@@ -6,7 +6,7 @@
 		<property name="project.name" value="Tokenizer" readonly="true" />
 
 		<!-- .NET Version -->
-		<property name="dotnet.versions" value="45" />
+		<property name="dotnet.versions" value="45,40,35" />
 
 		<!-- Internal Properties -->
 		<property name="root.dir" value="${project::get-base-directory()}" readonly="true"/>

@@ -29,12 +29,13 @@ namespace Tokens
         [Test]
         public void TestGetTokenFromMiddleOfString()
         {
-            const string pattern = "test #{TestClass.Message} string";
+            const string pattern = "test #{TestClass.Message:ToUpper()} string";
 
             var token = tokenizer.GetNextToken(pattern);
 
             Assert.AreEqual("test ", token.Prefix);
             Assert.AreEqual("TestClass.Message", token.Value);
+            Assert.AreEqual("ToUpper()", token.Operation);
             Assert.AreEqual(" string", token.Suffix);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tokens
+namespace Tokens.Exceptions
 {
     /// <summary>
     /// Thrown when an operation can't be mapped from a pattern

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -16,7 +17,7 @@ namespace Tokens
         [Test]
         public void TestConstructorPopulatesAssemblyTypes()
         {
-            Assert.IsTrue(factory.Operators.Count > 0);
+            Assert.IsTrue(factory.Items.Count > 0);
         }
 
         [Test]
@@ -46,6 +47,5 @@ namespace Tokens
 
             Assert.AreEqual("test", result);
         }
-
     }
 }

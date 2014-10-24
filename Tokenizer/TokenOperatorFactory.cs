@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Tokens.Exceptions;
 using Tokens.Operators;
 
 namespace Tokens
@@ -8,36 +6,8 @@ namespace Tokens
     /// <summary>
     /// Factory class to create <see cref="ITokenOperator"/> objects.
     /// </summary>
-    public class TokenOperatorFactory
+    public class TokenOperatorFactory : BaseTokenFactory<ITokenOperator>
     {
-        /// <summary>
-        /// Gets the operators.
-        /// </summary>
-        /// <value>
-        /// The operators.
-        /// </value>
-        public IList<ITokenOperator> Operators { get; private set; }
-
-        /// <summary>
-        /// Initializes the <see cref="TokenOperatorFactory"/> class.
-        /// </summary>
-        public TokenOperatorFactory()
-        {
-            Operators = new List<ITokenOperator>();
-
-            var types = GetType().Assembly.GetTypes();
-
-            foreach (var type in types)
-            {
-                if (type.GetInterfaces().Contains(typeof(ITokenOperator)) && !type.IsInterface)
-                {
-                    var @operator = Activator.CreateInstance(type) as ITokenOperator;
-
-                    Operators.Add(@operator);
-                }
-            }
-        }
-
         /// <summary>
         /// Performs an operation on the given value.
         /// </summary>
@@ -54,7 +24,7 @@ namespace Tokens
 
             var fired = false;
 
-            foreach (var @operator in Operators)
+            foreach (var @operator in Items)
             {
                 if (!CanPerform(@operator, token)) continue;
 

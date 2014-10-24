@@ -1,0 +1,40 @@
+﻿using NUnit.Framework;
+
+namespace Tokens.Validators
+{
+    [TestFixture]
+    public class IsNumericValidatorTest
+    {
+        private IsNumericValidator validator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            validator = new IsNumericValidator();
+        }
+
+        [Test]
+        public void TestValidateValueWhenNumericInteger()
+        {
+            var result = validator.IsValid(null, "100");
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestValidateValueWhenNumericFloat()
+        {
+            var result = validator.IsValid(null, "10.0");
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestValidateValueWhenNotNumeric()
+        {
+            var result = validator.IsValid(null, "hello world");
+
+            Assert.IsFalse(result);
+        }
+    }
+}

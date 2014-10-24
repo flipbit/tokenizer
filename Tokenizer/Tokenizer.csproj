@@ -35,7 +35,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MissingOperationException.cs" />
+    <Compile Include="BaseTokenFactory.cs" />
+    <Compile Include="Exceptions\ValidationException.cs" />
+    <Compile Include="TokenValidatorFactory.cs" />
+    <Compile Include="Exceptions\MissingOperationException.cs" />
+    <Compile Include="Operators\ToLowerOperator.cs" />
+    <Compile Include="Validators\IsNumericValidator.cs" />
     <Compile Include="Operators\ITokenOperator.cs" />
     <Compile Include="Operators\ToUpperOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -45,6 +50,7 @@
     <Compile Include="TokenOperatorFactory.cs" />
     <Compile Include="TokenReplacement.cs" />
     <Compile Include="TokenResult.cs" />
+    <Compile Include="Validators\ITokenValidator.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

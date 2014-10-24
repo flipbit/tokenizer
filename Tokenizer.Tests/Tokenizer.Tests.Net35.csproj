@@ -43,6 +43,8 @@
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="TokenOperatorFactoryTest.cs" />
     <Compile Include="TokenTest.cs" />
+    <Compile Include="TokenValidatorFactoryTest.cs" />
+    <Compile Include="Validators\IsNumericValidatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

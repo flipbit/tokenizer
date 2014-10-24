@@ -1,9 +1,9 @@
 ﻿namespace Tokens.Operators
 {
     /// <summary>
-    /// Converts the token value to upper case
+    /// Converts the token value to lower case
     /// </summary>
-    public class ToUpperOperator : ITokenOperator
+    public class ToLowerOperator : ITokenOperator
     {
         /// <summary>
         /// Performs the operation on the specified value.
@@ -16,7 +16,7 @@
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
 
-            return value.ToUpper();
+            return value.ToLower();
         }
     }
 }

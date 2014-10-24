@@ -164,8 +164,8 @@ namespace Tokens
             token.Suffix = token.Suffix.SubstringBeforeAnyString("\r\n", "\r", "\n");
 
             // Make whitespace empty strings
-            if (string.IsNullOrWhiteSpace(token.Suffix)) token.Suffix = string.Empty;
-            if (string.IsNullOrWhiteSpace(token.Prefix)) token.Prefix = string.Empty;
+            if (token.Suffix.IsNullOrWhiteSpace()) token.Suffix = string.Empty;
+            if (token.Prefix.IsNullOrWhiteSpace()) token.Prefix = string.Empty;
 
             if (token.Value.Contains(":"))
             {

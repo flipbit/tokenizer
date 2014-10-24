@@ -187,5 +187,27 @@ namespace Tokens
 
             return Regex.Split(value, "\r\n|\r|\n");
         }
+
+        /// <summary>
+        /// Determines whether the given string is null or white space.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+#if DOTNET35
+            var result = string.IsNullOrEmpty(value);
+
+            if (!result)
+            {
+                result = value.Trim() == string.Empty;
+            }
+
+            return result;
+#else
+            return string.IsNullOrWhiteSpace(value);
+#endif
+        }
+
     }
 }

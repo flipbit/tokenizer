@@ -40,6 +40,14 @@ namespace Tokens
         public string Operation { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Token"/> has replaced some text in the source input.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if replaced; otherwise, <c>false</c>.
+        /// </value>
+        public bool Replaced { get; set; }
+
+        /// <summary>
         /// Determines whether this instance is contained within the given input.
         /// </summary>
         /// <param name="input">The input.</param>

@@ -13,6 +13,8 @@ namespace Tokens
         {
             public string Message { get; set; }
 
+            public string Name { get; set; }
+
             public int Counter { get; set; }
 
             public IList<string> List { get; set; }
@@ -90,15 +92,69 @@ end #{TestClass.Nested.Counter}";
             var token = tokenizer.GetTokens(pattern);
 
             Assert.AreEqual(3, token.Count);
-            Assert.AreEqual("\r\nbegining ", token[0].Prefix);
+            Assert.AreEqual("begining ", token[0].Prefix);
             Assert.AreEqual("TestClass.Message", token[0].Value);
-            Assert.AreEqual(" \r\nmiddle ", token[0].Suffix);
-            Assert.AreEqual(" \r\nmiddle ", token[1].Prefix);
+            Assert.AreEqual("", token[0].Suffix);
+            Assert.AreEqual("middle ", token[1].Prefix);
             Assert.AreEqual("TestClass.Counter", token[1].Value);
-            Assert.AreEqual(" \r\nend ", token[1].Suffix);
-            Assert.AreEqual(" \r\nend ", token[2].Prefix);
+            Assert.AreEqual("", token[1].Suffix);
+            Assert.AreEqual("end ", token[2].Prefix);
             Assert.AreEqual("TestClass.Nested.Counter", token[2].Value);
             Assert.AreEqual("", token[2].Suffix);
+        }
+        
+        [Test]
+        public void TestGetMultipleTokensExtractsDataOnlyOnce()
+        {
+            const string patternOne = @"#{TestClass.Message}
+#{TestClass.Counter}";
+            const string input = @"1234
+5678";
+
+            var result = tokenizer.Parse<TestClass>(patternOne, input);
+
+            Assert.AreEqual("1234", result.Value.Message);
+            Assert.AreEqual(5678, result.Value.Counter);
+        }
+
+        [Test]
+        public void TestGetMultipleTokensRespectsTokenOrder()
+        {
+            const string patternOne = @"#{TestClass.Message} 
+#{TestClass.Counter}";
+            const string patternTwo = @"#{TestClass.Counter} 
+#{TestClass.Message}";
+            const string input = @"1234 
+5678";
+
+            var resultOne = tokenizer.Parse<TestClass>(patternOne, input);
+            var resultTwo = tokenizer.Parse<TestClass>(patternTwo, input);
+
+            Assert.AreEqual("1234", resultOne.Value.Message);
+            Assert.AreEqual(5678, resultOne.Value.Counter);
+
+            Assert.AreEqual("5678", resultTwo.Value.Message);
+            Assert.AreEqual(1234, resultTwo.Value.Counter);
+        }
+
+        [Test]
+        public void TestGetMultipleTokensSkipsMissingTokens()
+        {
+            const string patternOne = @"#{TestClass.Message} 
+#{TestClass.Counter}";
+            const string patternTwo = @"#{TestClass.Counter} 
+#{TestClass.Message}";
+            const string input = @"1234 
+5678";
+
+            var resultOne = tokenizer.Parse<TestClass>(patternOne, input);
+            var resultTwo = tokenizer.Parse<TestClass>(patternTwo, input);
+
+            Assert.AreEqual("1234", resultOne.Value.Message);
+            Assert.AreEqual(5678, resultOne.Value.Counter);
+
+            Assert.AreEqual("5678", resultTwo.Value.Message);
+            Assert.AreEqual(1234, resultTwo.Value.Counter);
         }
 
         [Test]
@@ -113,6 +169,23 @@ end #{TestClass.Nested.Counter}";
             Assert.AreEqual("TestClass.Message", result.Replacements[0].Value);
             Assert.AreEqual(typeof(TestClass), result.Value.GetType());
             Assert.AreEqual("hello world", result.Value.Message);
+        }
+
+        [Test]
+        [Ignore("Ignored for now..")]
+        public void TestExtractMultipleStringOnSameLine()
+        {
+            const string input = "test hello world string bob end";
+            const string pattern = "test #{TestClass.Message} string #{TestClass.Name} end";
+
+            var result = tokenizer.Parse<TestClass>(pattern, input);
+
+            Assert.AreEqual(2, result.Replacements.Count);
+            Assert.AreEqual("TestClass.Message", result.Replacements[0].Value);
+            Assert.AreEqual("TestClass.Name", result.Replacements[1].Value);
+            Assert.AreEqual(typeof(TestClass), result.Value.GetType());
+            Assert.AreEqual("hello world", result.Value.Message);
+            Assert.AreEqual("bob", result.Value.Name);
         }
 
         [Test]
@@ -240,7 +313,7 @@ end #{TestClass.Nested.Counter}";
         public void TestMultipleLinePatterns()
         {
             var pattern = "Hello #{TestClass.Message} World\r\nGoodbye #{TestClass.Counter} Everyone\r\n";
-            var input = new[] { "Hello 'They Said It Here!' World", "Goodbye 123456 Everyone" };
+            var input = "Hello 'They Said It Here!' World\nGoodbye 123456 Everyone";
 
             var result = tokenizer.Parse(new TestClass(), pattern, input);
 

@@ -11,6 +11,22 @@ namespace Tokens
     public class Tokenizer
     {
         /// <summary>
+        /// Gets or sets the operator factory.
+        /// </summary>
+        /// <value>
+        /// The operator factory.
+        /// </value>
+        public TokenOperatorFactory OperatorFactory { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tokenizer"/> class.
+        /// </summary>
+        public Tokenizer()
+        {
+            OperatorFactory = new TokenOperatorFactory();
+        }
+
+        /// <summary>
         /// Parses the given input and creates an object with values matching the specified pattern.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -18,11 +34,91 @@ namespace Tokens
         /// <param name="input">The input.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public TokenResult<T> Parse<T>(string pattern, string input) where T : class, new()
+        public TokenResult<T> ParseBlock<T>(string pattern, string input) where T : class, new()
         {
             var result = new T();
 
-            return Parse(result, pattern, input);
+            return ParseBlock(result, pattern, input);
+        }
+
+        /// <summary>
+        /// Parses the given input and creates an object with values matching the specified pattern.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target">The target.</param>
+        /// <param name="pattern">The pattern.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public TokenResult<T> ParseBlock<T>(T target, string pattern, string input) where T : class
+        {
+            var result = new TokenResult<T>(target);
+
+            return ParseBlock(result, pattern, input);
+        }
+
+        private TokenResult<T> ParseBlock<T>(TokenResult<T> result, string pattern, string input) where T : class
+        {
+            // Extract all the tokens from the pattern
+            var tokens = GetTokens(pattern);
+
+            // Parse input
+            return ParseBlock(result, tokens, input);
+        }
+
+        /// <summary>
+        /// Parses the given input and creates an object with values matching the specified pattern.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result">The result.</param>
+        /// <param name="tokens">The tokens.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        private TokenResult<T> ParseBlock<T>(TokenResult<T> result, IList<Token> tokens, string input) where T : class
+        {
+            foreach (var token in tokens)
+            {
+                // Skip already replaced tokens
+                if (token.Replaced) continue;
+                
+                // Ignore tokens that aren't contained in the input
+                if (!token.ContainedIn(input)) continue;
+
+                // Extract token value from the input text
+                var value = input
+                    .SubstringAfterString(token.Prefix)
+                    .SubstringBeforeString(token.Suffix)
+                    .Trim();
+
+                // Perform token operation
+                value = OperatorFactory.PerformOperation(token, value);
+
+                // Use reflection to set the property on the object with the token value
+                result.Value = SetValue(result.Value, token.Value, value);
+
+                // Add the match to the result collection
+                result.Replacements.Add(token);
+
+                // Remove token so it's not replaced again
+                token.Replaced = true;
+
+                break;
+            }
+
+            return result;            
+        }
+
+        /// <summary>
+        /// Parses the given input and creates an object with values matching the specified pattern.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pattern">The pattern.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public TokenResult<T> Parse<T>(string pattern, string input) where T : class, new()
+        {
+            var target = new T();
+
+            return Parse(target, pattern, input);
         }
 
         /// <summary>
@@ -37,61 +133,18 @@ namespace Tokens
         {
             var result = new TokenResult<T>(target);
 
-            return Parse(result, pattern, input);
-        }
-
-        public TokenResult<T> Parse<T>(TokenResult<T> result, string pattern, string input) where T : class
-        {
-            // Extract all the tokens from the pattern
             var tokens = GetTokens(pattern);
 
-            foreach (var token in tokens)
-            {
-                // Ignore tokens that aren't contained in the input
-                if (!token.ContainedIn(input)) continue;
-
-                // Extract token value from the input text
-                var value = input.SubstringAfterChar(token.Prefix).SubstringBeforeChar(token.Suffix);
-
-                // Perform token operation
-                value = token.PerformOperation(value);
-
-                // Use reflection to set the property on the object with the token value
-                result.Value = SetValue(result.Value, token.Value, value);
-
-                // Add the match to the result collection
-                result.Replacements.Add(token);
-            }
-
-            return result;            
-        }
-
-
-        public TokenResult<T> Parse<T>(string pattern, IEnumerable<string> input) where T : class, new()
-        {
-            var target = new T();
-
-            return Parse(target, pattern, input);
-        }
-
-        public TokenResult<T> Parse<T>(T target, string pattern, IEnumerable<string> input) where T : class
-        {
-            var result = new TokenResult<T>(target);
-
-            var patternLines = pattern.Split('\n');
-
-            foreach (var line in input)
+            foreach (var line in input.ToLines())
             {
                 if (string.IsNullOrEmpty(line)) continue;
 
-                foreach (var patternLine in patternLines)
-                {
-                    result = Parse(result, patternLine.Trim(), line.Trim());
-                }
+                result = ParseBlock(result, tokens, line);
             }
 
             return result;
         }
+
 
         /// <summary>
         /// Gets the next token that appears in the given pattern.
@@ -102,14 +155,22 @@ namespace Tokens
         {
             var token = new Token();
 
-            token.Prefix = pattern.SubstringBeforeChar("#{");
-            token.Suffix = pattern.SubstringAfterChar("}").SubstringBeforeChar("#{");
-            token.Value = pattern.SubstringBeforeChar("}").SubstringAfterChar("#{");
+            token.Prefix = pattern.SubstringBeforeString("#{");
+            token.Suffix = pattern.SubstringAfterString("}").SubstringBeforeString("#{");
+            token.Value = pattern.SubstringBeforeString("}").SubstringAfterString("#{");
+
+            // Limit prefix/suffix to the rest of the line
+            token.Prefix = token.Prefix.SubstringAfterLastAnyString("\r\n", "\r", "\n");
+            token.Suffix = token.Suffix.SubstringBeforeAnyString("\r\n", "\r", "\n");
+
+            // Make whitespace empty strings
+            if (string.IsNullOrWhiteSpace(token.Suffix)) token.Suffix = string.Empty;
+            if (string.IsNullOrWhiteSpace(token.Prefix)) token.Prefix = string.Empty;
 
             if (token.Value.Contains(":"))
             {
-                token.Operation = token.Value.SubstringAfterChar(":");
-                token.Value = token.Value.SubstringBeforeChar(":");
+                token.Operation = token.Value.SubstringAfterString(":");
+                token.Value = token.Value.SubstringBeforeString(":");
             }
 
             return token;
@@ -131,7 +192,7 @@ namespace Tokens
 
                 results.Add(token);
 
-                pattern = pattern.SubstringAfterChar("}");
+                pattern = pattern.SubstringAfterString("}");
             }
 
             return results;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Tokens
 {
@@ -22,6 +23,15 @@ namespace Tokens
         /// The suffix.
         /// </value>
         public string Suffix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the prerequisite for this token.  This is an entire line
+        /// that must appear before this token is found.
+        /// </summary>
+        /// <value>
+        /// The prerequisite.
+        /// </value>
+        public string Prerequisite { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the token.
@@ -81,6 +91,18 @@ namespace Tokens
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Determines if this token's prerequisites have been satisfied by the existing processing.
+        /// </summary>
+        /// <param name="processed">The processed.</param>
+        /// <returns></returns>
+        public bool PrerequisiteSatisfied(IList<string> processed)
+        {
+            if (string.IsNullOrEmpty(Prerequisite)) return true;
+
+            return processed.Contains(Prerequisite);
         }
     }
 }

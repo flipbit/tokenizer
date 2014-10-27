@@ -33,7 +33,7 @@ namespace Tokens
         {
             const string pattern = "test #{TestClass.Message:ToUpper()} string";
 
-            var token = tokenizer.GetNextToken(pattern);
+            var token = tokenizer.GetNextToken(pattern, string.Empty);
 
             Assert.AreEqual("test ", token.Prefix);
             Assert.AreEqual("TestClass.Message", token.Value);
@@ -46,7 +46,7 @@ namespace Tokens
         {
             const string pattern = "#{TestClass.Message} test string";
 
-            var token = tokenizer.GetNextToken(pattern);
+            var token = tokenizer.GetNextToken(pattern, string.Empty);
 
             Assert.AreEqual(string.Empty, token.Prefix);
             Assert.AreEqual("TestClass.Message", token.Value);
@@ -58,7 +58,7 @@ namespace Tokens
         {
             const string pattern = " test string #{TestClass.Message}";
 
-            var token = tokenizer.GetNextToken(pattern);
+            var token = tokenizer.GetNextToken(pattern, string.Empty);
 
             Assert.AreEqual(" test string ", token.Prefix);
             Assert.AreEqual("TestClass.Message", token.Value);
@@ -102,7 +102,39 @@ end #{TestClass.Nested.Counter}";
             Assert.AreEqual("TestClass.Nested.Counter", token[2].Value);
             Assert.AreEqual("", token[2].Suffix);
         }
-        
+
+        [Test]
+        public void TestGetTokensWithPrerequisite()
+        {
+            const string pattern = "First Line\r\nbegining #{TestClass.Message} end";
+
+            var token = tokenizer.GetTokens(pattern);
+
+            Assert.AreEqual(1, token.Count);
+            Assert.AreEqual("begining ", token[0].Prefix);
+            Assert.AreEqual("TestClass.Message", token[0].Value);
+            Assert.AreEqual(" end", token[0].Suffix);
+            Assert.AreEqual("First Line", token[0].Prerequisite);
+        }
+
+        [Test]
+        public void TestGetMulitipleTokensWithoutPrerequisites()
+        {
+            const string pattern = "First #{TestClass.Counter} Line\r\nbegining #{TestClass.Message} end";
+
+            var token = tokenizer.GetTokens(pattern);
+
+            Assert.AreEqual(2, token.Count);
+            Assert.AreEqual("First ", token[0].Prefix);
+            Assert.AreEqual("TestClass.Counter", token[0].Value);
+            Assert.AreEqual(" Line", token[0].Suffix);
+            Assert.AreEqual("", token[0].Prerequisite);
+            Assert.AreEqual("begining ", token[1].Prefix);
+            Assert.AreEqual("TestClass.Message", token[1].Value);
+            Assert.AreEqual(" end", token[1].Suffix);
+            Assert.AreEqual("", token[1].Prerequisite);
+        }
+
         [Test]
         public void TestGetMultipleTokensExtractsDataOnlyOnce()
         {
@@ -312,13 +344,57 @@ end #{TestClass.Nested.Counter}";
         [Test]
         public void TestMultipleLinePatterns()
         {
-            var pattern = "Hello #{TestClass.Message} World\r\nGoodbye #{TestClass.Counter} Everyone\r\n";
-            var input = "Hello 'They Said It Here!' World\nGoodbye 123456 Everyone";
+            const string pattern = "Hello #{TestClass.Message} World\r\nGoodbye #{TestClass.Counter} Everyone\r\n";
+            const string input = "Hello 'They Said It Here!' World\nGoodbye 123456 Everyone";
 
             var result = tokenizer.Parse(new TestClass(), pattern, input);
 
             Assert.AreEqual(result.Value.Message, "'They Said It Here!'");
             Assert.AreEqual(result.Value.Counter, 123456);
+        }
+
+        [Test]
+        public void TestValidateInputWhenValid()
+        {
+            const string pattern = "Hello #{TestClass.Message:IsNumeric()} Numbers";
+            const string input = "Hello 123456.7 Numbers";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(result.Value.Message, "123456.7");
+        }
+
+        [Test]
+        public void TestValidateInputWhenInvalid()
+        {
+            const string pattern = "Hello #{TestClass.Message:IsNumeric()} Numbers";
+            const string input = "Hello World Not Numbers";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(result.Value.Message, null);
+        }
+
+        [Test]
+        public void TestValidateInputWhenInvalidPicksNextValue()
+        {
+            const string pattern = "Hello #{TestClass.Message:IsNumeric()} Numbers";
+            const string input = "Hello World Not Numbers\r\nHello 12345678.9 Numbers";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(result.Value.Message, "12345678.9");
+        }
+
+        [Test]
+        public void TestExtractValueMustSeePrequisite()
+        {
+            const string pattern = "Hello First Line\r\nHello #{TestClass.Message} Line";
+            const string input = "Hello First Line\r\nHello Second Line";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(result.Value.Message, "Second");
         }
     }
 }

@@ -19,11 +19,20 @@ namespace Tokens
         public TokenOperatorFactory OperatorFactory { get; set; }
 
         /// <summary>
+        /// Gets or sets the validator factory.
+        /// </summary>
+        /// <value>
+        /// The validator factory.
+        /// </value>
+        public TokenValidatorFactory ValidatorFactory { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Tokenizer"/> class.
         /// </summary>
         public Tokenizer()
         {
             OperatorFactory = new TokenOperatorFactory();
+            ValidatorFactory = new TokenValidatorFactory();
         }
 
         /// <summary>
@@ -62,7 +71,7 @@ namespace Tokens
             var tokens = GetTokens(pattern);
 
             // Parse input
-            return ParseBlock(result, tokens, input);
+            return ParseBlock(result, tokens, input, new string[0]);
         }
 
         /// <summary>
@@ -72,13 +81,17 @@ namespace Tokens
         /// <param name="result">The result.</param>
         /// <param name="tokens">The tokens.</param>
         /// <param name="input">The input.</param>
+        /// <param name="processed">The lines that have already been processed.</param>
         /// <returns></returns>
-        private TokenResult<T> ParseBlock<T>(TokenResult<T> result, IList<Token> tokens, string input) where T : class
+        private TokenResult<T> ParseBlock<T>(TokenResult<T> result, IEnumerable<Token> tokens, string input, IList<string> processed) where T : class
         {
             foreach (var token in tokens)
             {
+                // Check token prerequisites
+                if (!token.PrerequisiteSatisfied(processed)) continue;
+
                 // Skip already replaced tokens
-                if (token.Replaced) continue;
+                if (token.Replaced) continue;               
                 
                 // Ignore tokens that aren't contained in the input
                 if (!token.ContainedIn(input)) continue;
@@ -88,6 +101,12 @@ namespace Tokens
                     .SubstringAfterString(token.Prefix)
                     .SubstringBeforeString(token.Suffix)
                     .Trim();
+
+                // Perform Validation
+                if (!ValidatorFactory.Validate(token, value))
+                {
+                    continue;
+                }
 
                 // Perform token operation
                 value = OperatorFactory.PerformOperation(token, value);
@@ -134,12 +153,15 @@ namespace Tokens
             var result = new TokenResult<T>(target);
 
             var tokens = GetTokens(pattern);
+            var processed = new List<string>();
 
             foreach (var line in input.ToLines())
             {
                 if (string.IsNullOrEmpty(line)) continue;
 
-                result = ParseBlock(result, tokens, line);
+                result = ParseBlock(result, tokens, line, processed);
+
+                processed.Add(line);
             }
 
             return result;
@@ -150,14 +172,16 @@ namespace Tokens
         /// Gets the next token that appears in the given pattern.
         /// </summary>
         /// <param name="pattern">The pattern.</param>
+        /// <param name="prerequisite">The prerequisite.</param>
         /// <returns></returns>
-        public Token GetNextToken(string pattern)
+        public Token GetNextToken(string pattern, string prerequisite)
         {
             var token = new Token();
 
             token.Prefix = pattern.SubstringBeforeString("#{");
             token.Suffix = pattern.SubstringAfterString("}").SubstringBeforeString("#{");
             token.Value = pattern.SubstringBeforeString("}").SubstringAfterString("#{");
+            token.Prerequisite = prerequisite;
 
             // Limit prefix/suffix to the rest of the line
             token.Prefix = token.Prefix.SubstringAfterLastAnyString("\r\n", "\r", "\n");
@@ -186,13 +210,32 @@ namespace Tokens
         {
             var results = new List<Token>();
 
-            while (pattern.Contains("#{"))
+            var lines = pattern.ToLines();
+            var previousLine = string.Empty;
+
+            foreach (var line in lines)
             {
-                var token = GetNextToken(pattern);
+                var currentLine = line.Clone() as string;
 
-                results.Add(token);
+                if (string.IsNullOrEmpty(currentLine)) continue;
 
-                pattern = pattern.SubstringAfterString("}");
+                if (!currentLine.Contains("#{"))
+                {
+                    previousLine = line;
+
+                    continue;
+                }
+
+                while (currentLine.Contains("#{"))
+                {
+                    var token = GetNextToken(currentLine, previousLine);
+
+                    results.Add(token);
+
+                    currentLine = currentLine.SubstringAfterString("}");
+                }
+
+                //previousLine = currentLine;
             }
 
             return results;

@@ -1,6 +1,6 @@
 
     Domain name:
-        #{WhoisRecord.DomainName}
+        #{WhoisRecord.Domain}
 
     Registrant:
         #{WhoisRecord.Registrant.Organization}
@@ -19,7 +19,7 @@
         Registrant contact details validated by Nominet on 12-Jun-2014
 
     Registrar:
-        #{WhoisRecord.RegistrarName} [Tag = BBC]
+        #{WhoisRecord.RegistrarName} [
         URL: #{WhoisRecord.RegistrarUrl}
 
     Relevant dates:

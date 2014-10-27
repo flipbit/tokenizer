@@ -1,4 +1,5 @@
-﻿using Tokens.Validators;
+﻿using Tokens.Exceptions;
+using Tokens.Validators;
 
 namespace Tokens
 {
@@ -21,15 +22,28 @@ namespace Tokens
                 return true;
             }
 
+            if (!token.Operation.StartsWith("Is"))
+            {
+                return true;
+            }
+
             var valid = true;
+            var fired = false;
 
             foreach (var @operator in Items)
             {
                 if (!CanPerform(@operator, token)) continue;
 
+                fired = true;
+
                 valid = @operator.IsValid(token, value);
                     
                 if (!valid) break;
+            }
+
+            if (!fired)
+            {
+                throw new MissingOperationException("Unknown validation method: " + value);
             }
 
             return valid;

@@ -31,7 +31,6 @@ namespace Tokens
         }
 
         [Test]
-        [Ignore]
         public void TestPerformValidationWhenInvalidValidatorSpecified()
         {
             var token = new Token { Operation = "IsMissingValidator()" };

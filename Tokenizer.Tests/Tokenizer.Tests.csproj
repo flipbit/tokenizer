@@ -41,6 +41,10 @@
     <Compile Include="Operators\ToLowerOperatorTest.cs" />
     <Compile Include="Operators\ToUpperOperatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Samples\Classes\Contact.cs" />
+    <Compile Include="Samples\Classes\WhoisRecord.cs" />
+    <Compile Include="Samples\Classes\WhoisServer.cs" />
+    <Compile Include="SampleTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="TokenOperatorFactoryTest.cs" />

@@ -22,6 +22,11 @@ namespace Tokens
                 return value;
             }
 
+            if (!token.Operation.StartsWith("To"))
+            {
+                return value;
+            }
+
             var fired = false;
 
             foreach (var @operator in Items)

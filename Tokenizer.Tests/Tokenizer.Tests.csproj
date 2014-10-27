@@ -38,6 +38,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionParserTest.cs" />
+    <Compile Include="Operators\ToDateTimeOperatorTest.cs" />
     <Compile Include="Operators\ToLowerOperatorTest.cs" />
     <Compile Include="Operators\ToUpperOperatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

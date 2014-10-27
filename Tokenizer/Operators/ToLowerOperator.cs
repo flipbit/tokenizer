@@ -8,11 +8,12 @@
         /// <summary>
         /// Performs the operation on the specified value.
         /// </summary>
+        /// <param name="function"></param>
         /// <param name="token">The token.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public string Perform(Token token, string value)
+        public object Perform(Function function, Token token, string value)
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
 

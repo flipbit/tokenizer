@@ -27,6 +27,8 @@ namespace Tokens
                 return true;
             }
 
+            var function = FunctionParser.Parse(token.Operation);
+
             var valid = true;
             var fired = false;
 
@@ -36,7 +38,7 @@ namespace Tokens
 
                 fired = true;
 
-                valid = @operator.IsValid(token, value);
+                valid = @operator.IsValid(function, token, value);
                     
                 if (!valid) break;
             }

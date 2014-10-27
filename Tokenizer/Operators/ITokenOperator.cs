@@ -8,9 +8,10 @@
         /// <summary>
         /// Performs the operation on the specified value.
         /// </summary>
+        /// <param name="function"></param>
         /// <param name="token">The token.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        string Perform(Token token, string value);
+        object Perform(Function function, Token token, string value);
     }
 }

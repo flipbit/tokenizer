@@ -97,19 +97,19 @@ namespace Tokens
                 if (!token.ContainedIn(input)) continue;
 
                 // Extract token value from the input text
-                var value = input
+                object value = input
                     .SubstringAfterString(token.Prefix)
                     .SubstringBeforeString(token.Suffix)
                     .Trim();
 
                 // Perform Validation
-                if (!ValidatorFactory.Validate(token, value))
+                if (!ValidatorFactory.Validate(token, value.ToString()))
                 {
                     continue;
                 }
 
                 // Perform token operation
-                value = OperatorFactory.PerformOperation(token, value);
+                value = OperatorFactory.PerformOperation(token, value.ToString());
 
                 // Use reflection to set the property on the object with the token value
                 result.Value = SetValue(result.Value, token.Value, value);

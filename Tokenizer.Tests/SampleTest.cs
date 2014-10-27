@@ -33,9 +33,10 @@ namespace Tokens
             Assert.AreEqual("London", result.Value.Registrant.PostalCode);
             Assert.AreEqual("British Broadcasting Corporation", result.Value.RegistrarName);
             Assert.AreEqual("http://www.bbc.co.uk", result.Value.RegistrarUrl);
-            //Assert.AreEqual(1, result.Value.Nameservers.Count);
-            //Assert.AreEqual(new DateTime(2012, 12, 13), result.Value.ExpirationDate);
-            //Assert.AreEqual(new DateTime(2014, 6, 12), result.Value.ModificationDate);
+            Assert.AreEqual(1, result.Value.NameServers.Count);
+            Assert.AreEqual("ns1.rbsov.bbc.co.uk       212.58.241.67", result.Value.NameServers[0]);
+            Assert.AreEqual(new DateTime(2014, 12, 13), result.Value.ExpirationDate);
+            Assert.AreEqual(new DateTime(2014, 6, 12), result.Value.ModificationDate);
         }
     }
 }

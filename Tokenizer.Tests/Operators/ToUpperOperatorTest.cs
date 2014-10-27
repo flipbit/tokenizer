@@ -18,7 +18,7 @@ namespace Tokens.Operators
         {
             var token = new Token();
 
-            var result = @operator.Perform(token, "test");
+            var result = @operator.Perform(null, token, "test");
 
             Assert.AreEqual("TEST", result);
         }
@@ -28,7 +28,7 @@ namespace Tokens.Operators
         {
             var token = new Token();
 
-            var result = @operator.Perform(token, string.Empty);
+            var result = @operator.Perform(null, token, string.Empty);
 
             Assert.AreEqual(string.Empty, result);
         }
@@ -38,7 +38,7 @@ namespace Tokens.Operators
         {
             var token = new Token();
 
-            var result = @operator.Perform(token, null);
+            var result = @operator.Perform(null, token, null);
 
             Assert.AreEqual(string.Empty, result);
         }

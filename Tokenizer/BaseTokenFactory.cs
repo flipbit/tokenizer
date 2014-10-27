@@ -10,6 +10,14 @@ namespace Tokens
     public abstract class BaseTokenFactory<T> where T : class
     {
         /// <summary>
+        /// Gets or sets the function parser.
+        /// </summary>
+        /// <value>
+        /// The function parser.
+        /// </value>
+        public FunctionParser FunctionParser { get; set; }
+
+        /// <summary>
         /// Gets the operators.
         /// </summary>
         /// <value>
@@ -22,6 +30,7 @@ namespace Tokens
         /// </summary>
         public BaseTokenFactory()
         {
+            FunctionParser = new FunctionParser();
             Items = new List<T>();
 
             var types = GetType().Assembly.GetTypes();

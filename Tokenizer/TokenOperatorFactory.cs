@@ -15,7 +15,7 @@ namespace Tokens
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public string PerformOperation(Token token, string value)
+        public object PerformOperation(Token token, string value)
         {
             if (string.IsNullOrEmpty(token.Operation))
             {
@@ -27,13 +27,17 @@ namespace Tokens
                 return value;
             }
 
+            object result = null;
+
+            var function = FunctionParser.Parse(token.Operation);
+
             var fired = false;
 
             foreach (var @operator in Items)
             {
                 if (!CanPerform(@operator, token)) continue;
 
-                value = @operator.Perform(token, value);
+                result = @operator.Perform(function, token, value);
                     
                 fired = true;
 
@@ -47,7 +51,7 @@ namespace Tokens
                 throw new MissingOperationException(message);
             }
 
-            return value;
+            return result;
         }
 
         private bool CanPerform(ITokenOperator @operator, Token token)

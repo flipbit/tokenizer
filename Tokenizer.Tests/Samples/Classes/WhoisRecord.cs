@@ -13,7 +13,7 @@ namespace Tokens.Samples.Classes
         /// </summary>
         public WhoisRecord()
         {
-            Nameservers = new List<string>();
+            NameServers = new List<string>();
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Tokens.Samples.Classes
         /// <param name="text">The text.</param>
         public WhoisRecord(string text)
         {
-            Nameservers = new List<string>();
+            NameServers = new List<string>();
 
             Text = text;
         }
@@ -81,7 +81,7 @@ namespace Tokens.Samples.Classes
         /// <value>
         /// The nameservers.
         /// </value>
-        public IList<string> Nameservers { get; private set; }
+        public IList<string> NameServers { get; private set; }
 
         /// <summary>
         /// Gets or sets the expiry date.

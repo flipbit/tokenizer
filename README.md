@@ -1,11 +1,13 @@
- 
-# .NET Tokenizer
+## .NET Tokenizer
+Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/0wfoj83bi9x8cvpx?svg=true)](https://ci.appveyor.com/project/flipbit/tokenizer)
 
 .NET Tokenizer is a library written in C# that extracts values from text.  By overlaying patterns on blocks of text, the library can create structured objects.  Object propeties are populated with data extracted from placeholder tokens within the patterns.
 
 ##Installation
 
-Installation:
+To install into your project, enter the following at the Package Manager prompt in Visual Studio:
+
+    Install-Package Tokenizer
 
 ##Basic Example
 

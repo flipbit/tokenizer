@@ -71,7 +71,7 @@ The Tokenizer will create an object with the information from the text extract a
 }
 ```
 
-The coding required to extract the information in the above example is simple.  First create:
+The coding required to extract the information in the above example is simple.  First create a simple class to hold all the information you'd like to extract from the source text:
 
 ```c#
 public class WhoisRecord
@@ -80,7 +80,11 @@ public class WhoisRecord
 
     ...
 }
+```
 
+In order to populate the class with values, create an instance of the Tokenizer and call the Parse() method.  This instantiates a new object and parses the input text and reflects it's content onto the object.  The TokenResult object contains a list of all tokens extracted, as well as a Value property with the new object assigned to.
+
+```c#
 public WhoisRecord Parse(string input)
 {
     var tokenizer = new Tokenizer();
@@ -91,6 +95,7 @@ public WhoisRecord Parse(string input)
 }
 ```
 
+Before you can call the Tokenizer, you need to supply it with a pattern first.  For the example above, the pattern would look something like:
 
 ```
 Domain Name: #{WhoisRecord.DomainName}
@@ -115,13 +120,30 @@ Registrant Phone: #{WhoisRecord.Registrant.PhoneNumber}
 Registrant Email: #{WhoisRecord.Registrant.Email}
 ```
 
+Each placeholder in the pattern refers to a property on the object.  The library will walk the object graph, instantiating properties as it encounters them, to set the values specified in the placeholder.
 
 ## Transforming Input
 
-## Validating Input
+Sometimes the data you're processing requires preprocessing before it can be mapped onto your object.  The Tokenizer library contains a number of built-in functions that enable this to save writing additional code.
 
+### Transforming Dates
+
+Sometimes a dates in input text can't automatically be parsed by the .NET framework.  In this case, you can add a ToDateTime() transform to tell the Tokenizer to parse the date in an exact format:
+
+```
+Creation Date: 4 Dec 1990 14:32
+```
+
+Pattern with transform:
+
+```
+Creation Date: #{WhoisRecord.CreationDate:ToDateTime('d MMM yyyy HH:mm')}
+```
 
 ## Limitations
 
+The Tokenizer currently works on line-by-line.  You cannot currently write multi-line placeholders.
 
 ## Extending Tokenizer
+
+The Tokenizer is easily extensible by adding new Token Operators and Token Validators.

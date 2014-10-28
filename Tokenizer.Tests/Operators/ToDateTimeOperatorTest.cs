@@ -56,5 +56,15 @@ namespace Tokens.Operators
 
             Assert.AreEqual(new DateTime(1, 1, 1), result);
         }
+
+        [Test]
+        public void TestParseDateWithEmptyValue()
+        {
+            var function = new Function();
+
+            var result = @operator.Perform(function, null, null);
+
+            Assert.AreEqual(string.Empty, result);
+        }
     }
 }

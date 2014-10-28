@@ -396,5 +396,25 @@ end #{TestClass.Nested.Counter}";
 
             Assert.AreEqual(result.Value.Message, "Second");
         }
+
+        [Test]
+        public void TestParseInputWithMissingOperators()
+        {
+            const string pattern = "Hello #{TestClass.Message:ToFabulous()} World";
+            const string input = "Hello ... World";
+
+            Assert.Throws<ArgumentException>(() => tokenizer.Parse(new TestClass(), pattern, input));            
+        }
+
+        [Test]
+        public void TestExtractValuesWhenNotPresentInInput()
+        {
+            const string pattern = "Hello #{TestClass.Message} World";
+            const string input = "Goodbye!";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(result.Value.Message, null);
+        }
     }
 }

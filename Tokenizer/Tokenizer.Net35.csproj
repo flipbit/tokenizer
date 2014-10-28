@@ -35,7 +35,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\MissingOperationException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="FunctionParser.cs" />
@@ -52,6 +51,11 @@
     <Compile Include="TokenResult.cs" />
     <Compile Include="Validators\IsNumericValidator.cs" />
     <Compile Include="Validators\ITokenValidator.cs" />
+    <Compile Include="Validators\MaxLengthValidator.cs" />
+    <Compile Include="Validators\MinLengthValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

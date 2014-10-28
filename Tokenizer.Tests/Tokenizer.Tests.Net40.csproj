@@ -51,7 +51,9 @@
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="TokenOperatorFactoryTest.cs" />
     <Compile Include="TokenTest.cs" />
+    <Compile Include="Validators\MinLengthValidatorTest.cs" />
     <Compile Include="Validators\IsNumericValidatorTest.cs" />
+    <Compile Include="Validators\MaxLengthValidatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

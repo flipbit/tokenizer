@@ -35,7 +35,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTokenFactory.cs" />
     <Compile Include="Exceptions\MissingOperationException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Function.cs" />
@@ -51,7 +50,6 @@
     <Compile Include="TokenOperatorFactory.cs" />
     <Compile Include="TokenReplacement.cs" />
     <Compile Include="TokenResult.cs" />
-    <Compile Include="TokenValidatorFactory.cs" />
     <Compile Include="Validators\IsNumericValidator.cs" />
     <Compile Include="Validators\ITokenValidator.cs" />
   </ItemGroup>

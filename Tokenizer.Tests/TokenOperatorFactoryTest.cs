@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Tokens.Exceptions;
 
 namespace Tokens
@@ -17,7 +18,123 @@ namespace Tokens
         [Test]
         public void TestConstructorPopulatesAssemblyTypes()
         {
-            Assert.IsTrue(factory.Items.Count > 0);
+            Assert.IsTrue(factory.Operators.Count > 0);
+        }
+
+        [Test]
+        public void TestTokenContainsOperationWhenTrue()
+        {
+            var token = new Token { Operation = "ToUpper()" };
+
+            var result = factory.ContainsOperation(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsOperationWhenFalse()
+        {
+            var token = new Token { Operation = "IsNumeric()" };
+
+            var result = factory.ContainsOperation(token);
+
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestTokenContainsOperationWhenInvalid()
+        {
+            var token = new Token { Operation = "Huh?" };
+
+            Assert.Throws<InvalidOperationException>(() => factory.ContainsOperation(token));
+        }
+
+        [Test]
+        public void TestTokenContainsOperationWhenHaveMultipleOperations()
+        {
+            var token = new Token { Operation = "ToUpper() && ToLower()" };
+
+            var result = factory.ContainsOperation(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsOperationWhenHaveMultipleOperationsAndValidators()
+        {
+            var token = new Token { Operation = "ToUpper() && IsNumeric()" };
+
+            var result = factory.ContainsOperation(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsValidatorWhenTrue()
+        {
+            var token = new Token { Operation = "IsNumeric()" };
+
+            var result = factory.ContainsValidator(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsValidatorWhenFalse()
+        {
+            var token = new Token { Operation = "ToLower()" };
+
+            var result = factory.ContainsValidator(token);
+
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestTokenContainsValidatorWhenInvalid()
+        {
+            var token = new Token { Operation = "Huh?" };
+
+            Assert.Throws<InvalidOperationException>(() => factory.ContainsValidator(token));
+        }
+
+        [Test]
+        public void TestTokenContainsValidatorWhenHaveMultipleOperations()
+        {
+            var token = new Token { Operation = "IsNumeric() && IsDateTime()" };
+
+            var result = factory.ContainsValidator(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsValidatorWhenHaveMultipleOperationsAndValidators()
+        {
+            var token = new Token { Operation = "ToUpper() && IsNumeric()" };
+
+            var result = factory.ContainsValidator(token);
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestTokenContainsMissingFunctions()
+        {
+            var token = new Token { Operation = "ToUpper() && IsNumeric()" };
+
+            var result = factory.HasMissingFunctions(token);
+
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestTokenContainsMissingFunctionsWhenHasMissingFunction()
+        {
+            var token = new Token { Operation = "ToUpper() && IsNumeric() && ToFabulous()" };
+
+            var result = factory.HasMissingFunctions(token);
+
+            Assert.IsTrue(result);
         }
 
         [Test]
@@ -31,11 +148,13 @@ namespace Tokens
         }
 
         [Test]
-        public void TestPerformOperationWhenInvalidOperationSpecified()
+        public void TestPerformMultipleOperations()
         {
-            var token = new Token { Operation = "ToMissingOperation()" };
+            var token = new Token { Operation = "ToUpper() && ToLower()" };
 
-            Assert.Throws<MissingOperationException>(() => factory.PerformOperation(token, "test"));
+            var result = factory.PerformOperation(token, "TEst");
+
+            Assert.AreEqual("test", result);
         }
 
         [Test]
@@ -47,5 +166,26 @@ namespace Tokens
 
             Assert.AreEqual("test", result);
         }
+
+        [Test]
+        public void TestValidateTokenWhenValid()
+        {
+            var token = new Token { Operation = "IsNumeric()" };
+
+            var result = factory.Validate(token, "1234.5");
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestValidateTokenWhenInvalid()
+        {
+            var token = new Token { Operation = "IsNumeric()" };
+
+            var result = factory.Validate(token, "hello world");
+
+            Assert.IsFalse(result);
+        }
+
     }
 }

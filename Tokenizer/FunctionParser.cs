@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Tokens
@@ -14,7 +15,24 @@ namespace Tokens
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        public Function Parse(string input)
+        public IList<Function> Parse(string input)
+        {
+            var functions = new List<Function>();
+
+            if (!string.IsNullOrEmpty(input))
+            {
+                var segements = input.Split(new[] {"&&"}, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var segement in segements)
+                {
+                    functions.Add(ParseSegment(segement.Trim()));
+                }
+            }
+
+            return functions;
+        }
+
+        private Function ParseSegment(string input)
         {
             var function = new Function();
 

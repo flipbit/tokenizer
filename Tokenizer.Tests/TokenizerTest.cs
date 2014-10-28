@@ -372,7 +372,7 @@ end #{TestClass.Nested.Counter}";
 
             var result = tokenizer.Parse(new TestClass(), pattern, input);
 
-            Assert.AreEqual(result.Value.Message, null);
+            Assert.AreEqual(null, result.Value.Message);
         }
 
         [Test]

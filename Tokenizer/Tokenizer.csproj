@@ -35,12 +35,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTokenFactory.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="FunctionParser.cs" />
     <Compile Include="Operators\ToDateTimeOperator.cs" />
-    <Compile Include="TokenValidatorFactory.cs" />
     <Compile Include="Exceptions\MissingOperationException.cs" />
     <Compile Include="Operators\ToLowerOperator.cs" />
     <Compile Include="Validators\IsNumericValidator.cs" />

@@ -12,6 +12,6 @@
         /// <param name="token">The token.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        object Perform(Function function, Token token, string value);
+        object Perform(Function function, Token token, object value);
     }
 }

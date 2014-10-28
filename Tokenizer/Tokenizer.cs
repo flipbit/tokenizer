@@ -19,20 +19,11 @@ namespace Tokens
         public TokenOperatorFactory OperatorFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets the validator factory.
-        /// </summary>
-        /// <value>
-        /// The validator factory.
-        /// </value>
-        public TokenValidatorFactory ValidatorFactory { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Tokenizer"/> class.
         /// </summary>
         public Tokenizer()
         {
             OperatorFactory = new TokenOperatorFactory();
-            ValidatorFactory = new TokenValidatorFactory();
         }
 
         /// <summary>
@@ -87,6 +78,12 @@ namespace Tokens
         {
             foreach (var token in tokens)
             {
+                // Check for missing operatations
+                if (OperatorFactory.HasMissingFunctions(token))
+                {
+                    throw new ArgumentException("Token has missing operators: " + token.Operation);
+                }
+
                 // Check token prerequisites
                 if (!token.PrerequisiteSatisfied(processed)) continue;
 
@@ -103,7 +100,7 @@ namespace Tokens
                     .Trim();
 
                 // Perform Validation
-                if (!ValidatorFactory.Validate(token, value.ToString()))
+                if (!OperatorFactory.Validate(token, value.ToString()))
                 {
                     continue;
                 }

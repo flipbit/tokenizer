@@ -13,11 +13,11 @@
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public object Perform(Function function, Token token, string value)
+        public object Perform(Function function, Token token, object value)
         {
-            if (string.IsNullOrEmpty(value)) return string.Empty;
+            if (value == null) return string.Empty;
 
-            return value.ToLower();
+            return value.ToString().ToLower();
         }
     }
 }

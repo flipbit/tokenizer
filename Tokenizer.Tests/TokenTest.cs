@@ -54,5 +54,32 @@ namespace Tokens
 
             Assert.IsTrue(result);
         }
+
+        [Test]
+        public void TestFunctions()
+        {
+            var token = new Token { Operation = "IsNumeric() && IsGreater(100)" };
+
+            Assert.AreEqual(2, token.Functions.Count);
+            Assert.AreEqual("IsNumeric", token.Functions[0].Name);
+            Assert.AreEqual("IsGreater", token.Functions[1].Name);
+            Assert.AreEqual("100", token.Functions[1].Parameters[0]);
+        }
+
+        [Test]
+        public void TestFunctionsWhenEmpty()
+        {
+            var token = new Token { Operation = "" };
+
+            Assert.AreEqual(0, token.Functions.Count);
+        }
+
+        [Test]
+        public void TestFunctionsWhenNull()
+        {
+            var token = new Token();
+
+            Assert.AreEqual(0, token.Functions.Count);
+        }
     }
 }

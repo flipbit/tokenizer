@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Tokens
@@ -17,7 +18,7 @@ namespace Tokens
         [Test]
         public void TestParseFunction()
         {
-            var result = parser.Parse("IsDate(dd-MMM-yyyy)");
+            var result = parser.Parse("IsDate(dd-MMM-yyyy)").First();
 
             Assert.AreEqual("IsDate", result.Name);
             Assert.AreEqual(1, result.Parameters.Count);
@@ -27,7 +28,7 @@ namespace Tokens
         [Test]
         public void TestParseFunctionWithMultipleParamters()
         {
-            var result = parser.Parse("IsDate(dd-MMM-yyyy,123)");
+            var result = parser.Parse("IsDate(dd-MMM-yyyy,123)").First();
 
             Assert.AreEqual("IsDate", result.Name);
             Assert.AreEqual(2, result.Parameters.Count);
@@ -38,7 +39,7 @@ namespace Tokens
         [Test]
         public void TestParseFunctionWithNoParamters()
         {
-            var result = parser.Parse("IsDate()");
+            var result = parser.Parse("IsDate()").First();
 
             Assert.AreEqual("IsDate", result.Name);
             Assert.AreEqual(0, result.Parameters.Count);;
@@ -53,10 +54,12 @@ namespace Tokens
         [Test]
         public void TestParseMulitpleFunctions()
         {
-            var result = parser.Parse("IsDate(),MaxLength(100)");
+            var results = parser.Parse("IsDate() && MaxLength(100)");
 
-            Assert.AreEqual("IsDate", result.Name);
-            Assert.AreEqual(0, result.Parameters.Count); ;
+            Assert.AreEqual(2, results.Count);
+            Assert.AreEqual("IsDate", results[0].Name);
+            Assert.AreEqual("MaxLength", results[1].Name);
+            Assert.AreEqual("100", results[1].Parameters[0]); ;
         }
     }
 }

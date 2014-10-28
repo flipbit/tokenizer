@@ -16,19 +16,19 @@ namespace Tokens.Operators
         /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public object Perform(Function function, Token token, string value)
+        public object Perform(Function function, Token token, object value)
         {
-            if (string.IsNullOrEmpty(value)) return string.Empty;
+            if (value == null) return string.Empty;
 
             DateTime result;
 
             if (function.Parameters.Count == 0 || string.IsNullOrEmpty(function.Parameters[0]))
             {
-                DateTime.TryParse(value, out result);
+                DateTime.TryParse(value.ToString(), out result);
             }
             else
             {
-                DateTime.TryParseExact(value, function.Parameters[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+                DateTime.TryParseExact(value.ToString(), function.Parameters[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
             }
 
             return result;

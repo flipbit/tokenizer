@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Tokens
@@ -8,6 +7,9 @@ namespace Tokens
     /// </summary>
     public class Token
     {
+        private IList<Function> functions;
+        private string operation;
+
         /// <summary>
         /// Gets or sets the prefixed string that must appear before the token.
         /// </summary>
@@ -47,7 +49,18 @@ namespace Tokens
         /// <value>
         /// The operation.
         /// </value>
-        public string Operation { get; set; }
+        public string Operation
+        {
+            get
+            {
+                return operation;
+            }
+            set 
+            { 
+                operation = value;
+                functions = null;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Token"/> has replaced some text in the source input.
@@ -67,32 +80,6 @@ namespace Tokens
             return input.Contains(Prefix) && input.Contains(Suffix);
         }
 
-        public string PerformOperation(string value)
-        {
-            string result;
-
-            switch (Operation)
-            {
-                case "ToUpper()":
-                    result = value.ToUpper();
-                    break;
-
-                case "ToLower()":
-                    result = value.ToLower();
-                    break;
-
-                case "":
-                case null:
-                    result = value;
-                    break;
-
-                default:
-                    throw new ArgumentException("Unknown Token Operation: " + Operation);
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Determines if this token's prerequisites have been satisfied by the existing processing.
         /// </summary>
@@ -103,6 +90,23 @@ namespace Tokens
             if (string.IsNullOrEmpty(Prerequisite)) return true;
 
             return processed.Contains(Prerequisite);
+        }
+
+        /// <summary>
+        /// Gets the functions to perform on this Token.
+        /// </summary>
+        /// <returns></returns>
+        public IList<Function> Functions
+        {
+            get
+            {
+                if (functions == null)
+                {
+                    functions = new FunctionParser().Parse(Operation);
+                }
+
+                return functions;
+            }
         }
     }
 }

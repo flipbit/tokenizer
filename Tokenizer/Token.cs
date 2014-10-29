@@ -108,5 +108,13 @@ namespace Tokens
                 return functions;
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is a list.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is list; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsList { get; set; }
     }
 }

@@ -39,6 +39,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionParserTest.cs" />
+    <Compile Include="Operators\ToDateTimeOperatorTest.cs" />
+    <Compile Include="Operators\ToLowerOperatorTest.cs" />
+    <Compile Include="Operators\ToUpperOperatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Samples\Classes\Contact.cs" />
     <Compile Include="Samples\Classes\WhoisRecord.cs" />
@@ -65,9 +68,7 @@
     <Content Include="Samples\Data\bbc.co.uk.txt" />
     <Content Include="Samples\Patterns\nominet.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Operators\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

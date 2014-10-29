@@ -35,6 +35,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\TokenizerException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="FunctionParser.cs" />
@@ -46,6 +47,7 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />
+    <Compile Include="TokenizerOptions.cs" />
     <Compile Include="TokenOperatorFactory.cs" />
     <Compile Include="TokenReplacement.cs" />
     <Compile Include="TokenResult.cs" />

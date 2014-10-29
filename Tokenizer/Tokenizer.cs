@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -19,10 +21,19 @@ namespace Tokens
         public TokenOperatorFactory OperatorFactory { get; set; }
 
         /// <summary>
+        /// Gets or sets the options.
+        /// </summary>
+        /// <value>
+        /// The options.
+        /// </value>
+        public TokenizerOptions Options { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Tokenizer"/> class.
         /// </summary>
         public Tokenizer()
         {
+            Options = TokenizerOptions.Defaults;
             OperatorFactory = new TokenOperatorFactory();
         }
 
@@ -88,8 +99,8 @@ namespace Tokens
                 if (!token.PrerequisiteSatisfied(processed)) continue;
 
                 // Skip already replaced tokens
-                if (token.Replaced) continue;               
-                
+                if (token.Replaced) continue;
+
                 // Ignore tokens that aren't contained in the input
                 if (!token.ContainedIn(input)) continue;
 
@@ -115,12 +126,81 @@ namespace Tokens
                 result.Replacements.Add(token);
 
                 // Remove token so it's not replaced again
-                token.Replaced = true;
+                if (!IsACollection(result.Value, token))
+                {
+                    token.Replaced = true;
+                }
+                else
+                {
+                    token.IsList = true;
+                }
 
                 break;
             }
 
-            return result;            
+            return result;
+        }
+
+        /// <summary>
+        /// Determines whether the specified token is a collection type.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private bool IsACollection(object target, Token token)
+        {
+            var result = false;
+
+            var path = token.Value.Split('.');
+
+            var property = GetPropertyInfo(target.GetType(), path.Skip(1).ToList());
+
+            if (property != null)
+            {
+                result = IsGenericList(property.PropertyType);
+            }
+
+            return result;
+        }
+
+        private PropertyInfo GetPropertyInfo(Type type, IList<string> path)
+        {
+            var propertyInfo = type.GetProperty(path[0]);
+
+            if (propertyInfo == null)
+            {
+                if (Options.ThrowExceptionOnMissingProperty)
+                {
+                    throw new TokenizerException("Can't find property '" + path[0] + "' on type " + type.Name);
+                }
+
+                return null;
+            }
+
+            if (path.Count == 1)
+            {
+                return propertyInfo;
+            }
+            else
+            {
+                return GetPropertyInfo(propertyInfo.PropertyType, path.Skip(1).ToList());
+            }
+        }
+
+        private bool IsGenericList(Type type)
+        {
+            foreach (var @interface in type.GetInterfaces())
+            {
+                if (!@interface.IsGenericType) continue;
+
+                if (@interface.GetGenericTypeDefinition() == typeof(ICollection<>))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -154,11 +234,22 @@ namespace Tokens
 
             foreach (var line in input.ToLines())
             {
-                if (string.IsNullOrEmpty(line)) continue;
+                var count = result.Replacements.Count;
 
-                result = ParseBlock(result, tokens, line, processed);
+                if (!string.IsNullOrEmpty(line))
+                {
+                    result = ParseBlock(result, tokens, line, processed);
 
-                processed.Add(line);
+                    processed.Add(line);
+                }
+
+                if (result.Replacements.Count == count)
+                {
+                    foreach (var token in tokens)
+                    {
+                        if (token.IsList) token.Replaced = true;
+                    }
+                }
             }
 
             return result;
@@ -231,8 +322,6 @@ namespace Tokens
 
                     currentLine = currentLine.SubstringAfterString("}");
                 }
-
-                //previousLine = currentLine;
             }
 
             return results;
@@ -275,12 +364,12 @@ namespace Tokens
                 {
                     if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>))
                     {
-                        var list = propertyInfo.GetValue(@object, null); 
+                        var list = propertyInfo.GetValue(@object, null);
 
                         if (list == null)
                         {
                             var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
-                            var enumerableType = typeof (List<>);
+                            var enumerableType = typeof(List<>);
                             var constructedEnumerableType = enumerableType.MakeGenericType(genericType);
                             list = Activator.CreateInstance(constructedEnumerableType);
 
@@ -303,7 +392,14 @@ namespace Tokens
 
                 if (currentValue == null)
                 {
-                    currentValue = Activator.CreateInstance(propertyInfo.PropertyType);
+                    try
+                    {
+                        currentValue = Activator.CreateInstance(propertyInfo.PropertyType);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException("Could not create type: " + propertyInfo.PropertyType, ex);
+                    }
 
                     propertyInfo.SetValue(@object, currentValue, null);
                 }

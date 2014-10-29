@@ -35,11 +35,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\TokenizerException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="FunctionParser.cs" />
     <Compile Include="Operators\ToDateTimeOperator.cs" />
     <Compile Include="Operators\ToLowerOperator.cs" />
+    <Compile Include="TokenizerOptions.cs" />
     <Compile Include="Validators\IsNumericValidator.cs" />
     <Compile Include="Operators\ITokenOperator.cs" />
     <Compile Include="Operators\ToUpperOperator.cs" />

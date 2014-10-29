@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -415,6 +416,92 @@ end #{TestClass.Nested.Counter}";
             var result = tokenizer.Parse(new TestClass(), pattern, input);
 
             Assert.AreEqual(result.Value.Message, null);
+        }
+
+        [Test]
+        public void TestExtractValuesAppendToList()
+        {
+            const string pattern = "List: #{TestClass.List}";
+            const string input = "List: One\r\nList: Two";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(2, result.Value.List.Count);
+            Assert.AreEqual("One", result.Value.List[0]);
+            Assert.AreEqual("Two", result.Value.List[1]);            
+        }
+
+        [Test]
+        public void TestExtractValuesAppendToNestedList()
+        {
+            const string pattern = "List: #{TestClass.Nested.List}";
+            const string input = "List: One\r\nList: Two";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(2, result.Value.Nested.List.Count);
+            Assert.AreEqual("One", result.Value.Nested.List[0]);
+            Assert.AreEqual("Two", result.Value.Nested.List[1]);
+
+        }
+
+        [Test]
+        public void TestExtractValuesAppendToNestedListStopsAfterUnMatchedLine()
+        {
+            const string pattern = "List: #{TestClass.Nested.List}";
+            const string input = "List: One\r\nList: Two\r\nBreak\r\nList: Three";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(2, result.Value.Nested.List.Count);
+            Assert.AreEqual("One", result.Value.Nested.List[0]);
+            Assert.AreEqual("Two", result.Value.Nested.List[1]);
+
+        }
+
+        [Test]
+        public void TestExtractValuesDoesntThrowErrorWhenOptionsSetToFalse()
+        {
+            const string pattern = "Hello #{TestClass.MissingPropertyName}";
+            const string input = "Hello World";
+
+            tokenizer.Options.ThrowExceptionOnMissingProperty = false;
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void TestExtractValuesThrowsAnErrorWhenOptionsSetToTrue()
+        {
+            const string pattern = "Hello #{TestClass.MissingPropertyName}";
+            const string input = "Hello World";
+
+            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
+
+            Assert.Throws<TokenizerException>(() => tokenizer.Parse(new TestClass(), pattern, input));
+        }
+
+        [Test]
+        public void TestExtractMulitpleValuesStopsExtractingOnEmptyLine()
+        {
+            const string pattern = @"
+Name servers:
+        #{TestClass.List}
+
+    WHOIS lookup made at 10:35:59 22-Oct-2014";
+            const string input = @"
+Name servers:
+        ns1.rbsov.bbc.co.uk       212.58.241.67
+        ns1.tcams.bbc.co.uk       212.72.49.3
+        ns1.thdow.bbc.co.uk       212.58.240.163
+
+    WHOIS lookup made at 10:35:59 22-Oct-2014";
+
+            var result = tokenizer.Parse(new TestClass(), pattern, input);
+
+            Assert.AreEqual(3, result.Value.List.Count);
         }
     }
 }

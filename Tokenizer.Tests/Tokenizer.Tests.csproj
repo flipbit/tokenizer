@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Samples\Data\bbc.co.uk.txt" />
+    <Content Include="Samples\Data\com.txt" />
+    <Content Include="Samples\Patterns\Iana.txt" />
     <Content Include="Samples\Patterns\nominet.txt" />
   </ItemGroup>
   <ItemGroup />

@@ -5,20 +5,18 @@ namespace Tokens.Operators
     [TestFixture]
     public class ToUpperOperatorTest
     {
-        private ToUpperOperator @operator;
+        private ToUpper @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToUpperOperator();
+            @operator = new ToUpper();
         }
 
         [Test]
         public void TestToUpper()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, "test");
+            var result = @operator.Perform("test");
 
             Assert.AreEqual("TEST", result);
         }
@@ -26,9 +24,7 @@ namespace Tokens.Operators
         [Test]
         public void TestToUpperWhenEmpty()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, string.Empty);
+            var result = @operator.Perform(string.Empty);
 
             Assert.AreEqual(string.Empty, result);
         }
@@ -36,9 +32,7 @@ namespace Tokens.Operators
         [Test]
         public void TestToUpperWhenNull()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, null);
+            var result = @operator.Perform(null);
 
             Assert.AreEqual(string.Empty, result);
         }

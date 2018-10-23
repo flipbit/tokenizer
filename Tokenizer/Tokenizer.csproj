@@ -10,5 +10,6 @@
    <PackageTags>tokenizer tokens pattern matching</PackageTags>
    <Description>Tokenizer extracts structed information from blocks of text and reflects them onto .NET objects</Description>
    <Copyright>Chris Wood 2018</Copyright>
+   <RootNamespace>Tokens</RootNamespace>
    </PropertyGroup>
 </Project>

@@ -1,85 +1,82 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
+using Tokens.Extensions;
+using Tokens.Validators;
 
 namespace Tokens
 {
     [TestFixture]
     public class TokenTest
     {
-        [Test]
-        public void TestTokenContainedIn()
+        private Token token;
+
+        public class Person
         {
-            var token = new Token { Prefix = "<", Suffix = ">" };
+            public string Name { get; set; }
 
-            var result = token.ContainedIn("<b>");
+            public int Age { get; set; }
 
-            Assert.IsTrue(result);
+            public DateTime Birthday { get; set; }
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            token = new Token();
         }
 
         [Test]
-        public void TestTokenContainedInWhenNotPresent()
+        public void TestSetTokenValue()
         {
-            var token = new Token { Prefix = "<", Suffix = ">" };
+            var person = new Person();
 
-            var result = token.ContainedIn("[b]");
+            token.Name = "Person.Name";
 
-            Assert.IsFalse(result);
+            var assigned = token.Assign(person, "Sue");
+
+            Assert.AreEqual(true, assigned);
+            Assert.AreEqual("Sue", person.Name);
         }
 
         [Test]
-        public void TestTokenContainedInHasGreedyPrefix()
+        public void TestSetTokenValueWithValidator()
         {
-            var token = new Token { Prefix = "", Suffix = ">" };
+            var person = new Person();
 
-            var result = token.ContainedIn("hello > nope");
+            token.Name = "Person.Age";
+            token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
 
-            Assert.IsTrue(result);
+            var assigned = token.Assign(person, "20");
+
+            Assert.AreEqual(true, assigned);
+            Assert.AreEqual(20, person.Age);
         }
 
         [Test]
-        public void TestTokenContainedInHasGreedySuffix()
+        public void TestSetTokenValueWithValidatorWhenInvalid()
         {
-            var token = new Token { Prefix = "<", Suffix = "" };
+            var person = new Person();
 
-            var result = token.ContainedIn("hello <nope");
+            token.Name = "Person.Age";
+            token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
 
-            Assert.IsTrue(result);
+            var assigned = token.Assign(person, "Twenty");
+
+            Assert.AreEqual(false, assigned);
+            Assert.AreEqual(0, person.Age);
         }
 
         [Test]
-        public void TestTokenContainedInIsGreedy()
+        public void TestSetTokenValueWhenNull()
         {
-            var token = new Token { Prefix = "", Suffix = "" };
+            var person = new Person();
 
-            var result = token.ContainedIn("hello");
+            token.Name = "Person.Name";
 
-            Assert.IsTrue(result);
-        }
+            var assigned = token.Assign(person, "Sue");
 
-        [Test]
-        public void TestFunctions()
-        {
-            var token = new Token { Operation = "IsNumeric() && IsGreater(100)" };
-
-            Assert.AreEqual(2, token.Functions.Count);
-            Assert.AreEqual("IsNumeric", token.Functions[0].Name);
-            Assert.AreEqual("IsGreater", token.Functions[1].Name);
-            Assert.AreEqual("100", token.Functions[1].Parameters[0]);
-        }
-
-        [Test]
-        public void TestFunctionsWhenEmpty()
-        {
-            var token = new Token { Operation = "" };
-
-            Assert.AreEqual(0, token.Functions.Count);
-        }
-
-        [Test]
-        public void TestFunctionsWhenNull()
-        {
-            var token = new Token();
-
-            Assert.AreEqual(0, token.Functions.Count);
+            Assert.AreEqual(true, assigned);
+            Assert.AreEqual("Sue", person.Name);
         }
     }
 }

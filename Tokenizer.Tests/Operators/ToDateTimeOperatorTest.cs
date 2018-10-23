@@ -6,21 +6,18 @@ namespace Tokens.Operators
     [TestFixture]
     public class ToDateTimeOperatorTest
     {
-        private ToDateTimeOperator @operator;
+        private ToDateTime @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToDateTimeOperator();
+            @operator = new ToDateTime();
         }
 
         [Test]
         public void TestParseDate()
         {
-            var function = new Function();
-            function.Parameters.Add("yyyy-MM-dd");
-
-            var result = @operator.Perform(function, null, "2014-01-01");
+            var result = @operator.Perform("2014-01-01", "yyyy-MM-dd");
 
             Assert.AreEqual(new DateTime(2014, 1, 1), result);
         }
@@ -28,10 +25,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithFormat()
         {
-            var function = new Function();
-            function.Parameters.Add("d MMM yyyy");
-
-            var result = @operator.Perform(function, null, "2 Mar 2012");
+            var result = @operator.Perform("2 Mar 2012", "d MMM yyyy");
 
             Assert.AreEqual(new DateTime(2012, 3, 2), result);
         }
@@ -39,9 +33,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithNoFormat()
         {
-            var function = new Function();
-            
-            var result = @operator.Perform(function, null, "2012-05-06");
+            var result = @operator.Perform("2012-05-06");
 
             Assert.AreEqual(new DateTime(2012, 5, 6), result);
         }
@@ -49,10 +41,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithInvalidFormat()
         {
-            var function = new Function();
-            function.Parameters.Add("dd MMM yy");
-
-            var result = @operator.Perform(function, null, "2012-05-06");
+            var result = @operator.Perform("2012-05-06", "dd MMM yy");
 
             Assert.AreEqual(new DateTime(1, 1, 1), result);
         }
@@ -60,9 +49,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithEmptyValue()
         {
-            var function = new Function();
-
-            var result = @operator.Perform(function, null, null);
+            var result = @operator.Perform(null);
 
             Assert.AreEqual(string.Empty, result);
         }

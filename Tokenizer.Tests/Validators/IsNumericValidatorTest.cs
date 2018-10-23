@@ -5,12 +5,12 @@ namespace Tokens.Validators
     [TestFixture]
     public class IsNumericValidatorTest
     {
-        private IsNumericValidator validator;
+        private IsNumeric validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new IsNumericValidator();
+            validator = new IsNumeric();
         }
 
         [Test]

@@ -1,9 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokenizer", "Tokenizer\Tokenizer.csproj", "{84646AE1-9D18-4E43-95A6-0BDD204A5D67}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokenizer", "Tokenizer\Tokenizer.csproj", "{84646AE1-9D18-4E43-95A6-0BDD204A5D67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokenizer.Tests", "Tokenizer.Tests\Tokenizer.Tests.csproj", "{FDE2BD45-D224-47C7-A04D-37C0D6D882C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokenizer.Tests", "Tokenizer.Tests\Tokenizer.Tests.csproj", "{FDE2BD45-D224-47C7-A04D-37C0D6D882C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{03008BA1-74FF-4DD9-BE0A-71AD03C4F969}"
+	ProjectSection(SolutionItems) = preProject
+		Appveyor.yml = Appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +29,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C47F1313-4F0E-4747-B60F-C6465C1CA415}
 	EndGlobalSection
 EndGlobal

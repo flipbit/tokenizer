@@ -6,21 +6,18 @@ namespace Tokens.Validators
     [TestFixture]
     public class MaxLengthValidatorTest
     {
-        private MaxLengthValidator validator;
+        private MaxLength validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new MaxLengthValidator();
+            validator = new MaxLength();
         }
 
         [Test]
         public void TestValidMaxmiumLengthWhenValid()
         {
-            var function = new Function();
-            function.Parameters.Add("100");
-
-            var result = validator.IsValid(function, null, "hello");
+            var result = validator.IsValid("hello", "100");
 
             Assert.IsTrue(result);
         }
@@ -28,10 +25,7 @@ namespace Tokens.Validators
         [Test]
         public void TestValidMaxmiumLengthWhenInvalid()
         {
-            var function = new Function();
-            function.Parameters.Add("5");
-
-            var result = validator.IsValid(function, null, "hello world");
+            var result = validator.IsValid("hello world", "5");
 
             Assert.IsFalse(result);
         }
@@ -39,18 +33,13 @@ namespace Tokens.Validators
         [Test]
         public void TestValidMaxmiumLengthWhenNoParameters()
         {
-            var function = new Function();
-
-            Assert.Throws<ValidationException>(() => validator.IsValid(function, null, "hello world"));
+            Assert.Throws<ValidationException>(() => validator.IsValid("hello world"));
         }
 
         [Test]
         public void TestValidMaxmiumLengthWhenParametersNotAnInteger()
         {
-            var function = new Function();
-            function.Parameters.Add("hello");
-
-            Assert.Throws<ValidationException>(() => validator.IsValid(function, null, "hello world"));
+            Assert.Throws<ValidationException>(() => validator.IsValid("hello world", "hello"));
         }
     }
 }

@@ -5,40 +5,34 @@ namespace Tokens.Operators
     [TestFixture]
     public class ToLowerOperatorTest
     {
-        private ToLowerOperator @operator;
+        private ToLower @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToLowerOperator();
+            @operator = new ToLower();
         }
 
         [Test]
-        public void TestToUpper()
+        public void TestToLower()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, "TEST");
+            var result = @operator.Perform("TEST");
 
             Assert.AreEqual("test", result);
         }
 
         [Test]
-        public void TestToUpperWhenEmpty()
+        public void TestToLowerWhenEmpty()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, string.Empty);
+            var result = @operator.Perform(string.Empty);
 
             Assert.AreEqual(string.Empty, result);
         }
 
         [Test]
-        public void TestToUpperWhenNull()
+        public void TestToLowerWhenNull()
         {
-            var token = new Token();
-
-            var result = @operator.Perform(null, token, null);
+            var result = @operator.Perform(null);
 
             Assert.AreEqual(string.Empty, result);
         }

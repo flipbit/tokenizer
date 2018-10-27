@@ -130,6 +130,21 @@ namespace Tokens
                     }
                     break;
 
+                case "#":
+                    token.Repeating = true;
+                    token.Optional = true;
+                    switch (peek)
+                    {
+                        case "$":
+                        case "?":
+                        case "}":
+                            break;
+
+                        default:
+                            throw new TokenizerException($"Invalid character in token name: '{peek}'");
+                    }
+                    break;
+
                 case ":":
                     state = FlatTokenParserState.InDecorator;
                     break;

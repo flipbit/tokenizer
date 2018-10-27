@@ -36,6 +36,11 @@ namespace Tokens
             public int Number { get; set; }
         }
 
+        private class Manager : Employee
+        {
+            public List<string> Manages { get; set; }
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -155,104 +160,95 @@ Last Name: Smith";
         }
 
         [Test]
-        public void TestGetMultipleTokensExtractsDataOnlyOnce()
+        public void TestExtractOptionalValueWhenNotPresent()
         {
-            const string patternOne = @"{TestClass.Message}
-{TestClass.Counter}";
-            const string input = @"1234
-5678";
+            const string pattern = @"First Name: {Employee.FirstName}, Middle Name: {Employee.MiddleName?}, Last Name: {Employee.LastName}";
+            const string input = @"First Name: Bob, Last Name: Smith";
 
-            var result = tokenizer.Parse<TestClass>(patternOne, input);
+            var employee = tokenizer.Parse<Employee>(pattern, input);
 
-            Assert.AreEqual("1234", result.Message);
-            Assert.AreEqual(5678, result.Counter);
+            Assert.AreEqual("Bob", employee.FirstName);
+            Assert.AreEqual("Smith", employee.LastName);
         }
 
         [Test]
-        public void TestGetMultipleTokensRespectsTokenOrder()
+        public void TestExtractOptionalValueWhenPresent()
         {
-            const string patternOne = @"{TestClass.Message} 
-{TestClass.Counter}";
-            const string patternTwo = @"{TestClass.Counter} 
-{TestClass.Message}";
-            const string input = @"1234 
-5678";
+            const string pattern = @"First Name: {Employee.FirstName}, Middle Name: {Employee.MiddleName?}, Last Name: {Employee.LastName}";
+            const string input = @"First Name: Bob, Middle Name: Charles, Last Name: Smith";
 
-            var resultOne = tokenizer.Parse<TestClass>(patternOne, input);
-            var resultTwo = tokenizer.Parse<TestClass>(patternTwo, input);
+            var employee = tokenizer.Parse<Employee>(pattern, input);
 
-            Assert.AreEqual("1234", resultOne.Message);
-            Assert.AreEqual(5678, resultOne.Counter);
-
-            Assert.AreEqual("5678", resultTwo.Message);
-            Assert.AreEqual(1234, resultTwo.Counter);
+            Assert.AreEqual("Bob", employee.FirstName);
+            Assert.AreEqual("Charles", employee.MiddleName);
+            Assert.AreEqual("Smith", employee.LastName);
         }
 
         [Test]
-        public void TestParseInputWithMissingOperators()
+        public void TestExtractWhenOperatorMissing()
         {
-            const string pattern = "Hello {TestClass.Message:UnknownFunction} World";
+            const string pattern = "Hello {Employee.FirstName:UnknownFunction} World";
             const string input = "Hello ... World";
 
-            Assert.Throws<TokenizerException>(() => tokenizer.Parse<TestClass>(pattern, input));            
+            Assert.Throws<TokenizerException>(() => tokenizer.Parse<Employee>(pattern, input));            
         }
 
         [Test]
-        public void TestExtracsWhenNotPresentInInput()
+        public void TestExtractWhenNotPresentInInput()
         {
-            const string pattern = "Hello {TestClass.Message} World";
-            const string input = "Goodbye!";
+            const string pattern = "First Name: {Employee.FirstName}";
+            const string input = "David";
 
-            var result = tokenizer.Parse<TestClass>(pattern, input);
+            var result = tokenizer.Parse<Employee>(pattern, input);
 
-            Assert.AreEqual(result.Message, null);
+            Assert.AreEqual(result.FirstName, null);
         }
 
         [Test]
-        public void TestExtraValuesAppendToList()
+        public void TestExtractListValues()
         {
-            const string pattern = "List: {TestClass.List}";
-            const string input = "List: One\r\nList: Two";
+            const string pattern = "Employee: {Manager.Manages#$}";
+            const string input = "Employee: Alice\r\nEmployee: Bob";
 
-            var result = tokenizer.Parse<TestClass>(pattern, input);
+            var result = tokenizer.Parse<Manager>(pattern, input);
 
-            Assert.AreEqual(2, result.List.Count);
-            Assert.AreEqual("One", result.List[0]);
-            Assert.AreEqual("Two", result.List[1]);            
+            Assert.AreEqual(2, result.Manages.Count);
+            Assert.AreEqual("Alice\r", result.Manages[0]);
+            Assert.AreEqual("Bob", result.Manages[1]);            
         }
 
         [Test]
-        public void TestExtracsAppendToNestedList()
+        public void TestExtractListValuesOnNewLines()
         {
-            const string pattern = "List: {TestClass.Nested.List}";
-            const string input = "List: One\r\nList: Two";
+            const string pattern = "Name: {Manager.FirstName}\r\nEmployee: {Manager.Manages#$}\r\nNumber: {Manager.Number}";
+            const string input = "Name: Sue\r\nEmployee: Alice\r\nEmployee: Bob\r\nEmployee: Charles\r\nNumber: 1234";
 
-            var result = tokenizer.Parse<TestClass>(pattern, input);
+            var result = tokenizer.Parse<Manager>(pattern, input);
 
-            Assert.AreEqual(2, result.Nested.List.Count);
-            Assert.AreEqual("One", result.Nested.List[0]);
-            Assert.AreEqual("Two", result.Nested.List[1]);
-
+            Assert.AreEqual(3, result.Manages.Count);
+            Assert.AreEqual("Alice", result.Manages[0]);
+            Assert.AreEqual("Bob", result.Manages[1]);            
         }
 
         [Test]
-        public void TestExtracsAppendToNestedListStopsAfterUnMatchedLine()
+        public void TestExtractEmbeddedListValues()
         {
-            const string pattern = "List: #{TestClass.Nested.List}";
-            const string input = "List: One\r\nList: Two\r\nBreak\r\nList: Three";
+            const string pattern = "Name: {Manager.FirstName}, Manages: {Manager.Manages#$}, Number: {Manager.Number}";
+            const string input = "Name: Alice, Manages: Bob, Manages: Sue, Number: 1234";
 
-            var result = tokenizer.Parse<TestClass>(pattern, input);
+            var result = tokenizer.Parse<Manager>(pattern, input);
 
-            Assert.AreEqual(2, result.Nested.List.Count);
-            Assert.AreEqual("One", result.Nested.List[0]);
-            Assert.AreEqual("Two", result.Nested.List[1]);
-
+            Assert.AreEqual("Alice", result.FirstName);
+            Assert.AreEqual(2, result.Manages.Count);
+            Assert.AreEqual("Bob", result.Manages[0]);
+            Assert.AreEqual("Sue", result.Manages[1]);            
+            Assert.AreEqual(1234, result.Number);
         }
 
         [Test]
         public void TestExtracsDoesntThrowErrorWhenOptionsSetToFalse()
         {
-            const string pattern = "Hello #{TestClass.MissingPropertyName}";
+            const string pattern = "Hello {TestClass.MissingPropertyName}";
             const string input = "Hello World";
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = false;
@@ -265,12 +261,12 @@ Last Name: Smith";
         [Test]
         public void TestExtracsThrowsAnErrorWhenOptionsSetToTrue()
         {
-            const string pattern = "Hello #{TestClass.MissingPropertyName}";
+            const string pattern = "Hello {TestClass.MissingPropertyName}";
             const string input = "Hello World";
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = true;
 
-            Assert.Throws<TokenizerException>(() => tokenizer.Parse<TestClass>(pattern, input));
+            Assert.Throws<MissingMemberException>(() => tokenizer.Parse<TestClass>(pattern, input));
         }
 
         [Test]
@@ -278,7 +274,8 @@ Last Name: Smith";
         {
             const string pattern = @"
 Name servers:
-        #{TestClass.List}
+        {TestClass.List#}
+        {TestClass.List#}
 
     WHOIS lookup made at 10:35:59 22-Oct-2014";
             const string input = @"
@@ -292,6 +289,17 @@ Name servers:
             var result = tokenizer.Parse<TestClass>(pattern, input);
 
             Assert.AreEqual(3, result.List.Count);
+        }
+
+        [Test]
+        public void TestExtractValueWithMismatchedNewLines()
+        {
+            const string pattern = "First Name:\n{Employee.FirstName}";
+            const string input = "First Name:\r\nAlice";
+
+            var employee = tokenizer.Parse<Employee>(pattern, input);
+
+            Assert.AreEqual("Alice", employee.FirstName);
         }
     }
 }

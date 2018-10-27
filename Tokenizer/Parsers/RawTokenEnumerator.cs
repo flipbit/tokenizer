@@ -32,6 +32,17 @@
 
             currentLocation++;
 
+            if (next == "\r" && IsEmpty == false)
+            {
+                var peek = pattern.Substring(currentLocation, 1);
+
+                if (peek == "\n")
+                {
+                    next = "\n";
+                    currentLocation++;
+                }
+            }
+
             return next;
         }
 

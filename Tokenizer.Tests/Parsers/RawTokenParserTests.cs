@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Tokens.Exceptions;
 
-namespace Tokens
+namespace Tokens.Parsers
 {
     [TestFixture]
     public class RawTokenParserTests
@@ -256,6 +256,38 @@ namespace Tokens
             var second = tokens[1];
             Assert.AreEqual(null, second.Name);
             Assert.AreEqual(" Postamble", second.Preamble);
+        }
+
+        [Test]
+        public void TestParseTokenConvertsWindowsLineEndingsToUnixLineEndings()
+        {
+            var tokens = parser.Parse("Preamble\r\n{TokenName}\r\nPostamble");
+
+            Assert.AreEqual(2, tokens.Count);
+
+            var token = tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+
+            var second = tokens[1];
+            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual("\nPostamble", second.Preamble);
+        }
+
+        [Test]
+        public void TestParseTokenPreservesUnixLineEndings()
+        {
+            var tokens = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r \n");
+
+            Assert.AreEqual(2, tokens.Count);
+
+            var token = tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+
+            var second = tokens[1];
+            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual("\nPostamble with linefeed: \r \n", second.Preamble);
         }
     }
 }

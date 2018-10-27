@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Resources;
-using System.Text;
-using Tokens.Exceptions;
-using Tokens.Extensions;
+﻿using System.Text;
 using Tokens.Parsers;
 
 namespace Tokens
@@ -62,21 +55,21 @@ namespace Tokens
                 }
 
                 // Check for next token
-                if (template.Tokens.Count > 0 && enumerator.Match(template.NextTokenPreamble))
+                if (enumerator.Match(template.Tokens, out var match))
                 {
                     if (current == null)
                     {
                         replacement.Clear();
-                        enumerator.Advance(template.NextTokenPreamble.Length);
-                        current = template.Tokens.Dequeue();
+                        enumerator.Advance(match.Preamble.Length);
+                        current = template.DequeueUpTo(match);
                     }
-                    else if (replacement.Length > 0 && current.Assign(value, replacement.ToString()))
+                    else if (replacement.Length > 0 && current.Assign(value, replacement.ToString(), Options.ThrowExceptionOnMissingProperty))
                     {
                         replacement.Clear();
 
-                        enumerator.Advance(template.NextTokenPreamble.Length);
+                        enumerator.Advance(match.Preamble.Length);
 
-                        current = template.Tokens.Dequeue();
+                        current = template.DequeueUpTo(match);
                     }
                     else
                     {
@@ -95,7 +88,7 @@ namespace Tokens
 
             if (current != null && replacement.Length > 0)
             {
-                current.Assign(value, replacement.ToString());
+                current.Assign(value, replacement.ToString(), Options.ThrowExceptionOnMissingProperty);
             }
 
 

@@ -51,6 +51,9 @@ namespace Tokens.Parsers
                 var token = new Token();
                 token.Preamble = rawToken.Preamble;
                 token.Name = rawToken.Name;
+                token.Optional = rawToken.Optional;
+                token.Repeating = rawToken.Repeating;
+                token.TerminateOnNewLine = rawToken.TerminateOnNewline;
 
                 var tokenOperators = new List<OperatorContext>();
                 var tokenValidators = new List<ValidatorContext>();
@@ -92,9 +95,9 @@ namespace Tokens.Parsers
                         }
 
                         tokenOperators.Add(operatorContext);
+    
+                        break;
                     }
-
-                    break;
                 }
 
                 if (operatorContext != null) continue;
@@ -111,10 +114,9 @@ namespace Tokens.Parsers
                         }
 
                         tokenValidators.Add(validatorContext);
+    
+                        break;
                     }
-
-                    break;
-                    
                 }
 
                 if (validatorContext == null)

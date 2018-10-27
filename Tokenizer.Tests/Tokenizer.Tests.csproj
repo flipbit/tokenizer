@@ -7,6 +7,18 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Samples\Data\bbc_co_uk.txt" />
+    <None Remove="Samples\Data\com.txt" />
+    <None Remove="Samples\Patterns\Iana.txt" />
+    <None Remove="Samples\Patterns\nominet.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Samples\Data\bbc_co_uk.txt" />
+    <EmbeddedResource Include="Samples\Data\com.txt" />
+    <EmbeddedResource Include="Samples\Patterns\Iana.txt" />
+    <EmbeddedResource Include="Samples\Patterns\nominet.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />

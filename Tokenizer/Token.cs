@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Tokens.Extensions;
 
@@ -40,6 +41,12 @@ namespace Tokens
         /// </summary>
         public IList<ValidatorContext> Validators { get; }
 
+        public bool Optional { get; set; }
+
+        public bool Repeating { get; set; }
+
+        public bool TerminateOnNewLine { get; set; }
+
         public bool CanAssign(object value)
         {
             foreach (var validator in Validators)
@@ -53,11 +60,31 @@ namespace Tokens
             return true;
         }
 
-        public bool Assign(object target, object value)
+        public bool Assign(object target, string value, bool throwOnMissingProperty)
         {
             if (CanAssign(value) == false) return false;
 
-            target.SetValue(Name, value);
+            if (TerminateOnNewLine)
+            {
+                var index = value.IndexOf("\n");
+                if (index > 0)
+                {
+                    value = value.Substring(0, index);
+                }
+            }
+
+            try
+            {
+                target.SetValue(Name, value);
+            }
+            catch (MissingMemberException)
+            {
+                if (throwOnMissingProperty)
+                {
+                    throw;
+                }
+            }
+
 
             return true;
         }

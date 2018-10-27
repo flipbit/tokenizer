@@ -27,15 +27,20 @@ namespace Tokens.Extensions
 
         private static object SetInnerValue(object @object, IReadOnlyList<string> path, object value)
         {
+            var set = false;
             var propertyInfos = @object.GetType().GetProperties();
 
             foreach (var propertyInfo in propertyInfos)
             {
                 if (propertyInfo.Name != path[0]) continue;
 
+                set = true;
+
                 if (path.Count == 1)
                 {
-                    if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>))
+                    if (propertyInfo.PropertyType.IsGenericType && 
+                       (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>) ||
+                        propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
                     {
                         var list = propertyInfo.GetValue(@object, null);
 
@@ -80,6 +85,11 @@ namespace Tokens.Extensions
                 SetInnerValue(currentValue, path.Skip(1).ToArray(), value);
 
                 break;
+            }
+
+            if (!set)
+            {
+                throw new MissingMemberException($@"Could find property '{path[0]}' on {@object.GetType().Name}");
             }
 
             return @object;

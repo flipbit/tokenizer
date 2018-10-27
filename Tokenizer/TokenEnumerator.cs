@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Tokens
 {
@@ -11,8 +12,15 @@ namespace Tokens
 
         public TokenEnumerator(string pattern)
         {
-            this.pattern = pattern;
             preamble = new StringBuilder();
+
+            if (string.IsNullOrEmpty(pattern) == false)
+            {
+                if (pattern.Contains("\r\n"))
+                {
+                    pattern = pattern.Replace("\r\n", "\n");
+                }
+            }
 
             if (string.IsNullOrEmpty(pattern))
             {
@@ -22,6 +30,8 @@ namespace Tokens
             {
                 patternLength = pattern.Length;
             }
+
+            this.pattern = pattern;
 
             currentLocation = 0;
         }
@@ -50,6 +60,17 @@ namespace Tokens
             return pattern.Substring(currentLocation, 1);
         }
 
+        public string Peek(int offset)
+        {
+            if (IsEmpty) return string.Empty;
+
+            var location = currentLocation + offset;
+
+            if (location > patternLength) return string.Empty;
+
+            return pattern.Substring(currentLocation + offset, 1);
+        }
+
         public bool Match(string value)
         {
             if (string.IsNullOrEmpty(value)) return true;
@@ -61,6 +82,23 @@ namespace Tokens
         public void Advance(int count)
         {
             currentLocation += count;
+        }
+
+        public bool Match(Queue<Token> tokens, out Token match)
+        {
+            foreach (var token in tokens)
+            {
+                if (Match(token.Preamble))
+                {
+                    match = token;
+                    return true;
+                }
+
+                if (token.Optional == false) break;
+            }
+
+            match = null;
+            return false;
         }
     }
 }

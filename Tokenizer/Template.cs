@@ -34,15 +34,26 @@ namespace Tokens
         /// </summary>
         public Queue<Token> Tokens { get; }
 
-        public string NextTokenPreamble
+        public Token DequeueUpTo(Token token)
         {
-            get
-            {
-                if (Tokens.Count == 0) return string.Empty;
-                if (string.IsNullOrEmpty(Tokens.Peek().Preamble)) return string.Empty;
+            Token match = null;
 
-                return Tokens.Peek().Preamble;
+            while (Tokens.Count > 0)
+            {
+                if (token.Repeating)
+                {
+                    if (Tokens.Peek() == token)
+                    {
+                        return token;
+                    }
+                }
+
+                match = Tokens.Dequeue();
+
+                if (match == token) break;
             }
+
+            return match;
         }
     }
 }

@@ -1,37 +1,38 @@
 
     Domain name:
-        #{WhoisRecord.Domain}
+        {WhoisRecord.Domain}
 
     Registrant:
-        #{WhoisRecord.Registrant.Organization}
+        {WhoisRecord.Registrant.Organization}
 
     Registrant type:
-        #{WhoisRecord.Registrant.Type}
+        {WhoisRecord.Registrant.Type}
 
     Registrant's address:
-        #{WhoisRecord.Registrant.Street}
-        #{WhoisRecord.Registrant.City}
-        #{WhoisRecord.Registrant.State}
-		#{WhoisRecord.Registrant.PostalCode}
-		#{WhoisRecord.Registrant.Country}
+        {WhoisRecord.Registrant.Street}
+        {WhoisRecord.Registrant.City}
+        {WhoisRecord.Registrant.State}
+        {WhoisRecord.Registrant.PostalCode}
+        {WhoisRecord.Registrant.Country}
 
     Data validation:
         Registrant contact details validated by Nominet on 12-Jun-2014
 
     Registrar:
-        #{WhoisRecord.RegistrarName} [
-        URL: #{WhoisRecord.RegistrarUrl}
+        {WhoisRecord.RegistrarName}
+        URL: {WhoisRecord.RegistrarUrl}
 
     Relevant dates:
-        Registered on: #{WhoisRecord.CreatedDate}
-        Expiry date:  #{WhoisRecord.ExpirationDate:ToDateTime(dd-MMM-yyyy)}
-        Last updated:  #{WhoisRecord.ModificationDate:ToDateTime(dd-MMM-yyyy)}
+        Registered on: {WhoisRecord.CreatedDate}
+        Expiry date:  {WhoisRecord.ExpirationDate:ToDateTime(dd-MMM-yyyy)}
+        Last updated:  {WhoisRecord.ModificationDate:ToDateTime(dd-MMM-yyyy)}
 
     Registration status:
         Registered until expiry date.
 
     Name servers:
-        #{WhoisRecord.NameServers}
+        {WhoisRecord.NameServers}
+        {WhoisRecord.NameServers#}
 
     WHOIS lookup made at 10:35:59 22-Oct-2014
 

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using NUnit.Framework;
+using Tokens.Samples;
 using Tokens.Samples.Classes;
 
 namespace Tokens
@@ -20,8 +19,8 @@ namespace Tokens
         [Test]
         public void TestParseUkWhoisData()
         {
-            var pattern = File.ReadAllText("..\\..\\Samples\\Patterns\\nominet.txt");
-            var input = File.ReadAllText("..\\..\\Samples\\Data\\bbc.co.uk.txt");
+            var pattern = Resources.Pattern_nominet;
+            var input = Resources.Data_bbc_co_uk;
 
             var result = tokenizer.Parse<WhoisRecord>(pattern, input);
 
@@ -32,7 +31,7 @@ namespace Tokens
             Assert.AreEqual("Broadcasting House", result.Registrant.City);
             Assert.AreEqual("Portland Place", result.Registrant.State);
             Assert.AreEqual("London", result.Registrant.PostalCode);
-            Assert.AreEqual("British Broadcasting Corporation", result.RegistrarName);
+            Assert.AreEqual("British Broadcasting Corporation [Tag = BBC]", result.RegistrarName);
             Assert.AreEqual("http://www.bbc.co.uk", result.RegistrarUrl);
             Assert.AreEqual(3, result.NameServers.Count);
             Assert.AreEqual("ns1.rbsov.bbc.co.uk       212.58.241.67", result.NameServers[0]);
@@ -45,8 +44,8 @@ namespace Tokens
         [Test]
         public void TestParseIanaServerDataData()
         {
-            var pattern = File.ReadAllText("..\\..\\Samples\\Patterns\\iana.txt");
-            var input = File.ReadAllText("..\\..\\Samples\\Data\\com.txt");
+            var pattern = Resources.Pattern_iana;
+            var input = Resources.Data_com;
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = true;
 

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tokens.Parsers;
+using Tokens.Transformers;
+using Tokens.Validators;
 
 namespace Tokens
 {
@@ -59,7 +61,20 @@ namespace Tokens
             match = results.OrderByDescending(r => r.Matches).FirstOrDefault();
 
             return match != null;
+        }
 
+        public TokenMatcher RegisterTransformer<T>() where T : ITokenTransformer
+        {
+            parser.RegisterTransformer<T>();
+
+            return this;
+        }
+
+        public TokenMatcher RegisterValidator<T>() where T : ITokenValidator
+        {
+            parser.RegisterValidator<T>();
+
+            return this;
         }
     }
 }

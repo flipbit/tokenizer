@@ -3,7 +3,7 @@
     /// <summary>
     /// Validator to determine if a token value is numeric
     /// </summary>
-    public class IsNumeric : ITokenValidator
+    public class IsNumericValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

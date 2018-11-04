@@ -43,7 +43,15 @@ namespace Tokens.Transformers
         {
             var result = @operator.Transform("2012-05-06", "dd MMM yy");
 
-            Assert.AreEqual(new DateTime(1, 1, 1), result);
+            Assert.AreEqual("2012-05-06", result);
+        }
+
+        [Test]
+        public void TestParseDateWithFormatList()
+        {
+            var result = @operator.Transform("2012-05-06", "dd MMM yy", "yyyy-MM-dd");
+
+            Assert.AreEqual(new DateTime(2012, 5 ,6), result);
         }
 
         [Test]

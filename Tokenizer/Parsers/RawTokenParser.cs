@@ -6,7 +6,7 @@ using Tokens.Exceptions;
 
 namespace Tokens.Parsers
 {
-    public class RawTokenParser
+    internal class RawTokenParser
     {
         private const string ValidTokenNameCharacters = @"abcdefghijklmnopqrstuvwxyzABCDDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.";
 

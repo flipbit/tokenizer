@@ -6,12 +6,12 @@ namespace Tokens.Validators
     [TestFixture]
     public class MinLengthValidatorTest
     {
-        private MinLength validator;
+        private MinLengthValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new MinLength();
+            validator = new MinLengthValidator();
         }
 
         [Test]

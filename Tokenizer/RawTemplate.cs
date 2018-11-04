@@ -2,7 +2,7 @@
 
 namespace Tokens
 {
-    public class RawTemplate
+    internal class RawTemplate
     {
         public RawTemplate()
         {

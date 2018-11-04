@@ -7,21 +7,15 @@ namespace Tokens
     /// </summary>
     public class TokenizerOptions
     {
-        public static TokenizerOptions Defaults
+        public static TokenizerOptions Defaults => new TokenizerOptions
         {
-            get
-            {
-                return new TokenizerOptions
-                {
-                    // Don't throw exceptions by default
-                    ThrowExceptionOnMissingProperty = false,
-                    TrimLeadingWhitespaceInTokenPreamble = true,
-                    TrimTrailingWhiteSpace = true,
-                    TokenStringComparison = StringComparison.InvariantCulture,
-                    OutOfOrderTokens = false
-                };
-            }
-        }
+            // Don't throw exceptions by default
+            ThrowExceptionOnMissingProperty = false,
+            TrimLeadingWhitespaceInTokenPreamble = true,
+            TrimTrailingWhiteSpace = true,
+            TokenStringComparison = StringComparison.InvariantCulture,
+            OutOfOrderTokens = false
+        };
 
         /// <summary>
         /// Gets or sets a value indicating whether to throw an exception when a token can't

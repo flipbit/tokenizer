@@ -6,12 +6,12 @@ namespace Tokens.Validators
     [TestFixture]
     public class MaxLengthValidatorTest
     {
-        private MaxLength validator;
+        private MaxLengthValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new MaxLength();
+            validator = new MaxLengthValidator();
         }
 
         [Test]

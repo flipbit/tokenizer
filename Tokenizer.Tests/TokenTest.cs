@@ -44,7 +44,7 @@ namespace Tokens
             var person = new Person();
 
             token.Name = "Person.Age";
-            token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
+            token.Validators.Add(new ValidatorContext(typeof(IsNumericValidator)));
 
             var assigned = token.Assign(person, "20", TokenizerOptions.Defaults);
 
@@ -58,7 +58,7 @@ namespace Tokens
             var person = new Person();
 
             token.Name = "Person.Age";
-            token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
+            token.Validators.Add(new ValidatorContext(typeof(IsNumericValidator)));
 
             var assigned = token.Assign(person, "Twenty", new TokenizerOptions{ ThrowExceptionOnMissingProperty = false });
 

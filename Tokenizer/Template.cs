@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -10,7 +9,7 @@ namespace Tokens
     /// </summary>
     public class Template
     {
-        private List<Token> tokens;
+        private readonly List<Token> tokens;
 
         public Template()
         {

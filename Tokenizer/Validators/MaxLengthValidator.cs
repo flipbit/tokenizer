@@ -6,7 +6,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value meets a maximum length requirement
     /// </summary>
-    public class MinLength : ITokenValidator
+    public class MaxLengthValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.
@@ -15,18 +15,18 @@ namespace Tokens.Validators
         {
             if (args.Length == 0)
             {
-                throw new ValidationException("You must specified a MinLength value, e.g. 'MinLength(50)'");
+                throw new ValidationException("You must specified a MaxLength value, e.g. 'MaxLength(255)'");
             }
 
             try
             {
-                var minLength = Convert.ToInt32(args[0]);
+                var maxLength = Convert.ToInt32(args[0]);
 
-                return value.ToString().Length >= minLength;
+                return value.ToString().Length <= maxLength;
             }
             catch (FormatException ex)
             {                
-                throw new ValidationException("MinLength parameter must be an integer", ex);
+                throw new ValidationException("MaxLength parameter must be an integer", ex);
             }
 
         }

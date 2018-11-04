@@ -7,7 +7,7 @@ using Tokens.Validators;
 
 namespace Tokens.Parsers
 {
-    public class TokenParser
+    internal class TokenParser
     {
         private readonly List<Type> transformers;
         private readonly List<Type> validators;
@@ -29,10 +29,13 @@ namespace Tokens.Parsers
             RegisterTransformer<ToDateTimeTransformer>();
             RegisterTransformer<ToLowerTransformer>();
             RegisterTransformer<ToUpperTransformer>();
+            RegisterTransformer<TrimTransformer>();
+            RegisterTransformer<SubstringAfterTransformer>();
+            RegisterTransformer<SubstringBeforeTransformer>();
 
-            RegisterValidator<IsNumeric>();
-            RegisterValidator<MaxLength>();
-            RegisterValidator<MinLength>();
+            RegisterValidator<IsNumericValidator>();
+            RegisterValidator<MaxLengthValidator>();
+            RegisterValidator<MinLengthValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
@@ -147,7 +150,8 @@ namespace Tokens.Parsers
 
                 foreach (var validatorType in validators)
                 {
-                    if (string.Compare(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    if (string.Compare(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
                         validatorContext = new ValidatorContext(validatorType);
 

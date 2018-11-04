@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Tokens
 {
-    public class RawTokenDecorator
+    internal class RawTokenDecorator
     {
         private readonly StringBuilder name;
 

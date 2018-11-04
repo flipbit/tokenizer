@@ -16,14 +16,24 @@ namespace Tokens.Transformers
 
             if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
             {
-                DateTime.TryParse(value.ToString(), out result);
+                if (DateTime.TryParse(value.ToString(), out result))
+                {
+                    return result;
+                }
             }
             else
             {
-                DateTime.TryParseExact(value.ToString(), args[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+                
+                foreach (var arg in args)
+                {
+                    if (DateTime.TryParseExact(value.ToString(), arg, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    {
+                        return result;
+                    }
+                }
             }
 
-            return result;
+            return value;
         }
     }
 }

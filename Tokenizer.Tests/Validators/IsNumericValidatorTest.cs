@@ -16,7 +16,7 @@ namespace Tokens.Validators
         [Test]
         public void TestValidateValueWhenNumericInteger()
         {
-            var result = validator.IsValid(null, null, "100");
+            var result = validator.IsValid("100");
 
             Assert.IsTrue(result);
         }
@@ -24,7 +24,7 @@ namespace Tokens.Validators
         [Test]
         public void TestValidateValueWhenNumericFloat()
         {
-            var result = validator.IsValid(null, null, "10.0");
+            var result = validator.IsValid("10.0");
 
             Assert.IsTrue(result);
         }
@@ -32,7 +32,15 @@ namespace Tokens.Validators
         [Test]
         public void TestValidateValueWhenNotNumeric()
         {
-            var result = validator.IsValid(null, null, "hello world");
+            var result = validator.IsValid("hello world");
+
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestValidateValueWhenNull()
+        {
+            var result = validator.IsValid(null);
 
             Assert.IsFalse(result);
         }

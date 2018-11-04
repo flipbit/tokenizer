@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -8,9 +10,11 @@ namespace Tokens
     /// </summary>
     public class Template
     {
+        private List<Token> tokens;
+
         public Template()
         {
-            Tokens = new Queue<Token>();
+            tokens = new List<Token>();
         }
 
         public Template(string name, string content) : this()
@@ -32,28 +36,48 @@ namespace Tokens
         /// <summary>
         /// The tokens contained within the template
         /// </summary>
-        public Queue<Token> Tokens { get; }
+        public IReadOnlyCollection<Token> Tokens => tokens.AsReadOnly();
 
-        public Token DequeueUpTo(Token token)
+        public TokenizerOptions Options { get; set; }
+
+        public IEnumerable<int> GetTokenIdsUpTo(Token token)
         {
-            Token match = null;
+            var matchIds = new List<int>();
 
-            while (Tokens.Count > 0)
+            // Only remove match if out-of-order token
+            if (Options.OutOfOrderTokens)
             {
-                if (token.Repeating)
-                {
-                    if (Tokens.Peek() == token)
-                    {
-                        return token;
-                    }
-                }
-
-                match = Tokens.Dequeue();
-
-                if (match == token) break;
+                if (token.Repeating == false) matchIds.Add(token.Id);
+                return matchIds;
             }
 
-            return match;
+            foreach (var candiate in tokens)
+            {
+                if (candiate == token)
+                {
+                    if (candiate.Repeating == false)
+                    {
+                        matchIds.Add(candiate.Id);
+                    }
+                    break;
+                }
+
+                matchIds.Add(candiate.Id);
+            }
+
+            return matchIds;
+        }
+
+        public void AddToken(Token token)
+        {
+            token.Id = tokens.Count + 1;
+
+            tokens.Add(token);
+        }
+
+        public IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
+        {
+            return tokens.Where(t => tokenIds.Contains(t.Id) == false);
         }
     }
 }

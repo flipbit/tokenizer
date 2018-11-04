@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tokens.Validators;
 
-namespace Tokens
+namespace Tokens.Validators
 {
     public class ValidatorContext
     {

@@ -7,16 +7,22 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Samples\Data\abogado.txt" />
     <None Remove="Samples\Data\bbc_co_uk.txt" />
     <None Remove="Samples\Data\com.txt" />
+    <None Remove="Samples\Data\facebook_com_redirect.txt" />
     <None Remove="Samples\Patterns\Iana.txt" />
     <None Remove="Samples\Patterns\nominet.txt" />
+    <None Remove="Samples\Patterns\verisign-grs.com.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Samples\Data\abogado.txt" />
     <EmbeddedResource Include="Samples\Data\bbc_co_uk.txt" />
     <EmbeddedResource Include="Samples\Data\com.txt" />
+    <EmbeddedResource Include="Samples\Data\facebook_com_redirect.txt" />
     <EmbeddedResource Include="Samples\Patterns\Iana.txt" />
     <EmbeddedResource Include="Samples\Patterns\nominet.txt" />
+    <EmbeddedResource Include="Samples\Patterns\verisign-grs.com.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />

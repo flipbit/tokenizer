@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using Tokens.Operators;
+using Tokens.Transformers;
 
 namespace Tokens.Parsers
 {
@@ -22,18 +22,18 @@ namespace Tokens.Parsers
             raw.Name = "Token";
             raw.Preamble = "Preamble";
 
-            var template = parser.Parse("name", "Preamble{Token:ToDateTime(yyyy-MM-dd)}");
+            var template = parser.Parse("Preamble{Token:ToDateTime(yyyy-MM-dd)}", "name");
 
             Assert.AreEqual("name", template.Name);
             Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();
 
-            Assert.AreEqual(1, token.Operators.Count);
+            Assert.AreEqual(1, token.Transformers.Count);
 
-            var tokenOperator = token.Operators.First();
+            var tokenOperator = token.Transformers.First();
 
-            Assert.AreEqual(typeof(ToDateTime), tokenOperator.OperatorType);
+            Assert.AreEqual(typeof(ToDateTimeTransformer), tokenOperator.OperatorType);
             Assert.AreEqual(1, tokenOperator.Parameters.Count);
             Assert.AreEqual("yyyy-MM-dd", tokenOperator.Parameters[0]);
         }

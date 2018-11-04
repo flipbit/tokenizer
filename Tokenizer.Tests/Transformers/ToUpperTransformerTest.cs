@@ -1,22 +1,22 @@
 ﻿using NUnit.Framework;
 
-namespace Tokens.Operators
+namespace Tokens.Transformers
 {
     [TestFixture]
-    public class ToUpperOperatorTest
+    public class ToUpperTransformerTest
     {
-        private ToUpper @operator;
+        private ToUpperTransformer @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToUpper();
+            @operator = new ToUpperTransformer();
         }
 
         [Test]
         public void TestToUpper()
         {
-            var result = @operator.Perform("test");
+            var result = @operator.Transform("test");
 
             Assert.AreEqual("TEST", result);
         }
@@ -24,7 +24,7 @@ namespace Tokens.Operators
         [Test]
         public void TestToUpperWhenEmpty()
         {
-            var result = @operator.Perform(string.Empty);
+            var result = @operator.Transform(string.Empty);
 
             Assert.AreEqual(string.Empty, result);
         }
@@ -32,7 +32,7 @@ namespace Tokens.Operators
         [Test]
         public void TestToUpperWhenNull()
         {
-            var result = @operator.Perform(null);
+            var result = @operator.Transform(null);
 
             Assert.AreEqual(string.Empty, result);
         }

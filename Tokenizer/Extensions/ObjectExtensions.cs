@@ -11,28 +11,41 @@ namespace Tokens.Extensions
         /// </summary>
         public static T SetValue<T>(this T @object, string propertyPath, object value) where T : class
         {
+            return SetValue(@object, propertyPath, value, StringComparison.InvariantCulture);
+        }
+
+        public static T SetValue<T>(this T @object, string propertyPath, object value, StringComparison stringComparison) where T : class
+        {
+            if (string.IsNullOrEmpty(propertyPath))
+            {
+                throw new ArgumentNullException(nameof(propertyPath));
+            }
+
             var segments = propertyPath.Split('.');
             var objectType = @object.GetType().Name;
 
-            // Must have at least a single property (e.g. "Object.Property")
-            if (segments.Length < 2) throw new ArgumentException("Property Path Too Short: " + propertyPath);
-
             // Check object type
-            if (objectType != segments[0]) throw new ArgumentException($"Invalid Property Path for {objectType}: {propertyPath}");
+            if (string.Compare(objectType, segments[0], stringComparison) == 0)
+            {
+                @object = SetInnerValue(@object, segments.Skip(1).ToArray(), value, stringComparison) as T;
+            }
+            else
+            {
+                @object = SetInnerValue(@object, segments.ToArray(), value, stringComparison) as T;
+            }
 
-            @object = SetInnerValue(@object, segments.Skip(1).ToArray(), value) as T;
 
             return @object;
         }
 
-        private static object SetInnerValue(object @object, IReadOnlyList<string> path, object value)
+        private static object SetInnerValue(object @object, IReadOnlyList<string> path, object value, StringComparison stringComparison)
         {
             var set = false;
             var propertyInfos = @object.GetType().GetProperties();
 
             foreach (var propertyInfo in propertyInfos)
             {
-                if (propertyInfo.Name != path[0]) continue;
+                if (string.Compare(propertyInfo.Name, path[0], stringComparison) != 0) continue;
 
                 set = true;
 
@@ -55,6 +68,14 @@ namespace Tokens.Extensions
                         }
 
                         list.GetType().GetMethod("Add").Invoke(list, new[] { value });
+                    }
+                    else if (propertyInfo.PropertyType.IsGenericType &&
+                             propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
+                        var convertedValue = Convert.ChangeType(value, genericType);
+
+                        propertyInfo.SetValue(@object, convertedValue, null);
                     }
                     else
                     {
@@ -82,7 +103,7 @@ namespace Tokens.Extensions
                     propertyInfo.SetValue(@object, currentValue, null);
                 }
 
-                SetInnerValue(currentValue, path.Skip(1).ToArray(), value);
+                SetInnerValue(currentValue, path.Skip(1).ToArray(), value, stringComparison);
 
                 break;
             }

@@ -1,11 +1,11 @@
-﻿namespace Tokens.Operators
+﻿namespace Tokens.Transformers
 {
     /// <summary>
     /// Converts the token value to lower case
     /// </summary>
-    public class ToLower : ITokenOperator
+    public class ToLowerTransformer : ITokenTransformer
     {
-        public object Perform(object value, params string[] args)
+        public object Transform(object value, params string[] args)
         {
             if (value == null) return string.Empty;
 

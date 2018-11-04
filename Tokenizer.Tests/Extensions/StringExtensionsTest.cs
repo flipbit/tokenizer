@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 
-namespace Tokens
+namespace Tokens.Extensions
 {
     [TestFixture]
     public class StringExtensionsTest

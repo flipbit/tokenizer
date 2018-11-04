@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Tokens
+namespace Tokens.Extensions
 {
     /// <summary>
     /// String extension class
@@ -185,6 +186,43 @@ namespace Tokens
             }
 
             return Regex.Split(value, "\r\n|\r|\n");
+        }
+
+        public static bool IsOnlySpaces(this string value)
+        {
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                foreach (var character in value.ToCharArray())
+                {
+                    if (character != ' ')
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string TrimLeadingSpaces(this string value)
+        {
+            var sb = new StringBuilder();
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                for (var i = 0; i < value.Length; i++)
+                {
+                    var character = value.Substring(i, 1);
+
+                    if (character ==" ") continue;
+
+                    return value.Substring(i);
+                }
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

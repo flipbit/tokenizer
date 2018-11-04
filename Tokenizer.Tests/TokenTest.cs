@@ -32,7 +32,7 @@ namespace Tokens
 
             token.Name = "Person.Name";
 
-            var assigned = token.Assign(person, "Sue", true);
+            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual("Sue", person.Name);
@@ -46,7 +46,7 @@ namespace Tokens
             token.Name = "Person.Age";
             token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
 
-            var assigned = token.Assign(person, "20", true);
+            var assigned = token.Assign(person, "20", TokenizerOptions.Defaults);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual(20, person.Age);
@@ -60,7 +60,7 @@ namespace Tokens
             token.Name = "Person.Age";
             token.Validators.Add(new ValidatorContext(typeof(IsNumeric)));
 
-            var assigned = token.Assign(person, "Twenty", false);
+            var assigned = token.Assign(person, "Twenty", new TokenizerOptions{ ThrowExceptionOnMissingProperty = false });
 
             Assert.AreEqual(false, assigned);
             Assert.AreEqual(0, person.Age);
@@ -73,7 +73,7 @@ namespace Tokens
 
             token.Name = "Person.Name";
 
-            var assigned = token.Assign(person, "Sue", true);
+            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual("Sue", person.Name);

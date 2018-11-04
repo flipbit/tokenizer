@@ -1,23 +1,23 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Tokens.Operators
+namespace Tokens.Transformers
 {
     [TestFixture]
-    public class ToDateTimeOperatorTest
+    public class ToDateTimeTransformerTest
     {
-        private ToDateTime @operator;
+        private ToDateTimeTransformer @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToDateTime();
+            @operator = new ToDateTimeTransformer();
         }
 
         [Test]
         public void TestParseDate()
         {
-            var result = @operator.Perform("2014-01-01", "yyyy-MM-dd");
+            var result = @operator.Transform("2014-01-01", "yyyy-MM-dd");
 
             Assert.AreEqual(new DateTime(2014, 1, 1), result);
         }
@@ -25,7 +25,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithFormat()
         {
-            var result = @operator.Perform("2 Mar 2012", "d MMM yyyy");
+            var result = @operator.Transform("2 Mar 2012", "d MMM yyyy");
 
             Assert.AreEqual(new DateTime(2012, 3, 2), result);
         }
@@ -33,7 +33,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithNoFormat()
         {
-            var result = @operator.Perform("2012-05-06");
+            var result = @operator.Transform("2012-05-06");
 
             Assert.AreEqual(new DateTime(2012, 5, 6), result);
         }
@@ -41,7 +41,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithInvalidFormat()
         {
-            var result = @operator.Perform("2012-05-06", "dd MMM yy");
+            var result = @operator.Transform("2012-05-06", "dd MMM yy");
 
             Assert.AreEqual(new DateTime(1, 1, 1), result);
         }
@@ -49,7 +49,7 @@ namespace Tokens.Operators
         [Test]
         public void TestParseDateWithEmptyValue()
         {
-            var result = @operator.Perform(null);
+            var result = @operator.Transform(null);
 
             Assert.AreEqual(string.Empty, result);
         }

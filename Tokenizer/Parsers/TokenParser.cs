@@ -1,34 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tokens.Exceptions;
-using Tokens.Operators;
+using Tokens.Extensions;
+using Tokens.Transformers;
 using Tokens.Validators;
 
 namespace Tokens.Parsers
 {
     public class TokenParser
     {
-        private List<Type> operators;
-        private List<Type> validators;
+        private readonly List<Type> transformers;
+        private readonly List<Type> validators;
 
-        public TokenParser()
+        public TokenizerOptions Options { get; set; }
+
+        public TokenParser() : this(TokenizerOptions.Defaults)
         {
-            operators = new List<Type>();
+        }
+
+        public TokenParser(TokenizerOptions options)
+        {
+            Options = options;
+
+            transformers = new List<Type>();
             validators = new List<Type>();
 
-            // Add default operators/validators
-            RegisterOperator<ToDateTime>();
-            RegisterOperator<ToLower>();
-            RegisterOperator<ToUpper>();
+            // Add default transformers/validators
+            RegisterTransformer<ToDateTimeTransformer>();
+            RegisterTransformer<ToLowerTransformer>();
+            RegisterTransformer<ToUpperTransformer>();
 
             RegisterValidator<IsNumeric>();
             RegisterValidator<MaxLength>();
             RegisterValidator<MinLength>();
         }
 
-        public TokenParser RegisterOperator<T>() where T : ITokenOperator
+        public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
         {
-            operators.Add(typeof(T));
+            transformers.Add(typeof(T));
 
             return this;
         }
@@ -40,29 +49,62 @@ namespace Tokens.Parsers
             return this;
         }
 
-        public Template Parse(string name, string content)
+        public Template Parse(string content)
+        {
+            return Parse(content, string.Empty);
+        }
+
+        public Template Parse(string content, string name)
         {
             var template = new Template(name, content);
 
-            var rawTokens = new RawTokenParser().Parse(content);
+            var rawTemplate = new RawTokenParser().Parse(content, Options);
 
-            foreach (var rawToken in rawTokens)
+            template.Options = rawTemplate.Options;
+
+            foreach (var rawToken in rawTemplate.Tokens)
             {
                 var token = new Token();
-                token.Preamble = rawToken.Preamble;
+
+                if (Options.TrimLeadingWhitespaceInTokenPreamble)
+                {
+                    if (rawToken.Preamble.IsOnlySpaces())
+                    {
+                        token.Preamble = rawToken.Preamble;
+                    }
+                    if (string.IsNullOrWhiteSpace(rawToken.Preamble))
+                    {
+                        token.Preamble = rawToken.Preamble.TrimLeadingSpaces();
+                    }
+                    else
+                    {
+                        token.Preamble = rawToken.Preamble.TrimStart();
+                    }
+                }
+                else
+                {
+                    token.Preamble = rawToken.Preamble;
+                }
+
                 token.Name = rawToken.Name;
                 token.Optional = rawToken.Optional;
                 token.Repeating = rawToken.Repeating;
                 token.TerminateOnNewLine = rawToken.TerminateOnNewline;
 
-                var tokenOperators = new List<OperatorContext>();
+                // All tokens optional if out-of-order enabled
+                if (template.Options.OutOfOrderTokens)
+                {
+                    token.Optional = true;
+                }
+
+                var tokenTransformers = new List<TransformerContext>();
                 var tokenValidators = new List<ValidatorContext>();
 
-                ParseTokenOperators(rawToken.Decorators, tokenOperators, tokenValidators);
+                ParseTokenOperators(rawToken.Decorators, tokenTransformers, tokenValidators);
 
-                foreach (var tokenOperator in tokenOperators)
+                foreach (var tokenOperator in tokenTransformers)
                 {
-                    token.Operators.Add(tokenOperator);
+                    token.Transformers.Add(tokenOperator);
                 }
 
                 foreach (var tokenValidator in tokenValidators)
@@ -70,37 +112,38 @@ namespace Tokens.Parsers
                     token.Validators.Add(tokenValidator);
                 }
 
-                template.Tokens.Enqueue(token);
+                template.AddToken(token);
             }
 
             return template;
         }
 
-        private void ParseTokenOperators(IEnumerable<RawTokenDecorator> decorators, List<OperatorContext> tokenOperators, List<ValidatorContext> tokenValidators)
+        private void ParseTokenOperators(IEnumerable<RawTokenDecorator> decorators, List<TransformerContext> tokenTransformers, List<ValidatorContext> tokenValidators)
         {
             foreach (var decorator in decorators)
             {
-                OperatorContext operatorContext = null;
+                TransformerContext transformerContext = null;
                 ValidatorContext validatorContext = null;
 
-                foreach (var operatorType in operators)
+                foreach (var operatorType in transformers)
                 {
-                    if (string.Compare(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    if (string.Compare(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        operatorContext = new OperatorContext(operatorType);
+                        transformerContext = new TransformerContext(operatorType);
 
                         foreach (var arg in decorator.Args)
                         {
-                            operatorContext.Parameters.Add(arg);
+                            transformerContext.Parameters.Add(arg);
                         }
 
-                        tokenOperators.Add(operatorContext);
+                        tokenTransformers.Add(transformerContext);
     
                         break;
                     }
                 }
 
-                if (operatorContext != null) continue;
+                if (transformerContext != null) continue;
 
                 foreach (var validatorType in validators)
                 {
@@ -121,7 +164,7 @@ namespace Tokens.Parsers
 
                 if (validatorContext == null)
                 {
-                    throw new TokenizerException($"Unknown Token Operator: {decorator.Name}");
+                    throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
                 }
             }
         }

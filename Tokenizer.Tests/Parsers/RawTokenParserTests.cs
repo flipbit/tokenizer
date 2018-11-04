@@ -18,27 +18,27 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseEmptyString()
         {
-            var tokens = parser.Parse(string.Empty);
+            var template = parser.Parse(string.Empty);
 
-            Assert.AreEqual(0, tokens.Count);
+            Assert.AreEqual(0, template.Tokens.Count);
         }
 
         [Test]
         public void TestParseNullString()
         {
-            var tokens = parser.Parse(null);
+            var template = parser.Parse(null);
 
-            Assert.AreEqual(0, tokens.Count);
+            Assert.AreEqual(0, template.Tokens.Count);
         }
 
         [Test]
         public void TestParseSingleToken()
         {
-            var tokens = parser.Parse("This is the preamble{TokenName}");
+            var template = parser.Parse("This is the preamble{TokenName}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("This is the preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -50,17 +50,17 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithInvalidName()
         {
-            Assert.Throws<TokenizerException>(() => parser.Parse("This is the preamble{Token Name}"));
+            Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{Token Name}"));
         }
 
         [Test]
         public void TestParseTwoTokens()
         {
-            var tokens = parser.Parse("This is the preamble{TokenName}Preamble 2 {TokenName2}");
+            var template = parser.Parse("This is the preamble{TokenName}Preamble 2 {TokenName2}");
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(2, template.Tokens.Count);
 
-            var token1 = tokens.First();
+            var token1 = template.Tokens.First();
 
             Assert.AreEqual("This is the preamble", token1.Preamble);
             Assert.AreEqual("TokenName", token1.Name);
@@ -68,7 +68,7 @@ namespace Tokens.Parsers
             Assert.IsFalse(token1.TerminateOnNewline);
             Assert.IsFalse(token1.Repeating);
 
-            var token2 = tokens.ElementAt(1);
+            var token2 = template.Tokens.ElementAt(1);
 
             Assert.AreEqual("Preamble 2 ", token2.Preamble);
             Assert.AreEqual("TokenName2", token2.Name);
@@ -80,11 +80,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithNewLineTerminator()
         {
-            var tokens = parser.Parse("Preamble{TokenName$}");
+            var template = parser.Parse("Preamble{TokenName$}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("Preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -96,17 +96,17 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithNewLineTerminatorAndInvalidCharacter()
         {
-            Assert.Throws<TokenizerException>(() => parser.Parse("This is the preamble{Token Name$$}"));
+            Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{Token Name$$}"));
         }
 
         [Test]
         public void TestParseTokenWithOptionalTerminator()
         {
-            var tokens = parser.Parse("Preamble{TokenName?}");
+            var template = parser.Parse("Preamble{TokenName?}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("Preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -118,11 +118,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithOptionalAndNewLineTerminator()
         {
-            var tokens = parser.Parse("Preamble{TokenName$?}");
+            var template = parser.Parse("Preamble{TokenName$?}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("Preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -134,11 +134,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithDecorator()
         {
-            var tokens = parser.Parse("Preamble{TokenName:ToDateTime}");
+            var template = parser.Parse("Preamble{TokenName:ToDateTime}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("Preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -155,11 +155,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithMultipleDecorators()
         {
-            var tokens = parser.Parse("Preamble{TokenName:Trim,IsNotNullOrEmpty}");
+            var template = parser.Parse("Preamble{TokenName:Trim,IsNotNullOrEmpty}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
 
             Assert.AreEqual("Preamble", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
@@ -180,11 +180,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithDecoratorWithArgument()
         {
-            var tokens = parser.Parse("Preamble{TokenName:ToDateTime(yyyy-MM-dd)}");
+            var template = parser.Parse("Preamble{TokenName:ToDateTime(yyyy-MM-dd)}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             var decorator = token.Decorators.First();
 
             Assert.AreEqual("ToDateTime", decorator.Name);
@@ -196,11 +196,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithDecoratorWithArgumentInSingleQuotes()
         {
-            var tokens = parser.Parse("Preamble{TokenName: ToDateTime ( 'yyyy-MM-dd' )}");
+            var template = parser.Parse("Preamble{TokenName: ToDateTime ( 'yyyy-MM-dd' )}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             var decorator = token.Decorators.First();
 
             Assert.AreEqual("ToDateTime", decorator.Name);
@@ -212,11 +212,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithDecoratorWithArgumentInDoubleQuotes()
         {
-            var tokens = parser.Parse(@"Preamble{TokenName: ToDateTime ( ""yyyy-MM-dd"" )}");
+            var template = parser.Parse(@"Preamble{TokenName: ToDateTime ( ""yyyy-MM-dd"" )}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             var decorator = token.Decorators.First();
 
             Assert.AreEqual("ToDateTime", decorator.Name);
@@ -228,11 +228,11 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithDecoratorWithThreeArguments()
         {
-            var tokens = parser.Parse(@"Preamble{TokenName:Decorator(One, Two Arg ,Three )}");
+            var template = parser.Parse(@"Preamble{TokenName:Decorator(One, Two Arg ,Three )}");
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             var decorator = token.Decorators.First();
 
             Assert.AreEqual("Decorator", decorator.Name);
@@ -246,14 +246,14 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenWithTrailingText()
         {
-            var tokens = parser.Parse(@"Preamble{TokenName} Postamble");
+            var template = parser.Parse(@"Preamble{TokenName} Postamble");
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(2, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             Assert.AreEqual("TokenName", token.Name);
 
-            var second = tokens[1];
+            var second = template.Tokens[1];
             Assert.AreEqual(null, second.Name);
             Assert.AreEqual(" Postamble", second.Preamble);
         }
@@ -261,15 +261,15 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenConvertsWindowsLineEndingsToUnixLineEndings()
         {
-            var tokens = parser.Parse("Preamble\r\n{TokenName}\r\nPostamble");
+            var template = parser.Parse("Preamble\r\n{TokenName}\r\nPostamble");
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(2, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             Assert.AreEqual("Preamble\n", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
 
-            var second = tokens[1];
+            var second = template.Tokens[1];
             Assert.AreEqual(null, second.Name);
             Assert.AreEqual("\nPostamble", second.Preamble);
         }
@@ -277,17 +277,30 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseTokenPreservesUnixLineEndings()
         {
-            var tokens = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r \n");
+            var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r \n");
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(2, template.Tokens.Count);
 
-            var token = tokens.First();
+            var token = template.Tokens.First();
             Assert.AreEqual("Preamble\n", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
 
-            var second = tokens[1];
+            var second = template.Tokens[1];
             Assert.AreEqual(null, second.Name);
             Assert.AreEqual("\nPostamble with linefeed: \r \n", second.Preamble);
+        }
+
+        [Test]
+        public void TestParseFrontMatter()
+        {
+            var template = parser.Parse("---\n# Comment\nThrowExceptionOnMissingProperty: true\n---\nPreamble\n{TokenName}\n");
+
+            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(2, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
         }
     }
 }

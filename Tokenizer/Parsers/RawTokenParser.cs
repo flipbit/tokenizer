@@ -1,58 +1,89 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Tokens.Enumerators;
 using Tokens.Exceptions;
 
-namespace Tokens
+namespace Tokens.Parsers
 {
     public class RawTokenParser
     {
         private const string ValidTokenNameCharacters = @"abcdefghijklmnopqrstuvwxyzABCDDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.";
 
-        public IList<RawToken> Parse(string pattern)
+        public RawTemplate Parse(string pattern)
         {
-            var tokens = new List<RawToken>();
+            return Parse(pattern, TokenizerOptions.Defaults);
+        }
+
+        public RawTemplate Parse(string pattern, TokenizerOptions options)
+        {
+            var template = new RawTemplate();
+            template.Options = options.Clone();
 
             var enumerator = new RawTokenEnumerator(pattern);
 
             if (enumerator.IsEmpty)
             {
-                return tokens;
+                return template;
             }
 
-            var state = FlatTokenParserState.InPreamble;
+            var state = FlatTokenParserState.AtStart;
             var token = new RawToken();
             var decorator = new RawTokenDecorator();
             var argument = string.Empty;
+            var frontMatterName = new StringBuilder();
+            var frontMatterValue = new StringBuilder();
 
-            foreach (var c in pattern)
+            while (enumerator.IsEmpty == false)
             {
                 switch (state)
                 {
+                    case FlatTokenParserState.AtStart:
+                        ParseStart(enumerator, ref state);
+                        break;
+
+                    case FlatTokenParserState.InFrontMatter:
+                        ParseFrontMatter(enumerator, ref frontMatterName, ref state);
+                        break;
+
+                    case FlatTokenParserState.InFrontMatterComment:
+                        ParseFrontMatterComment(enumerator, ref state);
+                        break;
+
+                    case FlatTokenParserState.InFrontMatterOption:
+                        ParseFrontMatterOption(enumerator, ref frontMatterName, ref state);
+                        break;
+
+                    case FlatTokenParserState.InFrontMatterOptionValue:
+                        ParseFrontMatterOptionValue(template, enumerator, ref frontMatterName, ref frontMatterValue, ref state);
+                        break;
+
                     case FlatTokenParserState.InPreamble:
-                        ParsePreamble(tokens, ref token, enumerator, ref state);
+                        ParsePreamble(ref token, enumerator, ref state);
                         break;
 
                     case FlatTokenParserState.InTokenName:
-                        ParseTokenName(tokens, ref token, enumerator, ref state);
+                        ParseTokenName(template, ref token, enumerator, ref state);
                         break;
 
                     case FlatTokenParserState.InDecorator:
-                        ParseDecorator(tokens, ref token, enumerator, ref state, ref decorator);
+                        ParseDecorator(template, ref token, enumerator, ref state, ref decorator);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgument:
-                        ParseDecoratorArgument(tokens, ref token, enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgument(enumerator, ref state, ref decorator, ref argument);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentSingleQuotes:
-                        ParseDecoratorArgumentInSingleQuotes(tokens, ref token, enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentInSingleQuotes(enumerator, ref state, ref decorator, ref argument);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentDoubleQuotes:
-                        ParseDecoratorArgumentInDoubleQuotes(tokens, ref token, enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentInDoubleQuotes(enumerator, ref state, ref decorator, ref argument);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentRunOff:
-                        ParseDecoratorArgumentRunOff(tokens, ref token, enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentRunOff(enumerator, ref state, ref decorator, ref argument);
                         break;
 
 
@@ -63,13 +94,160 @@ namespace Tokens
 
             if (string.IsNullOrEmpty(token.Preamble) == false)
             {
-                tokens.Add(token);
+                template.Tokens.Add(token);
             }
 
-            return tokens;
+            return template;
         }
 
-        private void ParsePreamble(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state)
+        private void ParseStart(RawTokenEnumerator enumerator, ref FlatTokenParserState state)
+        {
+            var peek = enumerator.Peek(4);
+
+            if (peek == "---\n")
+            {
+                state = FlatTokenParserState.InFrontMatter;
+                enumerator.Next(4);
+                return;
+            }
+
+            peek = enumerator.Peek(5);
+
+            if (peek == "---\r\n")
+            {
+                state = FlatTokenParserState.InFrontMatter;
+                enumerator.Next(4); // Next() will trim /r/n
+                return;
+            }
+
+            state = FlatTokenParserState.InPreamble;
+        }
+
+        private void ParseFrontMatter(RawTokenEnumerator enumerator, ref StringBuilder frontMatterName, ref FlatTokenParserState state)
+        {
+            var peek = enumerator.Peek(4);
+
+            if (peek == "---\n")
+            {
+                state = FlatTokenParserState.InPreamble;
+                enumerator.Next(4);
+                return;
+            }
+
+            peek = enumerator.Peek(5);
+
+            if (peek == "---\r\n")
+            {
+                state = FlatTokenParserState.InPreamble;
+                enumerator.Next(4); // Next() will trim \r\n
+                return;
+            }
+
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case "#":
+                    state = FlatTokenParserState.InFrontMatterComment;
+                    break;
+
+                case "\n":
+                    break;
+
+                default:
+                    state = FlatTokenParserState.InFrontMatterOption;
+                    frontMatterName.Append(next);
+                    break;
+            }
+        }
+
+        private void ParseFrontMatterOption(RawTokenEnumerator enumerator, ref StringBuilder frontMatterName, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case ":":
+                    state = FlatTokenParserState.InFrontMatterOptionValue;
+                    break;
+
+                default:
+                    frontMatterName.Append(next);
+                    break;
+            }
+        }
+
+        private void ParseFrontMatterOptionValue(RawTemplate template, RawTokenEnumerator enumerator, ref StringBuilder frontMatterName, ref StringBuilder frontMatterValue, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case "\n":
+                    var rawName = frontMatterName.ToString().Trim();
+                    var name = frontMatterName.ToString().Trim().ToLowerInvariant();
+                    var value = frontMatterValue.ToString().Trim().ToLowerInvariant();
+
+                    if (bool.TryParse(value, out var asBool))
+                    {
+                        switch (name)
+                        {
+                            case "throwexceptiononmissingproperty":
+                                template.Options.ThrowExceptionOnMissingProperty = asBool;
+                                break;
+                            case "trimleadingwhitespace":
+                                template.Options.TrimLeadingWhitespaceInTokenPreamble = asBool;
+                                break;
+                            case "trimtrailingwhitespace":
+                                template.Options.TrimTrailingWhiteSpace = asBool;
+                                break;
+                            case "outoforder":
+                                template.Options.OutOfOrderTokens = asBool;
+                                break;
+                            case "casesensitive":
+                                if (asBool)
+                                {
+                                    template.Options.TokenStringComparison = StringComparison.InvariantCulture;
+                                }
+                                else
+                                {
+                                    template.Options.TokenStringComparison = StringComparison.InvariantCultureIgnoreCase;
+                                }
+                                break;
+
+                            default:
+                                throw new ParsingException($"Unknown front matter option: {rawName}", enumerator);
+                        }
+                    }
+                    else
+                    {
+                        throw new ParsingException($"Unable to convert front matter option to boolean: {rawName}", enumerator);
+                    }
+
+                    frontMatterName.Clear();
+                    frontMatterValue.Clear();
+                    state = FlatTokenParserState.InFrontMatter;
+                    break;
+
+                default:
+                    frontMatterValue.Append(next);
+                    break;
+            }
+        }
+
+        private void ParseFrontMatterComment(RawTokenEnumerator enumerator, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case "\n":
+                    state = FlatTokenParserState.InFrontMatter;
+                    break;
+            }
+        }
+
+        private void ParsePreamble(ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state)
         {
             var next = enumerator.Next();
 
@@ -86,7 +264,7 @@ namespace Tokens
             }
         }
 
-        private void ParseTokenName(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state)
+        private void ParseTokenName(RawTemplate template, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state)
         {
             var next = enumerator.Next();
             var peek = enumerator.Peek();
@@ -94,10 +272,10 @@ namespace Tokens
             switch (next)
             {
                 case "{":
-                    throw new TokenizerException("Unexpected character in token name: '{'"); 
+                    throw new ParsingException($"Unexpected character '{{' in token '{token.Name}'", enumerator); 
 
                 case "}":
-                    tokens.Add(token);
+                    template.Tokens.Add(token);
                     token = new RawToken();
                     state = FlatTokenParserState.InPreamble;
                     break;
@@ -109,10 +287,11 @@ namespace Tokens
                         case "?":
                         case "#":
                         case "}":
+                        case ":":
                             break;
 
                         default:
-                            throw new TokenizerException($"Invalid character in token name: '{peek}'");
+                            throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
                     }
                     break;
 
@@ -123,10 +302,11 @@ namespace Tokens
                         case "$":
                         case "#":
                         case "}":
+                        case ":":
                             break;
 
                         default:
-                            throw new TokenizerException($"Invalid character in token name: '{peek}'");
+                            throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
                     }
                     break;
 
@@ -138,10 +318,11 @@ namespace Tokens
                         case "$":
                         case "?":
                         case "}":
+                        case ":":
                             break;
 
                         default:
-                            throw new TokenizerException($"Invalid character in token name: '{peek}'");
+                            throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
                     }
                     break;
 
@@ -157,13 +338,13 @@ namespace Tokens
                     }
                     else
                     {
-                        throw new TokenizerException($"Invalid character '{next}' in token name.");
+                        throw new ParsingException($"Invalid character '{next}' in token '{token.Name}'", enumerator);
                     }
                     break;
             }
         }
 
-        private void ParseDecorator(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator)
+        private void ParseDecorator(RawTemplate template, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator)
         {
             var next = enumerator.Next();
 
@@ -173,7 +354,7 @@ namespace Tokens
             {
                 case "}":
                     token.Decorators.Add(decorator);
-                    tokens.Add(token);
+                    template.Tokens.Add(token);
                     token = new RawToken();
                     decorator = new RawTokenDecorator();
                     state = FlatTokenParserState.InPreamble;
@@ -195,7 +376,7 @@ namespace Tokens
 
         }
 
-        private void ParseDecoratorArgument(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgument(RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
         {
             var next = enumerator.Next();
 
@@ -250,7 +431,7 @@ namespace Tokens
 
         }
 
-        private void ParseDecoratorArgumentInSingleQuotes(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentInSingleQuotes(RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
         {
             var next = enumerator.Next();
 
@@ -268,7 +449,7 @@ namespace Tokens
             }
         }
 
-        private void ParseDecoratorArgumentInDoubleQuotes(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentInDoubleQuotes(RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
         {
             var next = enumerator.Next();
 
@@ -286,7 +467,7 @@ namespace Tokens
             }
         }
 
-        private void ParseDecoratorArgumentRunOff(IList<RawToken> tokens, ref RawToken token, RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentRunOff(RawTokenEnumerator enumerator, ref FlatTokenParserState state, ref RawTokenDecorator decorator, ref string argument)
         {
             var next = enumerator.Next();
 
@@ -311,6 +492,11 @@ namespace Tokens
 
     internal enum FlatTokenParserState
     {
+        AtStart,
+        InFrontMatter,
+        InFrontMatterOption,
+        InFrontMatterOptionValue,
+        InFrontMatterComment,
         InPreamble,
         InTokenName,
         InDecorator,

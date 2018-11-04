@@ -10,9 +10,13 @@
         /// </summary>
         public bool IsValid(object value, params string[] args)
         {
-            float test;
+            if (value == null) return false;
 
-            return float.TryParse(value.ToString(), out test);
+            var valueString = value.ToString();
+
+            if (string.IsNullOrEmpty(valueString)) return false;
+
+            return float.TryParse(valueString, out var test);
         }
     }
 }

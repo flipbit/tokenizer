@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Tokens.Exceptions;
+using Tokens.Parsers;
 
 namespace Tokens
 {
@@ -213,7 +214,7 @@ Last Name: Smith";
             var result = tokenizer.Parse<Manager>(pattern, input);
 
             Assert.AreEqual(2, result.Manages.Count);
-            Assert.AreEqual("Alice\r", result.Manages[0]);
+            Assert.AreEqual("Alice", result.Manages[0]);
             Assert.AreEqual("Bob", result.Manages[1]);            
         }
 
@@ -300,6 +301,45 @@ Name servers:
             var employee = tokenizer.Parse<Employee>(pattern, input);
 
             Assert.AreEqual("Alice", employee.FirstName);
+        }
+
+        [Test]
+        public void TestExtractValueWithAnyOrder()
+        {
+            const string pattern = @"---
+OutOfOrder: true
+---
+First Name: {Employee.FirstName}
+Middle Name: {Employee.MiddleName}
+Last Name: {Employee.LastName}";
+            const string input = @"Last Name: Smith
+First Name: Bob
+Middle Name: Charles";
+
+            var employee = tokenizer.Parse<Employee>(pattern, input);
+
+            Assert.AreEqual("Bob", employee.FirstName);
+            Assert.AreEqual("Charles", employee.MiddleName);
+            Assert.AreEqual("Smith", employee.LastName);
+        }
+
+        [Test]
+        public void TestExtractPatternTwice()
+        {
+            const string pattern = @"First Name: {Employee.FirstName}, Last Name: {Employee.LastName}";
+            const string input = @"First Name: Alice, Last Name: Smith";
+
+            var template = new TokenParser().Parse(pattern);
+
+            var one = tokenizer.Parse<Employee>(template, input);
+
+            Assert.AreEqual("Alice", one.FirstName);
+            Assert.AreEqual("Smith", one.LastName);
+
+            var two = tokenizer.Parse<Employee>(template, input);
+
+            Assert.AreEqual("Alice", two.FirstName);
+            Assert.AreEqual("Smith", two.LastName);
         }
     }
 }

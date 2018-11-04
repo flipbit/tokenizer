@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Tokens.Operators
+namespace Tokens.Transformers
 {
     /// <summary>
     /// Converts the token value to a <see cref="DateTime"/>
     /// </summary>
-    public class ToDateTime : ITokenOperator
+    public class ToDateTimeTransformer : ITokenTransformer
     {
-        public object Perform(object value, params string[] args)
+        public object Transform(object value, params string[] args)
         {
             if (value == null) return string.Empty;
 

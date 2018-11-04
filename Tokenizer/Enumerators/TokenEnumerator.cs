@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Tokens
+namespace Tokens.Enumerators
 {
     internal class TokenEnumerator
     {
@@ -76,7 +76,9 @@ namespace Tokens
             if (string.IsNullOrEmpty(value)) return true;
             if (currentLocation + value.Length > pattern.Length) return false;
 
-            return value == pattern.Substring(currentLocation, value.Length);
+            var candidate = pattern.Substring(currentLocation, value.Length);
+
+            return value == candidate;
         }
 
         public void Advance(int count)
@@ -84,7 +86,7 @@ namespace Tokens
             currentLocation += count;
         }
 
-        public bool Match(Queue<Token> tokens, out Token match)
+        public bool Match(IEnumerable<Token> tokens, out Token match)
         {
             foreach (var token in tokens)
             {

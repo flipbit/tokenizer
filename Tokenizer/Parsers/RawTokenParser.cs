@@ -285,7 +285,7 @@ namespace Tokens.Parsers
                     switch (peek)
                     {
                         case "?":
-                        case "#":
+                        case "*":
                         case "}":
                         case ":":
                             break;
@@ -300,7 +300,7 @@ namespace Tokens.Parsers
                     switch (peek)
                     {
                         case "$":
-                        case "#":
+                        case "*":
                         case "}":
                         case ":":
                             break;
@@ -310,7 +310,7 @@ namespace Tokens.Parsers
                     }
                     break;
 
-                case "#":
+                case "*":
                     token.Repeating = true;
                     token.Optional = true;
                     switch (peek)

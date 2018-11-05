@@ -208,7 +208,7 @@ Last Name: Smith";
         [Test]
         public void TestExtractListValues()
         {
-            const string pattern = "Employee: {Manager.Manages#$}";
+            const string pattern = "Employee: {Manager.Manages*$}";
             const string input = "Employee: Alice\r\nEmployee: Bob";
 
             var result = tokenizer.Parse<Manager>(pattern, input);
@@ -221,7 +221,7 @@ Last Name: Smith";
         [Test]
         public void TestExtractListValuesOnNewLines()
         {
-            const string pattern = "Name: {Manager.FirstName}\r\nEmployee: {Manager.Manages#$}\r\nNumber: {Manager.Number}";
+            const string pattern = "Name: {Manager.FirstName}\r\nEmployee: {Manager.Manages*$}\r\nNumber: {Manager.Number}";
             const string input = "Name: Sue\r\nEmployee: Alice\r\nEmployee: Bob\r\nEmployee: Charles\r\nNumber: 1234";
 
             var result = tokenizer.Parse<Manager>(pattern, input);
@@ -234,7 +234,7 @@ Last Name: Smith";
         [Test]
         public void TestExtractEmbeddedListValues()
         {
-            const string pattern = "Name: {Manager.FirstName}, Manages: {Manager.Manages#$}, Number: {Manager.Number}";
+            const string pattern = "Name: {Manager.FirstName}, Manages: {Manager.Manages*}, Number: {Manager.Number}";
             const string input = "Name: Alice, Manages: Bob, Manages: Sue, Number: 1234";
 
             var result = tokenizer.Parse<Manager>(pattern, input);
@@ -275,8 +275,8 @@ Last Name: Smith";
         {
             const string pattern = @"
 Name servers:
-        {TestClass.List#}
-        {TestClass.List#}
+        {TestClass.List*}
+        {TestClass.List*}
 
     WHOIS lookup made at 10:35:59 22-Oct-2014";
             const string input = @"

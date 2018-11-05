@@ -36,6 +36,11 @@ namespace Tokens
             templates.Add(template);
         }
 
+        public void ClearPatterns()
+        {
+            templates.Clear();
+        }
+
         public T Match<T>(string input) where T : class, new()
         {
             return TryMatch<T>(input, out var match) ? match.Result : null;

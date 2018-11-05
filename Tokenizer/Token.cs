@@ -83,6 +83,16 @@ namespace Tokens
                 transformed = transformer.Transform(transformed);
             }
 
+            if (target is List<Substitution> list)
+            {
+                list.Add(new Substitution
+                {
+                    Name = Name,
+                    Value = transformed
+                });
+                return true;
+            }
+
             try
             {
                 target.SetValue(Name, transformed);

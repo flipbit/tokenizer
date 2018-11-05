@@ -2,7 +2,7 @@
   <PropertyGroup>
    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-   <Version>2.0.1.0</Version>
+   <Version>2.0.3.0</Version>
    <Authors>Chris Wood</Authors>
    <Company>flipbit.co.uk</Company>
    <PackageProjectUrl>http://github.com/flipbit/tokenizer</PackageProjectUrl>

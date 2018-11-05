@@ -5,7 +5,7 @@
    Creation Date: {WhoisRedirect.CreatedDate:ToDateTime('yyyy-MM-ddTHH:mm:ssZ')}
    Registry Expiry Date: {WhoisRedirect.ExpirationDate:ToDateTime('yyyy-MM-ddTHH:mm:ssZ')}
    Registrar: {WhoisRedirect.Registrar$?} 
-   Name Server: {WhoisRedirect.NameServers#$?} 
+   Name Server: {WhoisRedirect.NameServers*$?} 
 
 For more information on Whois status codes, please visit https://icann.org/epp
 

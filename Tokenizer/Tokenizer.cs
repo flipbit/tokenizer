@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using Tokens.Enumerators;
 using Tokens.Parsers;
@@ -140,6 +141,17 @@ namespace Tokens
             return matches > 0;
         }
 
+        public bool TryParseValues(string pattern, string input, out int matches, out List<Substitution> results)
+        {
+            var template = parser.Parse(pattern);
+
+            return TryParseValues(template, input, out matches, out results);
+        }
+
+        public bool TryParseValues(Template template, string input, out int matches, out List<Substitution> results)
+        {
+            return TryParse(template, input, out matches, out results);
+        }
 
         public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer
         {

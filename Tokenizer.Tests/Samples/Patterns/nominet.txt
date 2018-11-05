@@ -32,7 +32,7 @@
 
     Name servers:
         {WhoisRecord.NameServers}
-        {WhoisRecord.NameServers#}
+        {WhoisRecord.NameServers*}
 
     WHOIS lookup made at 10:35:59 22-Oct-2014
 

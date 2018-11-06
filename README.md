@@ -1,149 +1,99 @@
- 
-## .NET Tokenizer
+Tokenizer - Data Extraction Library
+===================================
 
-.NET Tokenizer is a library written in C# that extracts values from text.  The library creates structured objects by overlaying patterns onto blocks of text.
+[![GitHub Stars](https://img.shields.io/github/stars/flipbit/tokenizer.svg)](https://github.com/flipbit/tokenizer/stargazers) [![GitHub Issues](https://img.shields.io/github/issues/flipbit/tokenizer.svg)](https://github.com/flipbit/tokenizer/issues) [![NuGet Version](https://img.shields.io/nuget/v/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/) [![NuGet Downloads](https://img.shields.io/nuget/dt/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/) 
 
-##Installation
+Tokenizer is a .NET Standard and .NET Framework library that allows you to extract information from free form text using predefined patterns.  Tokens embedded within patterns are extracted, validated and transformed before being returned as a strongly typed object:
 
-Installation:
+```csharp
+var pattern = @"First Name: {FirstName}, Last Name: {LastName}, Enrolled: {Enrolled:ToDateTime('dd MMM yyyy')}";
+var input = @"First Name: Alice, Last Name: Smith, Enrolled: 16 Jan 2018";
 
-Enter the following into the Package Manager Console window in Visual Studio:
+var student = new Tokenizer().Parse<Student>(pattern, input);
 
-    Install-Package Tokenizer
-
-##Basic Example
-
-The Tokenizer library was originally developed in order to parse information from WHOIS records.  A typical WHOIS record will contain free-form text such as the example below:
-
-```
-Domain Name: LATIMES.COM
-Registry Domain ID: 510925_DOMAIN_COM-VRSN
-Registrar WHOIS Server: whois.godaddy.com
-Registrar URL: http://www.godaddy.com
-Update Date: 2013-12-02 10:38:01
-Creation Date: 1990-12-12 00:00:00
-Registrar Registration Expiration Date: 2015-12-11 00:00:00
-Registrar: GoDaddy.com, LLC
-Registrar IANA ID: 146
-Registrar Abuse Contact Email: abuse@godaddy.com
-Registrar Abuse Contact Phone: +1.480-624-2505
-Registrant Name: TRIBUNE COMPANY
-Registrant Organization: Tribune Technology LLC
-Registrant Street: 435 N. Michigan Ave
-Registrant City: Chicago
-Registrant State/Province: Illinois
-Registrant Postal Code: 60611
-Registrant Country: United States
-Registrant Phone: +1.3122229100
-Registrant Email: tis-dnsadmin@tribune.com
+Assert.AreEqual("Alice", student.FirstName);
+Assert.AreEqual("Smith", student.LastName);
+Assert.AreEqual(new DateTime(2018, 1, 16), student.Enrolled);
 ```
 
-The Tokenizer will create an object with the information from the text extract and set onto it's properties.  A JSON representation of the information extracted from the above would be:
+Tokens work by matching the preceding text (preamble) in your input.  When a match is found, the text after the preamble is taken and used to populate the token.  Text is taken up to a terminator, or until the next token begins.
 
-```json
-{
-    "WhoisRecord": {
-        "DomainName": "LATIMES.COM",
-        "RegistryDomainId": "510925_DOMAIN_COM-VRSN",
-        "Registrar": {
-            "WhoisHostName": "whois.godaddy.com",
-            "URL": "http://www.godaddy.com",
-            "Name": "GoDaddy.com, LLC",
-            "IanaId": "146"                
-        },
-        "CreatedDate": "1990-12-12",
-        "ModifiedDate": "2013-12-03",
-        "ExpirationDate": "2015-12-11",
-        "AbuseEmail": "abuse@godaddy.com",
-        "AbusePhoneNumber": "+1.480-624-2505",
-        "Registrant": {
-            "Name": "TRIBUNE COMPANY",
-            "Organization": "Tribune Technology LLC",
-            "Street": "435 N. Michigan Ave",
-            "City": "Chicago",
-            "State": "Illinois",
-            "PostalCode": "60611",
-            "Country": "United States",
-            "Phone": "+1.3122229100",
-            "Email": "tis-dnsadmin@tribune.com",
-        },
-    }
-}
+## In Order Processing
+
+Tokens can be processed in strict order according to the input pattern, or in any order.  If processing in order, a token can be marked as optional with the `?` suffix to allow matching to continue if it is not present in the input.
+
+```csharp
+var pattern = 
+@"---
+# Tokens must appear in defined order
+OutOfOrder: false
+---
+First Name: {FirstName}
+Middle Name: {MiddleName?}
+Last Name: {LastName}";
+
+var input = 
+@"First Name: Alice
+Last Name: Smith";
+
+var student = new Tokenizer().Parse<Student>(pattern, input);
+
+Assert.AreEqual("Alice", student.FirstName);
+Assert.IsNull(student.MiddleName);
+Assert.AreEqual("Smith", student.LastName);
 ```
 
-The coding required to extract the information in the above example is simple.  First create a simple class to hold all the information you'd like to extract from the source text:
+## Line Handling
 
-```c#
-public class WhoisRecord
-{
-    public string DomainName { get; set; }
+Multiple tokens can appear on the same line of text, or tokens can span multiple lines of text if desired.  Windows and Unix line endings are automatically handled in patterns and input.
 
-    ...
-}
+```csharp
+var pattern = 
+@"Comments:
+{Comment:Trim()}
+
+Name:
+{Name}";
+
+var input = 
+@"Comments:
+10/10
+Would parse text again.
+
+Name:
+Bob";
+
+var review = new Tokenizer().Parse<Review>(pattern, input);
+
+Assert.AreEqual("10/10\nWould parse text again.", review.Comment);
+Assert.AreEqual("Bob", review.Name);
 ```
 
-In order to populate the class with values, create an instance of the Tokenizer and call the Parse() method.  This instantiates a new object and parses the input text and reflects it's content onto the object.  The TokenResult object contains a list of all tokens extracted, as well as a Value property with the new object assigned to.
+## Repeating
 
-```c#
-public WhoisRecord Parse(string input)
-{
-    var tokenizer = new Tokenizer();
+Lists and repeating data elements can be extracted from data 1 or more times by appending the `*` suffix to the token.  Tokenizer will populate an underlying `List<>` or `IList<>` on the target object. 
 
-    var result = tokenizer.Parse<WhoisRecord>(pattern, input);
+```csharp
+var pattern = 
+@"Name: {Manager.Name}
+Employee: {Manager.Manages*}
+Number: {Manager.Number}";
 
-    return result.Value;
-}
+var input = 
+@"Name: Sue
+Employee: Alice
+Employee: Bob
+Employee: Charles
+Number: 1234";
+
+var result = new Tokenizer().Parse<Manager>(pattern, input);
+
+Assert.AreEqual("Sue", result.Name);
+Assert.AreEqual(3, result.Manages.Count);
+Assert.AreEqual("Alice", result.Manages[0]);
+Assert.AreEqual("Bob", result.Manages[1]);
+Assert.AreEqual("Charles", result.Manages[2]);
+Assert.AreEqual(1234, result.Number);
 ```
 
-Before you can call the Tokenizer, you need to supply it with a pattern first.  For the example above, the pattern would look something like:
-
-```
-Domain Name: #{WhoisRecord.DomainName}
-Registry Domain ID: #{WhoisRecord.DomainId}
-Registrar WHOIS Server: #{WhoisRecord.Registrar.WhoisHostName}
-Registrar URL: #{WhoisRecord.Registrar.Url}
-Updated Date: #{WhoisRecord.UpdatedDate}
-Creation Date: #{WhoisRecord.CreatedDate}
-Registrar Registration Expiration Date: #{WhoisRecord.ExpirationDate}
-Registrar: #{WhoisRecord.Registrar.Name}
-Registrar IANA ID: #{WhoisRecord.RegistrarIanaId}
-Registrar Abuse Contact Email: #{WhoisRecord.AbuseEmail}
-Registrar Abuse Contact Phone: #{WhoisRecord.AbusePhoneNumber}
-Registrant Name: #{WhoisRecord.Registrant.Name}
-Registrant Organization: #{WhoisRecord.Registrant.Organization}
-Registrant Street: #{WhoisRecord.Registrant.Street}
-Registrant City: #{WhoisRecord.Registrant.City}
-Registrant State/Province: #{WhoisRecord.Registrant.State}
-Registrant Postal Code: #{WhoisRecord.Registrant.PostalCode}
-Registrant Country: #{WhoisRecord.Registrant.Country}
-Registrant Phone: #{WhoisRecord.Registrant.PhoneNumber}
-Registrant Email: #{WhoisRecord.Registrant.Email}
-```
-
-Each placeholder in the pattern refers to a property on the object.  The library will walk the object graph, instantiating properties as it encounters them, to set the values specified in the placeholder.
-
-## Transforming Input
-
-Sometimes the data you're processing requires preprocessing before it can be mapped onto your object.  The Tokenizer library contains a number of built-in functions that enable this to save writing additional code.
-
-### Transforming Dates
-
-Sometimes a dates in input text can't automatically be parsed by the .NET framework.  In this case, you can add a ToDateTime() transform to tell the Tokenizer to parse the date in an exact format:
-
-```
-Creation Date: 4 Dec 1990 14:32
-```
-
-Pattern with transform:
-
-```
-Creation Date: #{WhoisRecord.CreationDate:ToDateTime('d MMM yyyy HH:mm')}
-```
-
-## Limitations
-
-The Tokenizer currently works on line-by-line.  You cannot currently write multi-line placeholders.
-
-## Extending Tokenizer
-
-The Tokenizer is easily extensible by adding new Token Operators and Token Validators.
+Repeating tokens are also treated as optional tokens.

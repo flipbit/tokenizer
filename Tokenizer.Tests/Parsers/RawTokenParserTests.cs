@@ -296,7 +296,20 @@ namespace Tokens.Parsers
             var template = parser.Parse("---\n# Comment\nThrowExceptionOnMissingProperty: true\n---\nPreamble\n{TokenName}\n");
 
             Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
-            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+        }
+
+        [Test]
+        public void TestParseFrontMatterWithWindowsLineEndings()
+        {
+            var template = parser.Parse("---\r\n# Comment\r\nThrowExceptionOnMissingProperty: true\r\n---\r\nPreamble\r\n{TokenName}\r\n");
+
+            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();
             Assert.AreEqual("Preamble\n", token.Preamble);

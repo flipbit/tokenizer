@@ -7,15 +7,12 @@ namespace Tokens
     /// </summary>
     public class TokenizerOptions
     {
-        public static TokenizerOptions Defaults => new TokenizerOptions
+        public static TokenizerOptions Defaults => new TokenizerOptions();
+
+        public TokenizerOptions()
         {
-            // Don't throw exceptions by default
-            ThrowExceptionOnMissingProperty = false,
-            TrimLeadingWhitespaceInTokenPreamble = true,
-            TrimTrailingWhiteSpace = true,
-            TokenStringComparison = StringComparison.InvariantCulture,
-            OutOfOrderTokens = false
-        };
+            ResetDefaults();
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to throw an exception when a token can't
@@ -37,6 +34,22 @@ namespace Tokens
         /// </summary>
         public StringComparison TokenStringComparison { get; set; }
 
+        public bool EnableLogging { get; set; }
+
+        /// <summary>
+        /// Resets the options to their default values 
+        /// </summary>
+        public void ResetDefaults()
+        {
+            // Don't throw exceptions by default
+            ThrowExceptionOnMissingProperty = false;
+            TrimLeadingWhitespaceInTokenPreamble = true;
+            TrimTrailingWhiteSpace = true;
+            TokenStringComparison = StringComparison.InvariantCulture;
+            OutOfOrderTokens = false;
+            EnableLogging = false;
+        }
+
         public TokenizerOptions Clone()
         {
             return new TokenizerOptions
@@ -45,7 +58,8 @@ namespace Tokens
                 TrimTrailingWhiteSpace = TrimTrailingWhiteSpace,
                 TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
                 TokenStringComparison = TokenStringComparison,
-                OutOfOrderTokens = OutOfOrderTokens
+                OutOfOrderTokens = OutOfOrderTokens,
+                EnableLogging = EnableLogging
             };
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Tokens.Exceptions;
 using Tokens.Extensions;
+using Tokens.Logging;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -47,10 +49,21 @@ namespace Tokens
 
         public bool CanAssign(object value)
         {
+            return CanAssign(value, null);
+        }
+
+        internal bool CanAssign(object value, ILog log)
+        {
+            // Don't assign tokens with no name
+            // (can happen if the token is the last token in the template)
+            if (string.IsNullOrWhiteSpace(Name)) return false;
+
             foreach (var validator in Validators)
             {
                 if (validator.Validate(value) == false)
                 {
+                    log?.Trace($"{validator.ValidatorType.Name} Validation Failure: {value}");
+
                     return false;
                 }
             }
@@ -58,9 +71,14 @@ namespace Tokens
             return true;
         }
 
-        public bool Assign(object target, string value, TokenizerOptions options)
+        internal bool Assign(object target, string value, TokenizerOptions options)
         {
-            if (CanAssign(value) == false) return false;
+            return Assign(target, value, options, null);
+        }
+
+        internal bool Assign(object target, string value, TokenizerOptions options, ILog log)
+        {
+            if (CanAssign(value, log) == false) return false;
 
             if (TerminateOnNewLine)
             {
@@ -93,16 +111,29 @@ namespace Tokens
                 return true;
             }
 
+            log?.Debug($"Assigning '{Name}' to '{transformed}'");
+
             try
             {
                 target.SetValue(Name, transformed);
             }
-            catch (MissingMemberException)
+            catch (MissingMemberException ex)
             {
                 if (options.ThrowExceptionOnMissingProperty)
                 {
+                    log?.Error(ex, $"Missing property on target: {Name}");
                     throw;
                 }
+
+                log?.Warn($"Missing property on target: {Name}");
+            }
+            catch (Exception e)
+            {
+                log?.Error(e, $"Unexpected error when assigning '{Name}' to '{transformed}':");
+
+                var ex = new TokenAssignmentException(this, e);
+
+                throw ex;
             }
 
             return true;

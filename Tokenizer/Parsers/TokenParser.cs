@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Tokens.Exceptions;
 using Tokens.Extensions;
+using Tokens.Logging;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -12,6 +13,8 @@ namespace Tokens.Parsers
         private readonly List<Type> transformers;
         private readonly List<Type> validators;
 
+        private readonly ILog log;
+
         public TokenizerOptions Options { get; set; }
 
         public TokenParser() : this(TokenizerOptions.Defaults)
@@ -20,6 +23,8 @@ namespace Tokens.Parsers
 
         public TokenParser(TokenizerOptions options)
         {
+            log = LogProvider.For<TokenParser>();
+
             Options = options;
 
             transformers = new List<Type>();
@@ -42,12 +47,16 @@ namespace Tokens.Parsers
         {
             transformers.Add(typeof(T));
 
+            log.Trace($"Added Transformer: {typeof(T)}");
+
             return this;
         }
 
         public TokenParser RegisterValidator<T>() where T : ITokenValidator
         {
             validators.Add(typeof(T));
+
+            log.Trace($"Added Validator: {typeof(T)}");
 
             return this;
         }
@@ -59,6 +68,8 @@ namespace Tokens.Parsers
 
         public Template Parse(string content, string name)
         {
+            log.Debug("Start: Parsing Template");
+
             var template = new Template(name, content);
 
             var rawTemplate = new RawTokenParser().Parse(content, Options);
@@ -116,7 +127,11 @@ namespace Tokens.Parsers
                 }
 
                 template.AddToken(token);
+
+                log.Trace($"  -> Added Token: {token.Name}");
             }
+
+            log.Debug("Finish: Parsing Template");
 
             return template;
         }

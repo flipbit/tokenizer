@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Tokens.Exceptions;
+using Tokens.Logging;
 using Tokens.Parsers;
 
 namespace Tokens
@@ -45,7 +46,9 @@ namespace Tokens
         [SetUp]
         public void SetUp()
         {
-            tokenizer = new Tokenizer();
+            SerilogConfig.Init();
+
+            tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
         }
 
         [Test]
@@ -369,11 +372,11 @@ Last Name: {Student.LastName}";
 First Name: Bob
 Middle Name: Charles";
 
-            var employee = tokenizer.Parse<Student>(pattern, input);
+            var student = tokenizer.Parse<Student>(pattern, input);
 
-            Assert.AreEqual("Bob", employee.FirstName);
-            Assert.AreEqual("Charles", employee.MiddleName);
-            Assert.AreEqual("Smith", employee.LastName);
+            Assert.AreEqual("Bob", student.FirstName);
+            Assert.AreEqual("Charles", student.MiddleName);
+            Assert.AreEqual("Smith", student.LastName);
         }
 
         [Test]

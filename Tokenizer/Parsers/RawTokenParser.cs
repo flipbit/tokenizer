@@ -92,7 +92,10 @@ namespace Tokens.Parsers
                 }
             }
 
-            if (string.IsNullOrEmpty(token.Preamble) == false)
+            // Append current token if it has contents
+            // Note: allow empty token values, as these will serve to truncate the last 
+            // token in the template
+            if (string.IsNullOrWhiteSpace(token.Preamble) == false)
             {
                 template.Tokens.Add(token);
             }

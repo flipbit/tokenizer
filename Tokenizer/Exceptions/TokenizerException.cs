@@ -14,5 +14,12 @@ namespace Tokens.Exceptions
         public TokenizerException(string message) : base(message)
         {            
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenizerException"/> class.
+        /// </summary>
+        public TokenizerException(string message, Exception innerException) : base(message, innerException)
+        {            
+        }
     }
 }

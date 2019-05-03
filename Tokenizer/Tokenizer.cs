@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Tokens.Enumerators;
+using Tokens.Logging;
 using Tokens.Parsers;
 using Tokens.Transformers;
 using Tokens.Validators;
@@ -15,6 +16,7 @@ namespace Tokens
     public class Tokenizer
     {
         private readonly TokenParser parser;
+        private readonly ILog log;
 
         /// <summary>
         /// Gets or sets the options.
@@ -36,6 +38,7 @@ namespace Tokens
             parser = new TokenParser(options);
 
             Options = options;
+            log = LogProvider.For<Tokenizer>();
         }
 
         public T Parse<T>(string pattern, string input) where T : class, new()
@@ -66,6 +69,8 @@ namespace Tokens
 
         public bool TryParse<T>(Template template, string input, out int matches, out T result) where T : class, new()
         {
+            log.Debug($"Start: Processing: {template.Name}");
+
             Token current = null;
             matches = 0;
 
@@ -107,7 +112,7 @@ namespace Tokens
                         enumerator.Advance(match.Preamble.Length);
                         matchIds.AddRange(template.GetTokenIdsUpTo(match));
                     }
-                    else if (replacement.Length > 0 && current.Assign(value, replacement.ToString(), template.Options))
+                    else if (replacement.Length > 0 && current.Assign(value, replacement.ToString(), template.Options, log))
                     {
                         matches++;
                         current = match;
@@ -132,11 +137,14 @@ namespace Tokens
 
             if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
             {
-                current.Assign(value, replacement.ToString(), template.Options);
+                current.Assign(value, replacement.ToString(), template.Options, log);
                 matches++;
             }
 
             result = value;
+
+            log.Debug($"  Found {matches} matches.");
+            log.Debug($"Finished: Processing: {template.Name}");
 
             return matches > 0;
         }

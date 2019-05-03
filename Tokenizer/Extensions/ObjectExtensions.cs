@@ -7,7 +7,7 @@ namespace Tokens.Extensions
     public static class ObjectExtensions
     {
         /// <summary>
-        /// Sets the given value on the given propetrty with the given path.
+        /// Sets the given value on the given property with the given path.
         /// </summary>
         public static T SetValue<T>(this T @object, string propertyPath, object value) where T : class
         {

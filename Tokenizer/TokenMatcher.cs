@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Tokens.Exceptions;
+using Tokens.Logging;
 using Tokens.Parsers;
 using Tokens.Transformers;
 using Tokens.Validators;
@@ -11,12 +14,14 @@ namespace Tokens
         private readonly Tokenizer tokenizer;
         private readonly TokenParser parser;
         private readonly List<Template> templates;
+        private readonly ILog log;
 
         public TokenMatcher()
         {
             parser = new TokenParser();
             templates = new List<Template>();
             tokenizer = new Tokenizer();
+            log = LogProvider.GetLogger(typeof(TokenMatcher));
         }
 
         public TokenMatcher(TokenizerOptions options) : this()
@@ -52,14 +57,27 @@ namespace Tokens
 
             foreach (var template in templates)
             {
-                if (tokenizer.TryParse<T>(template, input, out var count, out var result))
+                log.Info("Matching: {0}", template.Name);
+                try
                 {
-                    results.Add(new TokenMatch<T>
+                    if (tokenizer.TryParse<T>(template, input, out var count, out var result))
                     {
-                        Matches = count,
-                        Result = result,
+                        results.Add(new TokenMatch<T>
+                        {
+                            Matches = count,
+                            Result = result,
+                            Template = template
+                        });
+                    }
+                }
+                catch (Exception e)
+                {
+                    var exception = new TokenMatcherException(e.Message, e)
+                    {
                         Template = template
-                    });
+                    };
+
+                    throw exception;
                 }
             }
 

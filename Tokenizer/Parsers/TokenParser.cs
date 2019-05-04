@@ -32,6 +32,7 @@ namespace Tokens.Parsers
 
             // Add default transformers/validators
             RegisterTransformer<ToDateTimeTransformer>();
+            RegisterTransformer<ToDateTimeUtcTransformer>();
             RegisterTransformer<ToLowerTransformer>();
             RegisterTransformer<ToUpperTransformer>();
             RegisterTransformer<TrimTransformer>();

@@ -17,9 +17,10 @@ namespace Tokens.Transformers
         [Test]
         public void TestParseDate()
         {
-            var result = @operator.Transform("2014-01-01", "yyyy-MM-dd");
+            var result =  (DateTime) @operator.Transform("2014-01-01", "yyyy-MM-dd");
 
             Assert.AreEqual(new DateTime(2014, 1, 1), result);
+            Assert.AreEqual(DateTimeKind.Unspecified, result.Kind);
         }
 
         [Test]

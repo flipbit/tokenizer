@@ -12,28 +12,33 @@ namespace Tokens.Transformers
         {
             if (value == null) return string.Empty;
 
-            DateTime result;
+            return ToDateTime(value, args, out var result) ? result : value;
+        }
 
-            if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
+        public static bool ToDateTime(object value, string[] formats, out DateTime result)
+        {
+            if (formats == null || formats.Length == 0 || string.IsNullOrEmpty(formats[0]))
             {
                 if (DateTime.TryParse(value.ToString(), out result))
                 {
-                    return result;
+                    return true;
                 }
             }
             else
             {
                 
-                foreach (var arg in args)
+                foreach (var format in formats)
                 {
-                    if (DateTime.TryParseExact(value.ToString(), arg, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (DateTime.TryParseExact(value.ToString(), format, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                     {
-                        return result;
+                        return true;
                     }
                 }
             }
 
-            return value;
+            result = default(DateTime);
+
+            return false;
         }
     }
 }

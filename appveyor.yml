@@ -3,7 +3,6 @@ image: Visual Studio 2017
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
-  - cmd: echo hello
 install:
   # Install repo specific stuff here
 before_build:
@@ -12,15 +11,16 @@ before_build:
   # Display minimal restore text
   - cmd: dotnet restore ./Tokenizer/Tokenizer.csproj --verbosity m
 build_script:
-  # output will be in ./src/bin/debug/netcoreapp1.1/publish
+  # output will be in ./Tokenizer/Tokenizer/bin/Release/{framework}
   - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f netstandard2.0
   - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f net452
+  - cmd: dotnet pack ./Tokenizer/Tokenizer.csproj -c Release
 after_build:
   # For once the build has completed
-#artifacts:
-# - path: '\src\bin\Debug\netcoreapp1.1\publish'
-#   name: WebSite
-#   type: WebDeployPackage
+artifacts:
+  path: **\*.nupkg
+  name: Package
+  type: NuGetPackage
 clone_depth: 1
 test_script:
   # restore packages for our unit tests

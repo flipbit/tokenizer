@@ -13,7 +13,8 @@ before_build:
   - cmd: dotnet restore ./Tokenizer/Tokenizer.csproj --verbosity m
 build_script:
   # output will be in ./src/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj
+  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj -f netcoreapp2.2
+  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj -f net452
 after_build:
   # For once the build has completed
 #artifacts:

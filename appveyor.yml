@@ -1,4 +1,4 @@
-version: '1.0.{build}'
+version: '2.0.{build}'
 image: Visual Studio 2017
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
@@ -13,8 +13,8 @@ before_build:
   - cmd: dotnet restore ./Tokenizer/Tokenizer.csproj --verbosity m
 build_script:
   # output will be in ./src/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj -f netstandard2.0
-  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj -f net452
+  - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f netstandard2.0
+  - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f net452
 after_build:
   # For once the build has completed
 #artifacts:

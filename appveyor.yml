@@ -7,6 +7,14 @@ branches:
 nuget:
   disable_publish_on_pr: true
 image: Visual Studio 2017
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
@@ -39,7 +47,7 @@ on_finish :
   # any cleanup in here
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/flipbit/api/v3/package
+  server: https://www.myget.org/F/flipbit/api/v2/package
   api_key:
     secure: cl2Yd51h7iCxGVV0LM80pts3Kh2z4EFoI42GHMFpMjpQvnGaIkWqoLy9ouWLijXM
   skip_symbols: true

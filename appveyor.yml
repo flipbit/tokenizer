@@ -1,8 +1,12 @@
-version: '1.0.{build}'
-image: Visual Studio 2017
+version: '2.0.{build}'
+pull_requests:
+  do_not_increment_build_number: true
 branches:
   only:
   - master
+nuget:
+  disable_publish_on_pr: true
+image: Visual Studio 2017
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
@@ -14,14 +18,16 @@ before_build:
   # Display minimal restore text
   - cmd: dotnet restore ./Tokenizer/Tokenizer.csproj --verbosity m
 build_script:
-  # output will be in ./src/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet publish ./Tokenizer/Tokenizer.csproj
+  # output will be in ./Tokenizer/Tokenizer/bin/Release/{framework}
+  - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f netstandard2.0
+  - cmd: dotnet build ./Tokenizer/Tokenizer.csproj -c Release -f net452
+  - cmd: dotnet pack ./Tokenizer/Tokenizer.csproj -c Release
 after_build:
   # For once the build has completed
-#artifacts:
-# - path: '\src\bin\Debug\netcoreapp1.1\publish'
-#   name: WebSite
-#   type: WebDeployPackage
+artifacts:
+- path: .\**\*.nupkg
+  name: Package
+  type: NuGetPackage
 clone_depth: 1
 test_script:
   # restore packages for our unit tests
@@ -31,4 +37,11 @@ test_script:
   - cmd: dotnet test
 on_finish :
   # any cleanup in here
-deploy: off
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/flipbit/api/v3/package
+  api_key:
+    secure: cl2Yd51h7iCxGVV0LM80pts3Kh2z4EFoI42GHMFpMjpQvnGaIkWqoLy9ouWLijXM
+  skip_symbols: true
+  on:
+    branch: master

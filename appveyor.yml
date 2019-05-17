@@ -1,4 +1,11 @@
 version: '2.0.{build}'
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+nuget:
+  disable_publish_on_pr: true
 image: Visual Studio 2017
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
@@ -30,4 +37,11 @@ test_script:
   - cmd: dotnet test
 on_finish :
   # any cleanup in here
-deploy: off
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/flipbit/api/v3/package
+  api_key:
+    secure: cl2Yd51h7iCxGVV0LM80pts3Kh2z4EFoI42GHMFpMjpQvnGaIkWqoLy9ouWLijXM
+  skip_symbols: true
+  on:
+    branch: master

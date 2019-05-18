@@ -23,9 +23,11 @@ namespace Tokens
         [Test]
         public void TestParseOnePattern()
         {
-            matcher.AddPattern("Name: {Person.Name}");
+            matcher.RegisterTemplate("Name: {Person.Name}", "Person");
 
-            var person = matcher.Match<Person>("Name: Alice");
+            var result = matcher.Match<Person>("Name: Alice");
+
+            var person = result.BestMatch.Result;
 
             Assert.AreEqual("Alice", person.Name);
         }
@@ -33,12 +35,13 @@ namespace Tokens
         [Test]
         public void TestParseTwoPatterns()
         {
-            matcher.AddPattern("Name: {Person.Name}", "no-age");
-            matcher.AddPattern("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+            matcher.RegisterTemplate("Name: {Person.Name}", "no-age");
+            matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-            var matched = matcher.TryMatch<Person>("Name: Alice, Age: 30", out var match);
+            var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
-            Assert.AreEqual(true, matched);
+            var match = result.BestMatch;
+
             Assert.AreEqual("Alice", match.Result.Name);
             Assert.AreEqual(30, match.Result.Age);
             Assert.AreEqual("with-age", match.Template.Name);

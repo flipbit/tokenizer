@@ -52,5 +52,30 @@ namespace Tokens.Parsers
             Assert.AreEqual(1, tokenOperator.Parameters.Count);
             Assert.AreEqual("yyyy-MM-dd", tokenOperator.Parameters[0]);
         }
+
+        [Test]
+        public void TestParseSetName()
+        {
+            var template = parser.Parse("Preamble");
+
+            Assert.AreEqual("Preamble", template.Name);
+        }
+ 
+        [Test]
+        public void TestParseSetNameLimitToThreeWords()
+        {
+            var template = parser.Parse("One Two Three Four");
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
+
+        [Test]
+        public void TestParseSetNameCountsNewLines()
+        {
+            var template = parser.Parse("One Two\r\nThree Four");
+
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
     }
 }

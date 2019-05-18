@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -48,8 +49,6 @@ namespace Tokens.Parsers
         {
             transformers.Add(typeof(T));
 
-            log.Trace($"Added Transformer: {typeof(T)}");
-
             return this;
         }
 
@@ -57,14 +56,14 @@ namespace Tokens.Parsers
         {
             validators.Add(typeof(T));
 
-            log.Trace($"Added Validator: {typeof(T)}");
-
             return this;
         }
 
         public Template Parse(string content)
         {
-            return Parse(content, string.Empty);
+            var name = GenerateTemplateName(content);
+
+            return Parse(content, name);
         }
 
         public Template Parse(string content, string name)
@@ -187,6 +186,38 @@ namespace Tokens.Parsers
                     throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
                 }
             }
+        }
+
+        private string GenerateTemplateName(string content)
+        {
+            var name = new StringBuilder();
+
+            var words = 0;
+            var lastCharWasANewLine = false;
+            foreach (var c in content)
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    if (lastCharWasANewLine) continue;
+
+                    lastCharWasANewLine = true;
+                    
+                    words++;
+                    if (words <= 2)
+                    {
+                        name.Append(' ');
+                        continue;
+                    }
+
+                    name.Append("...");
+                    break;
+                }
+
+                name.Append(c);
+                lastCharWasANewLine = false;
+            }
+
+            return name.ToString();
         }
     }
 }

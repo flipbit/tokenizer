@@ -37,7 +37,7 @@ namespace Tokens.Transformers
         }
 
         [Test]
-        public void TestSubstringAfterhenNull()
+        public void TestSubstringAfterWhenNull()
         {
             var result = transformer.Transform(null);
 

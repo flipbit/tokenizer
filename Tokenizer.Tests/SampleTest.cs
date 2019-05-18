@@ -22,7 +22,7 @@ namespace Tokens
             var pattern = Resources.Pattern_nominet;
             var input = Resources.Data_bbc_co_uk;
 
-            var result = tokenizer.Parse<WhoisRecord>(pattern, input);
+            var result = tokenizer.Tokenize<WhoisRecord>(pattern, input).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("bbc.co.uk", result.Domain);
@@ -49,7 +49,7 @@ namespace Tokens
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = true;
 
-            var result = tokenizer.Parse<WhoisServer>(pattern, input);
+            var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("com", result.TLD);
@@ -104,7 +104,7 @@ namespace Tokens
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = true;
 
-            var result = tokenizer.Parse<WhoisServer>(pattern, input);
+            var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("abogado", result.TLD);
@@ -154,7 +154,7 @@ namespace Tokens
 
             tokenizer.Options.ThrowExceptionOnMissingProperty = true;
 
-            var result = tokenizer.Parse<WhoisRedirect>(pattern, input);
+            var result = tokenizer.Tokenize<WhoisRedirect>(pattern, input).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual("facebook.com", result.Domain);

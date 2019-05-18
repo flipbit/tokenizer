@@ -9,7 +9,8 @@ Tokenizer is a .NET Standard and .NET Framework library that allows you to extra
 var pattern = @"First Name: {FirstName}, Last Name: {LastName}, Enrolled: {Enrolled:ToDateTime('dd MMM yyyy')}";
 var input = @"First Name: Alice, Last Name: Smith, Enrolled: 16 Jan 2018";
 
-var student = new Tokenizer().Parse<Student>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Student>(pattern, input);
+var student = tokenized.Value;
 
 Assert.AreEqual("Alice", student.FirstName);
 Assert.AreEqual("Smith", student.LastName);
@@ -36,7 +37,8 @@ var input =
 @"First Name: Alice
 Last Name: Smith";
 
-var student = new Tokenizer().Parse<Student>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Student>(pattern, input);
+var student = tokenized.Value;
 
 Assert.AreEqual("Alice", student.FirstName);
 Assert.IsNull(student.MiddleName);
@@ -63,7 +65,8 @@ Would parse text again.
 Name:
 Bob";
 
-var review = new Tokenizer().Parse<Review>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Review>(pattern, input);
+var review = tokenized.Value;
 
 Assert.AreEqual("10/10\nWould parse text again.", review.Comment);
 Assert.AreEqual("Bob", review.Name);
@@ -81,7 +84,8 @@ var input = @"Name: Bob
 Surname: Jones
 Age: 31";
 
-var person = new Tokenizer().Parse<Person>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Person>(pattern, input);
+var person = tokenized.Value;
 
 Assert.AreEqual(person.Name, "Bob");  // Not: "Bob\nSurname: Jones"
 Assert.AreEqual(person.Age, 31);
@@ -104,17 +108,38 @@ Employee: Bob
 Employee: Charles
 Number: 1234";
 
-var result = new Tokenizer().Parse<Manager>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Manager>(pattern, input);
+var manager = tokenized.Value;
 
-Assert.AreEqual("Sue", result.Name);
-Assert.AreEqual(3, result.Manages.Count);
-Assert.AreEqual("Alice", result.Manages[0]);
-Assert.AreEqual("Bob", result.Manages[1]);
-Assert.AreEqual("Charles", result.Manages[2]);
-Assert.AreEqual(1234, result.Number);
+Assert.AreEqual("Sue", manager.Name);
+Assert.AreEqual(3, manager.Manages.Count);
+Assert.AreEqual("Alice", manager.Manages[0]);
+Assert.AreEqual("Bob", manager.Manages[1]);
+Assert.AreEqual("Charles", manager.Manages[2]);
+Assert.AreEqual(1234, manager.Number);
 ```
 
 Repeating tokens are also treated as optional tokens.
+
+## Required Values
+
+Fields in the pattern that are non-optional can be marked with the `!` character.  If this is set and the field is not found in the input, then the `TokenizeResult.Success` property will be `false`.
+
+```csharp
+var pattern = @"First Name: {FirstName!}, Last Name: {LastName!}"
+var input = "First Name: Alice";
+
+var tokenized = new Tokenizer().Tokenize<Student>(pattern, input);
+var student = tokenized.Value;
+
+// LastName was not in input
+Assert.IsFalse(tokenized.Success);
+
+// Value will still be populated with available fields
+Assert.AreEqual("Alice", student.FirstName);
+```
+
+Using required fields can be useful when matching multiple patterns to select the best matching one.
 
 ## Configuration
 
@@ -169,7 +194,8 @@ Extracted data can be transformed before being set on the target object.
 var pattern = "Name: {Name:Trim(),ToLower()}";
 var input = "Name:      Alice      ";
 
-var person = new Tokenizer().Parse<Person>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Person>(pattern, input);
+var person = tokenized.Value;
 
 Assert.AreEqual(person.Name, "alice");
 ```
@@ -183,7 +209,8 @@ Token validation functions are run against extracted content before it's mapped 
 var pattern = "Age: {Age:IsNumeric}";
 var input = "Age: Ten, Age: 11";
 
-var person = new Tokenizer().Parse<Person>(pattern, input);
+var tokenized = new Tokenizer().Tokenize<Person>(pattern, input);
+var person = tokenized.Value;
 
 Assert.AreEqual(person.Age, 11);
 ```

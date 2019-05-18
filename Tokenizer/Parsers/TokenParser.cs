@@ -104,6 +104,7 @@ namespace Tokens.Parsers
                 token.Optional = rawToken.Optional;
                 token.Repeating = rawToken.Repeating;
                 token.TerminateOnNewLine = rawToken.TerminateOnNewline;
+                token.Required = rawToken.Required;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
@@ -190,18 +191,36 @@ namespace Tokens.Parsers
 
         private string GenerateTemplateName(string content)
         {
+            if (string.IsNullOrWhiteSpace(content)) return "(empty)";
+
             var name = new StringBuilder();
 
             var words = 0;
             var lastCharWasANewLine = false;
-            foreach (var c in content)
+
+            var startIndex = 0;
+            var hasFrontmatter = content.StartsWith("---\n") || content.StartsWith("---\r\n");
+
+            if (hasFrontmatter)
             {
+                var frontmatterEndIndex = content.IndexOf("\n---", 5);
+
+                if (frontmatterEndIndex > -1) startIndex = frontmatterEndIndex + 4;
+            }
+
+            for (var i = startIndex; i < content.Length; i++)
+            {
+                var c = content[i];
+                
+
+
                 if (char.IsWhiteSpace(c))
                 {
                     if (lastCharWasANewLine) continue;
+                    if (name.Length == 0) continue;
 
                     lastCharWasANewLine = true;
-                    
+
                     words++;
                     if (words <= 2)
                     {

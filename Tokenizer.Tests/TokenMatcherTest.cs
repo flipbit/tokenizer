@@ -27,7 +27,7 @@ namespace Tokens
 
             var result = matcher.Match<Person>("Name: Alice");
 
-            var person = result.BestMatch.Result;
+            var person = result.BestMatch.Value;
 
             Assert.AreEqual("Alice", person.Name);
         }
@@ -42,8 +42,8 @@ namespace Tokens
 
             var match = result.BestMatch;
 
-            Assert.AreEqual("Alice", match.Result.Name);
-            Assert.AreEqual(30, match.Result.Age);
+            Assert.AreEqual("Alice", match.Value.Name);
+            Assert.AreEqual(30, match.Value.Age);
             Assert.AreEqual("with-age", match.Template.Name);
         }
     }

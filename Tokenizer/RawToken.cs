@@ -19,6 +19,8 @@ namespace Tokens
 
         public bool Repeating { get; set; }
 
+        public bool Required { get; set; }
+
         public IList<RawTokenDecorator> Decorators { get; private set; }
     }
 }

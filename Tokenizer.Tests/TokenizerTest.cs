@@ -57,7 +57,7 @@ namespace Tokens
             const string pattern = @"First Name: {FirstName}";
             const string input = @"First Name: Alice";
 
-            var student = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var student = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", student.FirstName);
         }
@@ -68,7 +68,7 @@ namespace Tokens
             const string pattern = @"First Name: {Student.FirstName}, Last Name: {Student.LastName}";
             const string input = @"First Name: Alice, Last Name: Smith";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
             Assert.AreEqual("Smith", employee.LastName);
@@ -80,7 +80,7 @@ namespace Tokens
             const string pattern = @"First Name: {Student.FirstName}, Middle Name: {Student.MiddleName}, Last Name: {Student.LastName}";
             const string input = @"First Name: Alice, Middle Name: Roberta, Last Name: Smith";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
             Assert.AreEqual("Roberta", employee.MiddleName);
@@ -103,7 +103,7 @@ Last Name: {LastName}";
 Middle Name: Roberta
 Last Name: Smith";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
             Assert.AreEqual("Roberta", employee.MiddleName);
@@ -127,7 +127,7 @@ we had a nice time.
 Name:
 Bob";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Everything went well,\nwe had a nice time.", employee.FirstName);
             Assert.AreEqual("Bob", employee.LastName);
@@ -139,7 +139,7 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Role: Programmer";
             const string input = @"First Name: Alice, Role: Programmer";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
         }
@@ -150,7 +150,7 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Number: {Student.Number}";
             const string input = @"First Name: Bob, Number: 12345";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", employee.FirstName);
             Assert.AreEqual(12345, employee.Number);
@@ -162,7 +162,7 @@ Bob";
             const string pattern = @"First Name: {FirstName}, Last Name: {LastName}, Enrolled: {Enrolled:ToDateTime('dd MMM yyyy')}";
             const string input = @"First Name: Alice, Last Name: Smith, Enrolled: 16 Jan 2018";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
             Assert.AreEqual("Smith", employee.LastName);
@@ -175,7 +175,7 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Number: {Student.Number:IsNumeric}";
             const string input = @"First Name: Bob, Number: 12345";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", employee.FirstName);
             Assert.AreEqual(12345, employee.Number);
@@ -187,7 +187,7 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Number: {Student.Number:IsNumeric}";
             const string input = @"First Name: Bob, Number: Not a number";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", employee.FirstName);
             Assert.AreEqual(0, employee.Number);
@@ -199,7 +199,7 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Number: {Student.Number:IsNumeric}";
             const string input = @"First Name: Bob, Number: (not a number), Number: 67890";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", employee.FirstName);
             Assert.AreEqual(67890, employee.Number);
@@ -211,10 +211,16 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Middle Name: {Student.MiddleName?}, Last Name: {Student.LastName}";
             const string input = @"First Name: Bob, Last Name: Smith";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var result = tokenizer.Tokenize<Student>(pattern, input);
+            var student = result.Value;
 
-            Assert.AreEqual("Bob", employee.FirstName);
-            Assert.AreEqual("Smith", employee.LastName);
+            Assert.IsTrue(result.Success);
+
+            Assert.AreEqual("Bob", student.FirstName);
+            Assert.AreEqual("Smith", student.LastName);
+
+            Assert.AreEqual(1, result.NotMatched.Count);
+            Assert.AreEqual("Student.MiddleName", result.NotMatched[0].Name);
         }
 
         [Test]
@@ -223,11 +229,32 @@ Bob";
             const string pattern = @"First Name: {Student.FirstName}, Middle Name: {Student.MiddleName?}, Last Name: {Student.LastName}";
             const string input = @"First Name: Bob, Middle Name: Charles, Last Name: Smith";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", employee.FirstName);
             Assert.AreEqual("Charles", employee.MiddleName);
             Assert.AreEqual("Smith", employee.LastName);
+        }
+
+        [Test]
+        public void TestExtractRequiredValueWhenNotPresent()
+        {
+            const string pattern = @"---
+OutOfOrder: true
+---
+First Name: {Student.FirstName}, Middle Name: {Student.MiddleName!}, Last Name: {Student.LastName}";
+            const string input = @"First Name: Bob, Last Name: Smith";
+
+            var result = tokenizer.Tokenize<Student>(pattern, input);
+            var student = result.Value;
+
+            Assert.IsFalse(result.Success);
+
+            Assert.AreEqual("Bob", student.FirstName);
+            Assert.AreEqual("Smith", student.LastName);
+
+            Assert.AreEqual(1, result.NotMatched.Count);
+            Assert.AreEqual("Student.MiddleName", result.NotMatched[0].Name);
         }
 
         [Test]
@@ -245,7 +272,7 @@ Bob";
             const string pattern = "First Name: {Student.FirstName}";
             const string input = "David";
 
-            var result = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var result = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual(result.FirstName, null);
         }
@@ -256,7 +283,7 @@ Bob";
             const string pattern = "Student: {Teacher.Class*$}";
             const string input = "Student: Alice\r\nStudent: Bob";
 
-            var result = tokenizer.Tokenize<Teacher>(pattern, input).Result;
+            var result = tokenizer.Tokenize<Teacher>(pattern, input).Value;
 
             Assert.AreEqual(2, result.Class.Count);
             Assert.AreEqual("Alice", result.Class[0]);
@@ -277,7 +304,7 @@ Bob";
             Student: Charles
             Number: 1234";
 
-            var result = tokenizer.Tokenize<Teacher>(pattern, input).Result;
+            var result = tokenizer.Tokenize<Teacher>(pattern, input).Value;
 
             Assert.AreEqual("Sue", result.FirstName);
             Assert.AreEqual(3, result.Class.Count);
@@ -293,7 +320,7 @@ Bob";
             const string pattern = "Name: {Teacher.FirstName}, Student: {Teacher.Class*}, Number: {Teacher.Number}";
             const string input = "Name: Alice, Student: Bob, Student: Sue, Number: 1234";
 
-            var result = tokenizer.Tokenize<Teacher>(pattern, input).Result;
+            var result = tokenizer.Tokenize<Teacher>(pattern, input).Value;
 
             Assert.AreEqual("Alice", result.FirstName);
             Assert.AreEqual(2, result.Class.Count);
@@ -343,7 +370,7 @@ Name servers:
 
     WHOIS lookup made at 10:35:59 22-Oct-2014";
 
-            var result = tokenizer.Tokenize<TestClass>(pattern, input).Result;
+            var result = tokenizer.Tokenize<TestClass>(pattern, input).Value;
 
             Assert.AreEqual(3, result.List.Count);
         }
@@ -354,7 +381,7 @@ Name servers:
             const string pattern = "First Name:\n{Student.FirstName}";
             const string input = "First Name:\r\nAlice";
 
-            var employee = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var employee = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Alice", employee.FirstName);
         }
@@ -372,7 +399,7 @@ Last Name: {Student.LastName}";
 First Name: Bob
 Middle Name: Charles";
 
-            var student = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var student = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("Bob", student.FirstName);
             Assert.AreEqual("Charles", student.MiddleName);
@@ -387,12 +414,12 @@ Middle Name: Charles";
 
             var template = new TokenParser().Parse(pattern);
 
-            var one = tokenizer.Tokenize<Student>(template, input).Result;
+            var one = tokenizer.Tokenize<Student>(template, input).Value;
 
             Assert.AreEqual("Alice", one.FirstName);
             Assert.AreEqual("Smith", one.LastName);
 
-            var two = tokenizer.Tokenize<Student>(template, input).Result;
+            var two = tokenizer.Tokenize<Student>(template, input).Value;
 
             Assert.AreEqual("Alice", two.FirstName);
             Assert.AreEqual("Smith", two.LastName);
@@ -415,7 +442,7 @@ Last Name: {LastName}
             // Should get overridden by embedded pattern declaration
             tokenizer.Options.TrimTrailingWhiteSpace = false;
 
-            var student = tokenizer.Tokenize<Student>(pattern, input).Result;
+            var student = tokenizer.Tokenize<Student>(pattern, input).Value;
 
             Assert.AreEqual("John", student.FirstName);
         }
@@ -426,7 +453,7 @@ Last Name: {LastName}
             const string pattern = "Age: {Age:IsNumeric}";
             const string input = "Age: Ten, Age: 11";
 
-            var person = new Tokenizer().Tokenize<TokenTest.Person>(pattern, input).Result;
+            var person = new Tokenizer().Tokenize<TokenTest.Person>(pattern, input).Value;
 
             Assert.AreEqual(person.Age, 11);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokens
 {
@@ -16,6 +17,7 @@ namespace Tokens
         {
             Exceptions = new List<Exception>();
             Matches = new List<Match>();
+            NotMatched = new List<Token>();
 
             Template = template;
         }
@@ -23,7 +25,7 @@ namespace Tokens
         /// <summary>
         /// An instance of <see cref="T"/> populated with data from the input string. 
         /// </summary>
-        public T Result { get; set; }
+        public T Value { get; set; }
 
         /// <summary>
         /// The <see cref="Template"/> containing the mapping between tokens in the
@@ -42,9 +44,21 @@ namespace Tokens
         public IList<Match> Matches { get; }
 
         /// <summary>
+        /// Contains a list of <see cref="Token"/> objects that were not
+        /// matched.
+        /// </summary>
+        public IList<Token> NotMatched { get; }
+
+        /// <summary>
         /// Determines whether the matching process was successful
         /// </summary>
-        public bool Success => Matches.Count > 0;
+        public bool Success
+        {
+            get
+            {
+                return Matches.Count > 0 && !NotMatched.Any(nm => nm.Required);
+            }
+        }
 
         internal void AddMatch(Token token, string value)
         {

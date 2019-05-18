@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Tokens.Enumerators;
@@ -124,9 +125,21 @@ namespace Tokens
                 }
             }
 
-            result.Result = value;
+            // Build unmatched collection
+            foreach (var token in template.Tokens)
+            {
+                if (result.Matches.Any(m => m.Token.Id == token.Id) == false)
+                {
+                    result.NotMatched.Add(token);
+                }
+            }
 
-            log.Debug($"  Found {result.Matches} matches.");
+            result.Value = value;
+
+            log.Debug($"  Found {result.Matches.Count} matches.");
+            log.Debug("  {0} required tokens were missing.", result.NotMatched.Count(t => t.Required));
+
+
             log.Debug($"Finished: Processing: {template.Name}");
 
             return result;

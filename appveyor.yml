@@ -1,4 +1,4 @@
-version: '2.0.{build}'
+version: '2.1.{build}'
 pull_requests:
   do_not_increment_build_number: true
 branches:
@@ -47,9 +47,9 @@ on_finish :
   # any cleanup in here
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/flipbit/api/v2/package
+  name: production
   api_key:
-    secure: cl2Yd51h7iCxGVV0LM80pts3Kh2z4EFoI42GHMFpMjpQvnGaIkWqoLy9ouWLijXM
-  skip_symbols: true
+    secure: YsZCVu8lLcQlDxg3pHUU7MPCZrC4ri69VpwmQecgfxxV54BUpoAvYjSOgrc0CzMj
   on:
     branch: master
+    appveyor_repo_tag: true

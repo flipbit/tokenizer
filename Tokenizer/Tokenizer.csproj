@@ -2,12 +2,12 @@
   <PropertyGroup>
    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-   <Version>2.0.6.0</Version>
+   <Version>2.1.0.0</Version>
    <Authors>Chris Wood</Authors>
    <Company>flipbit.co.uk</Company>
    <PackageProjectUrl>http://github.com/flipbit/tokenizer</PackageProjectUrl>
    <PackageTags>tokenizer tokens pattern matching</PackageTags>
-   <Description>Tokenizer extracts structed information from blocks of text and reflects them onto .NET objects</Description>
+   <Description>Tokenizer extracts structured information from blocks of text and reflects them onto .NET objects</Description>
    <Copyright>Chris Wood 2019</Copyright>
    <RootNamespace>Tokens</RootNamespace>
    </PropertyGroup>

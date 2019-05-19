@@ -10,9 +10,17 @@ namespace Tokens.Transformers
     {
         public object Transform(object value, params string[] args)
         {
-            if (value == null) return string.Empty;
+            switch (value)
+            {
+                case null:
+                    return string.Empty;
 
-            return ToDateTime(value, args, out var result) ? result : value;
+                case string s when string.IsNullOrWhiteSpace(s):
+                    return string.Empty;
+
+                default:
+                    return ToDateTime(value, args, out var result) ? result : value;
+            }
         }
 
         public static bool ToDateTime(object value, string[] formats, out DateTime result)

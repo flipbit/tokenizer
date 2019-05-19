@@ -52,5 +52,67 @@ namespace Tokens.Parsers
             Assert.AreEqual(1, tokenOperator.Parameters.Count);
             Assert.AreEqual("yyyy-MM-dd", tokenOperator.Parameters[0]);
         }
+
+        [Test]
+        public void TestParseTokenWithRequiredFlag()
+        {
+            var template = parser.Parse("Preamble{Token!}\n", "name");
+
+            Assert.AreEqual("name", template.Name);
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.IsTrue(token.Required);
+        }
+
+        [Test]
+        public void TestParseSetName()
+        {
+            var template = parser.Parse("Preamble");
+
+            Assert.AreEqual("Preamble", template.Name);
+        }
+ 
+        [Test]
+        public void TestParseSetNameLimitToThreeWords()
+        {
+            var template = parser.Parse("One Two Three Four");
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
+
+        [Test]
+        public void TestParseSetNameCountsNewLines()
+        {
+            var template = parser.Parse("One Two\r\nThree Four");
+
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
+
+        [Test]
+        public void TestParseSetNameIgnoresFrontmatterWithWindowsNewlines()
+        {
+            var template = parser.Parse("---\r\nOutOfOrder: true\r\n---\r\nOne Two\r\nThree Four");
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
+
+        [Test]
+        public void TestParseSetNameIgnoresFrontmatterWithUnixNewlines()
+        {
+            var template = parser.Parse("---\nOutOfOrder: true\n---\nOne Two\nThree Four");
+
+            Assert.AreEqual("One Two Three...", template.Name);
+        }
+
+        [Test]
+        public void TestParseSetNameWhenEmpty()
+        {
+            var template = parser.Parse("");
+
+            Assert.AreEqual("(empty)", template.Name);
+        }
     }
 }

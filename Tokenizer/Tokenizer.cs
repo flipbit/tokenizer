@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Tokens.Enumerators;
@@ -41,39 +42,20 @@ namespace Tokens
             log = LogProvider.For<Tokenizer>();
         }
 
-        public T Parse<T>(string pattern, string input) where T : class, new()
+        public TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new()
         {
             var template = parser.Parse(pattern);
 
-            return Parse<T>(template, input);
+            return Tokenize<T>(template, input);
         }
 
-        public T Parse<T>(Template template, string input) where T : class, new()
-        {
-            TryParse(template, input, out _, out T result);
-
-            return result;
-        }
-
-        public bool TryParse<T>(string pattern, string input, out int matches, out T result) where T : class, new()
-        {
-            var template = parser.Parse(pattern);
-
-            var parsed = TryParse<T>(template, input, out var m, out var r);
-
-            matches = m;
-            result = r;
-
-            return parsed;
-        }
-
-        public bool TryParse<T>(Template template, string input, out int matches, out T result) where T : class, new()
+        public TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new()
         {
             log.Debug($"Start: Processing: {template.Name}");
 
             Token current = null;
-            matches = 0;
 
+            var result = new TokenizeResult<T>(template);
             var value = new T();
             var enumerator = new TokenEnumerator(input);
             var replacement = new StringBuilder();
@@ -114,7 +96,7 @@ namespace Tokens
                     }
                     else if (replacement.Length > 0 && current.Assign(value, replacement.ToString(), template.Options, log))
                     {
-                        matches++;
+                        result.AddMatch(current, replacement.ToString());
                         current = match;
                         replacement.Clear();
                         enumerator.Advance(match.Preamble.Length);
@@ -137,28 +119,30 @@ namespace Tokens
 
             if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
             {
-                current.Assign(value, replacement.ToString(), template.Options, log);
-                matches++;
+                if (current.Assign(value, replacement.ToString(), template.Options, log))
+                {
+                    result.AddMatch(current, replacement.ToString());
+                }
             }
 
-            result = value;
+            // Build unmatched collection
+            foreach (var token in template.Tokens)
+            {
+                if (result.Matches.Any(m => m.Token.Id == token.Id) == false)
+                {
+                    result.NotMatched.Add(token);
+                }
+            }
 
-            log.Debug($"  Found {matches} matches.");
+            result.Value = value;
+
+            log.Debug($"  Found {result.Matches.Count} matches.");
+            log.Debug("  {0} required tokens were missing.", result.NotMatched.Count(t => t.Required));
+
+
             log.Debug($"Finished: Processing: {template.Name}");
 
-            return matches > 0;
-        }
-
-        public bool TryParseValues(string pattern, string input, out int matches, out List<Substitution> results)
-        {
-            var template = parser.Parse(pattern);
-
-            return TryParseValues(template, input, out matches, out results);
-        }
-
-        public bool TryParseValues(Template template, string input, out int matches, out List<Substitution> results)
-        {
-            return TryParse(template, input, out matches, out results);
+            return result;
         }
 
         public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer

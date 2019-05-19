@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -48,8 +49,6 @@ namespace Tokens.Parsers
         {
             transformers.Add(typeof(T));
 
-            log.Trace($"Added Transformer: {typeof(T)}");
-
             return this;
         }
 
@@ -57,14 +56,14 @@ namespace Tokens.Parsers
         {
             validators.Add(typeof(T));
 
-            log.Trace($"Added Validator: {typeof(T)}");
-
             return this;
         }
 
         public Template Parse(string content)
         {
-            return Parse(content, string.Empty);
+            var name = GenerateTemplateName(content);
+
+            return Parse(content, name);
         }
 
         public Template Parse(string content, string name)
@@ -105,6 +104,7 @@ namespace Tokens.Parsers
                 token.Optional = rawToken.Optional;
                 token.Repeating = rawToken.Repeating;
                 token.TerminateOnNewLine = rawToken.TerminateOnNewline;
+                token.Required = rawToken.Required;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
@@ -187,6 +187,56 @@ namespace Tokens.Parsers
                     throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
                 }
             }
+        }
+
+        private string GenerateTemplateName(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return "(empty)";
+
+            var name = new StringBuilder();
+
+            var words = 0;
+            var lastCharWasANewLine = false;
+
+            var startIndex = 0;
+            var hasFrontmatter = content.StartsWith("---\n") || content.StartsWith("---\r\n");
+
+            if (hasFrontmatter)
+            {
+                var frontmatterEndIndex = content.IndexOf("\n---", 5);
+
+                if (frontmatterEndIndex > -1) startIndex = frontmatterEndIndex + 4;
+            }
+
+            for (var i = startIndex; i < content.Length; i++)
+            {
+                var c = content[i];
+                
+
+
+                if (char.IsWhiteSpace(c))
+                {
+                    if (lastCharWasANewLine) continue;
+                    if (name.Length == 0) continue;
+
+                    lastCharWasANewLine = true;
+
+                    words++;
+                    if (words <= 2)
+                    {
+                        name.Append(' ');
+                        continue;
+                    }
+
+                    name.Append("...");
+                    break;
+                }
+
+                name.Append(c);
+                lastCharWasANewLine = false;
+            }
+
+            return name.ToString();
         }
     }
 }

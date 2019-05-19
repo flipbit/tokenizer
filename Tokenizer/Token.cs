@@ -39,11 +39,29 @@ namespace Tokens
         /// </summary>
         public IList<ValidatorContext> Validators { get; }
 
+        /// <summary>
+        /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
+        /// during processing.
+        /// </summary>
         public bool Optional { get; set; }
 
+        /// <summary>
+        /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
+        /// an <see cref="IList{T}"/>.
+        /// </summary>
         public bool Repeating { get; set; }
 
+        /// <summary>
+        /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
+        /// newline.
+        /// </summary>
         public bool TerminateOnNewLine { get; set; }
+
+        /// <summary>
+        /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
+        /// the processing to be successful.
+        /// </summary>
+        public bool Required { get; set; }
 
         public int Id { get; set; }
 
@@ -111,7 +129,7 @@ namespace Tokens
                 return true;
             }
 
-            log?.Debug($"Assigning '{Name}' to '{transformed}'");
+            log?.Debug($"  -> Assigning '{Name}' to '{transformed}'");
 
             try
             {
@@ -125,7 +143,13 @@ namespace Tokens
                     throw;
                 }
 
-                log?.Warn($"Missing property on target: {Name}");
+                log?.Warn($"       Missing property on target: {Name}");
+            }
+            catch (TypeConversionException ex)
+            {
+                log?.Warn($"       {ex.Message}");
+
+                return false;
             }
             catch (Exception e)
             {

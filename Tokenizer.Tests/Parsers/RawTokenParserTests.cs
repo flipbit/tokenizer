@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using Tokens.Exceptions;
 
@@ -113,6 +114,59 @@ namespace Tokens.Parsers
             Assert.IsTrue(token.Optional);
             Assert.IsFalse(token.TerminateOnNewline);
             Assert.IsFalse(token.Repeating);
+            Assert.IsFalse(token.Required);
+        }
+
+        [Test]
+        public void TestParseTokenWithRequiredTerminator()
+        {
+            var template = parser.Parse("Preamble{TokenName!}");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("Preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.Required);
+        }
+
+        [Test]
+        public void TestParseTokenWithRequiredAndOptionalCharacter()
+        {
+            try
+            {
+                parser.Parse("This is the preamble{TokenName!?}");
+
+                Assert.Fail("No exception thrown.");
+            }
+            catch (ParsingException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
+            }
+        }
+
+        [Test]
+        public void TestParseTokenWithOptionalAndRequiredCharacter()
+        {
+            try
+            {
+                parser.Parse("This is the preamble{TokenName?!}");
+
+                Assert.Fail("No exception thrown.");
+            }
+            catch (ParsingException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
+            }
         }
 
         [Test]

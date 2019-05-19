@@ -51,6 +51,8 @@ namespace Tokens.Samples.Classes
         /// <value>The created.</value>
         public DateTime? Created { get; set; }
 
+        public DateTime? Registered { get; set; }
+
         /// <summary>
         /// Gets or sets the registrant.
         /// </summary>

@@ -291,6 +291,7 @@ namespace Tokens.Parsers
                         case "*":
                         case "}":
                         case ":":
+                        case "!":
                             break;
 
                         default:
@@ -306,11 +307,15 @@ namespace Tokens.Parsers
                         case "*":
                         case "}":
                         case ":":
+                        case "!":
                             break;
 
                         default:
                             throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
                     }
+
+                    if (token.Required) throw new ParsingException($"Required token {token.Name} can't be Optional", enumerator);
+
                     break;
 
                 case "*":
@@ -322,11 +327,31 @@ namespace Tokens.Parsers
                         case "?":
                         case "}":
                         case ":":
+                        case "!":
                             break;
 
                         default:
                             throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
                     }
+                    break;
+
+                case "!":
+                    token.Required = true;
+                    switch (peek)
+                    {
+                        case "*":
+                        case "$":
+                        case "?":
+                        case "}":
+                        case ":":
+                            break;
+
+                        default:
+                            throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
+                    }
+
+                    if (token.Optional) throw new ParsingException($"Optional token {token.Name} can't be Required", enumerator);
+
                     break;
 
                 case ":":

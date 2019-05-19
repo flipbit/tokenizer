@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tokens.Exceptions;
 
 namespace Tokens.Extensions
 {
@@ -73,9 +74,23 @@ namespace Tokens.Extensions
                              propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
                         var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
-                        var convertedValue = Convert.ChangeType(value, genericType);
 
-                        propertyInfo.SetValue(@object, convertedValue, null);
+                        try
+                        {
+                            var convertedValue = Convert.ChangeType(value, genericType);
+
+                            propertyInfo.SetValue(@object, convertedValue, null);
+                        }
+                        catch (FormatException e)
+                        {
+                            var ex = new TypeConversionException($"Unable to convert '{value}' to type {genericType}", e)
+                            {
+                                Value = value, 
+                                TargetType = genericType
+                            };
+
+                            throw ex;
+                        }
                     }
                     else
                     {

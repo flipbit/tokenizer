@@ -14,6 +14,8 @@ namespace Tokens
         public void SetUp()
         {
             tokenizer = new Tokenizer();
+
+            SerilogConfig.Init();
         }
 
         [Test]
@@ -159,6 +161,21 @@ namespace Tokens
             Assert.IsNotNull(result);
             Assert.AreEqual("facebook.com", result.Domain);
             Assert.AreEqual("whois.registrarsafe.com", result.Url);
+
+        }
+
+        [Test]
+        public void TestPlDomain()
+        {
+            var pattern = Resources.Pattern_nic_br;
+            var input = Resources.Data_08_pl;
+
+            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
+
+            var result = tokenizer.Tokenize<WhoisRecord>(pattern, input);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual(null, result.Value.Domain);
 
         }
     }

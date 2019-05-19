@@ -143,7 +143,13 @@ namespace Tokens
                     throw;
                 }
 
-                log?.Warn($"Missing property on target: {Name}");
+                log?.Warn($"       Missing property on target: {Name}");
+            }
+            catch (TypeConversionException ex)
+            {
+                log?.Warn($"       {ex.Message}");
+
+                return false;
             }
             catch (Exception e)
             {

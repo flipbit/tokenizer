@@ -10,11 +10,11 @@ image: Visual Studio 2017
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{assembly_version}'
-  package_version: '{package_version}'
-  assembly_version: '{assembly_version}'
-  file_version: '{assembly_version}'
-  informational_version: '{package_version}'
+  version: '$(assembly_version)'
+  package_version: '$(package_version)'
+  assembly_version: '$(assembly_version)'
+  file_version: '$(assembly_version)'
+  informational_version: '$(package_version)'
 environment:  
   # Set library version 
   major: 2

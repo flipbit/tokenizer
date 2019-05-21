@@ -10,14 +10,38 @@ image: Visual Studio 2017
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
+  version: '$(assembly_version)'
+  package_version: '$(package_version)'
+  assembly_version: '$(assembly_version)'
+  file_version: '$(assembly_version)'
+  informational_version: '$(package_version)'
+environment:  
+  # Set library version 
+  major: 2
+  minor: 1 
+  patch: 2 
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
+  # Build version strings
+  - ps: |
+      $build = "$Env:APPVEYOR_BUILD_NUMBER"
+      $assembly_version = "$Env:major.$Env:minor.$Env:patch.0"
+
+      If ($Env:APPVEYOR_REPO_TAG -eq "true")
+      {
+          $package_version = "$($assembly_version)"
+      }
+      Else
+      {
+          $package_version = "$($assembly_version)-beta.$($build)"
+      }
+
+      Set-AppveyorBuildVariable -Name "assembly_version" -Value $assembly_version
+      Set-AppveyorBuildVariable -Name "package_version" -Value $package_version
+
+      Write-Host "Using Assembly Version: $($assembly_version)"
+      Write-Host "Using Package Version: $($package_version)"
 install:
   # Install repo specific stuff here
 before_build:

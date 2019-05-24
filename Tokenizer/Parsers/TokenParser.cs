@@ -81,6 +81,11 @@ namespace Tokens.Parsers
 
             template.Options = rawTemplate.Options;
 
+            if (string.IsNullOrWhiteSpace(rawTemplate.Name) == false)
+            {
+                template.Name = rawTemplate.Name;
+            }
+
             foreach (var rawToken in rawTemplate.Tokens)
             {
                 var token = new Token();

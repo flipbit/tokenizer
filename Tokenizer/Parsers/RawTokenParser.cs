@@ -191,37 +191,37 @@ namespace Tokens.Parsers
                     var name = frontMatterName.ToString().Trim().ToLowerInvariant();
                     var value = frontMatterValue.ToString().Trim().ToLowerInvariant();
 
-                    if (bool.TryParse(value, out var asBool))
+                    switch (name)
                     {
-                        switch (name)
-                        {
-                            case "trimleadingwhitespace":
-                                template.Options.TrimLeadingWhitespaceInTokenPreamble = asBool;
-                                break;
-                            case "trimtrailingwhitespace":
-                                template.Options.TrimTrailingWhiteSpace = asBool;
-                                break;
-                            case "outoforder":
-                                template.Options.OutOfOrderTokens = asBool;
-                                break;
-                            case "casesensitive":
-                                if (asBool)
-                                {
-                                    template.Options.TokenStringComparison = StringComparison.InvariantCulture;
-                                }
-                                else
-                                {
-                                    template.Options.TokenStringComparison = StringComparison.InvariantCultureIgnoreCase;
-                                }
-                                break;
+                        case "trimleadingwhitespace":
+                            var trimLeadingWhitespaceInTokenPreamble = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            template.Options.TrimLeadingWhitespaceInTokenPreamble = trimLeadingWhitespaceInTokenPreamble;
+                            break;
+                        case "trimtrailingwhitespace":
+                            var trimTrailingWhiteSpace = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            template.Options.TrimTrailingWhiteSpace = trimTrailingWhiteSpace;
+                            break;
+                        case "outoforder":
+                            var outOfOrderTokens = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            template.Options.OutOfOrderTokens = outOfOrderTokens;
+                            break;
+                        case "name":
+                            template.Name = frontMatterValue.ToString().Trim();
+                            break;
+                        case "casesensitive":
+                            var caseSensitive = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            if (caseSensitive)
+                            {
+                                template.Options.TokenStringComparison = StringComparison.InvariantCulture;
+                            }
+                            else
+                            {
+                                template.Options.TokenStringComparison = StringComparison.InvariantCultureIgnoreCase;
+                            }
+                            break;
 
-                            default:
-                                throw new ParsingException($"Unknown front matter option: {rawName}", enumerator);
-                        }
-                    }
-                    else
-                    {
-                        throw new ParsingException($"Unable to convert front matter option to boolean: {rawName}", enumerator);
+                        default:
+                            throw new ParsingException($"Unknown front matter option: {rawName}", enumerator);
                     }
 
                     frontMatterName.Clear();
@@ -233,6 +233,16 @@ namespace Tokens.Parsers
                     frontMatterValue.Append(next);
                     break;
             }
+        }
+
+        private bool ConvertFrontMatterOptionToBool(string input, string rawName, RawTokenEnumerator enumerator)
+        {
+            if (bool.TryParse(input, out var asBool))
+            {
+                return asBool;
+            }
+
+            throw new ParsingException($"Unable to convert front matter option to boolean: {rawName}", enumerator);
         }
 
         private void ParseFrontMatterComment(RawTokenEnumerator enumerator, ref FlatTokenParserState state)

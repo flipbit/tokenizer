@@ -369,5 +369,17 @@ namespace Tokens.Parsers
             Assert.AreEqual("Preamble\n", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
         }
+
+        [Test]
+        public void TestParseFrontMatterSetsName()
+        {
+            var template = parser.Parse("---\n# Comment\nName: My Template\n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual("My Template", template.Name);
+
+            var token = template.Tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+        }
     }
 }

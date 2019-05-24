@@ -12,5 +12,7 @@ namespace Tokens
         public TokenizerOptions Options { get; set; }
 
         public IList<RawToken> Tokens { get; }
+
+        public string Name { get; set; }
     }
 }

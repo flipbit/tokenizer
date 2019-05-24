@@ -43,6 +43,10 @@ namespace Tokens.Parsers
             RegisterValidator<IsNumericValidator>();
             RegisterValidator<MaxLengthValidator>();
             RegisterValidator<MinLengthValidator>();
+            RegisterValidator<IsDomainNameValidator>();
+            RegisterValidator<IsPhoneNumberValidator>();
+            RegisterValidator<IsEmailValidator>();
+            RegisterValidator<IsUrlValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

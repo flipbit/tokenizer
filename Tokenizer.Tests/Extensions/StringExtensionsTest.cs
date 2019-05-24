@@ -103,5 +103,45 @@ namespace Tokens.Extensions
 
             Assert.AreEqual(0, result.Count);
         }
+
+        [Test]
+        public void TestKeepCharacters()
+        {
+            var result = "123456".Keep("123");
+
+            Assert.AreEqual("123", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenNoneExist()
+        {
+            var result = "123456".Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenInputEmpty()
+        {
+            var result = "".Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenInputNull()
+        {
+            var result = ((string) null).Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenMatchNull()
+        {
+            var result = "123456".Keep(null);
+
+            Assert.AreEqual("", result);
+        }
     }
 }

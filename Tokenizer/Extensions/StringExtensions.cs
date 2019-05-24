@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -244,6 +245,30 @@ namespace Tokens.Extensions
 #else
             return string.IsNullOrWhiteSpace(value);
 #endif
+        }
+        
+        /// <summary>
+        /// Keeps the specified characters in the given value, removed the rest.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="keepTheseCharacters">The keep these characters.</param>
+        /// <returns></returns>
+        public static string Keep(this string value, string keepTheseCharacters)
+        {
+            var result =  new StringBuilder();
+
+            if (string.IsNullOrEmpty(value) == false &&
+                string.IsNullOrEmpty(keepTheseCharacters) == false)
+            {
+                foreach (var character in value)
+                {
+                    if (keepTheseCharacters.Contains(character) == false) continue;
+
+                    result.Append(character);
+                }
+            }
+
+            return result.ToString();
         }
 
     }

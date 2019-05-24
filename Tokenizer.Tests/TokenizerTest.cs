@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Tokens.Exceptions;
 using Tokens.Logging;
 using Tokens.Parsers;
+using Tokens.Transformers;
 
 namespace Tokens
 {
@@ -224,6 +225,45 @@ Bob";
         }
 
         [Test]
+        public void TestExtractOptionalValueWhenInvalidAndOptional()
+        {
+            const string pattern = @"First Name: {Student.FirstName}, Enrolled: {Student.Enrolled?:IsDateTime}, Last Name: {Student.LastName}";
+            const string input = @"First Name: Bob, Enrolled: N/A, Last Name: Smith";
+
+            var result = tokenizer.Tokenize<Student>(pattern, input);
+            var student = result.Value;
+
+            Assert.IsTrue(result.Success);
+
+            Assert.AreEqual("Bob", student.FirstName);
+            Assert.AreEqual("Smith", student.LastName);
+
+            Assert.AreEqual(1, result.NotMatched.Count);
+            Assert.AreEqual("Student.Enrolled", result.NotMatched[0].Name);
+        }
+
+        [Test]
+        public void TestExtractOptionalValueWhenTransformerBlowsUp()
+        {
+            const string pattern = @"First Name: {Student.FirstName}, Enrolled: {Student.Enrolled?:BlowsUp}, Last Name: {Student.LastName}";
+            const string input = @"First Name: Bob, Enrolled: 1019-01-01, Last Name: Smith";
+
+            // Always throws an exception
+            tokenizer.RegisterTransformer<BlowsUpTransformer>();
+
+            var result = tokenizer.Tokenize<Student>(pattern, input);
+            var student = result.Value;
+
+            Assert.IsTrue(result.Success);
+
+            Assert.AreEqual("Bob", student.FirstName);
+            Assert.AreEqual("Smith", student.LastName);
+
+            Assert.AreEqual(1, result.NotMatched.Count);
+            Assert.AreEqual("Student.Enrolled", result.NotMatched[0].Name);
+        }
+
+        [Test]
         public void TestExtractOptionalValueWhenPresent()
         {
             const string pattern = @"First Name: {Student.FirstName}, Middle Name: {Student.MiddleName?}, Last Name: {Student.LastName}";
@@ -335,22 +375,9 @@ First Name: {Student.FirstName}, Middle Name: {Student.MiddleName!}, Last Name: 
             const string pattern = "Hello {TestClass.MissingPropertyName}";
             const string input = "Hello World";
 
-            tokenizer.Options.ThrowExceptionOnMissingProperty = false;
-
             var result = tokenizer.Tokenize<TestClass>(pattern, input);
 
             Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void TestExtractsThrowsAnErrorWhenOptionsSetToTrue()
-        {
-            const string pattern = "Hello {TestClass.MissingPropertyName}";
-            const string input = "Hello World";
-
-            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
-
-            Assert.Throws<MissingMemberException>(() => tokenizer.Tokenize<TestClass>(pattern, input));
         }
 
         [Test]

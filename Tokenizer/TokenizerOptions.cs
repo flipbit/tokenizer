@@ -14,15 +14,6 @@ namespace Tokens
             ResetDefaults();
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to throw an exception when a token can't
-        /// be mapped to a property.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if to throw an exception when a property is missing; otherwise, <c>false</c>.
-        /// </value>
-        public bool ThrowExceptionOnMissingProperty { get; set; }
-
         public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
 
         public bool TrimTrailingWhiteSpace { get; set; }
@@ -41,8 +32,6 @@ namespace Tokens
         /// </summary>
         public void ResetDefaults()
         {
-            // Don't throw exceptions by default
-            ThrowExceptionOnMissingProperty = false;
             TrimLeadingWhitespaceInTokenPreamble = true;
             TrimTrailingWhiteSpace = true;
             TokenStringComparison = StringComparison.InvariantCulture;
@@ -54,7 +43,6 @@ namespace Tokens
         {
             return new TokenizerOptions
             {
-                ThrowExceptionOnMissingProperty = ThrowExceptionOnMissingProperty,
                 TrimTrailingWhiteSpace = TrimTrailingWhiteSpace,
                 TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
                 TokenStringComparison = TokenStringComparison,

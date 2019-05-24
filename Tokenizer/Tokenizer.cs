@@ -105,19 +105,19 @@ namespace Tokens
                             if (current.Assign(value, replacement.ToString(), template.Options, log))
                             {
                                 result.AddMatch(current, replacement.ToString());
-                                current = match;
-                                replacement.Clear();
-                                enumerator.Advance(match.Preamble.Length);
-                                matchIds.AddRange(template.GetTokenIdsUpTo(match));
-                                continue;
                             }
                         }
                         catch (Exception e)
                         {
-                            log.Error(e, "    Error Assigning Value: {0}", e.Message);
+                            log.Error(e, "     Error Assigning Value: {0}", e.Message);
                             result.Exceptions.Add(e);
                         }
                         
+                        current = match;
+                        replacement.Clear();
+                        enumerator.Advance(match.Preamble.Length);
+                        matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                        continue;
                     }
 
                     replacement.Append(next);

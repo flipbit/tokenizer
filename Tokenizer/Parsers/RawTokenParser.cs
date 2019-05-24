@@ -195,9 +195,6 @@ namespace Tokens.Parsers
                     {
                         switch (name)
                         {
-                            case "throwexceptiononmissingproperty":
-                                template.Options.ThrowExceptionOnMissingProperty = asBool;
-                                break;
                             case "trimleadingwhitespace":
                                 template.Options.TrimLeadingWhitespaceInTokenPreamble = asBool;
                                 break;

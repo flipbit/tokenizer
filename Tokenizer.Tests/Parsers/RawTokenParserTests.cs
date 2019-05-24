@@ -347,9 +347,9 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatter()
         {
-            var template = parser.Parse("---\n# Comment\nThrowExceptionOnMissingProperty: true\n---\nPreamble\n{TokenName}\n");
+            var template = parser.Parse("---\n# Comment\nCaseSensitive: true\n---\nPreamble\n{TokenName}\n");
 
-            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(StringComparison.InvariantCulture, template.Options.TokenStringComparison);
             Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();
@@ -360,9 +360,9 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterWithWindowsLineEndings()
         {
-            var template = parser.Parse("---\r\n# Comment\r\nThrowExceptionOnMissingProperty: true\r\n---\r\nPreamble\r\n{TokenName}\r\n");
+            var template = parser.Parse("---\r\n# Comment\r\nCaseSensitive: false\r\n---\r\nPreamble\r\n{TokenName}\r\n");
 
-            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(StringComparison.InvariantCultureIgnoreCase, template.Options.TokenStringComparison);
             Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();

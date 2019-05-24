@@ -49,8 +49,6 @@ namespace Tokens
             var pattern = Resources.Pattern_iana;
             var input = Resources.Data_com;
 
-            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
-
             var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Value;
 
             Assert.IsNotNull(result);
@@ -104,8 +102,6 @@ namespace Tokens
             var pattern = Resources.Pattern_iana;
             var input = Resources.Data_abogado;
 
-            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
-
             var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Value;
 
             Assert.IsNotNull(result);
@@ -154,8 +150,6 @@ namespace Tokens
             var pattern = Resources.Pattern_verisign_grs;
             var input = Resources.Data_facebook_com_redirect;
 
-            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
-
             var result = tokenizer.Tokenize<WhoisRedirect>(pattern, input).Value;
 
             Assert.IsNotNull(result);
@@ -170,13 +164,23 @@ namespace Tokens
             var pattern = Resources.Pattern_nic_br;
             var input = Resources.Data_08_pl;
 
-            tokenizer.Options.ThrowExceptionOnMissingProperty = true;
-
             var result = tokenizer.Tokenize<WhoisRecord>(pattern, input);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual(null, result.Value.Domain);
 
+        }
+
+        [Test]
+        public void TestSilOrgRedirect()
+        {
+            var pattern = Resources.Pattern_verisign_grs;
+            var input = Resources.Data_sil_org_redirect;
+
+            var result = tokenizer.Tokenize<WhoisRedirect>(pattern, input).Value;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("sil.org", result.Domain);
         }
     }
 }

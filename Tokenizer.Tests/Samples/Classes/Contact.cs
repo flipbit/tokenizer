@@ -100,5 +100,7 @@
         /// The email.
         /// </value>
         public string Email { get; set; }
+
+        public string Type { get; set; }
     }
 }

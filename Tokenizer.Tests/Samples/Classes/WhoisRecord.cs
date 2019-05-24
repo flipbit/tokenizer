@@ -49,8 +49,6 @@ namespace Tokens.Samples.Classes
         /// Gets or sets the date the domain was created.
         /// </summary>
         /// <value>The created.</value>
-        public DateTime? Created { get; set; }
-
         public DateTime? Registered { get; set; }
 
         /// <summary>

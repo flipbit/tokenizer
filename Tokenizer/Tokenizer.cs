@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -87,26 +88,40 @@ namespace Tokens
                 // Check for next token
                 if (enumerator.Match(template.TokensExcluding(matchIds), out var match))
                 {
+                    // Special case: first token found, just prepare to read token value
                     if (current == null)
                     {
                         current = match;
                         replacement.Clear();
                         enumerator.Advance(match.Preamble.Length);
                         matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                        continue;
                     }
-                    else if (replacement.Length > 0 && current.Assign(value, replacement.ToString(), template.Options, log))
+                    
+                    if (replacement.Length > 0)
                     {
-                        result.AddMatch(current, replacement.ToString());
-                        current = match;
-                        replacement.Clear();
-                        enumerator.Advance(match.Preamble.Length);
-                        matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                        try
+                        {
+                            if (current.Assign(value, replacement.ToString(), template.Options, log))
+                            {
+                                result.AddMatch(current, replacement.ToString());
+                                current = match;
+                                replacement.Clear();
+                                enumerator.Advance(match.Preamble.Length);
+                                matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                                continue;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error(e, "    Error Assigning Value: {0}", e.Message);
+                            result.Exceptions.Add(e);
+                        }
+                        
                     }
-                    else
-                    {
-                        replacement.Append(next);
-                        enumerator.Next();
-                    }
+
+                    replacement.Append(next);
+                    enumerator.Next();
                 }
 
                 // Append to replacement
@@ -119,10 +134,19 @@ namespace Tokens
 
             if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
             {
-                if (current.Assign(value, replacement.ToString(), template.Options, log))
+                try
                 {
-                    result.AddMatch(current, replacement.ToString());
+                    if (current.Assign(value, replacement.ToString(), template.Options, log))
+                    {
+                        result.AddMatch(current, replacement.ToString());
+                    }
                 }
+                catch (Exception e)
+                {
+                    log.Error(e, "    Error Assigning Value: {0}", e.Message);
+                    result.Exceptions.Add(e);
+                }
+                
             }
 
             // Build unmatched collection

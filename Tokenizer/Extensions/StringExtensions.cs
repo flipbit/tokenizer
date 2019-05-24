@@ -271,5 +271,32 @@ namespace Tokens.Extensions
             return result.ToString();
         }
 
+        /// <summary>
+        /// Gets the substring before the first newline.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="match">The match.</param>
+        /// <returns></returns>
+        public static string SubstringBeforeNewLine(this string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                // Only run conversion up to a new line character
+                var newlineIndex = value.IndexOf('\n');
+                if (newlineIndex > -1)
+                {
+                    value = value.Substring(0, newlineIndex);
+                }
+
+                // handle Windows newlines too
+                newlineIndex = value.IndexOf('\r');
+                if (newlineIndex > -1)
+                {
+                    value = value.Substring(0, newlineIndex);
+                }
+            }
+
+            return value;
+        }
     }
 }

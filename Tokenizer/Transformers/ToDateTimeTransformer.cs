@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Tokens.Extensions;
 
 namespace Tokens.Transformers
 {
@@ -10,24 +11,30 @@ namespace Tokens.Transformers
     {
         public object Transform(object value, params string[] args)
         {
-            switch (value)
-            {
-                case null:
-                    return string.Empty;
-
-                case string s when string.IsNullOrWhiteSpace(s):
-                    return string.Empty;
-
-                default:
-                    return ToDateTime(value, args, out var result) ? result : value;
-            }
+            return TryParseDateTime(value, args, out var result) ? result : value;
         }
 
-        public static bool ToDateTime(object value, string[] formats, out DateTime result)
+        public static bool TryParseDateTime(object value, string[] formats, out DateTime result)
         {
+            if (value == null)
+            {
+                result = default;
+                return false;
+            }
+
+            var valueString = value
+                .ToString()
+                .SubstringBeforeNewLine();
+            
+            if (string.IsNullOrWhiteSpace(valueString))
+            {
+                result = default;
+                return false;
+            }
+
             if (formats == null || formats.Length == 0 || string.IsNullOrEmpty(formats[0]))
             {
-                if (DateTime.TryParse(value.ToString(), out result))
+                if (DateTime.TryParse(valueString, out result))
                 {
                     return true;
                 }
@@ -37,14 +44,14 @@ namespace Tokens.Transformers
                 
                 foreach (var format in formats)
                 {
-                    if (DateTime.TryParseExact(value.ToString(), format, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (DateTime.TryParseExact(valueString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                     {
                         return true;
                     }
                 }
             }
 
-            result = default(DateTime);
+            result = default;
 
             return false;
         }

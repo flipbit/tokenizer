@@ -103,5 +103,85 @@ namespace Tokens.Extensions
 
             Assert.AreEqual(0, result.Count);
         }
+
+        [Test]
+        public void TestKeepCharacters()
+        {
+            var result = "123456".Keep("123");
+
+            Assert.AreEqual("123", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenNoneExist()
+        {
+            var result = "123456".Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenInputEmpty()
+        {
+            var result = "".Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenInputNull()
+        {
+            var result = ((string) null).Keep("789");
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestKeepCharactersWhenMatchNull()
+        {
+            var result = "123456".Keep(null);
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestSubstringBeforeNewLineWithUnixNewLine()
+        {
+            var result = "Hello\nWorld".SubstringBeforeNewLine();
+
+            Assert.AreEqual("Hello", result);
+        }
+
+        [Test]
+        public void TestSubstringBeforeNewLineWithWindowsNewLine()
+        {
+            var result = "Hello\r\nWorld".SubstringBeforeNewLine();
+
+            Assert.AreEqual("Hello", result);
+        }
+
+        [Test]
+        public void TestSubstringBeforeNewLineWitNoNewLine()
+        {
+            var result = "Hello World".SubstringBeforeNewLine();
+
+            Assert.AreEqual("Hello World", result);
+        }
+
+        [Test]
+        public void TestSubstringBeforeNewLineWhenEmpty()
+        {
+            var result = "".SubstringBeforeNewLine();
+
+            Assert.AreEqual("", result);
+        }
+
+        [Test]
+        public void TestSubstringBeforeNewLineWhenNull()
+        {
+            var result = ((string) null).SubstringBeforeNewLine();
+
+            Assert.AreEqual(null, result);
+        }
     }
 }

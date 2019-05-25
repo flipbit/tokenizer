@@ -12,12 +12,14 @@
     <None Remove="Samples\Data\bbc_co_uk.txt" />
     <None Remove="Samples\Data\com.txt" />
     <None Remove="Samples\Data\facebook_com_redirect.txt" />
+    <None Remove="Samples\Data\sil_org_redirect.txt" />
     <None Remove="Samples\Patterns\Iana.txt" />
     <None Remove="Samples\Patterns\NicBr.txt" />
     <None Remove="Samples\Patterns\nominet.txt" />
     <None Remove="Samples\Patterns\verisign-grs.com.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Samples\Data\sil_org_redirect.txt" />
     <EmbeddedResource Include="Samples\Data\08_pl.txt" />
     <EmbeddedResource Include="Samples\Data\abogado.txt" />
     <EmbeddedResource Include="Samples\Data\bbc_co_uk.txt" />

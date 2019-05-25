@@ -14,6 +14,7 @@ namespace Tokens
         public Template()
         {
             tokens = new List<Token>();
+            Hints = new List<Hint>();
         }
 
         public Template(string name, string content) : this()
@@ -31,6 +32,8 @@ namespace Tokens
         /// The name of the template
         /// </summary>
         public string Name { get; set; }
+
+        public IList<Hint> Hints { get; }
 
         /// <summary>
         /// The tokens contained within the template

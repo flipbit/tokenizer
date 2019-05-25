@@ -58,9 +58,33 @@ namespace Tokens.Transformers
         [Test]
         public void TestParseDateWithEmptyValue()
         {
-            var result = @operator.Transform(null);
+            var result = @operator.Transform(string.Empty);
 
             Assert.AreEqual(string.Empty, result);
+        }
+
+        [Test]
+        public void TestParseDateWithNullValue()
+        {
+            var result = @operator.Transform(null);
+
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void TestParseDateWithUnixNewLine()
+        {
+            var result = @operator.Transform("2012-05-06\nHello");
+
+            Assert.AreEqual(new DateTime(2012, 5, 6), result);
+        }
+
+        [Test]
+        public void TestParseDateWithWindowsNewLine()
+        {
+            var result = @operator.Transform("2012-05-06\r\nHello");
+
+            Assert.AreEqual(new DateTime(2012, 5, 6), result);
         }
     }
 }

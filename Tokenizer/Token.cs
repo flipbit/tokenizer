@@ -80,7 +80,7 @@ namespace Tokens
             {
                 if (validator.Validate(value) == false)
                 {
-                    log?.Trace($"{validator.ValidatorType.Name} Validation Failure: {value}");
+                    log?.Debug($"    -> {validator.ValidatorType.Name} Validation Failure: {value}");
 
                     return false;
                 }
@@ -96,6 +96,8 @@ namespace Tokens
 
         internal bool Assign(object target, string value, TokenizerOptions options, ILog log)
         {
+            log?.Debug($"  -> Assigning '{Name}' to '{value}'");
+
             if (CanAssign(value, log) == false) return false;
 
             if (TerminateOnNewLine)
@@ -112,11 +114,15 @@ namespace Tokens
                 value = value.TrimEnd();
             }
 
-            object transformed = value;
+            object input = value;
 
             foreach (var transformer in Transformers)
             {
-                transformed = transformer.Transform(transformed);
+                var output = transformer.Transform(input);
+        
+                log?.Debug($"     -> {transformer.OperatorType.Name}: Transformed '{input}' to '{output}'");
+
+                input = output;
             }
 
             if (target is List<Substitution> list)
@@ -124,26 +130,20 @@ namespace Tokens
                 list.Add(new Substitution
                 {
                     Name = Name,
-                    Value = transformed
+                    Value = input
                 });
                 return true;
             }
 
-            log?.Debug($"  -> Assigning '{Name}' to '{transformed}'");
-
             try
             {
-                target.SetValue(Name, transformed);
+                target.SetValue(Name, input);
             }
-            catch (MissingMemberException ex)
+            catch (MissingMemberException)
             {
-                if (options.ThrowExceptionOnMissingProperty)
-                {
-                    log?.Error(ex, $"Missing property on target: {Name}");
-                    throw;
-                }
-
                 log?.Warn($"       Missing property on target: {Name}");
+
+                throw;
             }
             catch (TypeConversionException ex)
             {
@@ -153,7 +153,7 @@ namespace Tokens
             }
             catch (Exception e)
             {
-                log?.Error(e, $"Unexpected error when assigning '{Name}' to '{transformed}':");
+                log?.Error(e, $"Unexpected error when assigning '{Name}' to '{input}':");
 
                 var ex = new TokenAssignmentException(this, e);
 

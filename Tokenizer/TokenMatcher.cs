@@ -33,9 +33,9 @@ namespace Tokens
 
         public IList<Template> Templates { get; }
 
-        public TokenMatch<T> Match<T>(string input) where T : class, new()
+        public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
         {
-            var results = new TokenMatch<T>();
+            var results = new TokenMatcherResult<T>();
 
             foreach (var template in Templates)
             {
@@ -48,7 +48,7 @@ namespace Tokens
                     results.Results.Add(result);
    
                     log.Info("  Match Success: {0}", result.Success);
-                    log.Info("  Total Matches: {0}", result.Matches.Count);
+                    log.Info("  Total Matches: {0}", result.Tokens.Matches.Count);
                     log.Info("  Total Errors : {0}", result.Exceptions.Count);
                     
                     log.Info("Finish: Matching: {0}", template.Name);
@@ -65,6 +65,9 @@ namespace Tokens
                     throw exception;
                 }
             }
+
+            // Assign best match
+            results.BestMatch = results.GetBestMatch();
 
             return results;
         }

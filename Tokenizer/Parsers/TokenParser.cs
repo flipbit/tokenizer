@@ -43,6 +43,11 @@ namespace Tokens.Parsers
             RegisterValidator<IsNumericValidator>();
             RegisterValidator<MaxLengthValidator>();
             RegisterValidator<MinLengthValidator>();
+            RegisterValidator<IsDomainNameValidator>();
+            RegisterValidator<IsPhoneNumberValidator>();
+            RegisterValidator<IsEmailValidator>();
+            RegisterValidator<IsUrlValidator>();
+            RegisterValidator<IsDateTimeValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
@@ -75,6 +80,16 @@ namespace Tokens.Parsers
             var rawTemplate = new RawTokenParser().Parse(content, Options);
 
             template.Options = rawTemplate.Options;
+
+            if (string.IsNullOrWhiteSpace(rawTemplate.Name) == false)
+            {
+                template.Name = rawTemplate.Name;
+            }
+
+            foreach (var hint in rawTemplate.Hints)
+            {
+                template.Hints.Add(hint);
+            }
 
             foreach (var rawToken in rawTemplate.Tokens)
             {
@@ -129,7 +144,7 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace($"  -> Added Token: {token.Name}");
+                log.Trace($"  -> Added Token: '{token.Name}'");
             }
 
             log.Debug("Finish: Parsing Template");

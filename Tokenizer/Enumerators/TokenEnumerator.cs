@@ -8,12 +8,11 @@ namespace Tokens.Enumerators
         private string pattern;
         private int currentLocation;
         private int patternLength;
-        private StringBuilder preamble;
+
+        private bool resetNextLine;
 
         public TokenEnumerator(string pattern)
         {
-            preamble = new StringBuilder();
-
             if (string.IsNullOrEmpty(pattern) == false)
             {
                 if (pattern.Contains("\r\n"))
@@ -34,11 +33,15 @@ namespace Tokens.Enumerators
             this.pattern = pattern;
 
             currentLocation = 0;
+            Character = 1;
+            Line = 1;
         }
 
         public bool IsEmpty => currentLocation >= patternLength;
+        
+        public int Line { get; private set; }
 
-        public string Preamble => preamble.ToString();
+        public int Character { get; private set; }
 
         public string Next()
         {
@@ -47,8 +50,19 @@ namespace Tokens.Enumerators
             var next = pattern.Substring(currentLocation, 1);
 
             currentLocation++;
+            Character++;
 
-            preamble.Append(next);
+            if (next == "\n")
+            {
+                resetNextLine = true;
+            }
+
+            if (resetNextLine)
+            {
+                resetNextLine = false;
+                Character = 1;
+                Line++;
+            }
 
             return next;
         }
@@ -101,6 +115,13 @@ namespace Tokens.Enumerators
 
             match = null;
             return false;
+        }
+
+        public void Reset()
+        {
+            currentLocation = 0;
+            Character = 1;
+            Line = 1;
         }
     }
 }

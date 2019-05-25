@@ -16,8 +16,9 @@ namespace Tokens
         public TokenizeResult(Template template)
         {
             Exceptions = new List<Exception>();
-            Matches = new List<Match>();
-            NotMatched = new List<Token>();
+
+            Hints = new HintResult();
+            Tokens = new TokenResult();
 
             Template = template;
         }
@@ -41,32 +42,18 @@ namespace Tokens
         /// <summary>
         /// The matches that where made during the tokenization process
         /// </summary>
-        public IList<Match> Matches { get; }
+        public TokenResult Tokens { get; set; } 
 
         /// <summary>
-        /// Contains a list of <see cref="Token"/> objects that were not
-        /// matched.
+        /// Gets the hints found in the input
         /// </summary>
-        public IList<Token> NotMatched { get; }
+        public HintResult Hints { get; set; }
 
         /// <summary>
         /// Determines whether the matching process was successful
         /// </summary>
-        public bool Success
-        {
-            get
-            {
-                return Matches.Count > 0 && !NotMatched.Any(nm => nm.Required);
-            }
-        }
-
-        internal void AddMatch(Token token, string value)
-        {
-            Matches.Add(new Match
-            {
-                Token = token,
-                Value = value
-            });
-        }
+        public bool Success => Tokens.HasMatches && 
+                               Tokens.HasMissingRequiredTokens == false &&
+                               Hints.HasMissingRequiredHints == false;
     }
 }

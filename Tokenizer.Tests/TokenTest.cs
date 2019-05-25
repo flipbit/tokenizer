@@ -60,7 +60,7 @@ namespace Tokens
             token.Name = "Person.Age";
             token.Validators.Add(new ValidatorContext(typeof(IsNumericValidator)));
 
-            var assigned = token.Assign(person, "Twenty", new TokenizerOptions{ ThrowExceptionOnMissingProperty = false });
+            var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults);
 
             Assert.AreEqual(false, assigned);
             Assert.AreEqual(0, person.Age);

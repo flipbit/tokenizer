@@ -9,6 +9,7 @@ namespace Tokens.Samples
         public static string Data_abogado => ReadResource("Tokens.Samples.Data.abogado.txt");
         public static string Data_facebook_com_redirect => ReadResource("Tokens.Samples.Data.facebook_com_redirect.txt");
         public static string Data_08_pl => ReadResource("Tokens.Samples.Data.08_pl.txt");
+        public static string Data_sil_org_redirect => ReadResource("Tokens.Samples.Data.sil_org_redirect.txt");
 
         public static string Pattern_iana => ReadResource("Tokens.Samples.Patterns.Iana.txt");
         public static string Pattern_nominet => ReadResource("Tokens.Samples.Patterns.nominet.txt");

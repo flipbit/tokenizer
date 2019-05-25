@@ -308,7 +308,7 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual(string.Empty, second.Name);
             Assert.AreEqual(" Postamble", second.Preamble);
         }
 
@@ -324,14 +324,14 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual(string.Empty, second.Name);
             Assert.AreEqual("\nPostamble", second.Preamble);
         }
 
         [Test]
         public void TestParseTokenPreservesUnixLineEndings()
         {
-            var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r \n");
+            var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
 
@@ -340,16 +340,16 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
-            Assert.AreEqual("\nPostamble with linefeed: \r \n", second.Preamble);
+            Assert.AreEqual(string.Empty, second.Name);
+            Assert.AreEqual("\nPostamble with linefeed: \n", second.Preamble);
         }
 
         [Test]
         public void TestParseFrontMatter()
         {
-            var template = parser.Parse("---\n# Comment\nThrowExceptionOnMissingProperty: true\n---\nPreamble\n{TokenName}\n");
+            var template = parser.Parse("---\n# Comment\nCaseSensitive: true\n---\nPreamble\n{TokenName}\n");
 
-            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(StringComparison.InvariantCulture, template.Options.TokenStringComparison);
             Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();
@@ -360,14 +360,90 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterWithWindowsLineEndings()
         {
-            var template = parser.Parse("---\r\n# Comment\r\nThrowExceptionOnMissingProperty: true\r\n---\r\nPreamble\r\n{TokenName}\r\n");
+            var template = parser.Parse("---\r\n# Comment\r\nCaseSensitive: false\r\n---\r\nPreamble\r\n{TokenName}\r\n");
 
-            Assert.IsTrue(template.Options.ThrowExceptionOnMissingProperty);
+            Assert.AreEqual(StringComparison.InvariantCultureIgnoreCase, template.Options.TokenStringComparison);
             Assert.AreEqual(1, template.Tokens.Count);
 
             var token = template.Tokens.First();
             Assert.AreEqual("Preamble\n", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
         }
+
+        [Test]
+        public void TestParseFrontMatterSetsName()
+        {
+            var template = parser.Parse("---\n# Comment\nName: My Template\n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual("My Template", template.Name);
+
+            var token = template.Tokens.First();
+            Assert.AreEqual("Preamble\n", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsRequiredHint()
+        {
+            var template = parser.Parse("---\n# Comment\nHint: My Hint   \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(1, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(false, template.Hints[0].Optional);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsOptionalHint()
+        {
+            var template = parser.Parse("---\n# Comment\nHint?: My Hint   \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(1, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(true, template.Hints[0].Optional);
+        }
+        [Test]
+        public void TestParseFrontMatterSetsMultipleHints()
+        {
+            var template = parser.Parse("---\n# Comment\nHint: My Hint   \nHint: Second Hint\n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(2, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(false, template.Hints[0].Optional);
+            Assert.AreEqual("Second Hint", template.Hints[1].Text);
+            Assert.AreEqual(false, template.Hints[1].Optional);
+        }
+
+        [Test]
+        public void TestParseTokenEscapeBrackets()
+        {
+            var template = parser.Parse("This {{is}} the preamble{TokenName}");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This {is} the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsFalse(token.Optional);
+            Assert.IsFalse(token.TerminateOnNewline);
+            Assert.IsFalse(token.Repeating);
+        }
+
+        [Test]
+        public void TestParseTokenEscapeBracketsWhenClosingBracketNotEscaped()
+        {
+            try
+            {
+                parser.Parse("This {{is} the preamble{TokenName}");
+
+                Assert.Fail("Should of thrown.");
+            }
+            catch (ParsingException e)
+            {
+                Assert.AreEqual(1, e.Line);
+                Assert.AreEqual(10, e.Column);
+            }
+        }
+
     }
 }

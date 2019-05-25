@@ -11,7 +11,7 @@ namespace Tokens.Transformers
         {
             if (value == null) return string.Empty;
 
-            if (ToDateTimeTransformer.ToDateTime(value, args, out var result))
+            if (ToDateTimeTransformer.TryParseDateTime(value, args, out var result))
             {
                 value = DateTime.SpecifyKind(result, DateTimeKind.Utc);
             }

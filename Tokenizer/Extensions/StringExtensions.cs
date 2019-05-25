@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -245,6 +246,57 @@ namespace Tokens.Extensions
             return string.IsNullOrWhiteSpace(value);
 #endif
         }
+        
+        /// <summary>
+        /// Keeps the specified characters in the given value, removed the rest.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="keepTheseCharacters">The keep these characters.</param>
+        /// <returns></returns>
+        public static string Keep(this string value, string keepTheseCharacters)
+        {
+            var result =  new StringBuilder();
 
+            if (string.IsNullOrEmpty(value) == false &&
+                string.IsNullOrEmpty(keepTheseCharacters) == false)
+            {
+                foreach (var character in value)
+                {
+                    if (keepTheseCharacters.Contains(character) == false) continue;
+
+                    result.Append(character);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Gets the substring before the first newline.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="match">The match.</param>
+        /// <returns></returns>
+        public static string SubstringBeforeNewLine(this string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                // Only run conversion up to a new line character
+                var newlineIndex = value.IndexOf('\n');
+                if (newlineIndex > -1)
+                {
+                    value = value.Substring(0, newlineIndex);
+                }
+
+                // handle Windows newlines too
+                newlineIndex = value.IndexOf('\r');
+                if (newlineIndex > -1)
+                {
+                    value = value.Substring(0, newlineIndex);
+                }
+            }
+
+            return value;
+        }
     }
 }

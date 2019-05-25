@@ -9,7 +9,7 @@ using Tokens.Transformers;
 namespace Tokens
 {
     [TestFixture]
-    public class TokenizerTest
+    public class TokenizerTests
     {
         private Tokenizer tokenizer;
 

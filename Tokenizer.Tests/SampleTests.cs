@@ -6,7 +6,7 @@ using Tokens.Samples.Classes;
 namespace Tokens
 {
     [TestFixture]
-    public class SampleTest
+    public class SampleTests
     {
         private Tokenizer tokenizer;
 

@@ -22,14 +22,17 @@ namespace Tokens
         /// <summary>
         /// Returns the best matching result
         /// </summary>
-        public TokenizeResult<T> BestMatch { get; internal set; } 
+        public TokenizeResult<T> BestMatch { get; internal set; }
+
+        /// <summary>
+        /// Determines if a successful match was able to be made
+        /// </summary>
+        public bool Success => BestMatch?.Success ?? false;
 
         internal TokenizeResult<T> GetBestMatch() => Results
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)
             .FirstOrDefault();
-
-
     }
 }

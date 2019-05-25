@@ -5,7 +5,7 @@ using Tokens.Transformers;
 namespace Tokens
 {
     [TestFixture]
-    public class TokenMatcherTest
+    public class TokenMatcherTests
     {
         private TokenMatcher matcher;
         private TokenParser parser;
@@ -116,6 +116,8 @@ namespace Tokens
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}, Location: {Location!}", "with-age");
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30");
+
+            Assert.IsTrue(result.Success);
 
             var match = result.BestMatch;
 

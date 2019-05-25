@@ -220,8 +220,8 @@ Bob";
             Assert.AreEqual("Bob", student.FirstName);
             Assert.AreEqual("Smith", student.LastName);
 
-            Assert.AreEqual(1, result.NotMatched.Count);
-            Assert.AreEqual("Student.MiddleName", result.NotMatched[0].Name);
+            Assert.AreEqual(1, result.Tokens.Misses.Count);
+            Assert.AreEqual("Student.MiddleName", result.Tokens.Misses[0].Name);
         }
 
         [Test]
@@ -238,8 +238,8 @@ Bob";
             Assert.AreEqual("Bob", student.FirstName);
             Assert.AreEqual("Smith", student.LastName);
 
-            Assert.AreEqual(1, result.NotMatched.Count);
-            Assert.AreEqual("Student.Enrolled", result.NotMatched[0].Name);
+            Assert.AreEqual(1, result.Tokens.Misses.Count);
+            Assert.AreEqual("Student.Enrolled", result.Tokens.Misses[0].Name);
         }
 
         [Test]
@@ -259,8 +259,8 @@ Bob";
             Assert.AreEqual("Bob", student.FirstName);
             Assert.AreEqual("Smith", student.LastName);
 
-            Assert.AreEqual(1, result.NotMatched.Count);
-            Assert.AreEqual("Student.Enrolled", result.NotMatched[0].Name);
+            Assert.AreEqual(1, result.Tokens.Misses.Count);
+            Assert.AreEqual("Student.Enrolled", result.Tokens.Misses[0].Name);
         }
 
         [Test]
@@ -293,8 +293,8 @@ First Name: {Student.FirstName}, Middle Name: {Student.MiddleName!}, Last Name: 
             Assert.AreEqual("Bob", student.FirstName);
             Assert.AreEqual("Smith", student.LastName);
 
-            Assert.AreEqual(1, result.NotMatched.Count);
-            Assert.AreEqual("Student.MiddleName", result.NotMatched[0].Name);
+            Assert.AreEqual(1, result.Tokens.Misses.Count);
+            Assert.AreEqual("Student.MiddleName", result.Tokens.Misses[0].Name);
         }
 
         [Test]

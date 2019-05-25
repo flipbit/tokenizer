@@ -86,6 +86,11 @@ namespace Tokens.Parsers
                 template.Name = rawTemplate.Name;
             }
 
+            foreach (var hint in rawTemplate.Hints)
+            {
+                template.Hints.Add(hint);
+            }
+
             foreach (var rawToken in rawTemplate.Tokens)
             {
                 var token = new Token();

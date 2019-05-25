@@ -381,5 +381,36 @@ namespace Tokens.Parsers
             Assert.AreEqual("Preamble\n", token.Preamble);
             Assert.AreEqual("TokenName", token.Name);
         }
+
+        [Test]
+        public void TestParseFrontMatterSetsRequiredHint()
+        {
+            var template = parser.Parse("---\n# Comment\nHint: My Hint   \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(1, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(false, template.Hints[0].Optional);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsOptionalHint()
+        {
+            var template = parser.Parse("---\n# Comment\nHint?: My Hint   \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(1, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(true, template.Hints[0].Optional);
+        }
+        [Test]
+        public void TestParseFrontMatterSetsMultipleHints()
+        {
+            var template = parser.Parse("---\n# Comment\nHint: My Hint   \nHint: Second Hint\n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(2, template.Hints.Count);
+            Assert.AreEqual("My Hint", template.Hints[0].Text);
+            Assert.AreEqual(false, template.Hints[0].Optional);
+            Assert.AreEqual("Second Hint", template.Hints[1].Text);
+            Assert.AreEqual(false, template.Hints[1].Optional);
+        }
     }
 }

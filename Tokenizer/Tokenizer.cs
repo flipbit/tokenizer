@@ -62,6 +62,8 @@ namespace Tokens
             var replacement = new StringBuilder();
             var matchIds = new List<int>();
 
+            FindHints(template, enumerator, result);
+
             while (enumerator.IsEmpty == false)
             {
                 var next = enumerator.Peek();
@@ -104,7 +106,7 @@ namespace Tokens
                         {
                             if (current.Assign(value, replacement.ToString(), template.Options, log))
                             {
-                                result.AddMatch(current, replacement.ToString());
+                                result.Tokens.AddMatch(current, replacement.ToString());
                             }
                         }
                         catch (Exception e)
@@ -138,7 +140,7 @@ namespace Tokens
                 {
                     if (current.Assign(value, replacement.ToString(), template.Options, log))
                     {
-                        result.AddMatch(current, replacement.ToString());
+                        result.Tokens.AddMatch(current, replacement.ToString());
                     }
                 }
                 catch (Exception e)
@@ -152,21 +154,55 @@ namespace Tokens
             // Build unmatched collection
             foreach (var token in template.Tokens)
             {
-                if (result.Matches.Any(m => m.Token.Id == token.Id) == false)
+                if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
                 {
-                    result.NotMatched.Add(token);
+                    result.Tokens.Misses.Add(token);
                 }
             }
 
             result.Value = value;
 
-            log.Debug($"  Found {result.Matches.Count} matches.");
-            log.Debug("  {0} required tokens were missing.", result.NotMatched.Count(t => t.Required));
+            log.Debug($"  Found {result.Tokens.Matches.Count} matches.");
+            log.Debug("  {0} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
 
 
             log.Debug($"Finished: Processing: {template.Name}");
 
             return result;
+        }
+
+        private void FindHints<T>(Template template, TokenEnumerator enumerator, TokenizeResult<T> result) where T : class, new()
+        {
+            if (template.Hints.Count == 0) return;
+
+            while (enumerator.IsEmpty == false)
+            {
+                // Check hints
+                foreach (var hint in template.Hints)
+                {
+                    if (enumerator.Match(hint.Text) &&
+                        result.Hints.AddMatch(hint, enumerator))
+                    {
+                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Line, enumerator.Character, hint.Text);
+                    }
+                }
+
+                // Exit early if all hints found
+                if (result.Hints.Matches.Count == template.Hints.Count) break;
+
+                enumerator.Next();
+            }
+
+            // Build unmatched hint collection
+            foreach (var hint in template.Hints)
+            {
+                if (result.Hints.AddMiss(hint))
+                {
+                    log.Debug("  -> Missing Hint: {0}", hint.Text);
+                }
+            }
+
+            enumerator.Reset();
         }
 
         public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer

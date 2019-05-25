@@ -120,7 +120,7 @@ namespace Tokens
             {
                 var output = transformer.Transform(input);
         
-                log?.Debug($"    -> {transformer.GetType().Name}: Transformed '{input}' to '{output}'");
+                log?.Debug($"     -> {transformer.OperatorType.Name}: Transformed '{input}' to '{output}'");
 
                 input = output;
             }

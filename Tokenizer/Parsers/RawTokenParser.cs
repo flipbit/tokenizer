@@ -208,6 +208,20 @@ namespace Tokens.Parsers
                         case "name":
                             template.Name = frontMatterValue.ToString().Trim();
                             break;
+                        case "hint":
+                            template.Hints.Add(new Hint
+                            {
+                                Text = frontMatterValue.ToString().Trim(),
+                                Optional = false
+                            }); 
+                            break;
+                        case "hint?":
+                            template.Hints.Add(new Hint
+                            {
+                                Text = frontMatterValue.ToString().Trim(),
+                                Optional = true
+                            }); 
+                            break;
                         case "casesensitive":
                             var caseSensitive = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
                             if (caseSensitive)

@@ -44,12 +44,3 @@ test_script:
   - cmd: cd Tokenizer.Tests
   - cmd: dotnet test
 on_finish :
-  # any cleanup in here
-deploy:
-- provider: NuGet
-  name: production
-  api_key:
-    secure: YsZCVu8lLcQlDxg3pHUU7MPCZrC4ri69VpwmQecgfxxV54BUpoAvYjSOgrc0CzMj
-  on:
-    branch: master
-    appveyor_repo_tag: true

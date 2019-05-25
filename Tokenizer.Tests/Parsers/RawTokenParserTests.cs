@@ -308,7 +308,7 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual(string.Empty, second.Name);
             Assert.AreEqual(" Postamble", second.Preamble);
         }
 
@@ -324,14 +324,14 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
+            Assert.AreEqual(string.Empty, second.Name);
             Assert.AreEqual("\nPostamble", second.Preamble);
         }
 
         [Test]
         public void TestParseTokenPreservesUnixLineEndings()
         {
-            var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r \n");
+            var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
 
@@ -340,8 +340,8 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token.Name);
 
             var second = template.Tokens[1];
-            Assert.AreEqual(null, second.Name);
-            Assert.AreEqual("\nPostamble with linefeed: \r \n", second.Preamble);
+            Assert.AreEqual(string.Empty, second.Name);
+            Assert.AreEqual("\nPostamble with linefeed: \n", second.Preamble);
         }
 
         [Test]
@@ -412,5 +412,38 @@ namespace Tokens.Parsers
             Assert.AreEqual("Second Hint", template.Hints[1].Text);
             Assert.AreEqual(false, template.Hints[1].Optional);
         }
+
+        [Test]
+        public void TestParseTokenEscapeBrackets()
+        {
+            var template = parser.Parse("This {{is}} the preamble{TokenName}");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This {is} the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsFalse(token.Optional);
+            Assert.IsFalse(token.TerminateOnNewline);
+            Assert.IsFalse(token.Repeating);
+        }
+
+        [Test]
+        public void TestParseTokenEscapeBracketsWhenClosingBracketNotEscaped()
+        {
+            try
+            {
+                parser.Parse("This {{is} the preamble{TokenName}");
+
+                Assert.Fail("Should of thrown.");
+            }
+            catch (ParsingException e)
+            {
+                Assert.AreEqual(1, e.Line);
+                Assert.AreEqual(10, e.Column);
+            }
+        }
+
     }
 }

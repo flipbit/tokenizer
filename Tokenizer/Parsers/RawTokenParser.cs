@@ -142,7 +142,7 @@ namespace Tokens.Parsers
             if (peek == "---\r\n")
             {
                 state = FlatTokenParserState.InPreamble;
-                enumerator.Next(4); // Next() will trim \r\n
+                enumerator.Next(5);
                 return;
             }
 
@@ -278,12 +278,29 @@ namespace Tokens.Parsers
             switch (next)
             {
                 case "{":
-                    state = FlatTokenParserState.InTokenName;
+                    if (enumerator.Peek() == "{")
+                    {
+                        token.AppendPreamble("{");
+                        enumerator.Next();
+                    }
+                    else
+                    {
+                        state = FlatTokenParserState.InTokenName;
+                    }
                     break;
 
+                case "}":
+                    if (enumerator.Peek() == "}")
+                    {
+                        token.AppendPreamble("}");
+                        enumerator.Next();
+                        break;
+                    }
+                    throw new ParsingException($"Unescaped character '}}' in template.", enumerator); 
+
+
                 default:
-                    if (token.Preamble == null) token.Preamble = string.Empty;
-                    token.Preamble += next;
+                    token.AppendPreamble(next);
                     break;
             }
         }
@@ -380,10 +397,9 @@ namespace Tokens.Parsers
                     break;
 
                 default:
-                    if (token.Name == null) token.Name = string.Empty;
                     if (ValidTokenNameCharacters.Contains(next))
                     {
-                        token.Name += next;
+                        token.AppendName(next);
                     }
                     else
                     {

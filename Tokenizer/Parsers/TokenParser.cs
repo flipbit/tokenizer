@@ -144,7 +144,7 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace($"  -> Added Token: {token.Name}");
+                log.Trace($"  -> Added Token: '{token.Name}'");
             }
 
             log.Debug("Finish: Parsing Template");

@@ -4,11 +4,11 @@ namespace Tokens.Enumerators
 {
     internal class RawTokenEnumerator
     {
-        private string pattern;
-        private int currentLocation;
-        private int patternLength;
+        private readonly string pattern;
+        private readonly int patternLength;
 
-        private bool resetNextLine = true;
+        private int currentLocation;
+        private bool resetNextLine;
 
         public RawTokenEnumerator(string pattern)
         {
@@ -24,13 +24,16 @@ namespace Tokens.Enumerators
             }
 
             currentLocation = 0;
+
+            Column = 0;
+            Line = 1;
         }
 
         public bool IsEmpty => currentLocation >= patternLength;
 
         public int Line { get; private set; }
 
-        public int Character { get; private set; }
+        public int Column { get; private set; }
 
         public string Next()
         {
@@ -39,27 +42,16 @@ namespace Tokens.Enumerators
             if (resetNextLine)
             {
                 Line++;
-                Character = 1;
+                Column = 1;
                 resetNextLine = false;
             }
 
             var next = pattern.Substring(currentLocation, 1);
 
             currentLocation++;
-            Character++;
+            Column++;
 
-            if (next == "\r" && IsEmpty == false)
-            {
-                var peek = pattern.Substring(currentLocation, 1);
-
-                if (peek == "\n")
-                {
-                    next = "\n";
-                    currentLocation++;
-                    resetNextLine = true;
-                }
-            }
-            else if (next == "\n")
+            if (next == "\n")
             {
                 resetNextLine = true;
             }

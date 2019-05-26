@@ -30,6 +30,21 @@ namespace Tokens.Validators
         }
 
         [Test]
+        public void TestValidateValueWhenValidWithDots()
+        {
+            var result = validator.IsValid("+44.1603.123123");
+
+            Assert.IsTrue(result);
+        }
+            
+        [Test]
+        public void TestValidateValueWhenValidWithDashes()
+        {
+            var result = validator.IsValid("+44-1603-123123");
+
+            Assert.IsTrue(result);
+        }
+        [Test]
         public void TestValidateValueWhenValidUkWithNoAreaCode()
         {
             var result = validator.IsValid("123123");

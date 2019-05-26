@@ -18,7 +18,7 @@ namespace Tokens.Validators
 
             if (string.IsNullOrEmpty(valueString)) return false;
 
-            var trimmed = valueString.Keep(" ()+0123456789");
+            var trimmed = valueString.Keep(" ()+.-0123456789");
 
             if (string.IsNullOrWhiteSpace(trimmed)) return false;
 

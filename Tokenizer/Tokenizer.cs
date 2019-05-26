@@ -43,6 +43,23 @@ namespace Tokens
             log = LogProvider.For<Tokenizer>();
         }
 
+        public TokenizeResult Tokenize(string template, string input)
+        {
+            var t = parser.Parse(template);
+
+            return Tokenize(t, input);
+        }
+
+        public TokenizeResult Tokenize(Template template, string input)
+        {
+            var result = new TokenizeResult(template);
+
+            Tokenize(result, result.Values, template, input);
+
+            return result;
+
+        }
+
         public TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new()
         {
             var template = parser.Parse(pattern);
@@ -52,15 +69,24 @@ namespace Tokens
 
         public TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new()
         {
+            var result = new TokenizeResult<T>(template);
+
+            Tokenize(result, result.Value, template, input);
+
+            return result;
+        }
+
+        private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
+        {
             log.Debug($"Start: Processing: {template.Name}");
 
             Token current = null;
 
-            var result = new TokenizeResult<T>(template);
-            var value = new T();
             var enumerator = new TokenEnumerator(input);
             var replacement = new StringBuilder();
             var matchIds = new List<int>();
+            var line = 1;
+            var column = 1;
 
             FindHints(template, enumerator, result);
 
@@ -83,6 +109,8 @@ namespace Tokens
                     {
                         replacement.Clear();
                         enumerator.Advance(current.Preamble.Length);
+                        line = enumerator.Line;
+                        column = enumerator.Column;
                         continue;
                     }
                 }
@@ -96,6 +124,8 @@ namespace Tokens
                         current = match;
                         replacement.Clear();
                         enumerator.Advance(match.Preamble.Length);
+                        line = enumerator.Line;
+                        column = enumerator.Column;
                         matchIds.AddRange(template.GetTokenIdsUpTo(match));
                         continue;
                     }
@@ -104,7 +134,7 @@ namespace Tokens
                     {
                         try
                         {
-                            if (current.Assign(value, replacement.ToString(), template.Options, log))
+                            if (current.Assign(value, replacement.ToString(), template.Options, line, column))
                             {
                                 result.Tokens.AddMatch(current, replacement.ToString());
                             }
@@ -118,6 +148,8 @@ namespace Tokens
                         current = match;
                         replacement.Clear();
                         enumerator.Advance(match.Preamble.Length);
+                        line = enumerator.Line;
+                        column = enumerator.Column;
                         matchIds.AddRange(template.GetTokenIdsUpTo(match));
                         continue;
                     }
@@ -138,7 +170,7 @@ namespace Tokens
             {
                 try
                 {
-                    if (current.Assign(value, replacement.ToString(), template.Options, log))
+                    if (current.Assign(value, replacement.ToString(), template.Options, line, column))
                     {
                         result.Tokens.AddMatch(current, replacement.ToString());
                     }
@@ -160,18 +192,13 @@ namespace Tokens
                 }
             }
 
-            result.Value = value;
-
             log.Debug($"  Found {result.Tokens.Matches.Count} matches.");
             log.Debug("  {0} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
 
-
             log.Debug($"Finished: Processing: {template.Name}");
-
-            return result;
         }
 
-        private void FindHints<T>(Template template, TokenEnumerator enumerator, TokenizeResult<T> result) where T : class, new()
+        private void FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 
         {
             if (template.Hints.Count == 0) return;
 
@@ -183,7 +210,7 @@ namespace Tokens
                     if (enumerator.Match(hint.Text) &&
                         result.Hints.AddMatch(hint, enumerator))
                     {
-                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Line, enumerator.Character, hint.Text);
+                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Line, enumerator.Column, hint.Text);
                     }
                 }
 

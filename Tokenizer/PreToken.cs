@@ -3,17 +3,25 @@ using System.Text;
 
 namespace Tokens
 {
-    internal class RawToken
+    /// <summary>
+    /// Intermediate data structure that holds the syntactically verified
+    /// template token data.
+    /// </summary>
+    internal class PreToken
     {
         private readonly StringBuilder preamble;
         private readonly StringBuilder name;
 
-        public RawToken()
+        public PreToken()
         {
-            Decorators = new List<RawTokenDecorator>();
+            Decorators = new List<PreTokenDecorator>();
             preamble = new StringBuilder();
             name = new StringBuilder();
         }
+
+        public int Id { get; set; }
+
+        public int DependsOnId { get; set; }
 
         public string Preamble => preamble.ToString();
 
@@ -27,7 +35,7 @@ namespace Tokens
 
         public bool Required { get; set; }
 
-        public IList<RawTokenDecorator> Decorators { get; private set; }
+        public IList<PreTokenDecorator> Decorators { get; }
 
         public void AppendPreamble(string value)
         {
@@ -39,6 +47,16 @@ namespace Tokens
         public void AppendName(string value)
         {
             name.Append(value);
+        }
+
+        public void AppendDecorators(IEnumerable<PreTokenDecorator> decorators)
+        {
+            if (decorators == null) return;
+
+            foreach (var decorator in decorators)
+            {
+                Decorators.Add(decorator);
+            }
         }
     }
 }

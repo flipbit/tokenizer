@@ -2,7 +2,7 @@
 
 namespace Tokens.Enumerators
 {
-    internal class RawTokenEnumerator
+    internal class PreTokenEnumerator
     {
         private readonly string pattern;
         private readonly int patternLength;
@@ -10,7 +10,7 @@ namespace Tokens.Enumerators
         private int currentLocation;
         private bool resetNextLine;
 
-        public RawTokenEnumerator(string pattern)
+        public PreTokenEnumerator(string pattern)
         {
             this.pattern = pattern;
 

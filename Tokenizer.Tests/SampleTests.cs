@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using Tokens.Samples;
 using Tokens.Samples.Classes;
@@ -13,9 +15,9 @@ namespace Tokens
         [SetUp]
         public void SetUp()
         {
-            tokenizer = new Tokenizer();
-
             SerilogConfig.Init();
+
+            tokenizer = new Tokenizer();
         }
 
         [Test]
@@ -181,6 +183,50 @@ namespace Tokens
 
             Assert.IsNotNull(result);
             Assert.AreEqual("sil.org", result.Domain);
+        }
+
+        [Test]
+        public void TestAmazonCoJp()
+        {
+            var template = ReadTemplate("Jprs");
+            var input = ReadData("amazon.co.jp");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(7, result.Values.Count);
+
+            Assert.AreEqual("amazon.co.jp", result.Values["DomainName"]);
+            Assert.AreEqual("Amazon, Inc.", result.Values["Registrar.Name"]);
+            Assert.AreEqual("JC076JP", result.Values["AdminContact.Name"]);
+            Assert.AreEqual("IK4644JP", result.Values["TechnicalContact.Name"]);
+            Assert.AreEqual(new DateTime(2002, 11, 21), result.Values["Registered"]);
+            Assert.AreEqual(new DateTime(2018, 12, 1), result.Values["Updated"]);
+
+            var nameServers = (List<object>) result.Values["NameServers"];
+
+            Assert.AreEqual("ns1.p31.dynect.net", nameServers[0]);
+            Assert.AreEqual("ns2.p31.dynect.net", nameServers[1]);
+            Assert.AreEqual("pdns1.ultradns.net", nameServers[2]);
+            Assert.AreEqual("pdns6.ultradns.co.uk", nameServers[3]);
+
+        }
+
+        private string ReadData(string name)
+        {
+            return Read("Data", name);
+        }
+
+        private string ReadTemplate(string name)
+        {
+            return Read("Patterns", name);
+        }
+
+        private string Read(string type, string name)
+        {
+            var fileName = $@"../../../Samples/{type}/{name}.txt";
+
+            return File.ReadAllText(fileName);
         }
     }
 }

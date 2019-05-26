@@ -2,17 +2,17 @@
 
 namespace Tokens
 {
-    internal class RawTemplate
+    internal class PreTemplate
     {
-        public RawTemplate()
+        public PreTemplate()
         {
-            Tokens = new List<RawToken>();
+            Tokens = new List<PreToken>();
             Hints = new List<Hint>();
         }
 
         public TokenizerOptions Options { get; set; }
 
-        public IList<RawToken> Tokens { get; }
+        public IList<PreToken> Tokens { get; }
 
         public IList<Hint> Hints { get; }
 

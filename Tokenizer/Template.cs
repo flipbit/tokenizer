@@ -72,14 +72,15 @@ namespace Tokens
 
         public void AddToken(Token token)
         {
-            token.Id = tokens.Count + 1;
-
             tokens.Add(token);
         }
 
         public IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
         {
-            return tokens.Where(t => tokenIds.Contains(t.Id) == false);
+            var includedTokens = tokens.Where(t => tokenIds.Contains(t.Id) == false).ToArray();
+            var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();
+
+            return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);
         }
     }
 }

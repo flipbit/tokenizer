@@ -77,7 +77,7 @@ namespace Tokens.Parsers
 
             var template = new Template(name, content);
 
-            var rawTemplate = new RawTokenParser().Parse(content, Options);
+            var rawTemplate = new PreTokenParser().Parse(content, Options);
 
             template.Options = rawTemplate.Options;
 
@@ -101,7 +101,7 @@ namespace Tokens.Parsers
                     {
                         token.Preamble = rawToken.Preamble;
                     }
-                    if (string.IsNullOrWhiteSpace(rawToken.Preamble))
+                    else if (string.IsNullOrWhiteSpace(rawToken.Preamble))
                     {
                         token.Preamble = rawToken.Preamble.TrimLeadingSpaces();
                     }
@@ -120,6 +120,8 @@ namespace Tokens.Parsers
                 token.Repeating = rawToken.Repeating;
                 token.TerminateOnNewLine = rawToken.TerminateOnNewline;
                 token.Required = rawToken.Required;
+                token.Id = rawToken.Id;
+                token.DependsOnId = rawToken.DependsOnId;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
@@ -144,7 +146,7 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace($"  -> Added Token: '{token.Name}'");
+                log.Trace($"  -> Added Token: '{token.Name}' ({token.Id})");
             }
 
             log.Debug("Finish: Parsing Template");
@@ -152,7 +154,7 @@ namespace Tokens.Parsers
             return template;
         }
 
-        private void ParseTokenOperators(IEnumerable<RawTokenDecorator> decorators, List<TransformerContext> tokenTransformers, List<ValidatorContext> tokenValidators)
+        private void ParseTokenOperators(IEnumerable<PreTokenDecorator> decorators, List<TransformerContext> tokenTransformers, List<ValidatorContext> tokenValidators)
         {
             foreach (var decorator in decorators)
             {

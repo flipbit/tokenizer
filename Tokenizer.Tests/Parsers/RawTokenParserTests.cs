@@ -8,12 +8,12 @@ namespace Tokens.Parsers
     [TestFixture]
     public class RawTokenParserTests
     {
-        private RawTokenParser parser;
+        private PreTokenParser parser;
 
         [SetUp]
         public void SetUp()
         {
-            parser = new RawTokenParser();
+            parser = new PreTokenParser();
         }
 
         [Test]
@@ -444,6 +444,57 @@ namespace Tokens.Parsers
                 Assert.AreEqual(10, e.Column);
             }
         }
+        
+        [Test]
+        public void TestParseTokenAllowWhiteSpace()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName $ ! * : IsDomain , IsUrl }");
 
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.Optional);
+            Assert.IsTrue(token.TerminateOnNewline);
+            Assert.IsTrue(token.Repeating);
+            Assert.IsTrue(token.Required);
+        }
+
+        [Test]
+        public void TestParseMultipleTokenListExpandsNewLine()
+        {
+            var template = parser.Parse(@"Repeating Token:
+    { TokenName * }");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+
+            var token1 = template.Tokens[0];
+
+            Assert.AreEqual("Repeating Token:\n    ", token1.Preamble);
+            Assert.AreEqual("TokenName", token1.Name);
+            Assert.IsFalse(token1.Repeating);
+
+            var token2 = template.Tokens[1];
+
+            Assert.AreEqual("\n    ", token2.Preamble);
+            Assert.AreEqual("TokenName", token2.Name);
+            Assert.IsTrue(token2.Repeating);
+        }
+
+        [Test]
+        public void TestParseMultipleTokenListDoesNotExpandsNewLine()
+        {
+            var template = parser.Parse(@"Repeating Token:    { TokenName * }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token1 = template.Tokens[0];
+
+            Assert.AreEqual("Repeating Token:    ", token1.Preamble);
+            Assert.AreEqual("TokenName", token1.Name);
+            Assert.IsTrue(token1.Repeating);
+        }
     }
 }

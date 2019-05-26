@@ -3,11 +3,11 @@ using System.Text;
 
 namespace Tokens
 {
-    internal class RawTokenDecorator
+    internal class PreTokenDecorator
     {
         private readonly StringBuilder name;
 
-        public RawTokenDecorator()
+        public PreTokenDecorator()
         {
             name = new StringBuilder();
             Args = new List<string>();

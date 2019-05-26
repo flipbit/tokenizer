@@ -32,7 +32,7 @@ namespace Tokens
 
             Matches.Add(new HintMatch
             {
-                Column = enumerator.Character,
+                Column = enumerator.Column,
                 Text = hint.Text,
                 Optional = hint.Optional,
                 Line = enumerator.Line

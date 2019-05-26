@@ -33,7 +33,7 @@ namespace Tokens.Enumerators
             this.pattern = pattern;
 
             currentLocation = 0;
-            Character = 1;
+            Column = 1;
             Line = 1;
         }
 
@@ -41,7 +41,7 @@ namespace Tokens.Enumerators
         
         public int Line { get; private set; }
 
-        public int Character { get; private set; }
+        public int Column { get; private set; }
 
         public string Next()
         {
@@ -50,18 +50,18 @@ namespace Tokens.Enumerators
             var next = pattern.Substring(currentLocation, 1);
 
             currentLocation++;
-            Character++;
+            Column++;
+            
+            if (resetNextLine)
+            {
+                resetNextLine = false;
+                Column = 1;
+                Line++;
+            }
 
             if (next == "\n")
             {
                 resetNextLine = true;
-            }
-
-            if (resetNextLine)
-            {
-                resetNextLine = false;
-                Character = 1;
-                Line++;
             }
 
             return next;
@@ -97,7 +97,10 @@ namespace Tokens.Enumerators
 
         public void Advance(int count)
         {
-            currentLocation += count;
+            for (var i = 0; i < count; i++)
+            {
+                Next();
+            }
         }
 
         public bool Match(IEnumerable<Token> tokens, out Token match)
@@ -120,7 +123,7 @@ namespace Tokens.Enumerators
         public void Reset()
         {
             currentLocation = 0;
-            Character = 1;
+            Column = 1;
             Line = 1;
         }
     }

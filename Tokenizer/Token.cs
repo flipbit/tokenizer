@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -13,6 +15,13 @@ namespace Tokens
     /// </summary>
     public class Token
     {
+        private static readonly ILog Log;
+
+        static Token()
+        {
+            Log = LogProvider.GetLogger(nameof(Token));
+        }
+
         public Token()
         {
             Transformers = new List<TransformerContext>();
@@ -65,12 +74,9 @@ namespace Tokens
 
         public int Id { get; set; }
 
-        public bool CanAssign(object value)
-        {
-            return CanAssign(value, null);
-        }
+        public int DependsOnId { get; set; }
 
-        internal bool CanAssign(object value, ILog log)
+        internal bool CanAssign(object value)
         {
             // Don't assign tokens with no name
             // (can happen if the token is the last token in the template)
@@ -80,7 +86,7 @@ namespace Tokens
             {
                 if (validator.Validate(value) == false)
                 {
-                    log?.Debug($"    -> {validator.ValidatorType.Name} Validation Failure: {value}");
+                    Log.Debug($"    -> {validator.ValidatorType.Name} Validation Failure: {value}");
 
                     return false;
                 }
@@ -89,16 +95,14 @@ namespace Tokens
             return true;
         }
 
-        internal bool Assign(object target, string value, TokenizerOptions options)
+        internal bool Assign(object target, string value, TokenizerOptions options, int line, int column)
         {
-            return Assign(target, value, options, null);
-        }
+            if (string.IsNullOrEmpty(value)) return false;
 
-        internal bool Assign(object target, string value, TokenizerOptions options, ILog log)
-        {
-            log?.Debug($"  -> Assigning '{Name}' to '{value}'");
-
-            if (CanAssign(value, log) == false) return false;
+            if (value.Substring(value.Length - 1) == "\n")
+            {
+                value = value.Substring(0, value.Length - 1);
+            }
 
             if (TerminateOnNewLine)
             {
@@ -108,6 +112,10 @@ namespace Tokens
                     value = value.Substring(0, index);
                 }
             }
+
+            Log.Debug("  -> Ln: {0} Col: {1} : Assigning {2} ({3}) as {4}", line, column, Name, Id, value);
+
+            if (CanAssign(value) == false) return false;
 
             if (options.TrimTrailingWhiteSpace)
             {
@@ -120,19 +128,14 @@ namespace Tokens
             {
                 var output = transformer.Transform(input);
         
-                log?.Debug($"     -> {transformer.OperatorType.Name}: Transformed '{input}' to '{output}'");
+                Log.Debug($"     -> {transformer.OperatorType.Name}: Transformed '{input}' to '{output}'");
 
                 input = output;
             }
 
-            if (target is List<Substitution> list)
+            if (target is IDictionary<string, object> dictionary)
             {
-                list.Add(new Substitution
-                {
-                    Name = Name,
-                    Value = input
-                });
-                return true;
+                return SetDictionaryValue(dictionary, input);
             }
 
             try
@@ -141,23 +144,52 @@ namespace Tokens
             }
             catch (MissingMemberException)
             {
-                log?.Warn($"       Missing property on target: {Name}");
+                Log.Warn($"       Missing property on target: {Name}");
 
                 throw;
             }
             catch (TypeConversionException ex)
             {
-                log?.Warn($"       {ex.Message}");
+                Log.Warn($"       {ex.Message}");
 
                 return false;
             }
             catch (Exception e)
             {
-                log?.Error(e, $"Unexpected error when assigning '{Name}' to '{input}':");
+                Log.Error(e, $"Unexpected error when assigning '{Name}' to '{input}':");
 
                 var ex = new TokenAssignmentException(this, e);
 
                 throw ex;
+            }
+
+            return true;
+        }
+
+        private bool SetDictionaryValue(IDictionary<string, object> dictionary, object input)
+        {
+            if (Repeating)
+            {
+                List<object> list;
+                if (dictionary.ContainsKey(Name))
+                {
+                    list = dictionary[Name] as List<object>;
+                }
+                else
+                {
+                    list = new List<object>();
+                }
+                list.Add(input);
+                input = list;
+            }
+
+            if (dictionary.ContainsKey(Name))
+            {
+                dictionary[Name] = input;
+            }
+            else
+            {
+                dictionary.Add(Name, input);
             }
 
             return true;

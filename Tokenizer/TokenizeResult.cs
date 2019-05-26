@@ -1,59 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Tokens
 {
     /// <summary>
     /// Holds the result of attempting to parse an input string against a
+    /// <see cref="Template"/>.
+    /// </summary>
+    public class TokenizeResult : TokenizeResultBase 
+    {
+        /// <summary>
+        ///  Creates a new instance of the <see cref="TokenizeResult"/> class.
+        /// </summary>
+        public TokenizeResult(Template template) : base(template)
+        {
+            Values = new Dictionary<string, object>();
+        }
+
+        /// <summary>
+        /// A dictionary of values extracted from the input string. 
+        /// </summary>
+        public IDictionary<string, object> Values { get; set; }
+    }    
+    
+    /// <summary>
+    /// Holds the result of attempting to parse an input string against a
     /// <see cref="Template"/> to generate an object of type <see cref="T"/>.
     /// </summary>
-    public class TokenizeResult<T> where T : class, new()
+    public class TokenizeResult<T> : TokenizeResultBase where T : class, new()
     {
         /// <summary>
         ///  Creates a new instance of the <see cref="TokenizeResult{T}"/> class.
         /// </summary>
-        public TokenizeResult(Template template)
+        public TokenizeResult(Template template) : base(template)
         {
-            Exceptions = new List<Exception>();
-
-            Hints = new HintResult();
-            Tokens = new TokenResult();
-
-            Template = template;
+            Value = new T();
         }
 
         /// <summary>
         /// An instance of <see cref="T"/> populated with data from the input string. 
         /// </summary>
         public T Value { get; set; }
-
-        /// <summary>
-        /// The <see cref="Template"/> containing the mapping between tokens in the
-        /// <see cref="Template"/> and properties on the object <see cref="T"/>.
-        /// </summary>
-        public Template Template { get; set; }
-
-        /// <summary>
-        /// A list of any exceptions that occurred during the matching process
-        /// </summary>
-        public IList<Exception> Exceptions { get; }
-
-        /// <summary>
-        /// The matches that where made during the tokenization process
-        /// </summary>
-        public TokenResult Tokens { get; set; } 
-
-        /// <summary>
-        /// Gets the hints found in the input
-        /// </summary>
-        public HintResult Hints { get; set; }
-
-        /// <summary>
-        /// Determines whether the matching process was successful
-        /// </summary>
-        public bool Success => Tokens.HasMatches && 
-                               Tokens.HasMissingRequiredTokens == false &&
-                               Hints.HasMissingRequiredHints == false;
     }
 }

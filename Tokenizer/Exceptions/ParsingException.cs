@@ -5,7 +5,7 @@ namespace Tokens.Exceptions
 {
     public class ParsingException : TokenizerException
     {
-        internal ParsingException(string message, RawTokenEnumerator enumerator) : this(message, enumerator.Column, enumerator.Line)
+        internal ParsingException(string message, PreTokenEnumerator enumerator) : this(message, enumerator.Column, enumerator.Line)
         {
         }
 

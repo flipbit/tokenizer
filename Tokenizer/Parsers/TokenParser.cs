@@ -77,51 +77,51 @@ namespace Tokens.Parsers
 
             var template = new Template(name, content);
 
-            var rawTemplate = new PreTokenParser().Parse(content, Options);
+            var preTemplate = new PreTokenParser().Parse(content, Options);
 
-            template.Options = rawTemplate.Options;
+            template.Options = preTemplate.Options;
 
-            if (string.IsNullOrWhiteSpace(rawTemplate.Name) == false)
+            if (string.IsNullOrWhiteSpace(preTemplate.Name) == false)
             {
-                template.Name = rawTemplate.Name;
+                template.Name = preTemplate.Name;
             }
 
-            foreach (var hint in rawTemplate.Hints)
+            foreach (var hint in preTemplate.Hints)
             {
                 template.Hints.Add(hint);
             }
 
-            foreach (var rawToken in rawTemplate.Tokens)
+            foreach (var preToken in preTemplate.Tokens)
             {
                 var token = new Token();
 
                 if (Options.TrimLeadingWhitespaceInTokenPreamble)
                 {
-                    if (rawToken.Preamble.IsOnlySpaces())
+                    if (preToken.Preamble.IsOnlySpaces())
                     {
-                        token.Preamble = rawToken.Preamble;
+                        token.Preamble = preToken.Preamble;
                     }
-                    else if (string.IsNullOrWhiteSpace(rawToken.Preamble))
+                    else if (string.IsNullOrWhiteSpace(preToken.Preamble))
                     {
-                        token.Preamble = rawToken.Preamble.TrimLeadingSpaces();
+                        token.Preamble = preToken.Preamble.TrimLeadingSpaces();
                     }
                     else
                     {
-                        token.Preamble = rawToken.Preamble.TrimStart();
+                        token.Preamble = preToken.Preamble.TrimStart();
                     }
                 }
                 else
                 {
-                    token.Preamble = rawToken.Preamble;
+                    token.Preamble = preToken.Preamble;
                 }
 
-                token.Name = rawToken.Name;
-                token.Optional = rawToken.Optional;
-                token.Repeating = rawToken.Repeating;
-                token.TerminateOnNewLine = rawToken.TerminateOnNewline;
-                token.Required = rawToken.Required;
-                token.Id = rawToken.Id;
-                token.DependsOnId = rawToken.DependsOnId;
+                token.Name = preToken.Name;
+                token.Optional = preToken.Optional;
+                token.Repeating = preToken.Repeating;
+                token.TerminateOnNewLine = preToken.TerminateOnNewline;
+                token.Required = preToken.Required;
+                token.Id = preToken.Id;
+                token.DependsOnId = preToken.DependsOnId;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
@@ -132,7 +132,7 @@ namespace Tokens.Parsers
                 var tokenTransformers = new List<TransformerContext>();
                 var tokenValidators = new List<ValidatorContext>();
 
-                ParseTokenOperators(rawToken.Decorators, tokenTransformers, tokenValidators);
+                ParseTokenOperators(preToken.Decorators, tokenTransformers, tokenValidators);
 
                 foreach (var tokenOperator in tokenTransformers)
                 {

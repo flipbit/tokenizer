@@ -6,7 +6,7 @@ using Tokens.Exceptions;
 namespace Tokens.Parsers
 {
     [TestFixture]
-    public class RawTokenParserTests
+    public class PreTokenParserTests
     {
         private PreTokenParser parser;
 

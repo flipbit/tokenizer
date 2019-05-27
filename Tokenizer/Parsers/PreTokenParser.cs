@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
@@ -83,7 +84,7 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentRunOff:
-                        ParseDecoratorArgumentRunOff(enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentRunOff(enumerator, ref state);
                         break;
 
 
@@ -444,7 +445,7 @@ namespace Tokens.Parsers
             switch (next)
             {
                 case "}":
-                    token.Decorators.Add(decorator);
+                    AppendDecorator(enumerator, token, decorator);
                     AppendToken(template, token);
                     token = new PreToken();
                     decorator = new PreTokenDecorator();
@@ -452,7 +453,7 @@ namespace Tokens.Parsers
                     break;
 
                 case ",":
-                    token.Decorators.Add(decorator);
+                    AppendDecorator(enumerator, token, decorator);
                     decorator = new PreTokenDecorator();
                     break;
 
@@ -558,7 +559,7 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseDecoratorArgumentRunOff(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentRunOff(PreTokenEnumerator enumerator, ref FlatTokenParserState state)
         {
             var next = enumerator.Next();
 
@@ -609,6 +610,43 @@ namespace Tokens.Parsers
             else
             {
                 template.Tokens.Add(token);
+            }
+        }
+
+        private void AppendDecorator(PreTokenEnumerator enumerator, PreToken token, PreTokenDecorator decorator)
+        {
+            if (decorator == null) return;
+            if (string.IsNullOrEmpty(decorator.Name)) return;
+
+            switch (decorator.Name.ToLowerInvariant())
+            {
+                case "eol":
+                case "$":
+                    if (decorator.Args.Any()) throw  new ParsingException($"'{decorator.Name}' decorator does not take any arguments", enumerator);
+                    token.TerminateOnNewline = true;
+                    break;
+
+                case "optional":
+                case "?":
+                    if (decorator.Args.Any()) throw  new ParsingException($"'{decorator.Name}' decorator does not take any arguments", enumerator);
+                    token.Optional = true;
+                    break;
+
+                case "repeating":
+                case "*":
+                    if (decorator.Args.Any()) throw  new ParsingException($"'{decorator.Name}' decorator does not take any arguments", enumerator);
+                    token.Repeating = true;
+                    break;
+
+                case "required":
+                case "!":
+                    if (decorator.Args.Any()) throw  new ParsingException($"'{decorator.Name}' decorator does not take any arguments", enumerator);
+                    token.Required = true;
+                    break;
+
+                default:
+                    token.Decorators.Add(decorator);
+                    break;
             }
         }
 

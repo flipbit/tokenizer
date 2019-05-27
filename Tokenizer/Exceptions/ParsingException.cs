@@ -9,9 +9,9 @@ namespace Tokens.Exceptions
         {
         }
 
-        public ParsingException(string message, int character, int line) : base(message)
+        public ParsingException(string message, int column, int line) : base(message)
         {
-            Column = character;
+            Column = column;
             Line = line;
         }
 

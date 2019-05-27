@@ -496,5 +496,65 @@ namespace Tokens.Parsers
             Assert.AreEqual("TokenName", token1.Name);
             Assert.IsTrue(token1.Repeating);
         }
+        
+        [Test]
+        public void TestParseTokenRequiredLonghand()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName : Required }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.Required);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+        
+        [Test]
+        public void TestParseTokenOptionalLonghand()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName : Optional }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.Optional);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+
+        [Test]
+        public void TestParseTokenRepeatingLonghand()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName : Repeating }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.Repeating);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+
+        [Test]
+        public void TestParseTokenNewLineLonghand()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName : EOL }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.IsTrue(token.TerminateOnNewline);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
     }
 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;

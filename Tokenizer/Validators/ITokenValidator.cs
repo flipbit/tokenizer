@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface to define the validation of tokens discovered in input text
     /// </summary>
-    public interface ITokenValidator
+    public interface ITokenValidator : ITokenDecorator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

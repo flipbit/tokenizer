@@ -15,15 +15,20 @@ namespace Tokens
     {
         private static readonly ILog Log;
 
+        /// <summary>
+        /// Sets the token logger
+        /// </summary>
         static Token()
         {
             Log = LogProvider.GetLogger(nameof(Token));
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Token"/> class.
+        /// </summary>
         public Token()
         {
-            Transformers = new List<TransformerContext>();
-            Validators = new List<ValidatorContext>();
+            Decorators = new List<TokenDecoratorContext>();
         }
 
         /// <summary>
@@ -37,14 +42,9 @@ namespace Tokens
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets the operators to perform on this Token.
+        /// Gets the decorators on this Token
         /// </summary>
-        public IList<TransformerContext> Transformers { get; }
-
-        /// <summary>
-        /// Gets the validators to perform on this Token
-        /// </summary>
-        public IList<ValidatorContext> Validators { get; }
+        public IList<TokenDecoratorContext> Decorators { get; }
 
         /// <summary>
         /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
@@ -70,32 +70,23 @@ namespace Tokens
         /// </summary>
         public bool Required { get; set; }
 
+        /// <summary>
+        /// The unique id of this token in the <see cref="Template"/>.
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Defines a token that must have been matched in the input before this token
+        /// can be considered.  Used with repeating tokens that would otherwise be
+        /// to aggressive in their matching.
+        /// </summary>
         public int DependsOnId { get; set; }
-
-        internal bool CanAssign(object value)
-        {
-            // Don't assign tokens with no name
-            // (can happen if the token is the last token in the template)
-            if (string.IsNullOrWhiteSpace(Name)) return false;
-
-            foreach (var validator in Validators)
-            {
-                if (validator.Validate(value) == false)
-                {
-                    Log.Debug($"    -> {validator.ValidatorType.Name} Validation Failure: {value}");
-
-                    return false;
-                }
-            }
-
-            return true;
-        }
 
         internal bool Assign(object target, string value, TokenizerOptions options, int line, int column)
         {
             if (string.IsNullOrEmpty(value)) return false;
+            if (string.IsNullOrWhiteSpace(Name)) return false;
+
 
             if (value.Substring(value.Length - 1) == "\n")
             {
@@ -113,8 +104,6 @@ namespace Tokens
 
             Log.Debug("  -> Ln: {0} Col: {1} : Assigning {2} ({3}) as {4}", line, column, Name, Id, value);
 
-            if (CanAssign(value) == false) return false;
-
             if (options.TrimTrailingWhiteSpace)
             {
                 value = value.TrimEnd();
@@ -122,13 +111,30 @@ namespace Tokens
 
             object input = value;
 
-            foreach (var transformer in Transformers)
+            foreach (var decorator in Decorators)
             {
-                var output = transformer.Transform(input);
-        
-                Log.Debug($"     -> {transformer.OperatorType.Name}: Transformed '{input}' to '{output}'");
+                if (decorator.IsTransformer)
+                {
+                    var output = decorator.Transform(input);
+            
+                    Log.Debug($"     -> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
 
-                input = output;
+                    input = output;
+                }
+
+                if (decorator.IsValidator)
+                {
+                    if (decorator.Validate(input))
+                    {
+                        Log.Debug($"    -> {decorator.DecoratorType.Name} OK!");
+                    }
+                    else
+                    {
+                        Log.Debug($"    -> {decorator.DecoratorType.Name} Validation Failure: {value}");
+
+                        return false;
+                    }
+                }
             }
 
             if (target is IDictionary<string, object> dictionary)
@@ -188,6 +194,31 @@ namespace Tokens
             else
             {
                 dictionary.Add(Name, input);
+            }
+
+            return true;
+        }
+
+        public bool CanAssign(string value)
+        {
+            object input = value;
+
+            foreach (var decorator in Decorators)
+            {
+                if (decorator.IsTransformer)
+                {
+                    var output = decorator.Transform(input);
+            
+                    input = output;
+                }
+
+                if (decorator.IsValidator)
+                {
+                    if (decorator.Validate(input) == false)
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;

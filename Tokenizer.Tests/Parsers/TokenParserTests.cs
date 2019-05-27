@@ -25,11 +25,11 @@ namespace Tokens.Parsers
 
             var token = template.Tokens.First();
 
-            Assert.AreEqual(1, token.Transformers.Count);
+            Assert.AreEqual(1, token.Decorators.Count);
 
-            var tokenOperator = token.Transformers.First();
+            var tokenOperator = token.Decorators.First();
 
-            Assert.AreEqual(typeof(ToDateTimeTransformer), tokenOperator.OperatorType);
+            Assert.AreEqual(typeof(ToDateTimeTransformer), tokenOperator.DecoratorType);
             Assert.AreEqual(1, tokenOperator.Parameters.Count);
             Assert.AreEqual("yyyy-MM-dd", tokenOperator.Parameters[0]);
         }
@@ -44,11 +44,11 @@ namespace Tokens.Parsers
 
             var token = template.Tokens.First();
 
-            Assert.AreEqual(1, token.Transformers.Count);
+            Assert.AreEqual(1, token.Decorators.Count);
 
-            var tokenOperator = token.Transformers.First();
+            var tokenOperator = token.Decorators.First();
 
-            Assert.AreEqual(typeof(ToDateTimeTransformer), tokenOperator.OperatorType);
+            Assert.AreEqual(typeof(ToDateTimeTransformer), tokenOperator.DecoratorType);
             Assert.AreEqual(1, tokenOperator.Parameters.Count);
             Assert.AreEqual("yyyy-MM-dd", tokenOperator.Parameters[0]);
         }

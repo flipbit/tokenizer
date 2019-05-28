@@ -88,9 +88,9 @@ namespace Tokens
             var line = 1;
             var column = 1;
 
-            FindHints(template, enumerator, result);
+            var hintsMissing = FindHints(template, enumerator, result);
 
-            while (enumerator.IsEmpty == false)
+            while (enumerator.IsEmpty == false && hintsMissing == false)
             {
                 var next = enumerator.Peek();
 
@@ -198,9 +198,9 @@ namespace Tokens
             log.Debug($"Finished: Processing: {template.Name}");
         }
 
-        private void FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 
+        private bool FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 
         {
-            if (template.Hints.Count == 0) return;
+            if (template.Hints.Count == 0) return false;
 
             while (enumerator.IsEmpty == false)
             {
@@ -230,6 +230,8 @@ namespace Tokens
             }
 
             enumerator.Reset();
+
+            return result.Hints.Misses.Any(h => h.Optional == false);
         }
 
         public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer

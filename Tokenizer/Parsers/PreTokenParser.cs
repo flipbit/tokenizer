@@ -7,25 +7,35 @@ using Tokens.Extensions;
 
 namespace Tokens.Parsers
 {
+    /// <summary>
+    /// Performs an initial pass over a template input string to create a <see cref="PreTemplate"/>.
+    /// This can then be used to create a <see cref="Template"/> that can be used to parse strings
+    /// into objects.
+    /// </summary>
     internal class PreTokenParser
     {
         private const string ValidTokenNameCharacters = @"abcdefghijklmnopqrstuvwxyzABCDDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.";
 
-        public PreTemplate Parse(string pattern)
+        /// <summary>
+        /// Parses the template string and constructs a <see cref="PreTemplate"/>.
+        /// </summary>
+        public PreTemplate Parse(string template)
         {
-            return Parse(pattern, TokenizerOptions.Defaults);
+            return Parse(template, TokenizerOptions.Defaults);
         }
 
-        public PreTemplate Parse(string pattern, TokenizerOptions options)
+        /// <summary>
+        /// Parses the template string and constructs a <see cref="PreTemplate"/>.
+        /// </summary>
+        public PreTemplate Parse(string template, TokenizerOptions options)
         {
-            var template = new PreTemplate();
-            template.Options = options.Clone();
+            var preTemplate = new PreTemplate { Options = options.Clone() };
 
-            var enumerator = new PreTokenEnumerator(pattern);
+            var enumerator = new PreTokenEnumerator(template);
 
             if (enumerator.IsEmpty)
             {
-                return template;
+                return preTemplate;
             }
 
             var state = FlatTokenParserState.AtStart;
@@ -56,7 +66,7 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InFrontMatterOptionValue:
-                        ParseFrontMatterOptionValue(template, enumerator, ref frontMatterName, ref frontMatterValue, ref state);
+                        ParseFrontMatterOptionValue(preTemplate, enumerator, ref frontMatterName, ref frontMatterValue, ref state);
                         break;
 
                     case FlatTokenParserState.InPreamble:
@@ -64,11 +74,11 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InTokenName:
-                        ParseTokenName(template, ref token, enumerator, ref state);
+                        ParseTokenName(preTemplate, ref token, enumerator, ref state);
                         break;
 
                     case FlatTokenParserState.InDecorator:
-                        ParseDecorator(template, ref token, enumerator, ref state, ref decorator);
+                        ParseDecorator(preTemplate, ref token, enumerator, ref state, ref decorator);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgument:
@@ -98,10 +108,10 @@ namespace Tokens.Parsers
             // token in the template
             if (string.IsNullOrWhiteSpace(token.Preamble) == false)
             {
-                AppendToken(template, token);
+                AppendToken(preTemplate, token);
             }
 
-            return template;
+            return preTemplate;
         }
 
         private void ParseStart(PreTokenEnumerator enumerator, ref FlatTokenParserState state)

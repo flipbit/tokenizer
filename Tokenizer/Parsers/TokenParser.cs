@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Tokens.Exceptions;
 using Tokens.Extensions;
@@ -9,6 +10,10 @@ using Tokens.Validators;
 
 namespace Tokens.Parsers
 {
+    /// <summary>
+    /// Parser that converts a string into a <see cref="Template"/> that can be
+    /// used to extract objects from input strings.
+    /// </summary>
     internal class TokenParser
     {
         private readonly List<Type> transformers;
@@ -73,9 +78,17 @@ namespace Tokens.Parsers
 
         public Template Parse(string content, string name)
         {
-            log.Debug("Start: Parsing Template");
+            Stopwatch stopwatch = null;
+
+            if (log.IsDebugEnabled())
+            {
+                stopwatch = new Stopwatch();
+                stopwatch.Start();
+            }
 
             var template = new Template(name, content);
+
+            log.Trace("Start: Parsing Template: {0}", template.Name);
 
             var preTemplate = new PreTokenParser().Parse(content, Options);
 
@@ -133,10 +146,10 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace($"  -> Added Token: '{token.Name}' ({token.Id})");
+                log.Trace("  -> Token {0:000}: '{1}'", token.Id, token.Name);
             }
 
-            log.Debug("Finish: Parsing Template");
+            log.Debug("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
 
             return template;
         }

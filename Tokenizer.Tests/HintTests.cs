@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Tokens
 {
@@ -12,13 +11,7 @@ namespace Tokens
         {
             public string FirstName { get; set; }
 
-            public string MiddleName { get; set; }
-
             public string LastName { get; set; }
-
-            public DateTime Enrolled { get; set; }
-
-            public int Number { get; set; }
         }
 
         [SetUp]
@@ -60,7 +53,7 @@ First Name: {FirstName}";
 
             var result = tokenizer.Tokenize<Student>(pattern, input);
 
-            Assert.AreEqual("Alice", result.Value.FirstName);
+            Assert.AreEqual(null, result.Value.FirstName);
 
             Assert.AreEqual(0, result.Hints.Matches.Count);
 

@@ -94,7 +94,7 @@ namespace Tokens.Extensions
                     }
                     else
                     {
-                        var convertedValue = Convert.ChangeType(value, propertyInfo.PropertyType);
+                        var convertedValue = ChangeType(value, propertyInfo.PropertyType);
 
                         propertyInfo.SetValue(@object, convertedValue, null);
                     }
@@ -129,6 +129,28 @@ namespace Tokens.Extensions
             }
 
             return @object;
+        }
+
+        private static object ChangeType(object value, Type targetType)
+        {
+            if (targetType.IsEnum)
+            {
+                return ChangeEnumType(value, targetType);
+            }
+
+            return Convert.ChangeType(value, targetType);
+        }
+
+        private static object ChangeEnumType(object value, Type targetType)
+        {
+            if (value.GetType() == targetType)
+            {
+                return value;
+            }
+
+            var valueString = value.ToString();
+
+            return Enum.Parse(targetType, valueString, true);
         }
     }
 }

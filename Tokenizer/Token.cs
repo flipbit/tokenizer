@@ -160,8 +160,6 @@ namespace Tokens
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error when assigning '{Name}' to '{input}':");
-
                 var ex = new TokenAssignmentException(this, e);
 
                 throw ex;

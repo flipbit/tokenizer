@@ -44,6 +44,7 @@ namespace Tokens.Parsers
             RegisterTransformer<TrimTransformer>();
             RegisterTransformer<SubstringAfterTransformer>();
             RegisterTransformer<SubstringBeforeTransformer>();
+            RegisterTransformer<SetTransformer>();
 
             RegisterValidator<IsNumericValidator>();
             RegisterValidator<MaxLengthValidator>();

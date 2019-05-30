@@ -244,6 +244,9 @@ namespace Tokens.Parsers
                                 template.Options.TokenStringComparison = StringComparison.InvariantCultureIgnoreCase;
                             }
                             break;
+                        case "tag":
+                            template.Tags.Add(frontMatterValue.ToString().Trim());
+                            break;
 
                         default:
                             throw new ParsingException($"Unknown front matter option: {rawName}", enumerator);

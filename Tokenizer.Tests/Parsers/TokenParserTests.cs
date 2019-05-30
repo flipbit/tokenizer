@@ -114,5 +114,15 @@ namespace Tokens.Parsers
 
             Assert.AreEqual("(empty)", template.Name);
         }
+
+        [Test]
+        public void TestParseSetsTags()
+        {
+            var template = parser.Parse("---\nTag: tag\n---\nOne Two\nThree Four");
+
+            Assert.AreEqual(1, template.Tags.Count);
+            Assert.AreEqual("tag", template.Tags[0]);
+        }
+
     }
 }

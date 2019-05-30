@@ -137,6 +137,11 @@ namespace Tokens.Parsers
                 token.Id = preToken.Id;
                 token.DependsOnId = preToken.DependsOnId;
 
+                foreach (var tag in preTemplate.Tags)
+                {
+                    template.Tags.Add(tag);
+                }
+
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
                 {

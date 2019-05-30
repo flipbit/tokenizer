@@ -15,6 +15,7 @@ namespace Tokens
         {
             tokens = new List<Token>();
             Hints = new List<Hint>();
+            Tags = new List<string>();
         }
 
         public Template(string name, string content) : this()
@@ -33,16 +34,31 @@ namespace Tokens
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Contains the hints associated with this <see cref="Template"/>.
+        /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
+        /// on text found within the input string.
+        /// </summary>
         public IList<Hint> Hints { get; }
+
+        /// <summary>
+        /// Contains the tags associated with this <see cref="Template"/>.
+        /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
+        /// in with the input string.
+        /// </summary>
+        public IList<string> Tags { get; }
 
         /// <summary>
         /// The tokens contained within the template
         /// </summary>
         public IReadOnlyCollection<Token> Tokens => tokens.AsReadOnly();
 
+        /// <summary>
+        /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
+        /// </summary>
         public TokenizerOptions Options { get; set; }
 
-        public IEnumerable<int> GetTokenIdsUpTo(Token token)
+        internal IEnumerable<int> GetTokenIdsUpTo(Token token)
         {
             var matchIds = new List<int>();
 
@@ -53,29 +69,29 @@ namespace Tokens
                 return matchIds;
             }
 
-            foreach (var candiate in tokens)
+            foreach (var candidate in tokens)
             {
-                if (candiate == token)
+                if (candidate == token)
                 {
-                    if (candiate.Repeating == false)
+                    if (candidate.Repeating == false)
                     {
-                        matchIds.Add(candiate.Id);
+                        matchIds.Add(candidate.Id);
                     }
                     break;
                 }
 
-                matchIds.Add(candiate.Id);
+                matchIds.Add(candidate.Id);
             }
 
             return matchIds;
         }
 
-        public void AddToken(Token token)
+        internal void AddToken(Token token)
         {
             tokens.Add(token);
         }
 
-        public IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
+        internal IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
         {
             var includedTokens = tokens.Where(t => tokenIds.Contains(t.Id) == false).ToArray();
             var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();

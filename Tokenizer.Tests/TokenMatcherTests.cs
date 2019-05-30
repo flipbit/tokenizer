@@ -125,5 +125,77 @@ namespace Tokens
             Assert.AreEqual(0, match.Value.Age);
             Assert.AreEqual("no-age", match.Template.Name);
         }
+
+        [Test]
+        public void TestParseTwoPatternsWithTags()
+        {
+            matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+            matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+
+            matcher.Templates[0].Tags.Add("no-age");
+
+            var result = matcher.Match<Person>("Name: Alice, Age: 30",  new [] { "no-age" });
+
+            Assert.IsTrue(result.Success);
+
+            var match = result.BestMatch;
+
+            Assert.AreEqual("Alice", match.Value.Name);
+            Assert.AreEqual(0, match.Value.Age);
+            Assert.AreEqual("no-age", match.Template.Name);
+        }
+
+        [Test]
+        public void TestParseTwoPatternsWithNoMatchingTags()
+        {
+            matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+            matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+
+            matcher.Templates[0].Tags.Add("no-age");
+            matcher.Templates[1].Tags.Add("with-age");
+
+            var result = matcher.Match<Person>("Name: Alice, Age: 30");
+
+            Assert.IsFalse(result.Success);
+            Assert.IsNull(result.BestMatch);
+        }
+
+        [Test]
+        public void TestParseTwoPatternsWithTagsWithInputWithNoTags()
+        {
+            matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+            matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+
+            matcher.Templates[0].Tags.Add("no-age");
+            matcher.Templates[1].Tags.Add("with-age");
+
+            var result = matcher.Match<Person>("Name: Alice, Age: 30");
+
+            Assert.IsFalse(result.Success);
+            Assert.IsNull(result.BestMatch);
+        }
+
+        [Test]
+        public void TestParseTwoPatternsWithTagsSelectsBestMatch()
+        {
+            matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+            matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+
+            matcher.Templates[0].Tags.Add("no-age");
+            matcher.Templates[0].Tags.Add("person");
+            matcher.Templates[1].Tags.Add("with-age");
+            matcher.Templates[1].Tags.Add("person");
+
+            var result = matcher.Match<Person>("Name: Alice, Age: 30",  new [] { "person" });
+
+            Assert.IsTrue(result.Success);
+
+            var match = result.BestMatch;
+
+            Assert.AreEqual("Alice", match.Value.Name);
+            Assert.AreEqual(30, match.Value.Age);
+            Assert.AreEqual("with-age", match.Template.Name);
+        }
+
     }
 }

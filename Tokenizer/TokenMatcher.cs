@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 using Tokens.Exceptions;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -35,11 +37,41 @@ namespace Tokens
 
         public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
         {
+            return Match<T>(input, null);
+        }
+
+        public TokenMatcherResult<T> Match<T>(string input, string[] tags) where T : class, new()
+        {
             var results = new TokenMatcherResult<T>();
+            
+            if (tags == null) tags = new string[0];
 
             foreach (var template in Templates)
             {
                 log.Info("Start: Matching: {0}", template.Name);
+
+                // Check template has tags
+                if (template.Tags.Count != 0 || tags.Length != 0)
+                {
+                    var found = false;
+
+                    foreach (var templateTag in template.Tags)
+                    {
+                        if (tags.Any(tag => string.Compare(tag, templateTag, StringComparison.InvariantCultureIgnoreCase) == 0))
+                        {
+                            found = true;
+                            log.Info("  Found tag matching: {0}", templateTag);
+                            break;
+                        }
+                    }
+
+                    if (found == false)
+                    {
+                        log.Info("  No tags matching: {0}", string.Join(",", template.Tags));
+                        log.Info("Finish: Matching: {0}", template.Name);
+                        continue;
+                    }
+                }
 
                 try
                 {

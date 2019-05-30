@@ -401,6 +401,7 @@ namespace Tokens.Parsers
             Assert.AreEqual("My Hint", template.Hints[0].Text);
             Assert.AreEqual(true, template.Hints[0].Optional);
         }
+
         [Test]
         public void TestParseFrontMatterSetsMultipleHints()
         {
@@ -556,5 +557,25 @@ namespace Tokens.Parsers
             Assert.IsTrue(token.TerminateOnNewline);
             Assert.AreEqual(0, token.Decorators.Count);
         }
+
+        [Test]
+        public void TestParseFrontMatterSetsTag()
+        {
+            var template = parser.Parse("---\n# Comment\nTag: My Tag   \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(1, template.Tags.Count);
+            Assert.AreEqual("My Tag", template.Tags[0]);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsMultipleTags()
+        {
+            var template = parser.Parse("---\n# Comment\nTag: Tag One   \nTag: Tag Two  \n---\nPreamble\n{TokenName}\n");
+
+            Assert.AreEqual(2, template.Tags.Count);
+            Assert.AreEqual("Tag One", template.Tags[0]);
+            Assert.AreEqual("Tag Two", template.Tags[1]);
+        }
+
     }
 }

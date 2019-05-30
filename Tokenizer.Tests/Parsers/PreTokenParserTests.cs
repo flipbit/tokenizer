@@ -577,5 +577,78 @@ namespace Tokens.Parsers
             Assert.AreEqual("Tag Two", template.Tags[1]);
         }
 
+        [Test]
+        public void TestParseTokenSetValue()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName = Foo }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.AreEqual("Foo", token.Value);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+
+        [Test]
+        public void TestParseTokenSetValueFailsWhenContainsSpaces()
+        {
+            Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{ TokenName = Foo Bar }"));
+        }
+
+        [Test]
+        public void TestParseTokenSetValueFailsWhenContainsInvalidCharacters()
+        {
+            Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{ TokenName = Foo{Bar }"));
+        }
+
+        [Test]
+        public void TestParseTokenSetValueInDoubleQuotes()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName = \" { Foo } \" }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.AreEqual(" { Foo } ", token.Value);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+
+        [Test]
+        public void TestParseTokenSetValueInSingleQuotes()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.AreEqual(" { Foo } \" ", token.Value);
+            Assert.AreEqual(0, token.Decorators.Count);
+        }
+
+        [Test]
+        public void TestParseTokenSetValueInSingleQuotesWithDecorator()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' : Bar } Next preamble");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.AreEqual(" { Foo } \" ", token.Value);
+            Assert.AreEqual(1, token.Decorators.Count);
+            Assert.AreEqual("Bar", token.Decorators[0].Name);
+        }
+
     }
 }

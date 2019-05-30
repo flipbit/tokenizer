@@ -45,6 +45,7 @@ namespace Tokens.Parsers
             var frontMatterName = new StringBuilder();
             var frontMatterValue = new StringBuilder();
 
+            // Basic State Machine to parse the template input
             while (enumerator.IsEmpty == false)
             {
                 switch (state)
@@ -75,6 +76,22 @@ namespace Tokens.Parsers
 
                     case FlatTokenParserState.InTokenName:
                         ParseTokenName(preTemplate, ref token, enumerator, ref state);
+                        break;
+
+                    case FlatTokenParserState.InTokenValue:
+                        ParseTokenValue(preTemplate, ref token, enumerator, ref state);
+                        break;
+
+                    case FlatTokenParserState.InTokenValueSingleQuotes:
+                        ParseTokenValueInSingleQuotes(enumerator,  ref token, ref state);
+                        break;
+
+                    case FlatTokenParserState.InTokenValueDoubleQuotes:
+                        ParseTokenValueInDoubleQuotes(enumerator,  ref token, ref state);
+                        break;
+
+                    case FlatTokenParserState.InTokenValueRunOff:
+                        ParseTokenValueRunOff(enumerator, ref preTemplate, ref token, ref state);
                         break;
 
                     case FlatTokenParserState.InDecorator:
@@ -414,6 +431,10 @@ namespace Tokens.Parsers
                     state = FlatTokenParserState.InDecorator;
                     break;
 
+                case "=":
+                    state = FlatTokenParserState.InTokenValue;
+                    break;
+
                 case " ":
                     switch (peek)
                     {
@@ -424,6 +445,7 @@ namespace Tokens.Parsers
                         case "}":
                         case ":":
                         case "!":
+                        case "=":
                             break;
 
                         default:
@@ -447,6 +469,113 @@ namespace Tokens.Parsers
                     }
                     break;
             }
+        }
+        
+        private void ParseTokenValue(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+            var peek = enumerator.Peek();
+
+            switch (next)
+            {
+                case "{":
+                    throw new ParsingException($"Unexpected character '{{' in token '{token.Name}'", enumerator); 
+
+                case "}":
+                    AppendToken(template, token);
+                    token = new PreToken();
+                    state = FlatTokenParserState.InPreamble;
+                    break;
+
+                case ":":
+                    state = FlatTokenParserState.InDecorator;
+                    break;
+
+                case "'":
+                    state = FlatTokenParserState.InTokenValueSingleQuotes;
+                    break;
+
+                case "\"":
+                    state = FlatTokenParserState.InTokenValueDoubleQuotes;
+                    break;
+
+                case " ":
+                    switch (peek)
+                    {
+                        case " ":
+                        case "}":
+                           break;
+
+                        default:
+                            if (token.HasValue)
+                            {
+                                throw new ParsingException($"Invalid character '{peek}' in token '{token.Name}'", enumerator);
+                            }
+                            break;
+                    }
+
+                    break;
+
+                default:
+                    token.AppendValue(next);
+                    break;
+            }
+        }
+
+        private void ParseTokenValueInSingleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case "'":
+                    state = FlatTokenParserState.InTokenValueRunOff;
+                    break;
+
+                default:
+                    token.AppendValue(next);
+                    break;
+            }
+        }
+
+        private void ParseTokenValueInDoubleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            switch (next)
+            {
+                case @"""":
+                    state = FlatTokenParserState.InTokenValueRunOff;
+                    break;
+
+                default:
+                    token.AppendValue(next);
+                    break;
+            }
+        }
+
+        private void ParseTokenValueRunOff(PreTokenEnumerator enumerator, ref PreTemplate template, ref PreToken token, ref FlatTokenParserState state)
+        {
+            var next = enumerator.Next();
+
+            if (string.IsNullOrWhiteSpace(next)) return;
+
+            switch (next)
+            {
+                case ":":
+                    state = FlatTokenParserState.InDecorator;
+                    break;
+
+                case "}":
+                    AppendToken(template, token);
+                    token = new PreToken();
+                    state = FlatTokenParserState.InPreamble;
+                    break;
+
+                default:
+                    throw new TokenizerException($"Unexpected character: '{next}'"); 
+            }
+
         }
 
         private void ParseDecorator(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator)
@@ -695,7 +824,10 @@ namespace Tokens.Parsers
         InDecoratorArgument,
         InDecoratorArgumentSingleQuotes,
         InDecoratorArgumentDoubleQuotes,
-        InDecoratorArgumentRunOff
-
+        InDecoratorArgumentRunOff,
+        InTokenValue,
+        InTokenValueSingleQuotes,
+        InTokenValueDoubleQuotes,
+        InTokenValueRunOff
     }
 }

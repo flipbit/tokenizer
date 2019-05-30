@@ -44,5 +44,16 @@ namespace Tokens.Transformers
 
             Assert.AreEqual("Alice", result.Values["Name"]);
         }
+
+        [Test]
+        public void TestInTemplateWithShortHand()
+        {
+            var pattern = @"Name: { Name = 'Alice' : ToUpper }";
+            var input = "Name: Bob";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.AreEqual("ALICE", result.Values["Name"]);
+        }
     }
 }

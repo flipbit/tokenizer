@@ -11,12 +11,14 @@ namespace Tokens
     {
         private readonly StringBuilder preamble;
         private readonly StringBuilder name;
+        private readonly StringBuilder value;
 
         public PreToken()
         {
             Decorators = new List<PreTokenDecorator>();
             preamble = new StringBuilder();
             name = new StringBuilder();
+            value = new StringBuilder();
         }
 
         public int Id { get; set; }
@@ -26,6 +28,8 @@ namespace Tokens
         public string Preamble => preamble.ToString();
 
         public string Name => name.ToString();
+
+        public string Value => value.ToString();
 
         public bool Optional { get; set; }
 
@@ -49,6 +53,11 @@ namespace Tokens
             name.Append(value);
         }
 
+        public void AppendValue(string value)
+        {
+            this.value.Append(value);
+        }
+
         public void AppendDecorators(IEnumerable<PreTokenDecorator> decorators)
         {
             if (decorators == null) return;
@@ -58,5 +67,7 @@ namespace Tokens
                 Decorators.Add(decorator);
             }
         }
+
+        public bool HasValue => value.Length > 0;
     }
 }

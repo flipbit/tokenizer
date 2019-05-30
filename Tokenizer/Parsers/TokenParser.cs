@@ -148,7 +148,7 @@ namespace Tokens.Parsers
                     token.Optional = true;
                 }
 
-                ParseTokenDecorators(preToken.Decorators, token);
+                ParseTokenDecorators(preToken.Value, preToken.Decorators, token);
 
                 template.AddToken(token);
 
@@ -160,8 +160,16 @@ namespace Tokens.Parsers
             return template;
         }
 
-        private void ParseTokenDecorators(IEnumerable<PreTokenDecorator> decorators, Token token)
+        private void ParseTokenDecorators(string value, IEnumerable<PreTokenDecorator> decorators, Token token)
         {
+            // If pre-token has value set, add transformer to set it when parsing
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                var setContext = new TokenDecoratorContext(typeof(SetTransformer));
+                setContext.Parameters.Add(value);
+                token.Decorators.Add(setContext);
+            }
+
             foreach (var decorator in decorators)
             {
                 TokenDecoratorContext context = null;

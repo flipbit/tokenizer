@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Tokens.Exceptions;
 using Tokens.Extensions;
@@ -148,7 +149,7 @@ namespace Tokens.Parsers
                     token.Optional = true;
                 }
 
-                ParseTokenDecorators(preToken.Value, preToken.Decorators, token);
+                ParseTokenDecorators(preToken, token);
 
                 template.AddToken(token);
 
@@ -160,17 +161,17 @@ namespace Tokens.Parsers
             return template;
         }
 
-        private void ParseTokenDecorators(string value, IEnumerable<PreTokenDecorator> decorators, Token token)
+        private void ParseTokenDecorators(PreToken preToken, Token token)
         {
             // If pre-token has value set, add transformer to set it when parsing
-            if (string.IsNullOrEmpty(value) == false)
+            if (string.IsNullOrEmpty(preToken.Value) == false)
             {
                 var setContext = new TokenDecoratorContext(typeof(SetTransformer));
-                setContext.Parameters.Add(value);
+                setContext.Parameters.Add(preToken.Value);
                 token.Decorators.Add(setContext);
             }
 
-            foreach (var decorator in decorators)
+            foreach (var decorator in preToken.Decorators)
             {
                 TokenDecoratorContext context = null;
 
@@ -215,6 +216,16 @@ namespace Tokens.Parsers
                 if (context == null)
                 {
                     throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
+                }
+            }
+
+            if (preToken.IsFrontMatterToken)
+            {
+                var hasSetTransformer = token.Decorators.Any(d => d.DecoratorType == typeof(SetTransformer));
+
+                if (hasSetTransformer == false)
+                {
+                    throw new TokenizerException($"Front Matter Token '{preToken.Name}' must have an assignment operation.");
                 }
             }
         }

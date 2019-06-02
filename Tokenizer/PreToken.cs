@@ -69,5 +69,7 @@ namespace Tokens
         }
 
         public bool HasValue => value.Length > 0;
+
+        public bool IsFrontMatterToken { get; set; }
     }
 }

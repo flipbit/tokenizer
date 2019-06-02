@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using Tokens.Exceptions;
 using Tokens.Transformers;
 
 namespace Tokens.Parsers
@@ -124,5 +125,19 @@ namespace Tokens.Parsers
             Assert.AreEqual("tag", template.Tags[0]);
         }
 
+        [Test]
+        public void TestParseFrontMatterTokenWithoutSet()
+        {
+            Assert.Throws<TokenizerException>(() => parser.Parse("---\nToken: Decorator\n---\nOne Two\nThree Four"));
+        }
+
+        [Test]
+        public void TestParseFrontMatterToken()
+        {
+            var template = parser.Parse("---\nToken : Foo = tag\n---\nOne Two\nThree Four");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("Foo", template.Tokens.First().Name);
+        }
     }
 }

@@ -592,6 +592,23 @@ namespace Tokens.Parsers
             Assert.AreEqual(0, token.Decorators.Count);
         }
 
+
+        [Test]
+        public void TestParseTokenSetValueWithDecorator()
+        {
+            var template = parser.Parse("This is the preamble{ TokenName = Foo : Bar }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("TokenName", token.Name);
+            Assert.AreEqual("Foo", token.Value);
+            Assert.AreEqual(1, token.Decorators.Count);
+            Assert.AreEqual("Bar", token.Decorators[0].Name);
+        }
+
         [Test]
         public void TestParseTokenSetValueFailsWhenContainsSpaces()
         {
@@ -650,5 +667,133 @@ namespace Tokens.Parsers
             Assert.AreEqual("Bar", token.Decorators[0].Name);
         }
 
+        [Test]
+        public void TestParseFrontMatterSetsToken()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndDecorator()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndDecoratorWithArgument()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(Arg1) \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+            Assert.AreEqual(1, template.Tokens[0].Decorators[0].Args.Count);
+            Assert.AreEqual("Arg1", template.Tokens[0].Decorators[0].Args[0]);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndDecoratorWithMultipleArguments()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(Arg1, Arg2) \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+            Assert.AreEqual(2, template.Tokens[0].Decorators[0].Args.Count);
+            Assert.AreEqual("Arg1", template.Tokens[0].Decorators[0].Args[0]);
+            Assert.AreEqual("Arg2", template.Tokens[0].Decorators[0].Args[1]);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndDecoratorWithDoubleQuotedArgument()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(\"Arg1, Arg2\") \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+            Assert.AreEqual(1, template.Tokens[0].Decorators[0].Args.Count);
+            Assert.AreEqual("Arg1, Arg2", template.Tokens[0].Decorators[0].Args[0]);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndDecoratorWithSingleQuotedArgument()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator('Arg1, Arg2') \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+            Assert.AreEqual(1, template.Tokens[0].Decorators[0].Args.Count);
+            Assert.AreEqual("Arg1, Arg2", template.Tokens[0].Decorators[0].Args[0]);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndAssignment()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken = Foo \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual("Foo", template.Tokens[0].Value);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndAssignmentInSingleQuotes()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken = 'Foo Bar' \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual("Foo Bar", template.Tokens[0].Value);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsTokenAndAssignmentInDoubleQuotes()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken = \"Foo Bar\" \n---\nPreamble\n");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual("Foo Bar", template.Tokens[0].Value);
+        }
+
+        [Test]
+        public void TestParseFrontMatterSetsMultipleTokens()
+        {
+            var template = parser.Parse("---\n# Comment\nToken: MyToken = \"Foo Bar\" \n  token  : this = that : ToUpper \n---\nPreamble\n");
+
+            Assert.AreEqual(3, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(true, template.Tokens[0].IsFrontMatterToken);
+            Assert.AreEqual("Foo Bar", template.Tokens[0].Value);
+
+            Assert.AreEqual("this", template.Tokens[1].Name);
+            Assert.AreEqual(true, template.Tokens[1].IsFrontMatterToken);
+            Assert.AreEqual("that", template.Tokens[1].Value);
+            Assert.AreEqual(1, template.Tokens[1].Decorators.Count);
+            Assert.AreEqual("ToUpper", template.Tokens[1].Decorators[0].Name);
+        }
     }
 }

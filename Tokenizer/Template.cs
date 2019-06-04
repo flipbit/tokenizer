@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Tokens
@@ -58,6 +59,25 @@ namespace Tokens
         /// </summary>
         public TokenizerOptions Options { get; set; }
 
+        /// <summary>
+        /// Determines if this instance contains all of the given tags.
+        /// </summary>
+        public bool HasAllTags(IList<string> tags)
+        {
+            if (tags == null) return false;
+            if (tags.Count > Tags.Count) return false;
+
+            foreach (var tag in tags)
+            {
+                if (Tags.Any(t => string.Compare(t, tag, StringComparison.InvariantCultureIgnoreCase) == 0) == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         internal IEnumerable<int> GetTokenIdsUpTo(Token token)
         {
             var matchIds = new List<int>();
@@ -93,7 +113,11 @@ namespace Tokens
 
         internal IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
         {
-            var includedTokens = tokens.Where(t => tokenIds.Contains(t.Id) == false).ToArray();
+            var includedTokens = tokens
+                .Where(t => t.IsFrontMatterToken == false)
+                .Where(t => tokenIds.Contains(t.Id) == false)
+                .ToArray();
+
             var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();
 
             return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);

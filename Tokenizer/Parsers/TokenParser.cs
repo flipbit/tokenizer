@@ -137,6 +137,7 @@ namespace Tokens.Parsers
                 token.Required = preToken.Required;
                 token.Id = preToken.Id;
                 token.DependsOnId = preToken.DependsOnId;
+                token.IsFrontMatterToken = preToken.IsFrontMatterToken;
 
                 foreach (var tag in preTemplate.Tags)
                 {

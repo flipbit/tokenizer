@@ -82,18 +82,24 @@ namespace Tokens
         /// </summary>
         public int DependsOnId { get; set; }
 
+        /// <summary>
+        /// Determines if this <see cref="Token"/> was defined in the template front matter section.
+        /// </summary>
+        public bool IsFrontMatterToken { get; set; }
+
         internal bool Assign(object target, string value, TokenizerOptions options, int line, int column)
         {
-            if (string.IsNullOrEmpty(value)) return false;
+            if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
             if (string.IsNullOrWhiteSpace(Name)) return false;
 
 
-            if (value.Substring(value.Length - 1) == "\n")
+            if (string.IsNullOrEmpty(value) == false &&
+                value.Substring(value.Length - 1) == "\n")
             {
                 value = value.Substring(0, value.Length - 1);
             }
 
-            if (TerminateOnNewLine)
+            if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
             {
                 var index = value.IndexOf("\n");
                 if (index > 0)
@@ -102,7 +108,7 @@ namespace Tokens
                 }
             }
 
-            Log.Debug("  -> Ln: {0} Col: {1} : Assigning {2} ({3}) as {4}", line, column, Name, Id, value);
+            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2} ({3}) as {4}", line, column, Name, Id, value);
 
             if (options.TrimTrailingWhiteSpace)
             {
@@ -111,28 +117,31 @@ namespace Tokens
 
             object input = value;
 
-            foreach (var decorator in Decorators)
+            using (new LogIndentation())
             {
-                if (decorator.IsTransformer)
+                foreach (var decorator in Decorators)
                 {
-                    var output = decorator.Transform(input);
-            
-                    Log.Debug($"     -> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
-
-                    input = output;
-                }
-
-                if (decorator.IsValidator)
-                {
-                    if (decorator.Validate(input))
+                    if (decorator.IsTransformer)
                     {
-                        Log.Debug($"    -> {decorator.DecoratorType.Name} OK!");
+                        var output = decorator.Transform(input);
+
+                        Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
+
+                        input = output;
                     }
-                    else
-                    {
-                        Log.Debug($"    -> {decorator.DecoratorType.Name} Validation Failure: {value}");
 
-                        return false;
+                    if (decorator.IsValidator)
+                    {
+                        if (decorator.Validate(input))
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name} OK!");
+                        }
+                        else
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name} Validation Failure: {value}");
+
+                            return false;
+                        }
                     }
                 }
             }
@@ -148,13 +157,13 @@ namespace Tokens
             }
             catch (MissingMemberException)
             {
-                Log.Warn($"       Missing property on target: {Name}");
+                Log.Verbose($"Missing property on target: {Name}");
 
                 throw;
             }
             catch (TypeConversionException ex)
             {
-                Log.Warn($"       {ex.Message}");
+                Log.Verbose($"{ex.Message}");
 
                 return false;
             }

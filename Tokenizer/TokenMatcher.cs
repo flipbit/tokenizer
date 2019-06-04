@@ -23,7 +23,7 @@ namespace Tokens
         public TokenMatcher()
         {
             parser = new TokenParser();
-            Templates = new List<Template>();
+            Templates = new TemplateCollection();
             tokenizer = new Tokenizer();
             log = LogProvider.GetLogger(typeof(TokenMatcher));
         }
@@ -33,7 +33,7 @@ namespace Tokens
             tokenizer.Options = options;
         }
 
-        public IList<Template> Templates { get; }
+        public TemplateCollection Templates { get; }
 
         public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
         {
@@ -50,52 +50,61 @@ namespace Tokens
             {
                 log.Info("Start: Matching: {0}", template.Name);
 
-                // Check template has tags
-                if (template.Tags.Count != 0 || tags.Length != 0)
+                using (new LogIndentation())
                 {
-                    var found = false;
-
-                    foreach (var templateTag in template.Tags)
+                    // Check template has tags
+                    if (template.Tags.Count != 0 || tags.Length != 0)
                     {
-                        if (tags.Any(tag => string.Compare(tag, templateTag, StringComparison.InvariantCultureIgnoreCase) == 0))
+                        var found = false;
+
+                        foreach (var templateTag in template.Tags)
                         {
-                            found = true;
-                            log.Info("  Found tag matching: {0}", templateTag);
-                            break;
+                            if (tags.Any(tag => string.Compare(tag, templateTag, StringComparison.InvariantCultureIgnoreCase) == 0))
+                            {
+                                found = true;
+                                log.Info("Found tag matching: {0}", templateTag);
+                                break;
+                            }
+                        }
+
+                        if (found == false)
+                        {
+                            log.Verbose("No tags matching: {0}", string.Join(",", template.Tags));
+                            log.Trace("Finish: Matching: {0}", template.Name);
+                            continue;
                         }
                     }
 
-                    if (found == false)
+                    try
                     {
-                        log.Info("  No tags matching: {0}", string.Join(",", template.Tags));
-                        log.Info("Finish: Matching: {0}", template.Name);
-                        continue;
+                        TokenizeResult<T> result;
+
+                        using (new LogIndentation())
+                        {
+                            result = tokenizer.Tokenize<T>(template, input);
+                        }
+
+                        results.Results.Add(result);
+
+                        log.Verbose("Match Success: {0}", result.Success);
+                        log.Verbose("Total Matches: {0}", result.Tokens.Matches.Count);
+                        log.Verbose("Total Errors : {0}", result.Exceptions.Count);
+
+                    }
+                    catch (Exception e)
+                    {
+                        var exception = new TokenMatcherException(e.Message, e)
+                        {
+                            Template = template
+                        };
+
+                        log.ErrorException($"Error processing template: {template.Name}", e);
+
+                        throw exception;
                     }
                 }
 
-                try
-                {
-                    var result = tokenizer.Tokenize<T>(template, input);
-
-                    results.Results.Add(result);
-   
-                    log.Info("  Match Success: {0}", result.Success);
-                    log.Info("  Total Matches: {0}", result.Tokens.Matches.Count);
-                    log.Info("  Total Errors : {0}", result.Exceptions.Count);
-                    
-                    log.Info("Finish: Matching: {0}", template.Name);
-                }
-                catch (Exception e)
-                {
-                    var exception = new TokenMatcherException(e.Message, e)
-                    {
-                        Template = template
-                    };
-
-                    log.ErrorException($"Error processing template: {template.Name}", e);
-
-                    throw exception;
-                }
+                log.Info("Finish: Matching: {0}", template.Name);
             }
 
             // Assign best match
@@ -107,6 +116,15 @@ namespace Tokens
         public TokenMatcher RegisterTemplate(string content, string name)
         {
             var template = parser.Parse(content, name);
+
+            Templates.Add(template);
+
+            return this;
+        }
+
+        public TokenMatcher RegisterTemplate(string content)
+        {
+            var template = parser.Parse(content);
 
             Templates.Add(template);
 

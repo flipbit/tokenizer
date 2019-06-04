@@ -184,6 +184,7 @@ namespace Tokens.Parsers
                     break;
 
                 case "\n":
+                case "\r":
                     break;
 
                 default:
@@ -200,7 +201,7 @@ namespace Tokens.Parsers
             switch (next)
             {
                 case ":":
-                    if (frontMatterName.ToString().Trim().ToLowerInvariant() == "token")
+                    if (frontMatterName.ToString().Trim().ToLowerInvariant() == "set")
                     {
                         inFrontMatterToken = true;
                         frontMatterName.Clear();

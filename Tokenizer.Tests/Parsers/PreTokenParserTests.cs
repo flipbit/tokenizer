@@ -670,7 +670,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsToken()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -680,7 +680,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndDecorator()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -692,7 +692,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndDecoratorWithArgument()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(Arg1) \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1) \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -706,7 +706,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndDecoratorWithMultipleArguments()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(Arg1, Arg2) \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1, Arg2) \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -721,7 +721,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndDecoratorWithDoubleQuotedArgument()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator(\"Arg1, Arg2\") \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(\"Arg1, Arg2\") \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -735,7 +735,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndDecoratorWithSingleQuotedArgument()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken : MyDecorator('Arg1, Arg2') \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator('Arg1, Arg2') \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -749,7 +749,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndAssignment()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken = Foo \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken = Foo \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -760,7 +760,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndAssignmentInSingleQuotes()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken = 'Foo Bar' \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken = 'Foo Bar' \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -771,7 +771,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsTokenAndAssignmentInDoubleQuotes()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken = \"Foo Bar\" \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n---\nPreamble\n");
 
             Assert.AreEqual(2, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -782,7 +782,7 @@ namespace Tokens.Parsers
         [Test]
         public void TestParseFrontMatterSetsMultipleTokens()
         {
-            var template = parser.Parse("---\n# Comment\nToken: MyToken = \"Foo Bar\" \n  token  : this = that : ToUpper \n---\nPreamble\n");
+            var template = parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n  Set  : this = that : ToUpper \n---\nPreamble\n");
 
             Assert.AreEqual(3, template.Tokens.Count);
             Assert.AreEqual("MyToken", template.Tokens[0].Name);
@@ -794,6 +794,28 @@ namespace Tokens.Parsers
             Assert.AreEqual("that", template.Tokens[1].Value);
             Assert.AreEqual(1, template.Tokens[1].Decorators.Count);
             Assert.AreEqual("ToUpper", template.Tokens[1].Decorators[0].Name);
+        }
+
+        [Test]
+        public void TestParseFrontMatterWithMultipleComments()
+        {
+            var content = @"---
+#
+# .capetown Parsing Template
+#
+
+# Use this template for queries to capetown-whois.registry.net.za:
+tag: capetown-whois.registry.net.za
+tag: capetown
+
+# Set query response type:
+set: Response = NotFound
+---
+";
+
+            var template = parser.Parse(content);
+
+            Assert.AreEqual(2, template.Tags.Count);
         }
     }
 }

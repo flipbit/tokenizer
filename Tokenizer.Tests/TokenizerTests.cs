@@ -484,6 +484,25 @@ Last Name: {LastName}
 
             Assert.AreEqual(person.Age, 11);
         }
+
+        [Test]
+        public void TestTemplateWithSetToken()
+        {
+            // Front matter configuration
+            const string pattern = @"---
+# Trim Whitespace
+set: LastName = Smith
+---
+First Name: {FirstName}
+...";
+
+            const string input = "First Name: John    ";
+
+            var student = tokenizer.Tokenize<Student>(pattern, input).Value;
+
+            Assert.AreEqual("John", student.FirstName);
+            Assert.AreEqual("Smith", student.LastName);
+        }
     }
 }
 

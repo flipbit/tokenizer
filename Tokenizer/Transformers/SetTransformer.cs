@@ -14,7 +14,7 @@ namespace Tokens.Transformers
                 throw new ArgumentException("Set() must specified one argument to set - Set( value)");
             }
 
-            return args[0];
+            return args[0].Trim();
         }
     }
 }

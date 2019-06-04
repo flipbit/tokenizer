@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -78,59 +79,102 @@ namespace Tokens
 
         private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
         {
-            log.Debug($"Start: Processing: {template.Name}");
+                log.Verbose($"Start: Processing: {template.Name}");
 
-            Token current = null;
-
-            var enumerator = new TokenEnumerator(input);
-            var replacement = new StringBuilder();
-            var matchIds = new List<int>();
-            var line = 1;
-            var column = 1;
-
-            var hintsMissing = FindHints(template, enumerator, result);
-
-            while (enumerator.IsEmpty == false && hintsMissing == false)
+            using (new LogIndentation())
             {
-                var next = enumerator.Peek();
+                Token current = null;
 
-                // Handle Windows new lines (normalize to Unix)
-                if (next == "\r" && enumerator.Peek(1) == "\n")
-                {
-                    enumerator.Next();
-                    next = "\n";
-                }
+                var enumerator = new TokenEnumerator(input);
+                var replacement = new StringBuilder();
+                var matchIds = new List<int>();
+                var line = 1;
+                var column = 1;
 
-                // Check for repeated current token
-                if (current != null && enumerator.Match(current.Preamble))
+                var hintsMissing = FindHints(template, enumerator, result);
+
+                while (enumerator.IsEmpty == false && hintsMissing == false)
                 {
-                    // Can't assign, so clear current context and move to next match
-                    if (current.CanAssign(replacement.ToString()) == false)
+                    var next = enumerator.Peek();
+
+                    // Handle Windows new lines (normalize to Unix)
+                    if (next == "\r" && enumerator.Peek(1) == "\n")
                     {
-                        replacement.Clear();
-                        enumerator.Advance(current.Preamble.Length);
-                        line = enumerator.Line;
-                        column = enumerator.Column;
-                        continue;
+                        enumerator.Next();
+                        next = "\n";
+                    }
+
+                    // Check for repeated current token
+                    if (current != null && enumerator.Match(current.Preamble))
+                    {
+                        // Can't assign, so clear current context and move to next match
+                        if (current.CanAssign(replacement.ToString()) == false)
+                        {
+                            replacement.Clear();
+                            enumerator.Advance(current.Preamble.Length);
+                            line = enumerator.Line;
+                            column = enumerator.Column;
+                            continue;
+                        }
+                    }
+
+                    // Check for next token
+                    if (enumerator.Match(template.TokensExcluding(matchIds), out var match))
+                    {
+                        // Special case: first token found, just prepare to read token value
+                        if (current == null)
+                        {
+                            current = match;
+                            replacement.Clear();
+                            enumerator.Advance(match.Preamble.Length);
+                            line = enumerator.Line;
+                            column = enumerator.Column;
+                            matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                            continue;
+                        }
+                        
+                        if (replacement.Length > 0)
+                        {
+                            using (new LogIndentation())
+                            {
+                                try
+                                {
+                                    if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                                    {
+                                        result.Tokens.AddMatch(current, replacement.ToString());
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    log.Verbose(e, "Error Assigning Value: {0}", e.Message);
+                                    result.Exceptions.Add(e);
+                                }
+                            }
+
+                            current = match;
+                            replacement.Clear();
+                            enumerator.Advance(match.Preamble.Length);
+                            line = enumerator.Line;
+                            column = enumerator.Column;
+                            matchIds.AddRange(template.GetTokenIdsUpTo(match));
+                            continue;
+                        }
+
+                        replacement.Append(next);
+                        enumerator.Next();
+                    }
+
+                    // Append to replacement
+                    else 
+                    {
+                        replacement.Append(next);
+                        enumerator.Next();
                     }
                 }
 
-                // Check for next token
-                if (enumerator.Match(template.TokensExcluding(matchIds), out var match))
+                if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
                 {
-                    // Special case: first token found, just prepare to read token value
-                    if (current == null)
-                    {
-                        current = match;
-                        replacement.Clear();
-                        enumerator.Advance(match.Preamble.Length);
-                        line = enumerator.Line;
-                        column = enumerator.Column;
-                        matchIds.AddRange(template.GetTokenIdsUpTo(match));
-                        continue;
-                    }
-                    
-                    if (replacement.Length > 0)
+                    using (new LogIndentation())
                     {
                         try
                         {
@@ -141,61 +185,38 @@ namespace Tokens
                         }
                         catch (Exception e)
                         {
-                            log.Error(e, "     Error Assigning Value: {0}", e.Message);
+                            log.Verbose(e, "Error Assigning Value: {0}", e.Message);
                             result.Exceptions.Add(e);
                         }
-                        
-                        current = match;
-                        replacement.Clear();
-                        enumerator.Advance(match.Preamble.Length);
-                        line = enumerator.Line;
-                        column = enumerator.Column;
-                        matchIds.AddRange(template.GetTokenIdsUpTo(match));
-                        continue;
                     }
-
-                    replacement.Append(next);
-                    enumerator.Next();
                 }
 
-                // Append to replacement
-                else 
+                // Process front matter tokens
+                foreach (var token in template.Tokens.Where(t => t.IsFrontMatterToken))
                 {
-                    replacement.Append(next);
-                    enumerator.Next();
-                }
-            }
-
-            if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
-            {
-                try
-                {
-                    if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                    using (new LogIndentation())
                     {
-                        result.Tokens.AddMatch(current, replacement.ToString());
+                        if (token.Assign(value, string.Empty, template.Options, line, column))
+                        {
+                            result.Tokens.AddMatch(token, string.Empty);
+                        }
                     }
                 }
-                catch (Exception e)
+
+                // Build unmatched collection
+                foreach (var token in template.Tokens)
                 {
-                    log.Error(e, "    Error Assigning Value: {0}", e.Message);
-                    result.Exceptions.Add(e);
+                    if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
+                    {
+                        result.Tokens.Misses.Add(token);
+                    }
                 }
-                
+
+                log.Verbose($"Found {result.Tokens.Matches.Count} matches.");
+                log.Verbose("{0} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
             }
 
-            // Build unmatched collection
-            foreach (var token in template.Tokens)
-            {
-                if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
-                {
-                    result.Tokens.Misses.Add(token);
-                }
-            }
-
-            log.Debug($"  Found {result.Tokens.Matches.Count} matches.");
-            log.Debug("  {0} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
-
-            log.Debug($"Finished: Processing: {template.Name}");
+            log.Verbose($"Finished: Processing: {template.Name}");
         }
 
         private bool FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 
@@ -247,6 +268,14 @@ namespace Tokens
 
             return this;
         }
-
+        public static Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
     }
 }

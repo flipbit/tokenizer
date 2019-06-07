@@ -298,5 +298,43 @@ namespace Tokens.Extensions
 
             return value;
         }
+
+        public static bool EndsWithNewLine(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return false;
+
+            // Check Unix format
+            if (value.Substring(value.Length - 1) == "\n")
+            {
+                return true;
+            }
+
+            // Check Windows format
+            if (value.Length >= 2 && value.Substring(value.Length - 2) == "\r\n")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string TrimTrailingNewLine(this string value)
+        {
+            if (value.EndsWithNewLine() == false) return value; 
+
+            // Check Windows format
+            if (value.Length >= 2 && value.Substring(value.Length - 2) == "\r\n")
+            {
+                return value.Substring(0, value.Length - 2);
+            }
+
+            // Check Unix format
+            if (value.Substring(value.Length - 1) == "\n")
+            {
+                return value.Substring(0, value.Length - 1);
+            }
+
+            return value;
+        }
     }
 }

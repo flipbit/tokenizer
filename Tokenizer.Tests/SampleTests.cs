@@ -212,6 +212,20 @@ namespace Tokens
 
         }
 
+        [Test]
+        public void TestGoogleVg()
+        {
+            var template = ReadTemplate("whois.vg");
+            var input = ReadData("google.vg");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(7, result.Values.Count);
+
+
+        }
+
         private string ReadData(string name)
         {
             return Read("Data", name);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using Tokens.Samples;
 using Tokens.Samples.Classes;
@@ -221,9 +222,27 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(7, result.Values.Count);
+            Assert.AreEqual(37, result.Values.Count);
+        }
 
+        [Test]
+        public void TestGoogleCc()
+        {
+            var template = ReadTemplate("whois.cc");
+            var input = ReadData("google.cc");
 
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(14, result.Values.Count);
+
+            var nameServers = result.Values["NameServers"] as List<object>;
+
+            Assert.AreEqual(4, nameServers.Count);
+            Assert.AreEqual("ns1.google.com", nameServers[0]);
+            Assert.AreEqual("ns2.google.com", nameServers[1]);
+            Assert.AreEqual("ns3.google.com", nameServers[2]);
+            Assert.AreEqual("ns4.google.com", nameServers[3]);
         }
 
         private string ReadData(string name)

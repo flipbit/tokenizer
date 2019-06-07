@@ -110,6 +110,7 @@ namespace Tokens
                         // Can't assign, so clear current context and move to next match
                         if (current.CanAssign(replacement.ToString()) == false)
                         {
+                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, current.Name, current.Id, replacement.ToString());
                             replacement.Clear();
                             enumerator.Advance(current.Preamble.Length);
                             line = enumerator.Line;

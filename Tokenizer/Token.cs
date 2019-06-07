@@ -205,7 +205,20 @@ namespace Tokens
         {
             if (string.IsNullOrEmpty(value)) return false;
 
-            object input = value.TrimTrailingNewLine();
+            // Trim trailing new line
+            value = value.TrimTrailingNewLine();
+
+            // Only check up to new line if set
+            if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
+            {
+                var index = value.IndexOf("\n");
+                if (index > 0)
+                {
+                    value = value.Substring(0, index);
+                }
+            }
+
+            object input = value;
 
             foreach (var decorator in Decorators)
             {

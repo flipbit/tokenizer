@@ -92,13 +92,8 @@ namespace Tokens
             if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
             if (string.IsNullOrWhiteSpace(Name)) return false;
 
-
-            if (string.IsNullOrEmpty(value) == false &&
-                value.Substring(value.Length - 1) == "\n")
-            {
-                value = value.Substring(0, value.Length - 1);
-            }
-
+            value = value.TrimTrailingNewLine();
+            
             if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
             {
                 var index = value.IndexOf("\n");
@@ -206,9 +201,11 @@ namespace Tokens
             return true;
         }
 
-        public bool CanAssign(string value)
+        internal bool CanAssign(string value)
         {
-            object input = value;
+            if (string.IsNullOrEmpty(value)) return false;
+
+            object input = value.TrimTrailingNewLine();
 
             foreach (var decorator in Decorators)
             {

@@ -183,5 +183,77 @@ namespace Tokens.Extensions
 
             Assert.AreEqual(null, result);
         }
+
+        [Test]
+        public void TestEndsWithNewLineWithUnixNewLine()
+        {
+            Assert.IsTrue("Ends with unix\n".EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestEndsWithNewLineWithWindowsNewLine()
+        {
+            Assert.IsTrue("Ends with Windows\r\n".EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestEndsWithNewLineWhenFalse()
+        {
+            Assert.IsFalse("Ends with nothing".EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestEndsWithNewLineWhenEmpty()
+        {
+            Assert.IsFalse("".EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestEndsWithNewLineWhenNull()
+        {
+            Assert.IsFalse(((string) null).EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestEndsWithNewLineWhenShort()
+        {
+            Assert.IsFalse("x".EndsWithNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWithUnixNewLine()
+        {
+            Assert.AreEqual("Ends with unix", "Ends with unix\n".TrimTrailingNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWithWindowsNewLine()
+        {
+            Assert.AreEqual("Ends with Windows", "Ends with Windows\r\n".TrimTrailingNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWhenFalse()
+        {
+            Assert.AreEqual("Ends with nothing", "Ends with nothing".TrimTrailingNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWhenEmpty()
+        {
+            Assert.AreEqual("", "".TrimTrailingNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWhenNull()
+        {
+            Assert.AreEqual(null, ((string) null).TrimTrailingNewLine());
+        }
+
+        [Test]
+        public void TestTrimTrailingNewLineWhenShort()
+        {
+            Assert.AreEqual("x", "x".TrimTrailingNewLine());
+        }
     }
 }

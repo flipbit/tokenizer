@@ -55,6 +55,7 @@ namespace Tokens.Parsers
             RegisterValidator<IsEmailValidator>();
             RegisterValidator<IsUrlValidator>();
             RegisterValidator<IsDateTimeValidator>();
+            RegisterValidator<IsNotEmptyValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

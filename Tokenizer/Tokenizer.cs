@@ -119,6 +119,35 @@ namespace Tokens
                         }
                     }
 
+                    // Assign newline terminated token
+                    if (current != null && current.TerminateOnNewLine && next == "\n")
+                    {
+                        using (new LogIndentation())
+                        {
+                            try
+                            {
+                                if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                                {
+                                    result.Tokens.AddMatch(current, replacement.ToString());
+                                }
+                                else
+                                {
+                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, current.Name, current.Id, replacement.ToString());
+
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                log.Verbose(e, "Error Assigning Value: {0}", e.Message);
+                                result.Exceptions.Add(e);
+                            }
+                        }
+
+                        current = null;
+                        replacement.Clear();
+                        //matchIds.AddRange(template.GetTokenIdsUpTo(current));
+                    }
+
                     // Check for next token
                     if (enumerator.Match(template.TokensExcluding(matchIds), out var match))
                     {
@@ -193,17 +222,19 @@ namespace Tokens
                 }
 
                 // Process front matter tokens
-                foreach (var token in template.Tokens.Where(t => t.IsFrontMatterToken))
+                if (hintsMissing == false)
                 {
-                    using (new LogIndentation())
+                    foreach (var token in template.Tokens.Where(t => t.IsFrontMatterToken))
                     {
-                        if (token.Assign(value, string.Empty, template.Options, line, column))
+                        using (new LogIndentation())
                         {
-                            result.Tokens.AddMatch(token, string.Empty);
+                            if (token.Assign(value, string.Empty, template.Options, line, column))
+                            {
+                                result.Tokens.AddMatch(token, string.Empty);
+                            }
                         }
                     }
                 }
-
                 // Build unmatched collection
                 foreach (var token in template.Tokens)
                 {

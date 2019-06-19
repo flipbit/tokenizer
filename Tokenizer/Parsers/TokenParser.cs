@@ -109,7 +109,7 @@ namespace Tokens.Parsers
 
             foreach (var preToken in preTemplate.Tokens)
             {
-                var token = new Token();
+                var token = new Token(preToken.Content);
 
                 if (Options.TrimLeadingWhitespaceInTokenPreamble)
                 {
@@ -139,6 +139,7 @@ namespace Tokens.Parsers
                 token.Id = preToken.Id;
                 token.DependsOnId = preToken.DependsOnId;
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
+                token.IsNull = preToken.IsNull;
 
                 foreach (var tag in preTemplate.Tags)
                 {
@@ -155,7 +156,7 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace("  -> Token {0:000}: '{1}'", token.Id, token.Name);
+                log.Trace("  -> Token[{0:000}]: '{1}'", token.Id, token.Name);
             }
 
             log.Debug("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));

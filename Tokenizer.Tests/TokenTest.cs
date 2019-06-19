@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using Tokens.Extensions;
 using Tokens.Validators;
 
 namespace Tokens
@@ -22,7 +21,7 @@ namespace Tokens
         [SetUp]
         public void SetUp()
         {
-            token = new Token();
+            token = new Token("Test");
         }
 
         [Test]

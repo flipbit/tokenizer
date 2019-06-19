@@ -245,6 +245,80 @@ namespace Tokens
             Assert.AreEqual("ns4.google.com", nameServers[3]);
         }
 
+        [Test]
+        public void TestGoogleCoZa()
+        {
+            var template = ReadTemplate("whois.co.za");
+            var input = ReadData("google.co.za");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(14, result.Values.Count);
+
+            var nameServers = result.Values["NameServers"] as List<object>;
+
+            Assert.AreEqual(4, nameServers.Count);
+            Assert.AreEqual("ns1.google.com", nameServers[0]);
+            Assert.AreEqual("ns2.google.com", nameServers[1]);
+            Assert.AreEqual("ns3.google.com", nameServers[2]);
+            Assert.AreEqual("ns4.google.com", nameServers[3]);
+        }
+
+        [Test]
+        public void TestGoogleBiz()
+        {
+            var template = ReadTemplate("whois.generic");
+            var input = ReadData("google.biz");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(14, result.Values.Count);
+
+            var nameServers = result.Values["NameServers"] as List<object>;
+
+            Assert.AreEqual(4, nameServers.Count);
+            Assert.AreEqual("ns1.google.com", nameServers[0]);
+            Assert.AreEqual("ns2.google.com", nameServers[1]);
+            Assert.AreEqual("ns3.google.com", nameServers[2]);
+            Assert.AreEqual("ns4.google.com", nameServers[3]);
+        }
+
+        [Test]
+        public void TestTokenMatcherCom()
+        {
+            var template = ReadTemplate("whois.iana");
+            var input = ReadData("com");
+
+            var matcher = new TokenMatcher();
+
+            matcher.RegisterTemplate(template);
+
+            var match = matcher.Match(input);
+
+            Assert.AreEqual(21, match.BestMatch.Values.Count);
+            AssertWriter.Write(match);
+ 
+            Assert.AreEqual(match.BestMatch.Values["AdminContact.Email"], "info@verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.Values["AdminContact.FaxNumber"], "+1 703 948 3978");
+            Assert.AreEqual(match.BestMatch.Values["AdminContact.Name"], "Registry Customer Service");
+            Assert.AreEqual(match.BestMatch.Values["AdminContact.Organization"], "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.Values["AdminContact.TelephoneNumber"], "+1 703 925-6999");
+            Assert.AreEqual(match.BestMatch.Values["Changed"], "2012-02-15");
+            Assert.AreEqual(match.BestMatch.Values["Created"], "1985-01-01");
+            Assert.AreEqual(match.BestMatch.Values["Organization.Name"], "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.Values["Remarks"], "Registration information: http://www.verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.Values["Status"], "Found");
+            Assert.AreEqual(match.BestMatch.Values["TechContact.Email"], "info@verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.Values["TechContact.FaxNumber"], "+1 703 948 3978");
+            Assert.AreEqual(match.BestMatch.Values["TechContact.Name"], "Registry Customer Service");
+            Assert.AreEqual(match.BestMatch.Values["TechContact.Organization"], "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.Values["TechContact.TelephoneNumber"], "+1 703 925-6999");
+            Assert.AreEqual(match.BestMatch.Values["Tld"], "com");
+            Assert.AreEqual(match.BestMatch.Values["Url"], "whois.verisign-grs.com");           
+        }
+
         private string ReadData(string name)
         {
             return Read("Data", name);

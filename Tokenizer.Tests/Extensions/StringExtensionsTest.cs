@@ -255,5 +255,17 @@ namespace Tokens.Extensions
         {
             Assert.AreEqual("x", "x".TrimTrailingNewLine());
         }
+
+        [Test]
+        public void TestToLogInfoString()
+        {
+            Assert.AreEqual("Hello", "Hello".ToLogInfoString());
+        }
+
+        [Test]
+        public void TestToLogInfoStringWithControlCharacters()
+        {
+            Assert.AreEqual("Hello\\r\\n\\t", "Hello\r\n\t".ToLogInfoString());
+        }
     }
 }

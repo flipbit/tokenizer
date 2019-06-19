@@ -817,5 +817,19 @@ set: Response = NotFound
 
             Assert.AreEqual(2, template.Tags.Count);
         }
+
+        [Test]
+        public void TestParseNullToken()
+        {
+            var template = parser.Parse("This is the preamble{ Null } Next preamble");
+
+            Assert.AreEqual(2, template.Tokens.Count);
+
+            var token = template.Tokens.First();
+
+            Assert.AreEqual("This is the preamble", token.Preamble);
+            Assert.AreEqual("Null", token.Name);
+            Assert.AreEqual(true, token.IsNull);
+        }
     }
 }

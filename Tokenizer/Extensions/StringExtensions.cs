@@ -336,5 +336,50 @@ namespace Tokens.Extensions
 
             return value;
         }
+
+        public static string ToLogInfoString(this object value)
+        {
+            if (value == null) return string.Empty;
+
+            var sb = new StringBuilder();
+
+            string str = value.ToString();
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                char @char = str[i];
+                
+                switch (@char)
+                {
+                    case '\r':
+                        sb.Append("\\r");
+                        break;
+
+                    case '\n':
+                        sb.Append("\\n");
+                        break;
+
+                    case '\t':
+                        sb.Append("\\t");
+                        break;
+
+                    default:
+                        sb.Append(@char);
+                        break;
+                }
+
+                if (sb.Length > 65)
+                {
+                    if (i != str.Length - 1)
+                    {
+                        sb.Append("...");
+                    }
+
+                    break;
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 }

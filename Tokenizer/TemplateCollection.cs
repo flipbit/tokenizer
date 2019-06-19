@@ -16,7 +16,7 @@ namespace Tokens
 
         public bool ContainsAllTags(params string[] tags)
         {
-            return this.Any(t => t.HasAllTags(tags));
+            return this.Any(t => t.HasTags(tags));
         }
     }
 }

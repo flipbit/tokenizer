@@ -4,7 +4,6 @@ using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
 using Tokens.Transformers;
-using Tokens.Validators;
 
 namespace Tokens
 {
@@ -14,6 +13,7 @@ namespace Tokens
     public class Token
     {
         private static readonly ILog Log;
+        private string content;
 
         /// <summary>
         /// Sets the token logger
@@ -26,8 +26,9 @@ namespace Tokens
         /// <summary>
         /// Creates a new instance of the <see cref="Token"/> class.
         /// </summary>
-        public Token()
+        public Token(string content)
         {
+            this.content = content;
             Decorators = new List<TokenDecoratorContext>();
         }
 
@@ -87,9 +88,23 @@ namespace Tokens
         /// </summary>
         public bool IsFrontMatterToken { get; set; }
 
+        /// <summary>
+        /// Determines if this token is a null placeholder
+        /// </summary>
+        public bool IsNull { get; set; }
+
+        /// <summary>
+        /// Returns the string from which this token was created.
+        /// </summary>
+        public override string ToString()
+        {
+            return content;
+        }
+
         internal bool Assign(object target, string value, TokenizerOptions options, int line, int column)
         {
             if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
+            if (IsNull) return false;
             if (string.IsNullOrWhiteSpace(Name)) return false;
 
             value = value.TrimTrailingNewLine();
@@ -103,7 +118,7 @@ namespace Tokens
                 }
             }
 
-            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2} ({3}) as {4}", line, column, Name, Id, value);
+            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2}[{3}] as {4}", line, column, Name, Id, value.ToLogInfoString());
 
             if (options.TrimTrailingWhiteSpace)
             {
@@ -120,7 +135,14 @@ namespace Tokens
                     {
                         var output = decorator.Transform(input);
 
-                        Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
+                        if (decorator.DecoratorType == typeof(SetTransformer))
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Set value to '{output}'");
+                        }
+                        else
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
+                        }
 
                         input = output;
                     }

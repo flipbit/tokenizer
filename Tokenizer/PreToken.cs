@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Tokens
@@ -75,5 +76,18 @@ namespace Tokens
         public bool HasValue => value.Length > 0;
 
         public bool IsFrontMatterToken { get; set; }
+
+        internal void TrimPreambleBeforeNewLine()
+        {
+            var preambleContent = preamble.ToString();
+
+            if (preambleContent.Contains("\n"))
+            {
+                var trimmed = preambleContent.Substring(preambleContent.LastIndexOf("\n") + 1);
+
+                preamble.Clear();
+                preamble.Append(trimmed);
+            }
+        }
     }
 }

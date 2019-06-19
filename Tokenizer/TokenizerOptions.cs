@@ -16,6 +16,8 @@ namespace Tokens
 
         public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
 
+        public bool TrimPreambleBeforeNewLine { get; set; }
+
         public bool TrimTrailingWhiteSpace { get; set; }
 
         public bool OutOfOrderTokens { get; set; }
@@ -33,6 +35,7 @@ namespace Tokens
         public void ResetDefaults()
         {
             TrimLeadingWhitespaceInTokenPreamble = true;
+            TrimPreambleBeforeNewLine = false;
             TrimTrailingWhiteSpace = true;
             TokenStringComparison = StringComparison.InvariantCulture;
             OutOfOrderTokens = false;
@@ -47,7 +50,8 @@ namespace Tokens
                 TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
                 TokenStringComparison = TokenStringComparison,
                 OutOfOrderTokens = OutOfOrderTokens,
-                EnableLogging = EnableLogging
+                EnableLogging = EnableLogging,
+                TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine
             };
         }
     }

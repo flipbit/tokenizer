@@ -154,14 +154,13 @@ namespace Tokens
             matcher.Templates[0].Tags.Add("no-age");
             matcher.Templates[1].Tags.Add("with-age");
 
-            var result = matcher.Match<Person>("Name: Alice, Age: 30");
+            var result = matcher.Match<Person>("Name: Alice, Age: 30", new [] { "Foo" });
 
             Assert.IsFalse(result.Success);
             Assert.IsNull(result.BestMatch);
         }
-
         [Test]
-        public void TestParseTwoPatternsWithTagsWithInputWithNoTags()
+        public void TestParseTwoPatternsWithNoTagInput()
         {
             matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
@@ -171,8 +170,12 @@ namespace Tokens
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
-            Assert.IsFalse(result.Success);
-            Assert.IsNull(result.BestMatch);
+            var match = result.BestMatch;
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Alice", match.Value.Name);
+            Assert.AreEqual(30, match.Value.Age);
+            Assert.AreEqual("with-age", match.Template.Name);
         }
 
         [Test]

@@ -35,16 +35,16 @@ namespace Tokens
 
         public TemplateCollection Templates { get; }
 
-        public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
+        public TokenMatcherResult Match(string input)
         {
-            return Match<T>(input, null);
+            return Match(input, null);
         }
 
-        public TokenMatcherResult<T> Match<T>(string input, string[] tags) where T : class, new()
+        public TokenMatcherResult Match(string input, string[] tags)
         {
-            var results = new TokenMatcherResult<T>();
-            
             if (tags == null) tags = new string[0];
+
+            var results = new TokenMatcherResult();
 
             foreach (var template in Templates)
             {
@@ -53,26 +53,71 @@ namespace Tokens
                 using (new LogIndentation())
                 {
                     // Check template has tags
-                    if (template.Tags.Count != 0 || tags.Length != 0)
+                    if (CheckTemplateTags(template, tags) == false)
                     {
-                        var found = false;
+                        continue;
+                    }
 
-                        foreach (var templateTag in template.Tags)
+                    try
+                    {
+                        TokenizeResult result;
+
+                        using (new LogIndentation())
                         {
-                            if (tags.Any(tag => string.Compare(tag, templateTag, StringComparison.InvariantCultureIgnoreCase) == 0))
-                            {
-                                found = true;
-                                log.Info("Found tag matching: {0}", templateTag);
-                                break;
-                            }
+                            result = tokenizer.Tokenize(template, input);
                         }
 
-                        if (found == false)
+                        results.Results.Add(result);
+
+                        log.Verbose("Match Success: {0}", result.Success);
+                        log.Verbose("Total Matches: {0}", result.Tokens.Matches.Count);
+                        log.Verbose("Total Errors : {0}", result.Exceptions.Count);
+
+                    }
+                    catch (Exception e)
+                    {
+                        var exception = new TokenMatcherException(e.Message, e)
                         {
-                            log.Verbose("No tags matching: {0}", string.Join(",", template.Tags));
-                            log.Trace("Finish: Matching: {0}", template.Name);
-                            continue;
-                        }
+                            Template = template
+                        };
+
+                        log.ErrorException($"Error processing template: {template.Name}", e);
+
+                        throw exception;
+                    }
+                }
+
+                log.Info("Finish: Matching: {0}", template.Name);
+            }
+
+            // Assign best match
+            results.BestMatch = results.GetBestMatch();
+
+            return results;
+
+        }
+
+        public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
+        {
+            return Match<T>(input, null);
+        }
+
+        public TokenMatcherResult<T> Match<T>(string input, string[] tags) where T : class, new()
+        {
+            if (tags == null) tags = new string[0];
+
+            var results = new TokenMatcherResult<T>();
+
+            foreach (var template in Templates)
+            {
+                log.Info("Start: Matching: {0}", template.Name);
+
+                using (new LogIndentation())
+                {
+                    // Check template has tags
+                    if (CheckTemplateTags(template, tags) == false)
+                    {
+                        continue;
                     }
 
                     try
@@ -143,6 +188,28 @@ namespace Tokens
             parser.RegisterValidator<T>();
 
             return this;
+        }
+
+        private bool CheckTemplateTags(Template template, string[] tags)
+        {
+            // No tags specified, always match template
+            if (tags.Length == 0) return true;
+
+            // Check template has tags
+            if (template.Tags.Any())
+            {
+                if (template.HasTags(tags, out var missing) == false)
+                { 
+                    log.Verbose("No tags matching: {0}", missing);
+                    log.Trace("Finish: Matching: {0}", template.Name);
+                    return false;
+                }
+                
+                log.Info("Found tag matching: {0}", string.Join(", ", tags));
+                return true;
+            }
+
+            return false;
         }
     }
 }

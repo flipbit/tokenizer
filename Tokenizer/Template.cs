@@ -60,22 +60,52 @@ namespace Tokens
         public TokenizerOptions Options { get; set; }
 
         /// <summary>
-        /// Determines if this instance contains all of the given tags.
+        /// Determines if this instance contains the given tag.
         /// </summary>
-        public bool HasAllTags(IList<string> tags)
+        public bool HasTag(string tag)
         {
-            if (tags == null) return false;
-            if (tags.Count > Tags.Count) return false;
+            if (string.IsNullOrEmpty(tag)) return false;
 
-            foreach (var tag in tags)
+            foreach (var candidate in Tags)
             {
-                if (Tags.Any(t => string.Compare(t, tag, StringComparison.InvariantCultureIgnoreCase) == 0) == false)
+                if (string.Compare(candidate, tag, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if this instance contains all of the given tags.
+        /// </summary>
+        public bool HasTags(IList<string> tags)
+        {
+            return HasTags(tags, out _);
+        }
+
+        /// <summary>
+        /// Determines if this instance contains all of the given tags.
+        /// </summary>
+        public bool HasTags(IList<string> tags, out IList<string> missing)
+        {
+            missing = new List<string>();
+
+            if (tags == null)
+            {
+                return false;
+            }
+
+            foreach (var tag in tags)
+            {
+                if (HasTag(tag) == false)
+                {
+                    missing.Add(tag);
+                }
+            }
+
+            return missing.Count == 0;
         }
 
         internal IEnumerable<int> GetTokenIdsUpTo(Token token)

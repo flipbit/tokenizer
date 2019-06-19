@@ -42,6 +42,7 @@ namespace Tokens.Parsers
             var token = new PreToken();
             var decorator = new PreTokenDecorator();
             var argument = string.Empty;
+            var tokenContent = new StringBuilder();
             var frontMatterName = new StringBuilder();
             var frontMatterValue = new StringBuilder();
             var inFrontMatterToken = false;
@@ -76,11 +77,11 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InTokenName:
-                        ParseTokenName(preTemplate, ref token, enumerator, ref state, ref inFrontMatterToken);
+                        ParseTokenName(preTemplate, ref token, enumerator, ref state, ref inFrontMatterToken, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InTokenValue:
-                        ParseTokenValue(preTemplate, ref token, enumerator, ref state, ref inFrontMatterToken);
+                        ParseTokenValue(preTemplate, ref token, enumerator, ref state, ref inFrontMatterToken, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InTokenValueSingleQuotes:
@@ -92,11 +93,11 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InTokenValueRunOff:
-                        ParseTokenValueRunOff(enumerator, ref preTemplate, ref token, ref state, ref inFrontMatterToken);
+                        ParseTokenValueRunOff(enumerator, ref preTemplate, ref token, ref state, ref inFrontMatterToken, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InDecorator:
-                        ParseDecorator(preTemplate, ref token, enumerator, ref state, ref decorator, ref inFrontMatterToken);
+                        ParseDecorator(preTemplate, ref token, enumerator, ref state, ref decorator, ref inFrontMatterToken, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgument:
@@ -126,7 +127,7 @@ namespace Tokens.Parsers
             // token in the template
             if (string.IsNullOrWhiteSpace(token.Preamble) == false)
             {
-                AppendToken(preTemplate, token);
+                AppendToken(preTemplate, token, ref tokenContent);
             }
 
             return preTemplate;
@@ -348,10 +349,11 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseTokenName(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref bool inFrontMatterToken)
+        private void ParseTokenName(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref bool inFrontMatterToken, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
             var peek = enumerator.Peek();
+            tokenContent.Append(next);
 
             switch (next)
             {
@@ -365,7 +367,7 @@ namespace Tokens.Parsers
                     }
                     else
                     {
-                        AppendToken(template, token);
+                        AppendToken(template, token, ref tokenContent);
                         token = new PreToken();
                         state = FlatTokenParserState.InPreamble;
                     }
@@ -484,7 +486,7 @@ namespace Tokens.Parsers
                     if (inFrontMatterToken)
                     {
                         token.IsFrontMatterToken = true;
-                        AppendToken(template, token);
+                        AppendToken(template, token, ref tokenContent);
                         token = new PreToken();
                         inFrontMatterToken = false;
                         state = FlatTokenParserState.InFrontMatter;
@@ -508,10 +510,12 @@ namespace Tokens.Parsers
             }
         }
         
-        private void ParseTokenValue(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref bool inFrontMatterToken)
+        private void ParseTokenValue(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref bool inFrontMatterToken, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
             var peek = enumerator.Peek();
+
+            tokenContent.Append(next);
 
             switch (next)
             {
@@ -521,7 +525,7 @@ namespace Tokens.Parsers
                 case "}" when inFrontMatterToken == false:
                 case "\n" when inFrontMatterToken:
                     token.IsFrontMatterToken = inFrontMatterToken;
-                    AppendToken(template, token);
+                    AppendToken(template, token, ref tokenContent);
                     token = new PreToken();
                     if (inFrontMatterToken)
                     {
@@ -607,9 +611,10 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseTokenValueRunOff(PreTokenEnumerator enumerator, ref PreTemplate template, ref PreToken token, ref FlatTokenParserState state, ref bool inFrontMatterToken)
+        private void ParseTokenValueRunOff(PreTokenEnumerator enumerator, ref PreTemplate template, ref PreToken token, ref FlatTokenParserState state, ref bool inFrontMatterToken, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
+            tokenContent.Append(next);
 
             if (string.IsNullOrWhiteSpace(next))
             {
@@ -626,7 +631,7 @@ namespace Tokens.Parsers
                 case "}" when inFrontMatterToken == false:
                 case "\n" when inFrontMatterToken:
                     token.IsFrontMatterToken = inFrontMatterToken;
-                    AppendToken(template, token);
+                    AppendToken(template, token, ref tokenContent);
                     token = new PreToken();
                     if (inFrontMatterToken)
                     {
@@ -644,9 +649,11 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseDecorator(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref bool inFrontMatterToken)
+        private void ParseDecorator(PreTemplate template, ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref bool inFrontMatterToken, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
+
+            tokenContent.Append(next);
 
             if (string.IsNullOrWhiteSpace(next))
             {
@@ -660,7 +667,7 @@ namespace Tokens.Parsers
                 case "\n" when inFrontMatterToken:
                     token.IsFrontMatterToken = inFrontMatterToken;
                     AppendDecorator(enumerator, token, decorator);
-                    AppendToken(template, token);
+                    AppendToken(template, token, ref tokenContent);
                     token = new PreToken();
                     decorator = new PreTokenDecorator();
                     if (inFrontMatterToken)
@@ -807,9 +814,13 @@ namespace Tokens.Parsers
 
         }
 
-        private void AppendToken(PreTemplate template, PreToken token)
+        private void AppendToken(PreTemplate template, PreToken token, ref StringBuilder tokenContent)
         {
+            token.Content = tokenContent.ToString();
             token.Id = template.Tokens.Count + 1;
+            token.IsNull = string.Compare(token.Name, "null", StringComparison.InvariantCultureIgnoreCase) == 0;
+
+            tokenContent.Clear();
 
             var preamble = GetRepeatingMultilinePreamble(token);
 
@@ -822,7 +833,8 @@ namespace Tokens.Parsers
                 {
                     Optional = true,
                     Repeating = true,
-                    TerminateOnNewline = token.TerminateOnNewline
+                    TerminateOnNewline = token.TerminateOnNewline,
+                    Content = token.Content
                 };
 
                 repeat.AppendName(token.Name);

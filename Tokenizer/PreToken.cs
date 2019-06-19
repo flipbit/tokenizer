@@ -39,6 +39,10 @@ namespace Tokens
 
         public bool Required { get; set; }
 
+        public bool IsNull { get; set; }
+
+        public string Content { get; set; }
+
         public IList<PreTokenDecorator> Decorators { get; }
 
         public void AppendPreamble(string value)

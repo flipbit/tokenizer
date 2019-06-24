@@ -254,7 +254,7 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(14, result.Values.Count);
+            Assert.AreEqual(33, result.Values.Count);
 
             var nameServers = result.Values["NameServers"] as List<object>;
 
@@ -274,15 +274,15 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(14, result.Values.Count);
+            Assert.AreEqual(30, result.Values.Count);
 
             var nameServers = result.Values["NameServers"] as List<object>;
 
             Assert.AreEqual(4, nameServers.Count);
             Assert.AreEqual("ns1.google.com", nameServers[0]);
             Assert.AreEqual("ns2.google.com", nameServers[1]);
-            Assert.AreEqual("ns3.google.com", nameServers[2]);
-            Assert.AreEqual("ns4.google.com", nameServers[3]);
+            Assert.AreEqual("ns4.google.com", nameServers[2]);
+            Assert.AreEqual("ns3.google.com", nameServers[3]);
         }
 
         [Test]

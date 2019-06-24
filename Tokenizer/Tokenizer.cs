@@ -222,7 +222,7 @@ namespace Tokens
                 }
 
                 // Process front matter tokens
-                if (hintsMissing == false)
+                if (hintsMissing == false && matchIds.Any())
                 {
                     foreach (var token in template.Tokens.Where(t => t.IsFrontMatterToken))
                     {

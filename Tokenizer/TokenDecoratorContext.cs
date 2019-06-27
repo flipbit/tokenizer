@@ -52,11 +52,11 @@ namespace Tokens
         /// <summary>
         /// Transforms the token value.
         /// </summary>
-        public object Transform(object value)
+        public bool CanTransform(object value, out object transformed)
         {
             var instance = (ITokenTransformer) CreateDecorator();
 
-            return instance.Transform(value, Parameters.ToArray());
+            return instance.CanTransform(value, Parameters.ToArray(), out transformed);
         }
 
         /// <summary>

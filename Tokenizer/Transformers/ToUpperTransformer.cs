@@ -5,11 +5,18 @@
     /// </summary>
     public class ToUpperTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null) return string.Empty;
+            if (value == null) 
+            {
+                transformed = string.Empty;
+            }
+            else
+            {
+                transformed = value.ToString().ToUpper();
+            }
 
-            return value.ToString().ToUpper();
+            return true;
         }
     }
 }

@@ -5,11 +5,17 @@
     /// </summary>
     public class ToLowerTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null) return string.Empty;
+            if (value == null) 
+            {
+                transformed = string.Empty;
+                return true;
+            }
 
-            return value.ToString().ToLower();
+            transformed = value.ToString().ToLower();
+
+            return true;
         }
     }
 }

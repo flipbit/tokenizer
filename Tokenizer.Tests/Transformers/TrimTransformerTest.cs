@@ -16,25 +16,25 @@ namespace Tokens.Transformers
         [Test]
         public void TestTrim()
         {
-            var result = transformer.Transform("  TEST  ");
+            var result = transformer.CanTransform("  TEST  ", null, out var t);
 
-            Assert.AreEqual("TEST", result);
+            Assert.AreEqual("TEST", t);
         }
 
         [Test]
         public void TestTrimWhenEmpty()
         {
-            var result = transformer.Transform(string.Empty);
+            var result = transformer.CanTransform(string.Empty, null, out var t);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.AreEqual(string.Empty, t);
         }
 
         [Test]
         public void TestTrimWhenNull()
         {
-            var result = transformer.Transform(null);
+            var result = transformer.CanTransform(null, null, out var t);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.AreEqual(string.Empty, t);
         }
     }
 }

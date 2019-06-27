@@ -8,13 +8,19 @@ namespace Tokens.Transformers
     /// </summary>
     public class SubstringAfterTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null || string.IsNullOrEmpty(value.ToString())) return string.Empty;
+            if (value == null || string.IsNullOrEmpty(value.ToString())) 
+            {
+                transformed = string.Empty;
+                return true;
+            }
 
             if (args == null || args.Length == 0) throw new TokenizerException($"SubstringAfter(): missing argument processing: {value}");
 
-            return value.ToString().SubstringAfterString(args[0]);
+            transformed = value.ToString().SubstringAfterString(args[0]);
+
+            return true;
         }
     }
 }

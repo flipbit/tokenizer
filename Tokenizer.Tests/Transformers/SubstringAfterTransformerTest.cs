@@ -17,31 +17,34 @@ namespace Tokens.Transformers
         [Test]
         public void TestSubstringAfter()
         {
-            var result = transformer.Transform("one two three", "two");
+            var result = transformer.CanTransform("one two three", new [] { "two" }, out var transformed);
 
-            Assert.AreEqual(" three", result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(" three", transformed);
         }
 
         [Test]
         public void TestSubstringAfterWhenMissingArgument()
         {
-            Assert.Throws<TokenizerException>(() => transformer.Transform("one two three"));
+            Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null, out var t));
         }
 
         [Test]
         public void TestSubstringAfterWhenEmpty()
         {
-            var result = transformer.Transform(string.Empty);
+            var result = transformer.CanTransform(string.Empty, null, out var transformed);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(string.Empty, transformed);
         }
 
         [Test]
         public void TestSubstringAfterWhenNull()
         {
-            var result = transformer.Transform(null);
+            var result = transformer.CanTransform(null, null, out var transformed);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(string.Empty, transformed);
         }
     }
 }

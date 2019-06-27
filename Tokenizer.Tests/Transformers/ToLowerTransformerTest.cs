@@ -16,25 +16,28 @@ namespace Tokens.Transformers
         [Test]
         public void TestToLower()
         {
-            var result = @operator.Transform("TEST");
+            var result = @operator.CanTransform("TEST", null, out var t);
 
-            Assert.AreEqual("test", result);
+            Assert.IsTrue(result);
+            Assert.AreEqual("test", t);
         }
 
         [Test]
         public void TestToLowerWhenEmpty()
         {
-            var result = @operator.Transform(string.Empty);
+            var result = @operator.CanTransform(string.Empty, null, out var t);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(string.Empty, t);
         }
 
         [Test]
         public void TestToLowerWhenNull()
         {
-            var result = @operator.Transform(null);
+            var result = @operator.CanTransform(null, null, out var t);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(string.Empty, t);
         }
     }
 }

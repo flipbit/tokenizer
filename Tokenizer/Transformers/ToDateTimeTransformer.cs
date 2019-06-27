@@ -9,12 +9,25 @@ namespace Tokens.Transformers
     /// </summary>
     public class ToDateTimeTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
-            return TryParseDateTime(value, args, out var result) ? result : value;
+            if (TryParseDateTime(value, args, out var result))
+            {
+                transformed = result;
+                return true;
+            };
+
+            transformed = value;
+
+            return false;
         }
 
         public static bool TryParseDateTime(object value, string[] formats, out DateTime result)
+        {
+            return TryParseDateTime(value, formats, DateTimeStyles.None, out result);
+        }
+
+        public static bool TryParseDateTime(object value, string[] formats, DateTimeStyles dateTimeStyles, out DateTime result)
         {
             if (value == null)
             {
@@ -34,7 +47,7 @@ namespace Tokens.Transformers
 
             if (formats == null || formats.Length == 0 || string.IsNullOrEmpty(formats[0]))
             {
-                if (DateTime.TryParse(valueString, out result))
+                if (DateTime.TryParse(valueString, CultureInfo.InvariantCulture, dateTimeStyles, out result))
                 {
                     return true;
                 }
@@ -44,7 +57,7 @@ namespace Tokens.Transformers
                 
                 foreach (var format in formats)
                 {
-                    if (DateTime.TryParseExact(valueString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (DateTime.TryParseExact(valueString, format, CultureInfo.InvariantCulture, dateTimeStyles, out result))
                     {
                         return true;
                     }

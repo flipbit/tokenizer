@@ -133,15 +133,25 @@ namespace Tokens
                 {
                     if (decorator.IsTransformer)
                     {
-                        var output = decorator.Transform(input);
+                        var transformed = decorator.CanTransform(input, out var output);
+
+                        if (transformed == false)
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Unable to transform value '{input}'!");
+                            continue;
+                        }
 
                         if (decorator.DecoratorType == typeof(SetTransformer))
                         {
                             Log.Verbose($"-> {decorator.DecoratorType.Name}: Set value to '{output}'");
                         }
+                        else if (output is DateTime time)
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to {time:yyyy-MM-dd HH:mm:ss} ({time.Kind})");
+                        }
                         else
                         {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}'");
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}' ({output.GetType().Name})");
                         }
 
                         input = output;
@@ -246,7 +256,10 @@ namespace Tokens
             {
                 if (decorator.IsTransformer)
                 {
-                    var output = decorator.Transform(input);
+                    if (decorator.CanTransform(input, out var output) == false)
+                    {
+                        continue;
+                    }
             
                     input = output;
                 }

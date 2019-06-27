@@ -7,14 +7,16 @@ namespace Tokens.Transformers
     /// </summary>
     public class SetTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
             if (args == null || args.Length != 1)
             {
                 throw new ArgumentException("Set() must specified one argument to set - Set( value)");
             }
 
-            return args[0].Trim();
+            transformed = args[0].Trim();
+
+            return true;
         }
     }
 }

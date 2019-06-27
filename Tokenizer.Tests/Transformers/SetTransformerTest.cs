@@ -17,21 +17,22 @@ namespace Tokens.Transformers
         [Test]
         public void TestSet()
         {
-            var result = transformer.Transform("input", "output");
+            var result = transformer.CanTransform("input", new [] { "output" }, out var transformed);
 
-            Assert.AreEqual("output", result);
+            Assert.IsTrue(result);
+            Assert.AreEqual("output", transformed);
         }
 
         [Test]
         public void TestSetWhenEmpty()
         {
-            Assert.Throws<ArgumentException>(() => transformer.Transform(string.Empty));
+            Assert.Throws<ArgumentException>(() => transformer.CanTransform(string.Empty, null, out var t));;
         }
 
         [Test]
         public void TestSetWhenTooManyArguments()
         {
-            Assert.Throws<ArgumentException>(() => transformer.Transform("input", "1", "2"));
+            Assert.Throws<ArgumentException>(() => transformer.CanTransform("input", new [] { "1", "2" }, out var t));
         }
 
         [Test]

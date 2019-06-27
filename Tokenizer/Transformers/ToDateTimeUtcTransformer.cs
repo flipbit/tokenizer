@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Tokens.Transformers
 {
@@ -7,16 +8,17 @@ namespace Tokens.Transformers
     /// </summary>
     public class ToDateTimeUtcTransformer : ITokenTransformer
     {
-        public object Transform(object value, params string[] args)
+        public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null) return string.Empty;
-
-            if (ToDateTimeTransformer.TryParseDateTime(value, args, out var result))
+            if (ToDateTimeTransformer.TryParseDateTime(value, args, DateTimeStyles.AssumeUniversal, out var result))
             {
-                value = DateTime.SpecifyKind(result, DateTimeKind.Utc);
-            }
+                transformed = DateTime.SpecifyKind(result.ToUniversalTime(), DateTimeKind.Utc);
+                return true;
+            };
 
-            return value;
+            transformed = value;
+
+            return false;
         }
     }
 }

@@ -77,9 +77,16 @@ namespace Tokens.Extensions
 
                         try
                         {
-                            var convertedValue = Convert.ChangeType(value, genericType);
+                            if (value.GetType() == genericType)
+                            {
+                                propertyInfo.SetValue(@object, value, null);
+                            }
+                            else
+                            {
+                                var convertedValue = Convert.ChangeType(value, genericType);
 
-                            propertyInfo.SetValue(@object, convertedValue, null);
+                                propertyInfo.SetValue(@object, convertedValue, null);
+                            }
                         }
                         catch (FormatException e)
                         {

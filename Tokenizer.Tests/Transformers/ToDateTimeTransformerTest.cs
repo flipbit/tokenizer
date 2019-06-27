@@ -17,74 +17,89 @@ namespace Tokens.Transformers
         [Test]
         public void TestParseDate()
         {
-            var result =  (DateTime) @operator.Transform("2014-01-01", "yyyy-MM-dd");
+            var result =  @operator.CanTransform("2014-01-01", new [] { "yyyy-MM-dd" }, out var t);
 
-            Assert.AreEqual(new DateTime(2014, 1, 1), result);
-            Assert.AreEqual(DateTimeKind.Unspecified, result.Kind);
+            var dateTime = (DateTime) t;
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2014, 1, 1), dateTime);
+            Assert.AreEqual(DateTimeKind.Unspecified, dateTime.Kind);
         }
 
         [Test]
         public void TestParseDateWithFormat()
         {
-            var result = @operator.Transform("2 Mar 2012", "d MMM yyyy");
+            var result = @operator.CanTransform("2 Mar 2012", new [] { "d MMM yyyy" }, out var t);
+            var dateTime = (DateTime) t;
 
-            Assert.AreEqual(new DateTime(2012, 3, 2), result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2012, 3, 2), dateTime);
         }
 
         [Test]
         public void TestParseDateWithNoFormat()
         {
-            var result = @operator.Transform("2012-05-06");
+            var result = @operator.CanTransform("2012-05-06", null, out var t);
+            var dateTime = (DateTime) t;
 
-            Assert.AreEqual(new DateTime(2012, 5, 6), result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2012, 5, 6), dateTime);
         }
 
         [Test]
         public void TestParseDateWithInvalidFormat()
         {
-            var result = @operator.Transform("2012-05-06", "dd MMM yy");
-
-            Assert.AreEqual("2012-05-06", result);
+            var result = @operator.CanTransform("2012-05-06", new [] { "dd MMM yy" }, out var t);
+            
+            Assert.IsFalse(result);
+            Assert.AreEqual("2012-05-06", t);
         }
 
         [Test]
         public void TestParseDateWithFormatList()
         {
-            var result = @operator.Transform("2012-05-06", "dd MMM yy", "yyyy-MM-dd");
+            var result = @operator.CanTransform("2012-05-06", new [] { "dd MMM yy", "yyyy-MM-dd" }, out var t);
+            var dateTime = (DateTime) t;
 
-            Assert.AreEqual(new DateTime(2012, 5 ,6), result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2012, 5 ,6), dateTime);
         }
 
         [Test]
         public void TestParseDateWithEmptyValue()
         {
-            var result = @operator.Transform(string.Empty);
+            var result = @operator.CanTransform(string.Empty, null, out var t);
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.IsFalse(result);
+            Assert.AreEqual(string.Empty, t);
         }
 
         [Test]
         public void TestParseDateWithNullValue()
         {
-            var result = @operator.Transform(null);
+            var result = @operator.CanTransform(null, null, out var t);
 
-            Assert.AreEqual(null, result);
+            Assert.IsFalse(result);
+            Assert.AreEqual(null, t);
         }
 
         [Test]
         public void TestParseDateWithUnixNewLine()
         {
-            var result = @operator.Transform("2012-05-06\nHello");
+            var result = @operator.CanTransform("2012-05-06\nHello", null, out var t);
+            var dateTime = (DateTime) t;
 
-            Assert.AreEqual(new DateTime(2012, 5, 6), result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2012, 5, 6), t);
         }
 
         [Test]
         public void TestParseDateWithWindowsNewLine()
         {
-            var result = @operator.Transform("2012-05-06\r\nHello");
+            var result = @operator.CanTransform("2012-05-06\r\nHello", null, out var t);
 
-            Assert.AreEqual(new DateTime(2012, 5, 6), result);
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2012, 5, 6), t);
         }
     }
 }

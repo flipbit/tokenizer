@@ -5,6 +5,9 @@
     /// </summary>
     public interface ITokenTransformer : ITokenDecorator
     {
-        object Transform(object value, params string[] args);
+        /// <summary>
+        /// Attempts to transform the given input
+        /// </summary>
+        bool CanTransform(object value, string[] args, out object transformed);
     }
 }

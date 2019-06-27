@@ -31,12 +31,12 @@ set: Status = Found
 ---
 Domain Name:{ DomainName : Trim, IsDomainName, ToLower, EOL }
 Domain ID:{ RegistryDomainId ? : Trim, EOL }
-Creation Date:{ Registered? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
-Updated Date:{ Updated ? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
-Registry Expiry Date:{ Expiration ? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
-Last Updated On:{ Updated ? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
-Created On:{ Registered ? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
-Expiration Date:{ Expiration ? : Trim, SubstringBefore("UTC"), ToDateTime("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Creation Date:{ Registered? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Updated Date:{ Updated ? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Registry Expiry Date:{ Expiration ? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Last Updated On:{ Updated ? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Created On:{ Registered ? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
+Expiration Date:{ Expiration ? : Trim, SubstringBefore("UTC"), ToDateTimeUtc("yyyy-MM-ddTHH:mm:ssZ", "dd-MMM-yyyy hh:MM:ss"), EOL }
 Trademark Name:{ Trademark.Name ? : Trim, EOL }
 Trademark Date:{ Trademark.Date ? : Trim, ToDateTime("yyyy-MM-dd"), EOL }
 Trademark Country:{ Trademark.Country ? : Trim, EOL }

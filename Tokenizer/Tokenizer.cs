@@ -105,7 +105,7 @@ namespace Tokens
                     }
 
                     // Check for repeated current token
-                    if (current != null && enumerator.Match(current.Preamble))
+                    if (current != null && enumerator.Match(current.Preamble) && current.Preamble.Length > 0)
                     {
                         // Can't assign, so clear current context and move to next match
                         if (current.CanAssign(replacement.ToString()) == false)

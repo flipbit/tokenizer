@@ -318,6 +318,22 @@ namespace Tokens
             Assert.AreEqual(match.BestMatch.Values["Tld"], "com");
             Assert.AreEqual(match.BestMatch.Values["Url"], "whois.verisign-grs.com");           
         }
+  
+        [Test]
+        public void TestTokenMatcherCoCa()
+        {
+            var template = ReadTemplate("whois.co.ca");
+            var input = ReadData("available.co.ca");
+
+            var matcher = new TokenMatcher();
+
+            matcher.RegisterTemplate(template);
+
+            var match = matcher.Match(input);
+
+            Assert.AreEqual(match.BestMatch.Values["DomainName"], "u34jedzcq.co.ca");
+            Assert.AreEqual(match.BestMatch.Values["Status"], "NotFound");
+        }
 
         private string ReadData(string name)
         {

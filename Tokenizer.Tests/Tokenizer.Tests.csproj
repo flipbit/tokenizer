@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Remove="Samples\Data\08_pl.txt" />
     <None Remove="Samples\Data\abogado.txt" />
+    <None Remove="Samples\Data\available.co.ca.txt" />
     <None Remove="Samples\Data\bbc_co_uk.txt" />
     <None Remove="Samples\Data\com.txt" />
     <None Remove="Samples\Data\facebook_com_redirect.txt" />
@@ -19,6 +20,7 @@
     <None Remove="Samples\Patterns\verisign-grs.com.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Samples\Data\available.co.ca.txt" />
     <EmbeddedResource Include="Samples\Data\sil_org_redirect.txt" />
     <EmbeddedResource Include="Samples\Data\08_pl.txt" />
     <EmbeddedResource Include="Samples\Data\abogado.txt" />

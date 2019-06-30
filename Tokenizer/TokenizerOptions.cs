@@ -30,6 +30,11 @@ namespace Tokens
         public bool EnableLogging { get; set; }
 
         /// <summary>
+        /// If set, token values will be extracted up till the first new line character.
+        /// </summary>
+        public bool TerminateOnNewline { get; set; }
+
+        /// <summary>
         /// Resets the options to their default values 
         /// </summary>
         public void ResetDefaults()
@@ -40,6 +45,7 @@ namespace Tokens
             TokenStringComparison = StringComparison.InvariantCulture;
             OutOfOrderTokens = false;
             EnableLogging = false;
+            TerminateOnNewline = false;
         }
 
         public TokenizerOptions Clone()
@@ -51,7 +57,8 @@ namespace Tokens
                 TokenStringComparison = TokenStringComparison,
                 OutOfOrderTokens = OutOfOrderTokens,
                 EnableLogging = EnableLogging,
-                TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine
+                TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
+                TerminateOnNewline = TerminateOnNewline
             };
         }
     }

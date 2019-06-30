@@ -250,6 +250,10 @@ namespace Tokens.Parsers
                             var outOfOrderTokens = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
                             template.Options.OutOfOrderTokens = outOfOrderTokens;
                             break;
+                        case "terminateonnewline":
+                            var terminateOnNewline = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            template.Options.TerminateOnNewline = terminateOnNewline;
+                            break;
                         case "name":
                             template.Name = frontMatterValue.ToString().Trim();
                             break;
@@ -827,6 +831,11 @@ namespace Tokens.Parsers
             if (options.TrimPreambleBeforeNewLine)
             {
                 token.TrimPreambleBeforeNewLine();
+            }
+
+            if (options.TerminateOnNewline)
+            {
+                token.TerminateOnNewline = true;
             }
 
             tokenContent.Clear();

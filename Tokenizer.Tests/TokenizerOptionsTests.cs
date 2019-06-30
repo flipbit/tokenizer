@@ -55,5 +55,37 @@ namespace Tokens
             Assert.AreEqual("Second: ", template.Tokens.ElementAt(1).Preamble);
             Assert.IsTrue(template.Options.TrimPreambleBeforeNewLine);
         } 
+
+        [Test]
+        public void TestTerminateOnNewLineWhenSetFromFrontMatter()
+        {
+            const string content = "---\nTerminateOnNewLine: true\n---\nPreamble: { First }\n Trimmed";
+
+            var parser = new TokenParser();
+
+            parser.Options.TrimPreambleBeforeNewLine = false;
+
+            var template = parser.Parse(content);
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("Preamble: ", template.Tokens.ElementAt(0).Preamble);
+            Assert.IsTrue(template.Options.TerminateOnNewline);
+        } 
+
+        [Test]
+        public void TestTerminateOnNewLineWhenNotSetFromFrontMatter()
+        {
+            const string content = "Preamble: { First }\n Trimmed";
+
+            var parser = new TokenParser();
+
+            parser.Options.TrimPreambleBeforeNewLine = false;
+
+            var template = parser.Parse(content);
+
+            Assert.AreEqual(2, template.Tokens.Count);
+            Assert.AreEqual("Preamble: ", template.Tokens.ElementAt(0).Preamble);
+            Assert.IsFalse(template.Options.TerminateOnNewline);
+        } 
     }
 }

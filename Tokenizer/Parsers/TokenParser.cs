@@ -57,6 +57,7 @@ namespace Tokens.Parsers
             RegisterValidator<IsUrlValidator>();
             RegisterValidator<IsDateTimeValidator>();
             RegisterValidator<IsNotEmptyValidator>();
+            RegisterValidator<IsNotValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
@@ -105,7 +106,18 @@ namespace Tokens.Parsers
 
             foreach (var hint in preTemplate.Hints)
             {
-                template.Hints.Add(hint);
+                if (template.Hints.Any(t => t == hint) == false)
+                {
+                    template.Hints.Add(hint);
+                }
+            }
+
+            foreach (var tag in preTemplate.Tags)
+            {
+                if (template.Tags.Any(t => t == tag) == false)
+                {
+                    template.Tags.Add(tag);
+                }
             }
 
             foreach (var preToken in preTemplate.Tokens)
@@ -142,11 +154,6 @@ namespace Tokens.Parsers
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
                 token.IsNull = preToken.IsNull;
 
-                foreach (var tag in preTemplate.Tags)
-                {
-                    template.Tags.Add(tag);
-                }
-
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
                 {
@@ -157,7 +164,10 @@ namespace Tokens.Parsers
 
                 template.AddToken(token);
 
-                log.Trace("  -> Token[{0:000}]: '{1}'", token.Id, token.Name);
+                if (string.IsNullOrEmpty(token.Name) == false)
+                {
+                    log.Trace("  -> Token[{0:000}]: '{1}'", token.Id, token.Name);
+                }
             }
 
             log.Debug("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));

@@ -138,7 +138,8 @@ namespace Tokens
                         if (transformed == false)
                         {
                             Log.Verbose($"-> {decorator.DecoratorType.Name}: Unable to transform value '{input}'!");
-                            continue;
+                            
+                            return false;
                         }
 
                         if (decorator.DecoratorType == typeof(SetTransformer))
@@ -258,7 +259,7 @@ namespace Tokens
                 {
                     if (decorator.CanTransform(input, out var output) == false)
                     {
-                        continue;
+                        return false;
                     }
             
                     input = output;

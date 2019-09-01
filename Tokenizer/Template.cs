@@ -108,6 +108,8 @@ namespace Tokens
             return missing.Count == 0;
         }
 
+        internal bool HasOnlyFrontMatterTokens => tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
+
         internal IEnumerable<int> GetTokenIdsUpTo(Token token)
         {
             var matchIds = new List<int>();
@@ -141,7 +143,7 @@ namespace Tokens
             tokens.Add(token);
         }
 
-        internal IEnumerable<Token> TokensExcluding(IList<int> tokenIds)
+        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds)
         {
             var includedTokens = tokens
                 .Where(t => t.IsFrontMatterToken == false)
@@ -151,6 +153,13 @@ namespace Tokens
             var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();
 
             return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);
+        }
+
+        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds, CandidateTokenList candidates)
+        {
+            var candidateIds = candidates.Tokens.Where(t => t.Repeating == false).Select(t => t.Id);
+
+            return TokensExcluding(tokenIds.Concat(candidateIds));
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using Tokens.Enumerators;
 using Tokens.Logging;
@@ -79,15 +78,15 @@ namespace Tokens
 
         private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
         {
-                log.Verbose($"Start: Processing: {template.Name}");
+            log.Verbose($"Start: Processing: {template.Name}");
 
             using (new LogIndentation())
             {
-                Token current = null;
+                var candidates = new CandidateTokenList();
 
                 var enumerator = new TokenEnumerator(input);
                 var replacement = new StringBuilder();
-                var matchIds = new List<int>();
+                var matchIds = new HashSet<int>();
                 var line = 1;
                 var column = 1;
 
@@ -105,14 +104,17 @@ namespace Tokens
                     }
 
                     // Check for repeated current token
-                    if (current != null && enumerator.Match(current.Preamble) && current.Preamble.Length > 0)
+                    if (candidates.Any && enumerator.Match(candidates.Preamble) && candidates.Preamble.Length > 0)
                     {
                         // Can't assign, so clear current context and move to next match
-                        if (current.CanAssign(replacement.ToString()) == false)
+                        if (candidates.CanAnyAssign(replacement.ToString()) == false)
                         {
-                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, current.Name, current.Id, replacement.ToString());
+                            foreach (var token in candidates.Tokens)
+                            {
+                                log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                            }
                             replacement.Clear();
-                            enumerator.Advance(current.Preamble.Length);
+                            enumerator.Advance(candidates.Preamble.Length);
                             line = enumerator.Line;
                             column = enumerator.Column;
                             continue;
@@ -120,20 +122,23 @@ namespace Tokens
                     }
 
                     // Assign newline terminated token
-                    if (current != null && current.TerminateOnNewLine && next == "\n")
+                    if (candidates.Any && candidates.TerminateOnNewLine && next == "\n")
                     {
                         using (new LogIndentation())
                         {
                             try
                             {
-                                if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                                if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
                                 {
-                                    result.Tokens.AddMatch(current, replacement.ToString());
+                                    result.Tokens.AddMatch(assigned, replacement.ToString());
+                                    AddMatchedTokenIds(template, assigned, matchIds);
                                 }
                                 else
                                 {
-                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, current.Name, current.Id, replacement.ToString());
-
+                                    foreach (var token in candidates.Tokens)
+                                    {
+                                        log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                                    }
                                 }
                             }
                             catch (Exception e)
@@ -143,23 +148,21 @@ namespace Tokens
                             }
                         }
 
-                        current = null;
+                        candidates.Clear();
                         replacement.Clear();
-                        //matchIds.AddRange(template.GetTokenIdsUpTo(current));
                     }
 
                     // Check for next token
-                    if (enumerator.Match(template.TokensExcluding(matchIds), out var match))
+                    if (enumerator.Match(template.TokensExcluding(matchIds, candidates), template.Options.OutOfOrderTokens, out var matches))
                     {
                         // Special case: first token found, just prepare to read token value
-                        if (current == null)
+                        if (candidates.Any == false)
                         {
-                            current = match;
+                            candidates.AddRange(matches);
                             replacement.Clear();
-                            enumerator.Advance(match.Preamble.Length);
+                            enumerator.Advance(candidates.Preamble.Length);
                             line = enumerator.Line;
                             column = enumerator.Column;
-                            matchIds.AddRange(template.GetTokenIdsUpTo(match));
                             continue;
                         }
                         
@@ -169,9 +172,17 @@ namespace Tokens
                             {
                                 try
                                 {
-                                    if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                                    if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
                                     {
-                                        result.Tokens.AddMatch(current, replacement.ToString());
+                                        result.Tokens.AddMatch(assigned, replacement.ToString());
+                                        AddMatchedTokenIds(template, assigned, matchIds);
+                                    }
+                                    else
+                                    {
+                                        foreach (var token in candidates.Tokens)
+                                        {
+                                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                                        }
                                     }
                                 }
                                 catch (Exception e)
@@ -181,12 +192,12 @@ namespace Tokens
                                 }
                             }
 
-                            current = match;
+                            candidates.Clear(); 
+                            candidates.AddRange(matches);
                             replacement.Clear();
-                            enumerator.Advance(match.Preamble.Length);
+                            enumerator.Advance(candidates.Preamble.Length);
                             line = enumerator.Line;
                             column = enumerator.Column;
-                            matchIds.AddRange(template.GetTokenIdsUpTo(match));
                             continue;
                         }
 
@@ -202,15 +213,16 @@ namespace Tokens
                     }
                 }
 
-                if (current != null && replacement.Length > 0 && !string.IsNullOrEmpty(current.Name))
+                if (candidates.Any && replacement.Length > 0 && !candidates.IsNullToken)
                 {
                     using (new LogIndentation())
                     {
                         try
                         {
-                            if (current.Assign(value, replacement.ToString(), template.Options, line, column))
+                            if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
                             {
-                                result.Tokens.AddMatch(current, replacement.ToString());
+                                result.Tokens.AddMatch(assigned, replacement.ToString());
+                                AddMatchedTokenIds(template, assigned, matchIds);
                             }
                         }
                         catch (Exception e)
@@ -222,7 +234,7 @@ namespace Tokens
                 }
 
                 // Process front matter tokens
-                if (hintsMissing == false && matchIds.Any())
+                if (hintsMissing == false && (matchIds.Any() || template.HasOnlyFrontMatterTokens))
                 {
                     foreach (var token in template.Tokens.Where(t => t.IsFrontMatterToken))
                     {
@@ -249,6 +261,19 @@ namespace Tokens
             }
 
             log.Verbose($"Finished: Processing: {template.Name}");
+        }
+
+        private void AddMatchedTokenIds(Template template, Token match, HashSet<int> matchIds)
+        {
+            var tokenIdsToAdd = template.GetTokenIdsUpTo(match);
+            
+            foreach (var tokenId in tokenIdsToAdd)
+            {
+                if (matchIds.Contains(tokenId) == false)
+                {
+                    matchIds.Add(tokenId);
+                }
+            }
         }
 
         private bool FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 

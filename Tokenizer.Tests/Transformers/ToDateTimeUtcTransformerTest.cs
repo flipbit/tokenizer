@@ -11,6 +11,8 @@ namespace Tokens.Transformers
         [SetUp]
         public void SetUp()
         {
+            SerilogConfig.Init();
+
             @operator = new ToDateTimeUtcTransformer();
         }
 
@@ -45,6 +47,58 @@ namespace Tokens.Transformers
             Assert.IsTrue(result);
             Assert.AreEqual(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
             Assert.AreEqual(DateTimeKind.Utc, dateTime.Kind);
+        }
+
+        [Test]
+        public void TestTrimUtcDescription()
+        {
+            var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+            var input = "Date: 2000-01-01 UTC";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
+        }
+
+        [Test]
+        public void TestTrimUtcDescriptionInBrackets()
+        {
+            var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+            var input = "Date: 2000-01-01 (UTC)";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
+        }
+
+        [Test]
+        public void TestWrongFormat()
+        {
+            var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+            var input = "Date: 2000-1-1 (UTC)";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.IsFalse(result.Values.ContainsKey("Date"));
+        }
+
+        [Test]
+        public void TestMultipleTokenMultipleFormats()
+        {
+            var pattern = @"---
+# End tokens on new lines
+outOfOrder: true
+
+# End tokens on new lines
+terminateOnNewLine: true
+---
+Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }
+Date: { Date : ToDateTimeUtc('yyyy-M-d') }";
+            var input = "Date: 2000-1-1 (UTC)";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
         }
     }
 }

@@ -226,6 +226,19 @@ namespace Tokens
         }
 
         [Test]
+        public void TestVgNotFound()
+        {
+            var template = ReadTemplate("whois.vg.not.found");
+            var input = ReadData("not.found.vg");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(1, result.Values.Count);
+        }
+
+
+        [Test]
         public void TestGoogleCc()
         {
             var template = ReadTemplate("whois.cc");
@@ -248,13 +261,15 @@ namespace Tokens
         [Test]
         public void TestGoogleCoZa()
         {
-            var template = ReadTemplate("whois.co.za");
+            var template = ReadTemplate("whois.generic");
             var input = ReadData("google.co.za");
 
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(33, result.Values.Count);
+            Assert.AreEqual(39, result.Values.Count);
+
+            Assert.AreEqual("google.co.za", result.Values["DomainName"]);
 
             var nameServers = result.Values["NameServers"] as List<object>;
 
@@ -274,7 +289,7 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(30, result.Values.Count);
+            Assert.AreEqual(34, result.Values.Count);
 
             var nameServers = result.Values["NameServers"] as List<object>;
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Tokens.Enumerators
@@ -103,21 +104,28 @@ namespace Tokens.Enumerators
             }
         }
 
-        public bool Match(IEnumerable<Token> tokens, out Token match)
+        public bool Match(IEnumerable<Token> tokens, bool outOfOrderTokens, out IList<Token> matches)
         {
+            matches = new List<Token>();
+
             foreach (var token in tokens)
             {
+                // Special case: if matching out of order template,
+                // don't match any tokens without a value
+                if (outOfOrderTokens && string.IsNullOrWhiteSpace(token.Name))
+                {
+                    continue;
+                }
+
                 if (Match(token.Preamble))
                 {
-                    match = token;
-                    return true;
+                    matches.Add(token);
                 }
 
                 if (token.Optional == false) break;
             }
 
-            match = null;
-            return false;
+            return matches.Any();
         }
 
         public void Reset()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Tokens.Extensions;
 
 namespace Tokens.Transformers
 {
@@ -10,6 +11,23 @@ namespace Tokens.Transformers
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
+            var valueString = value as string;
+
+            if (string.IsNullOrWhiteSpace(valueString) == false)
+            {
+                if (valueString.Contains("(UTC)"))
+                {
+                    valueString = valueString.SubstringBeforeString("(UTC)");
+                }
+
+                if (valueString.Contains("UTC"))
+                {
+                    valueString = valueString.SubstringBeforeString("UTC");
+                }
+
+                value = valueString.Trim();
+            }
+
             if (ToDateTimeTransformer.TryParseDateTime(value, args, DateTimeStyles.AssumeUniversal, out var result))
             {
                 transformed = DateTime.SpecifyKind(result.ToUniversalTime(), DateTimeKind.Utc);

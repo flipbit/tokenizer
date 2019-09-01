@@ -2,8 +2,8 @@
   <PropertyGroup>
    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-   <Version>2.1.7.0</Version>
-   <PackageVersion>2.1.7</PackageVersion>
+   <Version>2.1.8.0</Version>
+   <PackageVersion>2.1.8</PackageVersion>
    <Authors>Chris Wood</Authors>
    <Company>flipbit.co.uk</Company>
    <PackageProjectUrl>http://github.com/flipbit/tokenizer</PackageProjectUrl>
@@ -22,7 +22,6 @@
   <PropertyGroup>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <None Include="LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
   </ItemGroup>

@@ -20,7 +20,7 @@ namespace Tokens.Transformers
             var result = transformer.CanTransform("one two two three", new [] { "two" }, out var transformed);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(" two three", transformed);
+            Assert.AreEqual(" three", transformed);
         }
 
         [Test]

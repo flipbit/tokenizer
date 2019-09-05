@@ -17,6 +17,8 @@ namespace Tokens
 
         public IList<string> Args { get; }
 
+        public bool IsNotDecorator { get; set; }
+
         public void AppendName(string value)
         {
             name.Append(value);

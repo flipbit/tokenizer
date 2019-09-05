@@ -702,6 +702,17 @@ namespace Tokens.Parsers
                 case "\n" when inFrontMatterToken == false:
                     throw  new ParsingException($"'{decorator.Name}' unexpected character: {next}", enumerator);
 
+                case "!":
+                    if (string.IsNullOrWhiteSpace(decorator.Name))
+                    {
+                        decorator.IsNotDecorator = true;
+                    }
+                    else
+                    {
+                        throw  new ParsingException($"'{decorator.Name}' unexpected character: {next}", enumerator);
+                    }
+                    break;
+
                 default:
                     decorator.AppendName(next);
                     break;

@@ -50,6 +50,11 @@ namespace Tokens
         public bool IsValidator => typeof(ITokenValidator).IsAssignableFrom(DecoratorType);
 
         /// <summary>
+        /// Determines if this validator should reverse it's output
+        /// </summary>
+        public bool IsNotValidator { get; set; }
+
+        /// <summary>
         /// Transforms the token value.
         /// </summary>
         public bool CanTransform(object value, out object transformed)
@@ -65,6 +70,11 @@ namespace Tokens
         public bool Validate(object value)
         {
             var instance = (ITokenValidator) CreateDecorator();
+
+            if (IsNotValidator)
+            {
+                return !instance.IsValid(value, Parameters.ToArray());
+            }
 
             return instance.IsValid(value, Parameters.ToArray());
         }

@@ -196,6 +196,11 @@ namespace Tokens.Parsers
                     if (string.Compare(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0 ||
                         string.Compare($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
+                        if (decorator.IsNotDecorator)
+                        {
+                            throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
+                        }
+
                         context = new TokenDecoratorContext(operatorType);
 
                         foreach (var arg in decorator.Args)
@@ -222,6 +227,8 @@ namespace Tokens.Parsers
                         {
                             context.Parameters.Add(arg);
                         }
+
+                        context.IsNotValidator = decorator.IsNotDecorator;
 
                         token.Decorators.Add(context);
     

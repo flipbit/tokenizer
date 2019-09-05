@@ -831,5 +831,23 @@ set: Response = NotFound
             Assert.AreEqual("Null", token.Name);
             Assert.AreEqual(true, token.IsNull);
         }
+
+        [Test]
+        public void TestParseNotDecorator()
+        {
+            var template = parser.Parse("{ MyToken : !MyDecorator }");
+
+            Assert.AreEqual(1, template.Tokens.Count);
+            Assert.AreEqual("MyToken", template.Tokens[0].Name);
+            Assert.AreEqual(1, template.Tokens[0].Decorators.Count);
+            Assert.AreEqual("MyDecorator", template.Tokens[0].Decorators[0].Name);
+            Assert.IsTrue(template.Tokens[0].Decorators[0].IsNotDecorator);
+        }
+
+        [Test]
+        public void TestParseNotDecoratorThrowsException()
+        {
+            Assert.Throws<ParsingException>(() => parser.Parse("{ MyToken : Invalid!MyDecorator }"));
+        }
     }
 }

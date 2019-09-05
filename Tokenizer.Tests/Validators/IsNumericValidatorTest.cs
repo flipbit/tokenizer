@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Tokens.Validators
 {
@@ -10,6 +11,8 @@ namespace Tokens.Validators
         [SetUp]
         public void SetUp()
         {
+            SerilogConfig.Init();
+
             validator = new IsNumericValidator();
         }
 
@@ -43,6 +46,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(null);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestNotValidator()
+        {
+            var pattern = @"Age: { Age : !IsNumeric }";
+            var input = "Age: ten";
+
+            var result = new Tokenizer().Tokenize(pattern, input);
+
+            Assert.AreEqual("ten", result.Values["Age"]);
         }
     }
 }

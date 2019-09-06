@@ -61,6 +61,14 @@ namespace Tokens.Validators
         }
 
         [Test]
+        public void TestValidateValueWhenInvalidWithNumber()
+        {
+            var result = validator.IsValid("hello world 0123456789");
+
+            Assert.IsFalse(result);
+        }
+
+        [Test]
         public void TestValidateValueWhenTooShort()
         {
             var result = validator.IsValid("12345");

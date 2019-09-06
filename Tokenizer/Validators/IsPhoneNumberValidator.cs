@@ -20,6 +20,8 @@ namespace Tokens.Validators
 
             var trimmed = valueString.Keep(" ()+.-0123456789");
 
+            if (trimmed != valueString) return false;
+
             if (string.IsNullOrWhiteSpace(trimmed)) return false;
 
             var numbers = trimmed.Keep("0123456789");

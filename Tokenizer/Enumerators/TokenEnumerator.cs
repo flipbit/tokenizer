@@ -6,9 +6,10 @@ namespace Tokens.Enumerators
 {
     internal class TokenEnumerator
     {
-        private string pattern;
+        private readonly string pattern;
+        private readonly int patternLength;
+
         private int currentLocation;
-        private int patternLength;
 
         private bool resetNextLine;
 
@@ -34,30 +35,28 @@ namespace Tokens.Enumerators
             this.pattern = pattern;
 
             currentLocation = 0;
-            Column = 1;
-            Line = 1;
+            Location = new FileLocation();
         }
 
         public bool IsEmpty => currentLocation >= patternLength;
         
-        public int Line { get; private set; }
-
-        public int Column { get; private set; }
+        public FileLocation Location { get; }
 
         public string Next()
         {
             if (IsEmpty) return string.Empty;
 
             var next = pattern.Substring(currentLocation, 1);
-
             currentLocation++;
-            Column++;
-            
+
             if (resetNextLine)
             {
+                Location.NewLine();
                 resetNextLine = false;
-                Column = 1;
-                Line++;
+            }
+            else
+            {
+                Location.Increment(next);
             }
 
             if (next == "\n")
@@ -131,8 +130,7 @@ namespace Tokens.Enumerators
         public void Reset()
         {
             currentLocation = 0;
-            Column = 1;
-            Line = 1;
+            Location.Reset();
         }
     }
 }

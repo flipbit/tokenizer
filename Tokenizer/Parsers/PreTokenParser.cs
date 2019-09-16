@@ -65,7 +65,7 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InFrontMatterOption:
-                        ParseFrontMatterOption(enumerator, ref frontMatterName, ref state, ref inFrontMatterToken);
+                        ParseFrontMatterOption(enumerator, ref frontMatterName, ref state, ref inFrontMatterToken, ref token);
                         break;
 
                     case FlatTokenParserState.InFrontMatterOptionValue:
@@ -73,7 +73,7 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InPreamble:
-                        ParsePreamble(ref token, enumerator, ref state);
+                        ParsePreamble(ref token, enumerator, ref state, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InTokenName:
@@ -85,11 +85,11 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InTokenValueSingleQuotes:
-                        ParseTokenValueInSingleQuotes(enumerator,  ref token, ref state);
+                        ParseTokenValueInSingleQuotes(enumerator,  ref token, ref state, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InTokenValueDoubleQuotes:
-                        ParseTokenValueInDoubleQuotes(enumerator,  ref token, ref state);
+                        ParseTokenValueInDoubleQuotes(enumerator,  ref token, ref state, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InTokenValueRunOff:
@@ -101,19 +101,19 @@ namespace Tokens.Parsers
                         break;
 
                     case FlatTokenParserState.InDecoratorArgument:
-                        ParseDecoratorArgument(enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgument(enumerator, ref state, ref decorator, ref argument, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentSingleQuotes:
-                        ParseDecoratorArgumentInSingleQuotes(enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentInSingleQuotes(enumerator, ref state, ref decorator, ref argument, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentDoubleQuotes:
-                        ParseDecoratorArgumentInDoubleQuotes(enumerator, ref state, ref decorator, ref argument);
+                        ParseDecoratorArgumentInDoubleQuotes(enumerator, ref state, ref decorator, ref argument, ref tokenContent);
                         break;
 
                     case FlatTokenParserState.InDecoratorArgumentRunOff:
-                        ParseDecoratorArgumentRunOff(enumerator, ref state);
+                        ParseDecoratorArgumentRunOff(enumerator, ref state, ref tokenContent);
                         break;
 
 
@@ -195,7 +195,7 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseFrontMatterOption(PreTokenEnumerator enumerator, ref StringBuilder frontMatterName, ref FlatTokenParserState state, ref bool inFrontMatterToken)
+        private void ParseFrontMatterOption(PreTokenEnumerator enumerator, ref StringBuilder frontMatterName, ref FlatTokenParserState state, ref bool inFrontMatterToken, ref PreToken token)
         {
             var next = enumerator.Next();
 
@@ -206,6 +206,7 @@ namespace Tokens.Parsers
                     {
                         inFrontMatterToken = true;
                         frontMatterName.Clear();
+                        token.Location = enumerator.Location.Clone(); 
                         state = FlatTokenParserState.InTokenName;
                     }
                     else
@@ -253,6 +254,10 @@ namespace Tokens.Parsers
                         case "terminateonnewline":
                             var terminateOnNewline = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
                             template.Options.TerminateOnNewline = terminateOnNewline;
+                            break;
+                        case "ignoremissingproperties":
+                            var ignoreMissingProperties = ConvertFrontMatterOptionToBool(value, rawName, enumerator);
+                            template.Options.IgnoreMissingProperties = ignoreMissingProperties;
                             break;
                         case "name":
                             template.Name = frontMatterValue.ToString().Trim();
@@ -323,7 +328,7 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParsePreamble(ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state)
+        private void ParsePreamble(ref PreToken token, PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
 
@@ -337,6 +342,9 @@ namespace Tokens.Parsers
                     }
                     else
                     {
+                        token.Location = enumerator.Location.Clone();
+                        tokenContent.Append("{");
+
                         state = FlatTokenParserState.InTokenName;
                     }
                     break;
@@ -587,7 +595,7 @@ namespace Tokens.Parsers
             }
         }
 
-        private void ParseTokenValueInSingleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state)
+        private void ParseTokenValueInSingleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
 
@@ -601,9 +609,11 @@ namespace Tokens.Parsers
                     token.AppendValue(next);
                     break;
             }
+
+            tokenContent.Append(next);
         }
 
-        private void ParseTokenValueInDoubleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state)
+        private void ParseTokenValueInDoubleQuotes(PreTokenEnumerator enumerator, ref PreToken token, ref FlatTokenParserState state, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
 
@@ -617,6 +627,8 @@ namespace Tokens.Parsers
                     token.AppendValue(next);
                     break;
             }
+
+            tokenContent.Append(next);
         }
 
         private void ParseTokenValueRunOff(PreTokenEnumerator enumerator, ref PreTemplate template, ref PreToken token, ref FlatTokenParserState state, ref bool inFrontMatterToken, ref StringBuilder tokenContent, TokenizerOptions options)
@@ -720,9 +732,10 @@ namespace Tokens.Parsers
 
         }
 
-        private void ParseDecoratorArgument(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgument(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
+            tokenContent.Append(next);
 
             if (string.IsNullOrWhiteSpace(argument) &&
                 string.IsNullOrWhiteSpace(next))
@@ -775,7 +788,7 @@ namespace Tokens.Parsers
 
         }
 
-        private void ParseDecoratorArgumentInSingleQuotes(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentInSingleQuotes(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
 
@@ -791,9 +804,11 @@ namespace Tokens.Parsers
                     argument += next;
                     break;
             }
+
+            tokenContent.Append(next);
         }
 
-        private void ParseDecoratorArgumentInDoubleQuotes(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument)
+        private void ParseDecoratorArgumentInDoubleQuotes(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref PreTokenDecorator decorator, ref string argument, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
 
@@ -809,11 +824,14 @@ namespace Tokens.Parsers
                     argument += next;
                     break;
             }
+            
+            tokenContent.Append(next);
         }
 
-        private void ParseDecoratorArgumentRunOff(PreTokenEnumerator enumerator, ref FlatTokenParserState state)
+        private void ParseDecoratorArgumentRunOff(PreTokenEnumerator enumerator, ref FlatTokenParserState state, ref StringBuilder tokenContent)
         {
             var next = enumerator.Next();
+            tokenContent.Append(next);
 
             if (string.IsNullOrWhiteSpace(next)) return;
 

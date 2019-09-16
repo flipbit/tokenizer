@@ -1,4 +1,6 @@
-﻿namespace Tokens
+﻿using Tokens.Enumerators;
+
+namespace Tokens
 {
     public class HintMatch
     {
@@ -6,8 +8,6 @@
 
         public bool Optional { get; set; }
 
-        public int Line { get; set; }
-
-        public int Column { get; set; }
+        public FileLocation Location { get; set; }
     }
 }

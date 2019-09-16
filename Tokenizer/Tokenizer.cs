@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Tokens.Enumerators;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -54,7 +55,7 @@ namespace Tokens
         {
             var result = new TokenizeResult(template);
 
-            Tokenize(result, result.Values, template, input);
+            Tokenize(result, null, template, input);
 
             return result;
 
@@ -87,8 +88,7 @@ namespace Tokens
                 var enumerator = new TokenEnumerator(input);
                 var replacement = new StringBuilder();
                 var matchIds = new HashSet<int>();
-                var line = 1;
-                var column = 1;
+                var replacementLocation = new FileLocation();
 
                 var hintsMissing = FindHints(template, enumerator, result);
 
@@ -111,12 +111,11 @@ namespace Tokens
                         {
                             foreach (var token in candidates.Tokens)
                             {
-                                log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                                log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
                             }
                             replacement.Clear();
                             enumerator.Advance(candidates.Preamble.Length);
-                            line = enumerator.Line;
-                            column = enumerator.Column;
+                            replacementLocation = enumerator.Location;
                             continue;
                         }
                     }
@@ -128,16 +127,16 @@ namespace Tokens
                         {
                             try
                             {
-                                if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
+                                if (candidates.TryAssign(value, replacement, template.Options, replacementLocation, out var assigned, out var assignedValue))
                                 {
-                                    result.Tokens.AddMatch(assigned, replacement.ToString());
+                                    result.Tokens.AddMatch(assigned, assignedValue, enumerator.Location);
                                     AddMatchedTokenIds(template, assigned, matchIds);
                                 }
                                 else
                                 {
                                     foreach (var token in candidates.Tokens)
                                     {
-                                        log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                                        log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
                                     }
                                 }
                             }
@@ -150,6 +149,7 @@ namespace Tokens
 
                         candidates.Clear();
                         replacement.Clear();
+                        replacementLocation = enumerator.Location;
                     }
 
                     // Check for next token
@@ -161,8 +161,6 @@ namespace Tokens
                             candidates.AddRange(matches);
                             replacement.Clear();
                             enumerator.Advance(candidates.Preamble.Length);
-                            line = enumerator.Line;
-                            column = enumerator.Column;
                             continue;
                         }
                         
@@ -172,16 +170,16 @@ namespace Tokens
                             {
                                 try
                                 {
-                                    if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
+                                    if (candidates.TryAssign(value, replacement, template.Options, replacementLocation, out var assigned, out var assignedValue))
                                     {
-                                        result.Tokens.AddMatch(assigned, replacement.ToString());
+                                        result.Tokens.AddMatch(assigned, assignedValue, enumerator.Location);
                                         AddMatchedTokenIds(template, assigned, matchIds);
                                     }
                                     else
                                     {
                                         foreach (var token in candidates.Tokens)
                                         {
-                                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", line, column, token.Name, token.Id, replacement.ToString());
+                                            log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
                                         }
                                     }
                                 }
@@ -196,8 +194,7 @@ namespace Tokens
                             candidates.AddRange(matches);
                             replacement.Clear();
                             enumerator.Advance(candidates.Preamble.Length);
-                            line = enumerator.Line;
-                            column = enumerator.Column;
+                            replacementLocation = enumerator.Location;
                             continue;
                         }
 
@@ -219,9 +216,9 @@ namespace Tokens
                     {
                         try
                         {
-                            if (candidates.TryAssign(value, replacement.ToString(), template.Options, line, column, out var assigned))
+                            if (candidates.TryAssign(value, replacement, template.Options, replacementLocation, out var assigned, out var assignedValue))
                             {
-                                result.Tokens.AddMatch(assigned, replacement.ToString());
+                                result.Tokens.AddMatch(assigned, assignedValue, replacementLocation);
                                 AddMatchedTokenIds(template, assigned, matchIds);
                             }
                         }
@@ -240,9 +237,9 @@ namespace Tokens
                     {
                         using (new LogIndentation())
                         {
-                            if (token.Assign(value, string.Empty, template.Options, line, column))
+                            if (token.Assign(value, string.Empty, template.Options, enumerator.Location, out var assignedValue))
                             {
-                                result.Tokens.AddMatch(token, string.Empty);
+                                result.Tokens.AddMatch(token, assignedValue, token.Location);
                             }
                         }
                     }
@@ -288,7 +285,7 @@ namespace Tokens
                     if (enumerator.Match(hint.Text) &&
                         result.Hints.AddMatch(hint, enumerator))
                     {
-                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Line, enumerator.Column, hint.Text);
+                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Location.Line, enumerator.Location.Column, hint.Text);
                     }
                 }
 

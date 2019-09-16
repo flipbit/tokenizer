@@ -43,7 +43,7 @@ namespace Tokens.Transformers
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual("Alice", result.Values["Name"]);
+            Assert.AreEqual("Alice", result.First("Name"));
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace Tokens.Transformers
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual("ALICE", result.Values["Name"]);
+            Assert.AreEqual("ALICE", result.First("Name"));
         }
     }
 }

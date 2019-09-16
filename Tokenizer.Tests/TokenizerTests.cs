@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Tokens.Exceptions;
 using Tokens.Logging;
@@ -502,6 +503,27 @@ First Name: {FirstName}
 
             Assert.AreEqual("John", student.FirstName);
             Assert.AreEqual("Smith", student.LastName);
+        }
+
+        [Test]
+        public void TestTemplateIgnoreMissingProperties()
+        {
+            // Front matter configuration
+            const string pattern = @"---
+IgnoreMissingProperties: true
+---
+First Name: {FirstName}
+Last Name: {Foo}
+...";
+
+            const string input = "First Name: John\nLast Name: Smith";
+
+            var result = tokenizer.Tokenize<Student>(pattern, input);
+
+            var student = result.Value;
+
+            Assert.AreEqual("John", student.FirstName);
+            Assert.AreEqual("Smith", result.Tokens.Matches.First(m => m.Token.Name == "Foo").Value);
         }
     }
 }

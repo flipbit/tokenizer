@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using Tokens.Enumerators;
 
 namespace Tokens
 {
@@ -38,13 +40,16 @@ namespace Tokens
             tokens.Clear();
         }
 
-        public bool TryAssign(object target, string value, TokenizerOptions options, int line, int column, out Token assigned)
+        public bool TryAssign(object target, StringBuilder value, TokenizerOptions options, FileLocation location, out Token assigned, out object assignedValue)
         {
             assigned = null;
+            assignedValue = null;
+
+            var valueString = value.ToString();
 
             foreach (var token in tokens)
             {
-                if (token.Assign(target, value, options, line, column))
+                if (token.Assign(target, valueString, options, location, out assignedValue))
                 {
                     assigned = token;
 

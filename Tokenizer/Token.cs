@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -94,6 +95,11 @@ namespace Tokens
         public bool IsNull { get; set; }
 
         /// <summary>
+        /// The location of this token in the template.
+        /// </summary>
+        public FileLocation Location { get; set; }
+
+        /// <summary>
         /// Returns the string from which this token was created.
         /// </summary>
         public override string ToString()
@@ -101,8 +107,10 @@ namespace Tokens
             return content;
         }
 
-        internal bool Assign(object target, string value, TokenizerOptions options, int line, int column)
+        internal bool Assign(object target, string value, TokenizerOptions options, FileLocation location, out object assignedValue)
         {
+            assignedValue = null;
+
             if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
             if (IsNull) return false;
             if (string.IsNullOrWhiteSpace(Name)) return false;
@@ -118,14 +126,14 @@ namespace Tokens
                 }
             }
 
-            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2}[{3}] as {4}", line, column, Name, Id, value.ToLogInfoString());
+            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2}[{3}] as {4}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
 
             if (options.TrimTrailingWhiteSpace)
             {
                 value = value.TrimEnd();
             }
 
-            object input = value;
+            assignedValue = value;
 
             using (new LogIndentation())
             {
@@ -133,11 +141,11 @@ namespace Tokens
                 {
                     if (decorator.IsTransformer)
                     {
-                        var transformed = decorator.CanTransform(input, out var output);
+                        var transformed = decorator.CanTransform(assignedValue, out var output);
 
                         if (transformed == false)
                         {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Unable to transform value '{input}'!");
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Unable to transform value '{assignedValue}'!");
                             
                             return false;
                         }
@@ -148,19 +156,19 @@ namespace Tokens
                         }
                         else if (output is DateTime time)
                         {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to {time:yyyy-MM-dd HH:mm:ss} ({time.Kind})");
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{assignedValue}' to {time:yyyy-MM-dd HH:mm:ss} ({time.Kind})");
                         }
                         else
                         {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{input}' to '{output}' ({output.GetType().Name})");
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{assignedValue}' to '{output}' ({output.GetType().Name})");
                         }
 
-                        input = output;
+                        assignedValue = output;
                     }
 
                     if (decorator.IsValidator)
                     {
-                        if (decorator.Validate(input))
+                        if (decorator.Validate(assignedValue))
                         {
                             Log.Verbose($"-> {decorator.DecoratorType.Name} OK!");
                         }
@@ -176,18 +184,27 @@ namespace Tokens
 
             if (target is IDictionary<string, object> dictionary)
             {
-                return SetDictionaryValue(dictionary, input);
+                return SetDictionaryValue(dictionary, assignedValue);
+            }
+
+            // Target can be null if not reflecting onto an object
+            if (target is null)
+            {
+                return true;
             }
 
             try
             {
-                target.SetValue(Name, input);
+                target.SetValue(Name, assignedValue);
             }
             catch (MissingMemberException)
             {
                 Log.Verbose($"Missing property on target: {Name}");
 
-                throw;
+                if (options.IgnoreMissingProperties == false)
+                {
+                    throw;
+                }
             }
             catch (TypeConversionException ex)
             {

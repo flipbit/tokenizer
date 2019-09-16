@@ -60,6 +60,7 @@ namespace Tokens.Parsers
             RegisterValidator<IsDateTimeValidator>();
             RegisterValidator<IsNotEmptyValidator>();
             RegisterValidator<IsNotValidator>();
+            RegisterValidator<StartsWithValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
@@ -155,6 +156,7 @@ namespace Tokens.Parsers
                 token.DependsOnId = preToken.DependsOnId;
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
                 token.IsNull = preToken.IsNull;
+                token.Location = preToken.Location;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)

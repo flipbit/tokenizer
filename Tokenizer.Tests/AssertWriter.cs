@@ -14,11 +14,15 @@ namespace Tokens
         {
             if (result.BestMatch == null) return;
 
-            var keys = result.BestMatch.Values.Keys.OrderBy(k => k);
+            var keys = result
+                .BestMatch
+                .Matches
+                .Select(m => m.Token.Name)
+                .OrderBy(n => n);
 
             foreach (var key in keys)
             {
-                var value = result.BestMatch.Values[key];
+                var value = result.BestMatch.First(key);
 
                 if (value is string)
                 {

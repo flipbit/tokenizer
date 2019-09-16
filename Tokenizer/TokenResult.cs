@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Tokens.Enumerators;
 
 namespace Tokens
 {
@@ -15,12 +16,13 @@ namespace Tokens
 
         public IList<Token> Misses { get; }
 
-        internal void AddMatch(Token token, string value)
+        internal void AddMatch(Token token, object value, FileLocation location)
         {
             Matches.Add(new Match
             {
                 Token = token,
-                Value = value
+                Value = value,
+                Location = location.Clone()
             });
         }
 

@@ -14,6 +14,8 @@ namespace Tokens
             ResetDefaults();
         }
 
+        public bool IgnoreMissingProperties { get; set; }
+
         public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
 
         public bool TrimPreambleBeforeNewLine { get; set; }
@@ -46,6 +48,7 @@ namespace Tokens
             OutOfOrderTokens = false;
             EnableLogging = false;
             TerminateOnNewline = false;
+            IgnoreMissingProperties = false;
         }
 
         public TokenizerOptions Clone()
@@ -58,7 +61,8 @@ namespace Tokens
                 OutOfOrderTokens = OutOfOrderTokens,
                 EnableLogging = EnableLogging,
                 TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
-                TerminateOnNewline = TerminateOnNewline
+                TerminateOnNewline = TerminateOnNewline,
+                IgnoreMissingProperties = IgnoreMissingProperties
             };
         }
     }

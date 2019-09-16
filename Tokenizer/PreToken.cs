@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using Tokens.Enumerators;
 
 namespace Tokens
 {
@@ -44,6 +44,8 @@ namespace Tokens
 
         public string Content { get; set; }
 
+        public FileLocation Location { get; set; }
+
         public IList<PreTokenDecorator> Decorators { get; }
 
         public void AppendPreamble(string value)
@@ -76,6 +78,11 @@ namespace Tokens
         public bool HasValue => value.Length > 0;
 
         public bool IsFrontMatterToken { get; set; }
+
+        public override string ToString()
+        {
+            return Content;
+        }
 
         internal void TrimPreambleBeforeNewLine()
         {

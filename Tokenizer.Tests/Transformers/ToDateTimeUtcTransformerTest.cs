@@ -57,7 +57,7 @@ namespace Tokens.Transformers
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace Tokens.Transformers
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace Tokens.Transformers
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.IsFalse(result.Values.ContainsKey("Date"));
+            Assert.IsFalse(result.Contains("Date"));
         }
 
         [Test]
@@ -98,7 +98,7 @@ Date: { Date : ToDateTimeUtc('yyyy-M-d') }";
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Values["Date"]);
+            Assert.AreEqual(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));
         }
     }
 }

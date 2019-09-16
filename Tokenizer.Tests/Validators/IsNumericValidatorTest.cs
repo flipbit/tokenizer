@@ -56,7 +56,7 @@ namespace Tokens.Validators
 
             var result = new Tokenizer().Tokenize(pattern, input);
 
-            Assert.AreEqual("ten", result.Values["Age"]);
+            Assert.AreEqual("ten", result.First("Age"));
         }
     }
 }

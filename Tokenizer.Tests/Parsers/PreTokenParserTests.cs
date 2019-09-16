@@ -849,5 +849,52 @@ set: Response = NotFound
         {
             Assert.Throws<ParsingException>(() => parser.Parse("{ MyToken : Invalid!MyDecorator }"));
         }
+        
+        [Test]
+        public void TestParseTemplateLocations()
+        {
+            var content = @"{ First : Decorator('One'), Two , Three ("" Four "") }
+{Second} {Third}
+
+{Fourth}
+{Fifth}
+
+
+{Sixth}";
+
+            var template = parser.Parse(content);
+
+            Assert.AreEqual(6, template.Tokens.Count);
+
+            Assert.AreEqual(@"{ First : Decorator('One'), Two , Three ("" Four "") }", template.Tokens[0].ToString());
+            Assert.AreEqual(1, template.Tokens[0].Location.Column);
+            Assert.AreEqual(1, template.Tokens[0].Location.Line);
+            Assert.AreEqual(1, template.Tokens[0].Location.Paragraph);
+
+            Assert.AreEqual(@"{Second}", template.Tokens[1].ToString());
+            Assert.AreEqual(1, template.Tokens[1].Location.Column);
+            Assert.AreEqual(2, template.Tokens[1].Location.Line);
+            Assert.AreEqual(1, template.Tokens[1].Location.Paragraph);
+
+            Assert.AreEqual(@"{Third}", template.Tokens[2].ToString());
+            Assert.AreEqual(10, template.Tokens[2].Location.Column);
+            Assert.AreEqual(2, template.Tokens[2].Location.Line);
+            Assert.AreEqual(1, template.Tokens[2].Location.Paragraph);
+
+            Assert.AreEqual(@"{Fourth}", template.Tokens[3].ToString());
+            Assert.AreEqual(1, template.Tokens[3].Location.Column);
+            Assert.AreEqual(4, template.Tokens[3].Location.Line);
+            Assert.AreEqual(2, template.Tokens[3].Location.Paragraph);
+
+            Assert.AreEqual(@"{Fifth}", template.Tokens[4].ToString());
+            Assert.AreEqual(1, template.Tokens[4].Location.Column);
+            Assert.AreEqual(5, template.Tokens[4].Location.Line);
+            Assert.AreEqual(2, template.Tokens[4].Location.Paragraph);
+
+            Assert.AreEqual(@"{Sixth}", template.Tokens[5].ToString());
+            Assert.AreEqual(1, template.Tokens[5].Location.Column);
+            Assert.AreEqual(8, template.Tokens[5].Location.Line);
+            Assert.AreEqual(3, template.Tokens[5].Location.Paragraph);
+        }
     }
 }

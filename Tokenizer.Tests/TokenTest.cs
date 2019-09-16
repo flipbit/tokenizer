@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Tokens.Enumerators;
 using Tokens.Validators;
 
 namespace Tokens
@@ -31,7 +32,7 @@ namespace Tokens
 
             token.Name = "Person.Name";
 
-            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, 1, 1);
+            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual("Sue", person.Name);
@@ -45,7 +46,7 @@ namespace Tokens
             token.Name = "Person.Age";
             token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
-            var assigned = token.Assign(person, "20", TokenizerOptions.Defaults, 1, 1);
+            var assigned = token.Assign(person, "20", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual(20, person.Age);
@@ -59,7 +60,7 @@ namespace Tokens
             token.Name = "Person.Age";
             token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
-            var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults, 1, 1);
+            var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
             Assert.AreEqual(false, assigned);
             Assert.AreEqual(0, person.Age);
@@ -72,7 +73,7 @@ namespace Tokens
 
             token.Name = "Person.Name";
 
-            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, 1, 1);
+            var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
             Assert.AreEqual(true, assigned);
             Assert.AreEqual("Sue", person.Name);

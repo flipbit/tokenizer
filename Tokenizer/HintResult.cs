@@ -32,10 +32,9 @@ namespace Tokens
 
             Matches.Add(new HintMatch
             {
-                Column = enumerator.Column,
                 Text = hint.Text,
                 Optional = hint.Optional,
-                Line = enumerator.Line
+                Location = enumerator.Location.Clone()
             });
 
             return true;

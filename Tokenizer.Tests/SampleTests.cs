@@ -195,16 +195,16 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(7, result.Values.Count);
+            Assert.AreEqual(11, result.Matches.Count);
 
-            Assert.AreEqual("amazon.co.jp", result.Values["DomainName"]);
-            Assert.AreEqual("Amazon, Inc.", result.Values["Registrar.Name"]);
-            Assert.AreEqual("JC076JP", result.Values["AdminContact.Name"]);
-            Assert.AreEqual("IK4644JP", result.Values["TechnicalContact.Name"]);
-            Assert.AreEqual(new DateTime(2002, 11, 21), result.Values["Registered"]);
-            Assert.AreEqual(new DateTime(2018, 12, 1), result.Values["Updated"]);
+            Assert.AreEqual("amazon.co.jp", result.First("DomainName"));
+            Assert.AreEqual("Amazon, Inc.", result.First("Registrar.Name"));
+            Assert.AreEqual("JC076JP", result.First("AdminContact.Name"));
+            Assert.AreEqual("IK4644JP", result.First("TechnicalContact.Name"));
+            Assert.AreEqual(new DateTime(2002, 11, 21), result.First("Registered"));
+            Assert.AreEqual(new DateTime(2018, 12, 1), result.First("Updated"));
 
-            var nameServers = (List<object>) result.Values["NameServers"];
+            var nameServers = (List<object>) result.All("NameServers");
 
             Assert.AreEqual("ns1.p31.dynect.net", nameServers[0]);
             Assert.AreEqual("ns2.p31.dynect.net", nameServers[1]);
@@ -222,7 +222,7 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(37, result.Values.Count);
+            Assert.AreEqual(53, result.Matches.Count);
         }
 
         [Test]
@@ -234,7 +234,7 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(1, result.Values.Count);
+            Assert.AreEqual(1, result.Matches.Count);
         }
 
 
@@ -247,9 +247,9 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(14, result.Values.Count);
+            Assert.AreEqual(22, result.Matches.Count);
 
-            var nameServers = result.Values["NameServers"] as List<object>;
+            var nameServers = result.All("NameServers");
 
             Assert.AreEqual(4, nameServers.Count);
             Assert.AreEqual("ns1.google.com", nameServers[0]);
@@ -267,11 +267,11 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(39, result.Values.Count);
+            Assert.AreEqual(58, result.Matches.Count);
 
-            Assert.AreEqual("google.co.za", result.Values["DomainName"]);
+            Assert.AreEqual("google.co.za", result.First("DomainName"));
 
-            var nameServers = result.Values["NameServers"] as List<object>;
+            var nameServers = result.All("NameServers");
 
             Assert.AreEqual(4, nameServers.Count);
             Assert.AreEqual("ns1.google.com", nameServers[0]);
@@ -289,9 +289,9 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(34, result.Values.Count);
+            Assert.AreEqual(51, result.Matches.Count);
 
-            var nameServers = result.Values["NameServers"] as List<object>;
+            var nameServers = result.All("NameServers");
 
             Assert.AreEqual(4, nameServers.Count);
             Assert.AreEqual("ns1.google.com", nameServers[0]);
@@ -312,26 +312,26 @@ namespace Tokens
 
             var match = matcher.Match(input);
 
-            Assert.AreEqual(21, match.BestMatch.Values.Count);
+            Assert.AreEqual(39, match.BestMatch.Matches.Count);
             AssertWriter.Write(match);
  
-            Assert.AreEqual(match.BestMatch.Values["AdminContact.Email"], "info@verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.Values["AdminContact.FaxNumber"], "+1 703 948 3978");
-            Assert.AreEqual(match.BestMatch.Values["AdminContact.Name"], "Registry Customer Service");
-            Assert.AreEqual(match.BestMatch.Values["AdminContact.Organization"], "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.Values["AdminContact.TelephoneNumber"], "+1 703 925-6999");
-            Assert.AreEqual(match.BestMatch.Values["Changed"], "2012-02-15");
-            Assert.AreEqual(match.BestMatch.Values["Created"], "1985-01-01");
-            Assert.AreEqual(match.BestMatch.Values["Organization.Name"], "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.Values["Remarks"], "Registration information: http://www.verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.Values["Status"], "Found");
-            Assert.AreEqual(match.BestMatch.Values["TechContact.Email"], "info@verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.Values["TechContact.FaxNumber"], "+1 703 948 3978");
-            Assert.AreEqual(match.BestMatch.Values["TechContact.Name"], "Registry Customer Service");
-            Assert.AreEqual(match.BestMatch.Values["TechContact.Organization"], "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.Values["TechContact.TelephoneNumber"], "+1 703 925-6999");
-            Assert.AreEqual(match.BestMatch.Values["Tld"], "com");
-            Assert.AreEqual(match.BestMatch.Values["Url"], "whois.verisign-grs.com");           
+            Assert.AreEqual(match.BestMatch.First("AdminContact.Email"), "info@verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.First("AdminContact.FaxNumber"), "+1 703 948 3978");
+            Assert.AreEqual(match.BestMatch.First("AdminContact.Name"), "Registry Customer Service");
+            Assert.AreEqual(match.BestMatch.First("AdminContact.Organization"), "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.First("AdminContact.TelephoneNumber"), "+1 703 925-6999");
+            Assert.AreEqual(match.BestMatch.First("Changed"), "2012-02-15");
+            Assert.AreEqual(match.BestMatch.First("Created"), "1985-01-01");
+            Assert.AreEqual(match.BestMatch.First("Organization.Name"), "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.First("Remarks"), "Registration information: http://www.verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.First("Status"), "Found");
+            Assert.AreEqual(match.BestMatch.First("TechContact.Email"), "info@verisign-grs.com");
+            Assert.AreEqual(match.BestMatch.First("TechContact.FaxNumber"), "+1 703 948 3978");
+            Assert.AreEqual(match.BestMatch.First("TechContact.Name"), "Registry Customer Service");
+            Assert.AreEqual(match.BestMatch.First("TechContact.Organization"), "VeriSign Global Registry Services");
+            Assert.AreEqual(match.BestMatch.First("TechContact.TelephoneNumber"), "+1 703 925-6999");
+            Assert.AreEqual(match.BestMatch.First("Tld"), "com");
+            Assert.AreEqual(match.BestMatch.First("Url"), "whois.verisign-grs.com");           
         }
   
         [Test]
@@ -346,8 +346,19 @@ namespace Tokens
 
             var match = matcher.Match(input);
 
-            Assert.AreEqual(match.BestMatch.Values["DomainName"], "u34jedzcq.co.ca");
-            Assert.AreEqual(match.BestMatch.Values["Status"], "NotFound");
+            Assert.AreEqual(match.BestMatch.First("DomainName"), "u34jedzcq.co.ca");
+            Assert.AreEqual(match.BestMatch.First("Status"), "NotFound");
+        }
+  
+        [Test]
+        public void TestWhoisEuOrg()
+        {
+            var template = ReadTemplate("whois.eu.org");
+            var input = ReadData("google.eu.org");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.AreEqual(result.First("DomainName"), "u34jedzcq.co.ca");
         }
 
         private string ReadData(string name)

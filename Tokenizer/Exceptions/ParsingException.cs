@@ -5,14 +5,14 @@ namespace Tokens.Exceptions
 {
     public class ParsingException : TokenizerException
     {
-        internal ParsingException(string message, PreTokenEnumerator enumerator) : this(message, enumerator.Column, enumerator.Line)
+        internal ParsingException(string message, PreTokenEnumerator enumerator) : this(message, enumerator.Location)
         {
         }
 
-        public ParsingException(string message, int column, int line) : base(message)
+        public ParsingException(string message, FileLocation location) : base(message)
         {
-            Column = column;
-            Line = line;
+            Column = location.Column;
+            Line = location.Line;
         }
 
         public int Line { get; set; }

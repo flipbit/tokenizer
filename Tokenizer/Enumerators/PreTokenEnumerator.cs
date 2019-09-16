@@ -24,32 +24,29 @@ namespace Tokens.Enumerators
             }
 
             currentLocation = 0;
-
-            Column = 0;
-            Line = 1;
+            Location = new FileLocation();
         }
 
         public bool IsEmpty => currentLocation >= patternLength;
 
-        public int Line { get; private set; }
-
-        public int Column { get; private set; }
+        public FileLocation Location { get; }
 
         public string Next()
         {
             if (IsEmpty) return string.Empty;
 
+            var next = pattern.Substring(currentLocation, 1);
+            currentLocation++;
+
             if (resetNextLine)
             {
-                Line++;
-                Column = 1;
+                Location.NewLine();
                 resetNextLine = false;
             }
-
-            var next = pattern.Substring(currentLocation, 1);
-
-            currentLocation++;
-            Column++;
+            else
+            {
+                Location.Increment(next);
+            }
 
             if (next == "\n")
             {

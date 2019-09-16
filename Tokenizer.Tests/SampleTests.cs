@@ -358,7 +358,7 @@ namespace Tokens
 
             var result = tokenizer.Tokenize(template, input);
 
-            Assert.AreEqual(result.First("DomainName"), "u34jedzcq.co.ca");
+            Assert.AreEqual(result.First("DomainName"), "google.eu.org");
         }
 
         private string ReadData(string name)

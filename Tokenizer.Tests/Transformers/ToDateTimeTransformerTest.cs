@@ -101,5 +101,25 @@ namespace Tokens.Transformers
             Assert.IsTrue(result);
             Assert.AreEqual(new DateTime(2012, 5, 6), t);
         }
+
+        [Test]
+        public void TestParseDateWithDayOrdinalAtStart()
+        {
+            var result = @operator.CanTransform("01st August 2001", new [] { "dd MMMM yyyy" }, out var t);
+            var dateTime = (DateTime) t;
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2001, 8 , 1), dateTime);
+        }
+
+        [Test]
+        public void TestParseDateWithDayOrdinalInMiddle()
+        {
+            var result = @operator.CanTransform("August 2nd 2001", new [] { "MMMM d yyyy" }, out var t);
+            var dateTime = (DateTime) t;
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2001, 8 , 2), dateTime);
+        }
     }
 }

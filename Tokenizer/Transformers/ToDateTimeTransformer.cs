@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Tokens.Extensions;
 
 namespace Tokens.Transformers
@@ -54,10 +55,21 @@ namespace Tokens.Transformers
             }
             else
             {
-                
                 foreach (var format in formats)
                 {
-                    if (DateTime.TryParseExact(valueString, format, CultureInfo.InvariantCulture, dateTimeStyles, out result))
+                    if (string.IsNullOrWhiteSpace(format)) continue;
+
+                    var valueToFormat = valueString;
+
+                    if (format.Contains(" d ") || 
+                        format.Contains(" dd ") || 
+                        format.StartsWith("d ") ||
+                        format.StartsWith("dd "))
+                    {
+                        valueToFormat = Regex.Replace(valueToFormat, @"\b(\d+)(?:st|nd|rd|th)\b", "$1"); 
+                    }
+
+                    if (DateTime.TryParseExact(valueToFormat, format, CultureInfo.InvariantCulture, dateTimeStyles, out result))
                     {
                         return true;
                     }

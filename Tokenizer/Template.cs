@@ -155,11 +155,11 @@ namespace Tokens
             return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);
         }
 
-        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds, CandidateTokenList candidates)
+        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds, CandidateTokenList candidates, IEnumerable<int> excludedRepeatingTokens)
         {
             var candidateIds = candidates.Tokens.Where(t => t.Repeating == false).Select(t => t.Id);
 
-            return TokensExcluding(tokenIds.Concat(candidateIds));
+            return TokensExcluding(tokenIds.Concat(candidateIds).Concat(excludedRepeatingTokens));
         }
     }
 }

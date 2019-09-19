@@ -10,40 +10,64 @@ namespace Tokens
     /// </summary>
     internal class AssertWriter
     {
-        public static void Write(TokenMatcherResult result)
+        private static StringBuilder sb = new StringBuilder();
+
+        public static void Write(TokenizeResult result)
         {
-            if (result.BestMatch == null) return;
+            sb.Clear();
 
-            var keys = result
-                .BestMatch
-                .Matches
-                .Select(m => m.Token.Name)
-                .OrderBy(n => n);
+            var listNames = new List<string>(); 
 
-            foreach (var key in keys)
+            foreach (var match in result.Matches)
             {
-                var value = result.BestMatch.First(key);
+                var name = match.Token.Name;
 
-                if (value is string)
+                if (result.Matches.Count(m => m.Token.Name == name) > 1)
                 {
-                    Console.WriteLine($@"            Assert.AreEqual(match.BestMatch.Values[""{key}""], ""{value}"");");
-                }
+                    if (listNames.Contains(name)) continue;
 
-                if (value is DateTime dateTime)
+                    var listMatches = result.All(name);
+                    var listCount = 0;
+
+                    sb.AppendLine();
+                        WriteValue($@"result.All(""{name}"").Count", listMatches.Count);
+                    foreach (var listMatch in listMatches)
+                    {
+                        WriteValue($@"result.All(""{name}"")[{listCount}]", listMatch);
+
+                        listCount++;
+                    }
+                    sb.AppendLine();
+
+                    listNames.Add(name);
+                }
+                else
                 {
-                    Console.WriteLine($@"            Assert.AreEqual(match.BestMatch.Values[""{key}""], new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second}));");
-                        
+                    WriteValue($@"result.First(""{name}"")", match.Value);
                 }
+            }
 
-                /*
-                if (value is List<object> list)
-                {
-                    Console.WriteLine($@"            Assert.AreEqual(match.BestMatch.Values[""{key}""], ""{value}"");");
+            Console.Write(sb.ToString());
+            WindowsClipboard.SetText(sb.ToString());
+        }
 
+        private static void WriteValue(string name, object value)
+        {
 
+            if (value is string)
+            {
+                sb.AppendLine($@"            Assert.AreEqual(""{value}"", {name});");
+            }
 
-                }
-                */
+            if (value is int)
+            {
+                sb.AppendLine($@"            Assert.AreEqual({value}, {name});");
+            }
+
+            if (value is DateTime dateTime)
+            {
+                sb.AppendLine($@"            Assert.AreEqual(new DateTime({dateTime.Year}, {dateTime.Month:00}, {dateTime.Day:00}, {dateTime.Hour:00}, {dateTime.Minute:00}, {dateTime.Second:00}, {dateTime.Millisecond:000}, DateTimeKind.Utc), {name});");
+                    
             }
         }
     }

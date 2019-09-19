@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using Tokens.Samples;
 using Tokens.Samples.Classes;
@@ -22,28 +21,39 @@ namespace Tokens
         }
 
         [Test]
-        public void TestParseUkWhoisData()
+        public void TestWhoisUk()
         {
-            var pattern = Resources.Pattern_nominet;
-            var input = Resources.Data_bbc_co_uk;
+            var template = ReadTemplate("whois.uk");
+            var input = ReadData("bbc.co.uk");
 
-            var result = tokenizer.Tokenize<WhoisRecord>(pattern, input).Value;
+            var result = tokenizer.Tokenize(template, input);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("bbc.co.uk", result.Domain);
-            Assert.AreEqual("British Broadcasting Corporation", result.Registrant.Organization);
-            Assert.AreEqual("British Broadcasting Corporation", result.Registrant.Street);
-            Assert.AreEqual("Broadcasting House", result.Registrant.City);
-            Assert.AreEqual("Portland Place", result.Registrant.State);
-            Assert.AreEqual("London", result.Registrant.PostalCode);
-            Assert.AreEqual("British Broadcasting Corporation [Tag = BBC]", result.RegistrarName);
-            Assert.AreEqual("http://www.bbc.co.uk", result.RegistrarUrl);
-            Assert.AreEqual(3, result.NameServers.Count);
-            Assert.AreEqual("ns1.rbsov.bbc.co.uk       212.58.241.67", result.NameServers[0]);
-            Assert.AreEqual("ns1.tcams.bbc.co.uk       212.72.49.3", result.NameServers[1]);
-            Assert.AreEqual("ns1.thdow.bbc.co.uk       212.58.240.163", result.NameServers[2]);
-            Assert.AreEqual(new DateTime(2014, 12, 13), result.ExpirationDate);
-            Assert.AreEqual(new DateTime(2014, 6, 12), result.ModificationDate);
+
+            Assert.AreEqual("bbc.co.uk", result.First("DomainName"));
+            Assert.AreEqual("British Broadcasting Corporation", result.First("Registrant.Name"));
+
+            Assert.AreEqual(6, result.All("Registrant.Address").Count);
+            Assert.AreEqual("British Broadcasting Corporation", result.All("Registrant.Address")[0]);
+            Assert.AreEqual("Broadcasting House", result.All("Registrant.Address")[1]);
+            Assert.AreEqual("Portland Place", result.All("Registrant.Address")[2]);
+            Assert.AreEqual("London", result.All("Registrant.Address")[3]);
+            Assert.AreEqual("W1A 1AA", result.All("Registrant.Address")[4]);
+            Assert.AreEqual("United Kingdom", result.All("Registrant.Address")[5]);
+
+            Assert.AreEqual("British Broadcasting Corporation [Tag = BBC]", result.First("Registrar.Name"));
+            Assert.AreEqual("http://www.bbc.co.uk", result.First("Registrar.Url"));
+            Assert.AreEqual(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Registered"));
+            Assert.AreEqual(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
+            Assert.AreEqual(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Updated"));
+            Assert.AreEqual("Registered until expiry date.", result.First("DomainStatus"));
+
+            Assert.AreEqual(3, result.All("NameServers").Count);
+            Assert.AreEqual("ns1.rbsov.bbc.co.uk", result.All("NameServers")[0]);
+            Assert.AreEqual("ns1.tcams.bbc.co.uk", result.All("NameServers")[1]);
+            Assert.AreEqual("ns1.thdow.bbc.co.uk", result.All("NameServers")[2]);
+
+            Assert.AreEqual("Found", result.First("Status"));
         }
 
         [Test]
@@ -306,32 +316,10 @@ namespace Tokens
             var template = ReadTemplate("whois.iana");
             var input = ReadData("com");
 
-            var matcher = new TokenMatcher();
+            var result = tokenizer.Tokenize(template, input);
 
-            matcher.RegisterTemplate(template);
-
-            var match = matcher.Match(input);
-
-            Assert.AreEqual(39, match.BestMatch.Matches.Count);
-            AssertWriter.Write(match);
- 
-            Assert.AreEqual(match.BestMatch.First("AdminContact.Email"), "info@verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.First("AdminContact.FaxNumber"), "+1 703 948 3978");
-            Assert.AreEqual(match.BestMatch.First("AdminContact.Name"), "Registry Customer Service");
-            Assert.AreEqual(match.BestMatch.First("AdminContact.Organization"), "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.First("AdminContact.TelephoneNumber"), "+1 703 925-6999");
-            Assert.AreEqual(match.BestMatch.First("Changed"), "2012-02-15");
-            Assert.AreEqual(match.BestMatch.First("Created"), "1985-01-01");
-            Assert.AreEqual(match.BestMatch.First("Organization.Name"), "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.First("Remarks"), "Registration information: http://www.verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.First("Status"), "Found");
-            Assert.AreEqual(match.BestMatch.First("TechContact.Email"), "info@verisign-grs.com");
-            Assert.AreEqual(match.BestMatch.First("TechContact.FaxNumber"), "+1 703 948 3978");
-            Assert.AreEqual(match.BestMatch.First("TechContact.Name"), "Registry Customer Service");
-            Assert.AreEqual(match.BestMatch.First("TechContact.Organization"), "VeriSign Global Registry Services");
-            Assert.AreEqual(match.BestMatch.First("TechContact.TelephoneNumber"), "+1 703 925-6999");
-            Assert.AreEqual(match.BestMatch.First("Tld"), "com");
-            Assert.AreEqual(match.BestMatch.First("Url"), "whois.verisign-grs.com");           
+            Assert.AreEqual(39, result.Matches.Count);
+            AssertWriter.Write(result);
         }
   
         [Test]
@@ -359,6 +347,17 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.AreEqual(result.First("DomainName"), "google.eu.org");
+        }
+  
+        [Test]
+        public void TestWhoisGoogleTr()
+        {
+            var template = ReadTemplate("whois.tr");
+            var input = ReadData("google.tr");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            Assert.AreEqual(new DateTime(2001, 08, 23), result.First("Registered"));
         }
 
         private string ReadData(string name)

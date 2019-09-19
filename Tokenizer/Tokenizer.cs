@@ -88,6 +88,7 @@ namespace Tokens
                 var enumerator = new TokenEnumerator(input);
                 var replacement = new StringBuilder();
                 var matchIds = new HashSet<int>();
+                var disabledRepeatingTokens = new HashSet<int>();
                 var replacementLocation = new FileLocation();
 
                 var hintsMissing = FindHints(template, enumerator, result);
@@ -109,10 +110,28 @@ namespace Tokens
                         // Can't assign, so clear current context and move to next match
                         if (candidates.CanAnyAssign(replacement.ToString()) == false)
                         {
-                            foreach (var token in candidates.Tokens)
+                            for (var i = 0; i < candidates.Tokens.Count; i++)
                             {
-                                log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                                // If repeated token was the last match, then this non-match will stop it
+                                // matching any future results
+                                var token = candidates.Tokens[i];
+                                if (WasLastMatchedToken(result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacement.ToString()))
+                                {
+                                    log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                                    using (new LogIndentation())
+                                    {
+                                        log.Verbose(("-> Disabled this repeating token."));
+                                        disabledRepeatingTokens.Add(token.Id);
+                                        candidates.Remove(token);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    log.Verbose("-> Ln: {0} Col: {1} : Skipping {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                                }
                             }
+
                             replacement.Clear();
                             enumerator.Advance(candidates.Preamble.Length);
                             replacementLocation = enumerator.Location;
@@ -123,6 +142,20 @@ namespace Tokens
                     // Assign newline terminated token
                     if (candidates.Any && candidates.TerminateOnNewLine && next == "\n")
                     {
+                        if (candidates.Tokens.First().Repeating &&
+                            string.IsNullOrWhiteSpace(candidates.Preamble) &&
+                            result.Tokens.HasMatches)
+                        {
+                            if (result.Tokens.Matches.Last().Token.Id == candidates.Tokens.First().Id)
+                            {
+                                if (enumerator.Location.Line > result.Tokens.Matches.Last().Location.Line + 1)
+                                {
+                                    disabledRepeatingTokens.Add(candidates.Tokens.First().Id);
+                                    candidates.Remove(candidates.Tokens.First());
+                                }
+                            }
+                        }
+
                         using (new LogIndentation())
                         {
                             try
@@ -153,7 +186,7 @@ namespace Tokens
                     }
 
                     // Check for next token
-                    if (enumerator.Match(template.TokensExcluding(matchIds, candidates), template.Options.OutOfOrderTokens, out var matches))
+                    if (enumerator.Match(template.TokensExcluding(matchIds, candidates, disabledRepeatingTokens), template.Options.OutOfOrderTokens, out var matches))
                     {
                         // Special case: first token found, just prepare to read token value
                         if (candidates.Any == false)
@@ -271,6 +304,18 @@ namespace Tokens
                     matchIds.Add(tokenId);
                 }
             }
+        }
+
+        private bool WasLastMatchedToken(TokenizeResultBase result, Token token)
+        {
+            var lastMatch = result.Tokens.Matches.LastOrDefault();
+
+            if (lastMatch != null)
+            {
+                return lastMatch.Token.Id == token.Id;
+            }
+
+            return false;
         }
 
         private bool FindHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result) 

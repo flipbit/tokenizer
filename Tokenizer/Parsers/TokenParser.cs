@@ -47,6 +47,7 @@ namespace Tokens.Parsers
             RegisterTransformer<SubstringBeforeTransformer>();
             RegisterTransformer<SetTransformer>();
             RegisterTransformer<ReplaceTransformer>();
+            RegisterTransformer<RemoveTransformer>();
             RegisterTransformer<SubstringAfterLastTransformer>();
             RegisterTransformer<SubstringBeforeLastTransformer>();
 
@@ -61,6 +62,8 @@ namespace Tokens.Parsers
             RegisterValidator<IsNotEmptyValidator>();
             RegisterValidator<IsNotValidator>();
             RegisterValidator<StartsWithValidator>();
+            RegisterValidator<EndsWithValidator>();
+            RegisterValidator<ContainsValidator>();
         }
 
         public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

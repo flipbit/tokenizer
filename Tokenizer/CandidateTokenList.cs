@@ -84,5 +84,10 @@ namespace Tokens
         public bool IsNullToken { get; private set; }
 
         public IList<Token> Tokens => tokens;
+
+        public void Remove(Token token)
+        {
+            tokens.Remove(token);
+        }
     }
 }

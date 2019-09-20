@@ -100,6 +100,17 @@ namespace Tokens
         public FileLocation Location { get; set; }
 
         /// <summary>
+        /// If true, multiple instances of this token will be concatenated together
+        /// on the target.
+        /// </summary>
+        public bool Concatenate { get; set; }
+
+        /// <summary>
+        /// Defines a joining string to use when concatenating two token values.
+        /// </summary>
+        public string ConcatenationString { get; set; }
+
+        /// <summary>
         /// Returns the string from which this token was created.
         /// </summary>
         public override string ToString()
@@ -195,7 +206,25 @@ namespace Tokens
 
             try
             {
-                target.SetValue(Name, assignedValue);
+                if (Concatenate)
+                {
+                    if (assignedValue == null) return true;
+
+                    var current = target.GetValue(Name);
+
+                    if (CanConcatenate(current, assignedValue))
+                    {
+                        target.SetValue(Name, ConcatenateValues(current, assignedValue, ConcatenationString));
+                    }
+                    else
+                    {
+                        throw new TokenAssignmentException(this, $"Unable to concatenate type {assignedValue.GetType().Name} to {Name}");
+                    }
+                }
+                else
+                {
+                    target.SetValue(Name, assignedValue);
+                }
             }
             catch (MissingMemberException)
             {
@@ -292,6 +321,28 @@ namespace Tokens
             }
 
             return true;
+        }
+
+        internal bool CanConcatenate(object existingValue, object newValue)
+        {
+            if (existingValue is string && newValue is string)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        internal object ConcatenateValues(object existingValue, object newValue, string concatenationString)
+        {
+            if (existingValue is string && newValue is string)
+            {
+                var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine);
+
+                return $"{existingValue}{concatStringValue}{newValue}";
+            }
+
+            return existingValue;
         }
     }
 }

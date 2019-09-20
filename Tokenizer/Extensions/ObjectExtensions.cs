@@ -159,5 +159,70 @@ namespace Tokens.Extensions
 
             return Enum.Parse(targetType, valueString, true);
         }
+
+        public static object GetValue(this object target, string propertyPath)
+        {
+            return GetValue<object>(target, propertyPath, StringComparison.InvariantCulture);
+        }
+
+        public static T GetValue<T>(this object target, string propertyPath)
+        {
+            return GetValue<T>(target, propertyPath, StringComparison.InvariantCulture);
+        }
+
+        public static T GetValue<T>(this object target, string propertyPath, StringComparison stringComparison)
+        {
+            if (string.IsNullOrEmpty(propertyPath))
+            {
+                throw new ArgumentNullException(nameof(propertyPath));
+            }
+
+            var segments = propertyPath.Split('.');
+            var objectType = target.GetType().Name;
+
+            T value;
+
+            // Check object type
+            if (string.Compare(objectType, segments[0], stringComparison) == 0)
+            {
+                value = GetInnerValue<T>(target, segments.Skip(1).ToArray(), stringComparison);
+            }
+            else
+            {
+                value = GetInnerValue<T>(target, segments.ToArray(), stringComparison);
+            }
+
+
+            return @value;
+
+        }
+        
+        private static T GetInnerValue<T>(object @object, IReadOnlyList<string> path, StringComparison stringComparison)
+        {
+            var propertyInfos = @object.GetType().GetProperties();
+
+            foreach (var propertyInfo in propertyInfos)
+            {
+                if (string.Compare(propertyInfo.Name, path[0], stringComparison) != 0) continue;
+
+                if (path.Count == 1)
+                { 
+                    var value = propertyInfo.GetValue(@object);
+
+                    return (T) value;
+                }
+
+                var currentValue = propertyInfo.GetValue(@object);
+
+                if (currentValue == null)
+                {
+                    return default;
+                }
+
+                return GetInnerValue<T>(currentValue, path.Skip(1).ToArray(), stringComparison);
+            }
+            
+            throw new MissingMemberException($@"Could find property '{path[0]}' on {@object.GetType().Name}");
+        }
     }
 }

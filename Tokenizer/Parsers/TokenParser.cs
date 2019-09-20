@@ -194,6 +194,14 @@ namespace Tokens.Parsers
 
             foreach (var decorator in preToken.Decorators)
             {
+                if (IsConcatenationDecorator(preToken.Name, decorator, out var joiningString))
+                {
+                    token.Concatenate = true;
+                    token.ConcatenationString = joiningString;
+
+                    continue;
+                }
+
                 TokenDecoratorContext context = null;
 
                 foreach (var operatorType in transformers)
@@ -256,6 +264,26 @@ namespace Tokens.Parsers
                     throw new TokenizerException($"Front Matter Token '{preToken.Name}' must have an assignment operation.");
                 }
             }
+        }
+
+        private bool IsConcatenationDecorator(string name, PreTokenDecorator decorator, out string joiningString)
+        { 
+            joiningString = null;
+
+            if (string.Compare("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase) != 0) return false;
+
+            if (decorator.Args.Count == 1)
+            {
+                joiningString = decorator.Args[0];
+            }
+
+            if (decorator.Args.Count > 1)
+            {
+                throw new TokenizerException($"Token '{name}' Concat() must have a single argument.");
+            }
+
+            return true;
+
         }
 
         private string GenerateTemplateName(string content)

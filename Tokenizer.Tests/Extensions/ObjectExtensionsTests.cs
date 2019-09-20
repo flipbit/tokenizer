@@ -70,5 +70,65 @@ namespace Tokens.Extensions
             Assert.IsTrue(foo.Boo.HasValue);
             Assert.AreEqual(10, foo.Boo.Value);
         }
+
+        [Test]
+        public void TestGetPropertyWithClassName()
+        {
+            var foo = new Foo {Baz = "Value"};
+
+            var result = foo.GetValue<string>("Foo.Baz");
+
+            Assert.AreEqual("Value", result);
+        }
+
+        [Test]
+        public void TestGetPropertyWithoutClassName()
+        {
+            var foo = new Foo {Baz = "Value"};
+
+            var result = foo.GetValue<string>("Baz");
+
+            Assert.AreEqual("Value", result);
+        }
+
+        [Test]
+        public void TestGetPropertyFromChildObject()
+        {
+            var foo = new Foo { Bar = new Bar{ Age = 10 }};
+
+            var result = foo.GetValue<int>("Bar.Age");
+
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
+        public void TestGetPropertyFromChildObjectIgnoresCase()
+        {
+            var foo = new Foo { Bar = new Bar{ Age = 10 }};
+
+            var result = foo.GetValue<int>("bar.age", StringComparison.InvariantCultureIgnoreCase);
+
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
+        public void TestGetPropertyWhenNull()
+        {
+            var foo = new Foo();
+
+            var result = foo.GetValue<string>("Baz");
+
+            Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public void TestGetPropertyNonGeneric()
+        {
+            var foo = new Foo { Boo = 5 };
+
+            var result = foo.GetValue("Boo");
+
+            Assert.AreEqual(5, result);
+        }
     }
 }

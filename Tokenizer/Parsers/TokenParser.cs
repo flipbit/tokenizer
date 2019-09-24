@@ -160,6 +160,7 @@ namespace Tokens.Parsers
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
                 token.IsNull = preToken.IsNull;
                 token.Location = preToken.Location;
+                token.ConsiderOnce = preToken.ConsiderOnce;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)

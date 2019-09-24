@@ -111,6 +111,11 @@ namespace Tokens
         public string ConcatenationString { get; set; }
 
         /// <summary>
+        /// If true, this token will only be attempted to be matched once. 
+        /// </summary>
+        public bool ConsiderOnce { get; set; }
+
+        /// <summary>
         /// Returns the string from which this token was created.
         /// </summary>
         public override string ToString()

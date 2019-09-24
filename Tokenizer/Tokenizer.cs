@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Tokens.Enumerators;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -125,6 +124,14 @@ namespace Tokens
                                         candidates.Remove(token);
                                         i--;
                                     }
+                                }
+                                else if (token.ConsiderOnce)
+                                {
+                                    log.Verbose("-> Ln: {0} Col: {1} : Skipping & removing {2} ({3}), '{4}' is not a match.", enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+
+                                    candidates.Remove(token);
+                                    result.Tokens.AddMiss(token);
+                                    matchIds.Add(token.Id);
                                 }
                                 else
                                 {

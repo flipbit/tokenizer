@@ -42,6 +42,8 @@ namespace Tokens
 
         public bool IsNull { get; set; }
 
+        public bool ConsiderOnce { get; set; }
+
         public string Content { get; set; }
 
         public FileLocation Location { get; set; }

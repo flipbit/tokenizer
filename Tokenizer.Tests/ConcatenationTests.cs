@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
-using Tokens.Extensions;
 
 namespace Tokens
 {

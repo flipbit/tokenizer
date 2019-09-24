@@ -360,6 +360,70 @@ namespace Tokens
             Assert.AreEqual(new DateTime(2001, 08, 23), result.First("Registered"));
         }
 
+        [Test]
+        public void TestWhoisVe()
+        {
+            var template = ReadTemplate("whois.ve");
+            var input = ReadData("aloespa.com.ve");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            AssertWriter.Write(result);
+            Assert.AreEqual("Rafael Perez", result.First("Registrant.Name"));
+            Assert.AreEqual("aloespa.com.ve-dom", result.First("Registrant.RegistryId"));
+            Assert.AreEqual("registro@tepuynet.com", result.First("Registrant.Email"));
+
+            Assert.AreEqual(3, result.All("Registrant.Address").Count);
+            Assert.AreEqual("Rafael Perez", result.All("Registrant.Address")[0]);
+            Assert.AreEqual("Caracas", result.All("Registrant.Address")[1]);
+            Assert.AreEqual("Caracas, D. Federal  VE", result.All("Registrant.Address")[2]);
+
+            Assert.AreEqual("aloespa.com.ve", result.First("DomainName"));
+            Assert.AreEqual("Tepuynet", result.First("AdminContact.Name"));
+            Assert.AreEqual("aloespa.com.ve-adm", result.First("AdminContact.RegistryId"));
+            Assert.AreEqual("registro@tepuynet.com", result.First("AdminContact.Email"));
+
+            Assert.AreEqual(3, result.All("AdminContact.Address").Count);
+            Assert.AreEqual("Tepuynet C.A.", result.All("AdminContact.Address")[0]);
+            Assert.AreEqual("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("AdminContact.Address")[1]);
+            Assert.AreEqual("Valencia, Carabobo  VE", result.All("AdminContact.Address")[2]);
+
+            Assert.AreEqual("2418246437", result.First("AdminContact.TelephoneNumber"));
+            Assert.AreEqual("2418246437", result.First("AdminContact.FaxNumber"));
+            Assert.AreEqual("Tepuynet", result.First("TechnicalContact.Name"));
+            Assert.AreEqual("aloespa.com.ve-tec", result.First("TechnicalContact.RegistryId"));
+            Assert.AreEqual("registro@tepuynet.com", result.First("TechnicalContact.Email"));
+
+            Assert.AreEqual(3, result.All("TechnicalContact.Address").Count);
+            Assert.AreEqual("Tepuynet C.A.", result.All("TechnicalContact.Address")[0]);
+            Assert.AreEqual("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("TechnicalContact.Address")[1]);
+            Assert.AreEqual("Valencia, Carabobo  VE", result.All("TechnicalContact.Address")[2]);
+
+            Assert.AreEqual("2418246437", result.First("TechnicalContact.TelephoneNumber"));
+            Assert.AreEqual("2418246437", result.First("TechnicalContact.FaxNumber"));
+            Assert.AreEqual("Tepuynet", result.First("BillingContact.Name"));
+            Assert.AreEqual("aloespa.com.ve-bil", result.First("BillingContact.RegistryId"));
+            Assert.AreEqual("registro@tepuynet.com", result.First("BillingContact.Email"));
+
+            Assert.AreEqual(3, result.All("BillingContact.Address").Count);
+            Assert.AreEqual("Tepuynet C.A.", result.All("BillingContact.Address")[0]);
+            Assert.AreEqual("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("BillingContact.Address")[1]);
+            Assert.AreEqual("Valencia, Carabobo  VE", result.All("BillingContact.Address")[2]);
+
+            Assert.AreEqual("2418246437", result.First("BillingContact.TelephoneNumber"));
+            Assert.AreEqual("2418246437", result.First("BillingContact.FaxNumber"));
+            Assert.AreEqual(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
+            Assert.AreEqual(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
+            Assert.AreEqual(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
+            Assert.AreEqual("SUSPENDIDO", result.First("DomainStatus"));
+
+            Assert.AreEqual(2, result.All("NameServers").Count);
+            Assert.AreEqual("ns10.tepuyserver.net", result.All("NameServers")[0]);
+            Assert.AreEqual("ns9.tepuyserver.net", result.All("NameServers")[1]);
+
+            Assert.AreEqual("Found", result.First("Status"));
+        }
+
         private string ReadData(string name)
         {
             return Read("Data", name);

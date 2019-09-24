@@ -929,6 +929,11 @@ namespace Tokens.Parsers
                     token.Required = true;
                     break;
 
+                case "once":
+                    if (decorator.Args.Any()) throw  new ParsingException($"'{decorator.Name}' decorator does not take any arguments", enumerator);
+                    token.ConsiderOnce = true;
+                    break;
+
                 default:
                     token.Decorators.Add(decorator);
                     break;

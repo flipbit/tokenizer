@@ -121,5 +121,25 @@ namespace Tokens.Transformers
             Assert.IsTrue(result);
             Assert.AreEqual(new DateTime(2001, 8 , 2), dateTime);
         }
+
+        [Test]
+        public void TestParseDateWithSpanishFullMonth()
+        {
+            var result = @operator.CanTransform("Agosto 2nd 2001", new [] { "MMMM d yyyy" }, out var t);
+            var dateTime = (DateTime) t;
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(2001, 8 , 2), dateTime);
+        }
+
+        [Test]
+        public void TestParseDateWithSpanishMonthAbbreviation()
+        {
+            var result = @operator.CanTransform("16-abr-1997", new [] { "dd-MMM-yyyy" }, out var t);
+            var dateTime = (DateTime) t;
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(new DateTime(1997, 4 , 16), dateTime);
+        }
     }
 }

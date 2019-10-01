@@ -4,7 +4,7 @@ using Tokens.Extensions;
 namespace Tokens.Transformers
 {
     /// <summary>
-    /// Removes occurrences of a string from then end of a token value
+    /// Removes occurrences of a string from the end of a token value
     /// </summary>
     public class RemoveEndTransformer : ITokenTransformer
     {

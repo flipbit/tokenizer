@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tokens.Exceptions;
@@ -68,7 +69,18 @@ namespace Tokens.Extensions
                             propertyInfo.SetValue(@object, list, null);
                         }
 
-                        list.GetType().GetMethod("Add").Invoke(list, new[] { value });
+                        if (value is IEnumerable<string> valueList)
+                        {
+                            foreach (var valueItem in valueList)
+                            {
+                                list.GetType().GetMethod("Add").Invoke(list, new[] {valueItem});
+                            }
+                        }
+                        else
+                        {
+                            list.GetType().GetMethod("Add").Invoke(list, new[] { value });
+                        }
+
                     }
                     else if (propertyInfo.PropertyType.IsGenericType &&
                              propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))

@@ -111,6 +111,7 @@ namespace Tokens
         public string ConcatenationString { get; set; }
 
         /// <summary>
+
         /// If true, this token will only be attempted to be matched once. 
         /// </summary>
         public bool ConsiderOnce { get; set; }
@@ -173,6 +174,10 @@ namespace Tokens
                         else if (output is DateTime time)
                         {
                             Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{assignedValue}' to {time:yyyy-MM-dd HH:mm:ss} ({time.Kind})");
+                        }
+                        else if (output is IEnumerable<string> list)
+                        {
+                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Split '{assignedValue}' into [] {{ {string.Join(", ", list)} }}");
                         }
                         else
                         {

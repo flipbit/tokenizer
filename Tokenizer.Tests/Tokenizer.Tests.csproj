@@ -14,6 +14,7 @@
     <None Remove="Samples\Data\com.txt" />
     <None Remove="Samples\Data\facebook_com_redirect.txt" />
     <None Remove="Samples\Data\google.tr.txt" />
+    <None Remove="Samples\Data\moscowfood.coop.txt" />
     <None Remove="Samples\Data\sil_org_redirect.txt" />
     <None Remove="Samples\Patterns\Iana.txt" />
     <None Remove="Samples\Patterns\NicBr.txt" />
@@ -21,6 +22,7 @@
     <None Remove="Samples\Patterns\whois.uk.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Samples\Data\moscowfood.coop.txt" />
     <EmbeddedResource Include="Samples\Data\available.co.ca.txt" />
     <EmbeddedResource Include="Samples\Data\google.tr.txt" />
     <EmbeddedResource Include="Samples\Data\sil_org_redirect.txt" />

@@ -424,6 +424,56 @@ namespace Tokens
             Assert.AreEqual("Found", result.First("Status"));
         }
 
+        [Test]
+        public void TestWhoisCoop()
+        {
+            var template = ReadTemplate("whois.coop");
+            var input = ReadData("moscowfood.coop");
+
+            var result = tokenizer.Tokenize(template, input);
+
+            AssertWriter.Write(result);
+            Assert.AreEqual("5662D-COOP", result.First("RegistryDomainId"));
+            Assert.AreEqual("moscowfood.coop", result.First("DomainName"));
+            Assert.AreEqual(new DateTime(2013, 01, 30, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
+
+            Assert.AreEqual(3, result.All("DomainStatus").Count);
+            Assert.AreEqual("clientDeleteProhibited", result.All("DomainStatus")[0]);
+            Assert.AreEqual("clientTransferProhibited", result.All("DomainStatus")[1]);
+            Assert.AreEqual("clientUpdateProhibited", result.All("DomainStatus")[2]);
+
+            Assert.AreEqual("Domain Bank Inc.", result.First("Registrar.Name"));
+            Assert.AreEqual("31", result.First("Registrar.IanaId"));
+            Assert.AreEqual(new DateTime(2001, 10, 09, 04, 36, 36, 000, DateTimeKind.Utc), result.First("Registered"));
+            Assert.AreEqual("registrant", result.First("Type"));
+            Assert.AreEqual("71764C-COOP", result.First("Contact.Id"));
+            Assert.AreEqual("Kenna Eaton", result.First("Contact.Name"));
+            Assert.AreEqual("Moscow Food Co-op", result.First("Contact.Organization"));
+
+            Assert.AreEqual(5, result.All("Address").Count);
+            Assert.AreEqual("P. O. Box 9485", result.All("Address")[0]);
+            Assert.AreEqual("Moscow", result.All("Address")[1]);
+            Assert.AreEqual("ID", result.All("Address")[2]);
+            Assert.AreEqual("83843", result.All("Address")[3]);
+            Assert.AreEqual("United States", result.All("Address")[4]);
+
+            Assert.AreEqual("+1.2088828537", result.First("Phone"));
+            Assert.AreEqual("+1.2088828082", result.First("Fax"));
+
+            Assert.AreEqual(4, result.All("Email").Count);
+            Assert.AreEqual("kenna@moscowfood.coop", result.All("Email")[0]);
+            Assert.AreEqual("outreach@moscowfood.coop", result.All("Email")[1]);
+            Assert.AreEqual("payable@moscowfood.coop", result.All("Email")[2]);
+            Assert.AreEqual("joseph@moscowfood.coop", result.All("Email")[3]);
+
+
+            Assert.AreEqual(2, result.All("NameServers").Count);
+            Assert.AreEqual("ns2.west-datacenter.net", result.All("NameServers")[0]);
+            Assert.AreEqual("ns1.west-datacenter.net", result.All("NameServers")[1]);
+
+            Assert.AreEqual("Found", result.First("Status"));
+        }
+
         private string ReadData(string name)
         {
             return Read("Data", name);

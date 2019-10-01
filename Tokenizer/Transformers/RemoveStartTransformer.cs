@@ -5,7 +5,7 @@ using Tokens.Extensions;
 namespace Tokens.Transformers
 {
     /// <summary>
-    /// Removes occurrences of a string from then end of a token value
+    /// Removes occurrences of a string from the start of a token value
     /// </summary>
     public class RemoveStartTransformer : ITokenTransformer
     {

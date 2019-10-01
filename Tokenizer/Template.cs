@@ -33,7 +33,8 @@ namespace Tokens
         public string Content { get; set; }
 
         /// <summary>
-        /// The name of the template
+        /// The name of the template.  If no name is specified, the name will be assigned
+        /// a hash of the template content.
         /// </summary>
         public string Name
         {

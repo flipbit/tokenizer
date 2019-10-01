@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 using Tokens.Exceptions;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -46,8 +44,10 @@ namespace Tokens
 
             var results = new TokenMatcherResult();
 
-            foreach (var template in Templates)
+            foreach (var name in Templates.Names)
             {
+                if (!Templates.TryGet(name, out var template)) continue;
+
                 log.Info("Start: Matching: {0}", template.Name);
 
                 using (new LogIndentation())
@@ -108,8 +108,10 @@ namespace Tokens
 
             var results = new TokenMatcherResult<T>();
 
-            foreach (var template in Templates)
+            foreach (var name in Templates.Names)
             {
+                if (!Templates.TryGet(name, out var template)) continue;
+
                 log.Info("Start: Matching: {0}", template.Name);
 
                 using (new LogIndentation())

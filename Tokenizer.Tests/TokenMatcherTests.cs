@@ -132,7 +132,7 @@ namespace Tokens
             matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-            matcher.Templates[0].Tags.Add("no-age");
+            matcher.Templates.Get("no-age").Tags.Add("no-age");
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30",  new [] { "no-age" });
 
@@ -151,8 +151,8 @@ namespace Tokens
             matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-            matcher.Templates[0].Tags.Add("no-age");
-            matcher.Templates[1].Tags.Add("with-age");
+            matcher.Templates.Get("no-age").Tags.Add("no-age");
+            matcher.Templates.Get("with-age").Tags.Add("with-age");
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30", new [] { "Foo" });
 
@@ -165,8 +165,8 @@ namespace Tokens
             matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-            matcher.Templates[0].Tags.Add("no-age");
-            matcher.Templates[1].Tags.Add("with-age");
+            matcher.Templates.Get("no-age").Tags.Add("no-age");
+            matcher.Templates.Get("with-age").Tags.Add("with-age");
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
@@ -184,10 +184,10 @@ namespace Tokens
             matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
             matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-            matcher.Templates[0].Tags.Add("no-age");
-            matcher.Templates[0].Tags.Add("person");
-            matcher.Templates[1].Tags.Add("with-age");
-            matcher.Templates[1].Tags.Add("person");
+            matcher.Templates.Get("no-age").Tags.Add("no-age");
+            matcher.Templates.Get("no-age").Tags.Add("person");
+            matcher.Templates.Get("with-age").Tags.Add("with-age");
+            matcher.Templates.Get("with-age").Tags.Add("person");
 
             var result = matcher.Match<Person>("Name: Alice, Age: 30",  new [] { "person" });
 

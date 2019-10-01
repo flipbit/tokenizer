@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tokens.Extensions;
 
 namespace Tokens
 {
@@ -11,6 +12,7 @@ namespace Tokens
     public class Template
     {
         private readonly List<Token> tokens;
+        private string name;
 
         public Template()
         {
@@ -33,7 +35,19 @@ namespace Tokens
         /// <summary>
         /// The name of the template
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = Content.ToMd5();
+                }
+
+                return name;
+            }
+            set => name = value;
+        }
 
         /// <summary>
         /// Contains the hints associated with this <see cref="Template"/>.

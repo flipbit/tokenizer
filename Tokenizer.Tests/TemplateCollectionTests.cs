@@ -69,5 +69,19 @@ namespace Tokens
 
             Assert.IsFalse(collection.ContainsAllTags("One", "Two", "Three"));
         }
+
+        [Test]
+        public void TestCollectionCount()
+        {
+            collection.Add(new Template("One", string.Empty));
+            collection.Add(new Template("Two", string.Empty));
+            collection.Add(new Template("Three", string.Empty));
+
+            Assert.AreEqual(3, collection.Count);
+
+            collection.Clear();
+
+            Assert.AreEqual(0, collection.Count);
+        }
     }
 }

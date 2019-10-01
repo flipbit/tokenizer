@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -380,6 +381,17 @@ namespace Tokens.Extensions
             }
 
             return sb.ToString();
+        }
+
+        public static string ToMd5(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+
+            var md5 = new MD5CryptoServiceProvider();
+            var originalBytes = Encoding.Default.GetBytes(value);
+            var encodedBytes = md5.ComputeHash(originalBytes);
+
+            return BitConverter.ToString(encodedBytes);
         }
     }
 }

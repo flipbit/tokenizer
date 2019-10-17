@@ -4,7 +4,7 @@ using Tokens.Exceptions;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class SubstringBeforeTransformerTest
+    public class SubstringBeforeTransformerTests
     {
         private SubstringBeforeTransformer transformer;
 

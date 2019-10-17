@@ -4,20 +4,20 @@ using Tokens.Exceptions;
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class StartsWithValidatorTest
+    public class EndsWithValidatorTests
     {
-        private StartsWithValidator validator;
+        private EndsWithValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new StartsWithValidator();
+            validator = new EndsWithValidator();
         }
 
         [Test]
         public void TestValidateValueWhenTrue()
         {
-            var result = validator.IsValid("hello world", "hello");
+            var result = validator.IsValid("hello world", "world");
 
             Assert.IsTrue(result);
         }
@@ -25,7 +25,7 @@ namespace Tokens.Validators
         [Test]
         public void TestValidateValueWhenFalse()
         {
-            var result = validator.IsValid("hello world", "world");
+            var result = validator.IsValid("hello world", "hello");
 
             Assert.IsFalse(result);
         }
@@ -50,6 +50,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Email: { AdminEmail : EndsWith('admin.com') }";
+            var input = "Email: alice@customer.com Email: bob@admin.com";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("bob@admin.com", result.First("AdminEmail"));
         }
     }
 }

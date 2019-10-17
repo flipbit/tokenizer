@@ -200,5 +200,43 @@ namespace Tokens
             Assert.AreEqual("with-age", match.Template.Name);
         }
 
+        [Test]
+        public void TestDocumentationTags1()
+        {
+            var template1 = @"---
+name: template1
+tag: standard
+outOfOrder: true
+terminateOnNewLine: true
+---
+Name: {Name}
+Age: {Age}";
+
+            var template2 = @"---
+name: template2
+tag: extended
+outOfOrder: true
+terminateOnNewLine: true
+---
+Name: {Name}
+Age: {Age}
+Address: {Address}";
+
+            matcher.RegisterTemplate(template1);
+            matcher.RegisterTemplate(template2);
+
+            var input = @"Name: Alice
+Age: 30
+Address: London";
+
+
+            var result = matcher.Match(input, new[] { "standard" });
+
+            var match = result.BestMatch;
+
+            Assert.AreEqual("template1", match.Template.Name);
+            Assert.AreEqual("Alice", match.First("Name"));
+            Assert.AreEqual("30", match.First("Age"));
+        }
     }
 }

@@ -4,20 +4,20 @@ using Tokens.Exceptions;
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class MinLengthValidatorTest
+    public class MaxLengthValidatorTests
     {
-        private MinLengthValidator validator;
+        private MaxLengthValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new MinLengthValidator();
+            validator = new MaxLengthValidator();
         }
 
         [Test]
         public void TestValidMaxmiumLengthWhenValid()
         {
-            var result = validator.IsValid("hello", "3");
+            var result = validator.IsValid("hello", "100");
 
             Assert.IsTrue(result);
         }
@@ -25,7 +25,7 @@ namespace Tokens.Validators
         [Test]
         public void TestValidMaxmiumLengthWhenInvalid()
         {
-            var result = validator.IsValid("hello world", "255");
+            var result = validator.IsValid("hello world", "5");
 
             Assert.IsFalse(result);
         }
@@ -40,6 +40,17 @@ namespace Tokens.Validators
         public void TestValidMaxmiumLengthWhenParametersNotAnInteger()
         {
             Assert.Throws<ValidationException>(() => validator.IsValid("hello world", "hello"));
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Zip: { ZipCode : MaxLength(5) }";
+            var input = "Zip: 123456  Zip: 78912";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("78912", result.First("ZipCode"));
         }
     }
 }

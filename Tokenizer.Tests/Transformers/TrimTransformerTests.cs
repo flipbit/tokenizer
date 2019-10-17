@@ -3,7 +3,7 @@
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class TrimTransformerTest
+    public class TrimTransformerTests
     {
         private TrimTransformer transformer;
 

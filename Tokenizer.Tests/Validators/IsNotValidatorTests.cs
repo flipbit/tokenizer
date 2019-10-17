@@ -3,7 +3,7 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsNotValidatorTest
+    public class IsNotValidatorTests
     {
         private IsNotValidator validator;
 
@@ -43,6 +43,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty, "hello");
 
             Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Address: { Address : IsNot('N/A') }";
+            var input = "Address: N/A  Address: 10 Acacia Avenue";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("10 Acacia Avenue", result.First("Address"));
         }
     }
 }

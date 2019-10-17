@@ -3,37 +3,40 @@
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class ToUpperTransformerTest
+    public class ToLowerTransformerTests
     {
-        private ToUpperTransformer @operator;
+        private ToLowerTransformer @operator;
 
         [SetUp]
         public void SetUp()
         {
-            @operator = new ToUpperTransformer();
+            @operator = new ToLowerTransformer();
         }
 
         [Test]
-        public void TestToUpper()
+        public void TestToLower()
         {
-            var result = @operator.CanTransform("test", null, out var t);
+            var result = @operator.CanTransform("TEST", null, out var t);
 
-            Assert.AreEqual("TEST", t);
+            Assert.IsTrue(result);
+            Assert.AreEqual("test", t);
         }
 
         [Test]
-        public void TestToUpperWhenEmpty()
+        public void TestToLowerWhenEmpty()
         {
             var result = @operator.CanTransform(string.Empty, null, out var t);
 
+            Assert.IsTrue(result);
             Assert.AreEqual(string.Empty, t);
         }
 
         [Test]
-        public void TestToUpperWhenNull()
+        public void TestToLowerWhenNull()
         {
             var result = @operator.CanTransform(null, null, out var t);
 
+            Assert.IsTrue(result);
             Assert.AreEqual(string.Empty, t);
         }
     }

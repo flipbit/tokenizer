@@ -3,42 +3,42 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsDateTimeValidatorTest
+    public class IsDomainNameValidatorTests
     {
-        private IsDateTimeValidator validator;
+        private IsDomainNameValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new IsDateTimeValidator();
+            validator = new IsDomainNameValidator();
         }
 
         [Test]
         public void TestValidateValueWhenValid()
         {
-            var result = validator.IsValid("1 May 2019");
+            var result = validator.IsValid("github.com");
 
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void TestValidateValueWhenNewIsoDate()
+        public void TestValidateValueWhenNewTld()
         {
-            var result = validator.IsValid("2019-05-01");
+            var result = validator.IsValid("hello.ninja");
 
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void TestValidateValueWhenHasTime()
+        public void TestValidateValueWhenHasSubdomain()
         {
-            var result = validator.IsValid("2019-05-01 14:00:00");
+            var result = validator.IsValid("www.hello.ninja");
 
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void TestValidateValueWhenInvalid()
+        public void TestValidateValueWhenInvalidDomain()
         {
             var result = validator.IsValid("hello world");
 
@@ -59,6 +59,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Web: { Domain : IsDomainName }";
+            var input = "Web: n/a Web: www.flipbit.co.uk";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("www.flipbit.co.uk", result.First("Domain"));
         }
     }
 }

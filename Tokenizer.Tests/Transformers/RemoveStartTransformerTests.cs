@@ -4,23 +4,32 @@ using Tokens.Exceptions;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class SubstringAfterTransformerTest
+    public class RemoveStartTransformerTests
     {
-        private SubstringAfterTransformer transformer;
+        private RemoveStartTransformer transformer;
 
         [SetUp]
         public void SetUp()
         {
-            transformer = new SubstringAfterTransformer();
+            transformer = new RemoveStartTransformer();
         }
 
         [Test]
-        public void TestSubstringAfter()
+        public void TestRemoveStart()
+        {
+            var result = transformer.CanTransform("one two three", new [] { "one" }, out var transformed);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(" two three", transformed);
+        }
+
+        [Test]
+        public void TestRemoveStartWhenNotPresent()
         {
             var result = transformer.CanTransform("one two three", new [] { "two" }, out var transformed);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(" three", transformed);
+            Assert.AreEqual("one two three", transformed);
         }
 
         [Test]
@@ -45,6 +54,17 @@ namespace Tokens.Transformers
 
             Assert.IsTrue(result);
             Assert.AreEqual(string.Empty, transformed);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = ": { DomainName : RemoveEnd('.') }";
+            var input = "Domain Name: domain.com.";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("domain.com", result.First("DomainName"));
         }
     }
 }

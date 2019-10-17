@@ -3,7 +3,7 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsPhoneNumberValidatorTest
+    public class IsPhoneNumberValidatorTests
     {
         private IsPhoneNumberValidator validator;
 
@@ -90,6 +90,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Phone: { Phone : IsPhoneNumber }";
+            var input = "Phone: Disconnected  Phone: +44 (0) 1603 555-1234";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("+44 (0) 1603 555-1234", result.First("Phone"));
         }
     }
 }

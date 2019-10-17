@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class ToDateTimeUtcTransformerTest
+    public class ToDateTimeUtcTransformerTests
     {
         private ToDateTimeUtcTransformer @operator;
 

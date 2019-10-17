@@ -6,7 +6,7 @@ using Tokens.Validators;
 namespace Tokens
 {
     [TestFixture]
-    public class TokenTest
+    public class TokenTests
     {
         private Token token;
 

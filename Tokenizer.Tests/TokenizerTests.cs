@@ -481,7 +481,7 @@ Last Name: {LastName}
             const string pattern = "Age: {Age:IsNumeric}";
             const string input = "Age: Ten, Age: 11";
 
-            var person = new Tokenizer().Tokenize<TokenTest.Person>(pattern, input).Value;
+            var person = new Tokenizer().Tokenize<TokenTests.Person>(pattern, input).Value;
 
             Assert.AreEqual(person.Age, 11);
         }
@@ -524,6 +524,21 @@ Last Name: {Foo}
 
             Assert.AreEqual("John", student.FirstName);
             Assert.AreEqual("Smith", result.Tokens.Matches.First(m => m.Token.Name == "Foo").Value);
+        }
+
+        [Test]
+        public void TestMatchCountWithInvalidTokens()
+        {
+            const string pattern = @"Date: { Date? : ToDateTime('dd MMM yyyy') }Date: { Date? : ToDateTime('yyyy-MM-dd') }";
+
+            const string input = "Date: 2001-01-01";
+
+            var result = tokenizer.Tokenize(pattern, input);
+
+            var date = result.First<DateTime>("Date");
+
+            Assert.AreEqual(new DateTime(2001, 1, 1), date);
+            Assert.AreEqual(1, result.Matches.Count);
         }
     }
 }

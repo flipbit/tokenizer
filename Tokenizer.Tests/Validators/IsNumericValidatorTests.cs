@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsNumericValidatorTest
+    public class IsNumericValidatorTests
     {
         private IsNumericValidator validator;
 
@@ -57,6 +57,17 @@ namespace Tokens.Validators
             var result = new Tokenizer().Tokenize(pattern, input);
 
             Assert.AreEqual("ten", result.First("Age"));
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Age: { Age : IsNumeric }";
+            var input = "Age: Ten  Age: 10";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("10", result.First("Age"));
         }
     }
 }

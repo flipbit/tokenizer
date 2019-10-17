@@ -3,42 +3,34 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsDomainNameValidatorTest
+    public class IsUrlValidatorTests
     {
-        private IsDomainNameValidator validator;
+        private IsUrlValidator validator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new IsDomainNameValidator();
+            validator = new IsUrlValidator();
         }
 
         [Test]
-        public void TestValidateValueWhenValid()
+        public void TestValidateValueWhenHttp()
         {
-            var result = validator.IsValid("github.com");
+            var result = validator.IsValid("http://github.com");
 
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void TestValidateValueWhenNewTld()
+        public void TestValidateValueWhenHttps()
         {
-            var result = validator.IsValid("hello.ninja");
+            var result = validator.IsValid("https://github.com");
 
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void TestValidateValueWhenHasSubdomain()
-        {
-            var result = validator.IsValid("www.hello.ninja");
-
-            Assert.IsTrue(result);
-        }
-
-        [Test]
-        public void TestValidateValueWhenInvalidDomain()
+        public void TestValidateValueWhenInvalidUrl()
         {
             var result = validator.IsValid("hello world");
 
@@ -59,6 +51,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Server: { ServerUrl : IsUrl }";
+            var input = "Server: 192.168.1.1  Server: www.server.com";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("www.server.com", result.First("ServerUrl"));
         }
     }
 }

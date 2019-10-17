@@ -4,14 +4,14 @@ using Tokens.Exceptions;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class SubstringBeforeLastTransformerTest
+    public class SubstringAfterLastTransformerTests
     {
-        private SubstringBeforeLastTransformer transformer;
+        private SubstringAfterLastTransformer transformer;
 
         [SetUp]
         public void SetUp()
         {
-            transformer = new SubstringBeforeLastTransformer();
+            transformer = new SubstringAfterLastTransformer();
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace Tokens.Transformers
             var result = transformer.CanTransform("one two two three", new [] { "two" }, out var transformed);
 
             Assert.IsTrue(result);
-            Assert.AreEqual("one two ", transformed);
+            Assert.AreEqual(" three", transformed);
         }
 
         [Test]

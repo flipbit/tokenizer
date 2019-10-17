@@ -3,7 +3,7 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsNotEmptyValidatorTest
+    public class IsNotEmptyValidatorTests
     {
         private IsNotEmptyValidator validator;
 
@@ -35,6 +35,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Middle Name: { MiddleName : IsNotEmpty }";
+            var input = "Middle Name:  Middle Name: Charles";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("Charles", result.First("MiddleName"));
         }
     }
 }

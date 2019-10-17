@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class SetTransformerTest
+    public class SetTransformerTests
     {
         private SetTransformer transformer;
 

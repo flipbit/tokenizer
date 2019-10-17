@@ -3,7 +3,7 @@
 namespace Tokens.Validators
 {
     [TestFixture]
-    public class IsEmailValidatorTest
+    public class IsEmailValidatorTests
     {
         private IsEmailValidator validator;
 
@@ -43,6 +43,17 @@ namespace Tokens.Validators
             var result = validator.IsValid(string.Empty);
 
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TestForDocumentation()
+        {
+            var template = "Email: { Email : IsEmail }";
+            var input = "Email: webmaster at host.com Email: hello@domain.com";
+
+            var result = new Tokenizer().Tokenize(template, input);
+
+            Assert.AreEqual("hello@domain.com", result.First("Email"));
         }
     }
 }

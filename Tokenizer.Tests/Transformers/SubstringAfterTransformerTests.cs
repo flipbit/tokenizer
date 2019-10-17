@@ -4,23 +4,23 @@ using Tokens.Exceptions;
 namespace Tokens.Transformers
 {
     [TestFixture]
-    public class ReplaceTransformerTest
+    public class SubstringAfterTransformerTests
     {
-        private ReplaceTransformer transformer;
+        private SubstringAfterTransformer transformer;
 
         [SetUp]
         public void SetUp()
         {
-            transformer = new ReplaceTransformer();
+            transformer = new SubstringAfterTransformer();
         }
 
         [Test]
         public void TestSubstringAfter()
         {
-            var result = transformer.CanTransform("one two three", new [] { "two", "four" }, out var transformed);
+            var result = transformer.CanTransform("one two three", new [] { "two" }, out var transformed);
 
             Assert.IsTrue(result);
-            Assert.AreEqual("one four three", transformed);
+            Assert.AreEqual(" three", transformed);
         }
 
         [Test]

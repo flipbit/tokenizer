@@ -102,7 +102,7 @@ namespace Tokens.Parsers
 
             var template = new Template(name, content);
 
-            log.Trace("Start: Parsing Template: {0}", template.Name);
+            log.Verbose("Start: Parsing Template: {0}", template.Name);
 
             var preTemplate = new PreTokenParser().Parse(content, Options);
 
@@ -177,11 +177,11 @@ namespace Tokens.Parsers
 
                 if (string.IsNullOrEmpty(token.Name) == false)
                 {
-                    log.Trace("  -> Token[{0:000}]: '{1}'", token.Id, token.Name);
+                    log.Verbose("  -> Token[{0:000}]: {1}", token.Id, token);
                 }
             }
 
-            log.Debug("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
+            log.Verbose("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
 
             return template;
         }

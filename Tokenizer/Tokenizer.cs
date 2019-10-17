@@ -337,7 +337,7 @@ namespace Tokens
                     if (enumerator.Match(hint.Text) &&
                         result.Hints.AddMatch(hint, enumerator))
                     {
-                        log.Debug("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Location.Line, enumerator.Location.Column, hint.Text);
+                        log.Verbose("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Location.Line, enumerator.Location.Column, hint.Text);
                     }
                 }
 
@@ -352,7 +352,7 @@ namespace Tokens
             {
                 if (result.Hints.AddMiss(hint))
                 {
-                    log.Debug("  -> Missing Hint: {0}", hint.Text);
+                    log.Verbose("  -> Missing Hint: {0}", hint.Text);
                 }
             }
 

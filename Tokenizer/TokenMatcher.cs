@@ -48,7 +48,7 @@ namespace Tokens
             {
                 if (!Templates.TryGet(name, out var template)) continue;
 
-                log.Info("Start: Matching: {0}", template.Name);
+                log.Verbose("Start: Matching: {0}", template.Name);
 
                 using (new LogIndentation())
                 {
@@ -87,7 +87,7 @@ namespace Tokens
                     }
                 }
 
-                log.Info("Finish: Matching: {0}", template.Name);
+                log.Verbose("Finish: Matching: {0}", template.Name);
             }
 
             // Assign best match
@@ -112,7 +112,7 @@ namespace Tokens
             {
                 if (!Templates.TryGet(name, out var template)) continue;
 
-                log.Info("Start: Matching: {0}", template.Name);
+                log.Verbose("Start: Matching: {0}", template.Name);
 
                 using (new LogIndentation())
                 {
@@ -151,7 +151,7 @@ namespace Tokens
                     }
                 }
 
-                log.Info("Finish: Matching: {0}", template.Name);
+                log.Verbose("Finish: Matching: {0}", template.Name);
             }
 
             // Assign best match
@@ -203,11 +203,11 @@ namespace Tokens
                 if (template.HasTags(tags, out var missing) == false)
                 { 
                     log.Verbose("No tags matching: {0}", missing);
-                    log.Trace("Finish: Matching: {0}", template.Name);
+                    log.Verbose("Finish: Matching: {0}", template.Name);
                     return false;
                 }
                 
-                log.Info("Found tag matching: {0}", string.Join(", ", tags));
+                log.Verbose("Found tag matching: {0}", string.Join(", ", tags));
                 return true;
             }
 

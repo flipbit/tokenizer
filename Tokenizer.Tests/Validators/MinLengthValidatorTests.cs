@@ -15,7 +15,7 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenValid()
+        public void TestValidMinimumLengthWhenValid()
         {
             var result = validator.IsValid("hello", "3");
 
@@ -23,7 +23,7 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenInvalid()
+        public void TestValidMinimumLengthWhenInvalid()
         {
             var result = validator.IsValid("hello world", "255");
 
@@ -31,13 +31,13 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenNoParameters()
+        public void TestValidMinimumLengthWhenNoParameters()
         {
             Assert.Throws<ValidationException>(() => validator.IsValid("hello world"));
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenParametersNotAnInteger()
+        public void TestValidMinimumLengthWhenParametersNotAnInteger()
         {
             Assert.Throws<ValidationException>(() => validator.IsValid("hello world", "hello"));
         }
@@ -45,8 +45,8 @@ namespace Tokens.Validators
         [Test]
         public void TestForDocumentation()
         {
-            var template = "Zip: { ZipCode : MinLength(5) }";
-            var input = "Zip: 123  Zip: 45678";
+            var template = "Zip: { ZipCode : MinLength(5), EOL }";
+            var input = "Zip: 123\nZip: 45678";
 
             var result = new Tokenizer().Tokenize(template, input);
 

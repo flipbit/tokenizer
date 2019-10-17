@@ -15,7 +15,7 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenValid()
+        public void TestValidMaximumLengthWhenValid()
         {
             var result = validator.IsValid("hello", "100");
 
@@ -23,7 +23,7 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenInvalid()
+        public void TestValidMaximumLengthWhenInvalid()
         {
             var result = validator.IsValid("hello world", "5");
 
@@ -31,13 +31,13 @@ namespace Tokens.Validators
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenNoParameters()
+        public void TestValidMaximumLengthWhenNoParameters()
         {
             Assert.Throws<ValidationException>(() => validator.IsValid("hello world"));
         }
 
         [Test]
-        public void TestValidMaxmiumLengthWhenParametersNotAnInteger()
+        public void TestValidMaximumLengthWhenParametersNotAnInteger()
         {
             Assert.Throws<ValidationException>(() => validator.IsValid("hello world", "hello"));
         }

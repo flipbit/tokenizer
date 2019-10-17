@@ -56,12 +56,12 @@ namespace Tokens.Validators
         [Test]
         public void TestForDocumentation()
         {
-            var template = "Server: { ServerUrl : IsUrl }";
-            var input = "Server: 192.168.1.1  Server: www.server.com";
+            var template = "Server: { ServerUrl : IsUrl, EOL }";
+            var input = "Server: 192.168.1.1\nServer: http://www.server.com";
 
             var result = new Tokenizer().Tokenize(template, input);
 
-            Assert.AreEqual("www.server.com", result.First("ServerUrl"));
+            Assert.AreEqual("http://www.server.com", result.First("ServerUrl"));
         }
     }
 }

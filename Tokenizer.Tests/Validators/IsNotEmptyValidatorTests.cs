@@ -40,8 +40,8 @@ namespace Tokens.Validators
         [Test]
         public void TestForDocumentation()
         {
-            var template = "Middle Name: { MiddleName : IsNotEmpty }";
-            var input = "Middle Name:  Middle Name: Charles";
+            var template = "Middle Name: { MiddleName : IsNotEmpty, EOL }";
+            var input = "Middle Name:\nMiddle Name: Charles";
 
             var result = new Tokenizer().Tokenize(template, input);
 

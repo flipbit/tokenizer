@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using Tokens.Samples;
-using Tokens.Samples.Classes;
 
 namespace Tokens
 {
@@ -59,147 +57,180 @@ namespace Tokens
         [Test]
         public void TestParseIanaServerDataData()
         {
-            var pattern = Resources.Pattern_iana;
-            var input = Resources.Data_com;
+            var pattern = ReadTemplate("whois.iana");
+            var input = ReadData("com");
 
-            var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Value;
+            var result = tokenizer.Tokenize(pattern, input);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("com", result.TLD);
-            Assert.AreEqual("VeriSign Global Registry Services", result.Organization.Name);
-            Assert.AreEqual(3, result.Organization.Address.Count);
-            Assert.AreEqual("12061 Bluemont Way", result.Organization.Address[0]);
-            Assert.AreEqual("Reston Virginia 20190", result.Organization.Address[1]);
-            Assert.AreEqual("United States", result.Organization.Address[2]);
-            Assert.AreEqual("Registry Customer Service", result.AdminContact.Name);
-            Assert.AreEqual("VeriSign Global Registry Services", result.AdminContact.Organization);
-            Assert.AreEqual(3, result.AdminContact.Address.Count);
-            Assert.AreEqual("12061 Bluemont Way", result.AdminContact.Address[0]);
-            Assert.AreEqual("Reston Virginia 20190", result.AdminContact.Address[1]);
-            Assert.AreEqual("United States", result.AdminContact.Address[2]);
-            Assert.AreEqual("+1 703 925-6999", result.AdminContact.PhoneNumber);
-            Assert.AreEqual("+1 703 948 3978", result.AdminContact.FaxNumber);
-            Assert.AreEqual("info@verisign-grs.com", result.AdminContact.Email);
-            Assert.AreEqual("Registry Customer Service", result.TechContact.Name);
-            Assert.AreEqual("VeriSign Global Registry Services", result.TechContact.Organization);
-            Assert.AreEqual(3, result.TechContact.Address.Count);
-            Assert.AreEqual("12061 Bluemont Way", result.TechContact.Address[0]);
-            Assert.AreEqual("Reston Virginia 20190", result.TechContact.Address[1]);
-            Assert.AreEqual("United States", result.TechContact.Address[2]);
-            Assert.AreEqual("+1 703 925-6999", result.TechContact.PhoneNumber);
-            Assert.AreEqual("+1 703 948 3978", result.TechContact.FaxNumber);
-            Assert.AreEqual("info@verisign-grs.com", result.TechContact.Email);
-            Assert.AreEqual(13, result.NameServers.Count);
-            Assert.AreEqual("A.GTLD-SERVERS.NET 192.5.6.30 2001:503:a83e:0:0:0:2:30", result.NameServers[0]);
-            Assert.AreEqual("B.GTLD-SERVERS.NET 192.33.14.30 2001:503:231d:0:0:0:2:30", result.NameServers[1]);
-            Assert.AreEqual("C.GTLD-SERVERS.NET 192.26.92.30", result.NameServers[2]);
-            Assert.AreEqual("D.GTLD-SERVERS.NET 192.31.80.30", result.NameServers[3]);
-            Assert.AreEqual("E.GTLD-SERVERS.NET 192.12.94.30", result.NameServers[4]);
-            Assert.AreEqual("F.GTLD-SERVERS.NET 192.35.51.30", result.NameServers[5]);
-            Assert.AreEqual("G.GTLD-SERVERS.NET 192.42.93.30", result.NameServers[6]);
-            Assert.AreEqual("H.GTLD-SERVERS.NET 192.54.112.30", result.NameServers[7]);
-            Assert.AreEqual("I.GTLD-SERVERS.NET 192.43.172.30", result.NameServers[8]);
-            Assert.AreEqual("J.GTLD-SERVERS.NET 192.48.79.30", result.NameServers[9]);
-            Assert.AreEqual("K.GTLD-SERVERS.NET 192.52.178.30", result.NameServers[10]);
-            Assert.AreEqual("L.GTLD-SERVERS.NET 192.41.162.30", result.NameServers[11]);
-            Assert.AreEqual("M.GTLD-SERVERS.NET 192.55.83.30", result.NameServers[12]);
-            Assert.AreEqual("whois.verisign-grs.com", result.Url);
-            Assert.AreEqual("Registration information: http://www.verisign-grs.com", result.Remarks);
-            Assert.AreEqual(new DateTime(1985, 1, 1), result.Created);
-            Assert.AreEqual(new DateTime(2012, 2, 15), result.Changed);
+            Assert.AreEqual("com", result.First("Tld"));
+            Assert.AreEqual("VeriSign Global Registry Services", result.First("Organization.Name"));
+
+            Assert.AreEqual(3, result.All("Organization.Address").Count);
+            Assert.AreEqual("12061 Bluemont Way", result.All("Organization.Address")[0]);
+            Assert.AreEqual("Reston Virginia 20190", result.All("Organization.Address")[1]);
+            Assert.AreEqual("United States", result.All("Organization.Address")[2]);
+
+            Assert.AreEqual("Registry Customer Service", result.First("AdminContact.Name"));
+            Assert.AreEqual("VeriSign Global Registry Services", result.First("AdminContact.Organization"));
+
+            Assert.AreEqual(3, result.All("AdminContact.Address").Count);
+            Assert.AreEqual("12061 Bluemont Way", result.All("AdminContact.Address")[0]);
+            Assert.AreEqual("Reston Virginia 20190", result.All("AdminContact.Address")[1]);
+            Assert.AreEqual("United States", result.All("AdminContact.Address")[2]);
+
+            Assert.AreEqual("+1 703 925-6999", result.First("AdminContact.TelephoneNumber"));
+            Assert.AreEqual("+1 703 948 3978", result.First("AdminContact.FaxNumber"));
+            Assert.AreEqual("info@verisign-grs.com", result.First("AdminContact.Email"));
+            Assert.AreEqual("Registry Customer Service", result.First("TechContact.Name"));
+            Assert.AreEqual("VeriSign Global Registry Services", result.First("TechContact.Organization"));
+
+            Assert.AreEqual(3, result.All("TechContact.Address").Count);
+            Assert.AreEqual("12061 Bluemont Way", result.All("TechContact.Address")[0]);
+            Assert.AreEqual("Reston Virginia 20190", result.All("TechContact.Address")[1]);
+            Assert.AreEqual("United States", result.All("TechContact.Address")[2]);
+
+            Assert.AreEqual("+1 703 925-6999", result.First("TechContact.TelephoneNumber"));
+            Assert.AreEqual("+1 703 948 3978", result.First("TechContact.FaxNumber"));
+            Assert.AreEqual("info@verisign-grs.com", result.First("TechContact.Email"));
+
+            Assert.AreEqual(13, result.All("NameServers").Count);
+            Assert.AreEqual("A.GTLD-SERVERS.NET 192.5.6.30 2001:503:a83e:0:0:0:2:30", result.All("NameServers")[0]);
+            Assert.AreEqual("B.GTLD-SERVERS.NET 192.33.14.30 2001:503:231d:0:0:0:2:30", result.All("NameServers")[1]);
+            Assert.AreEqual("C.GTLD-SERVERS.NET 192.26.92.30", result.All("NameServers")[2]);
+            Assert.AreEqual("D.GTLD-SERVERS.NET 192.31.80.30", result.All("NameServers")[3]);
+            Assert.AreEqual("E.GTLD-SERVERS.NET 192.12.94.30", result.All("NameServers")[4]);
+            Assert.AreEqual("F.GTLD-SERVERS.NET 192.35.51.30", result.All("NameServers")[5]);
+            Assert.AreEqual("G.GTLD-SERVERS.NET 192.42.93.30", result.All("NameServers")[6]);
+            Assert.AreEqual("H.GTLD-SERVERS.NET 192.54.112.30", result.All("NameServers")[7]);
+            Assert.AreEqual("I.GTLD-SERVERS.NET 192.43.172.30", result.All("NameServers")[8]);
+            Assert.AreEqual("J.GTLD-SERVERS.NET 192.48.79.30", result.All("NameServers")[9]);
+            Assert.AreEqual("K.GTLD-SERVERS.NET 192.52.178.30", result.All("NameServers")[10]);
+            Assert.AreEqual("L.GTLD-SERVERS.NET 192.41.162.30", result.All("NameServers")[11]);
+            Assert.AreEqual("M.GTLD-SERVERS.NET 192.55.83.30", result.All("NameServers")[12]);
+
+            Assert.AreEqual("whois.verisign-grs.com", result.First("Url"));
+            Assert.AreEqual("Registration information: http://www.verisign-grs.com", result.First("Remarks"));
+            Assert.AreEqual("1985-01-01", result.First("Created"));
+            Assert.AreEqual("2012-02-15", result.First("Changed"));
+            Assert.AreEqual("Found", result.First("Status"));
         }
 
         [Test]
         public void TestParseAbogadoData()
         {
-            var pattern = Resources.Pattern_iana;
-            var input = Resources.Data_abogado;
+            var pattern = ReadTemplate("whois.iana");
+            var input = ReadData("abogado");
 
-            var result = tokenizer.Tokenize<WhoisServer>(pattern, input).Value;
+            var result = tokenizer.Tokenize(pattern, input);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("abogado", result.TLD);
-            Assert.AreEqual("Minds + Machines Group Limited", result.Organization.Name);
-            Assert.AreEqual(2, result.Organization.Address.Count);
-            Assert.AreEqual("Craigmuir Chambers, Road Town Tortola VG 1110", result.Organization.Address[0]);
-            Assert.AreEqual("Virgin Islands, British", result.Organization.Address[1]);
-            Assert.AreEqual("Admin Contact", result.AdminContact.Name);
-            Assert.AreEqual("Minds + Machines Ltd", result.AdminContact.Organization);
-            Assert.AreEqual(2, result.AdminContact.Address.Count);
-            Assert.AreEqual("32 Nassau St, Dublin 2", result.AdminContact.Address[0]);
-            Assert.AreEqual("Ireland", result.AdminContact.Address[1]);
-            Assert.AreEqual("+1-877-734-4783", result.AdminContact.PhoneNumber);
-            Assert.AreEqual("ops@mmx.co", result.AdminContact.Email);
-            Assert.AreEqual("TLD Registry Services Technical", result.TechContact.Name);
-            Assert.AreEqual("Nominet", result.TechContact.Organization);
-            Assert.AreEqual(6, result.TechContact.Address.Count);
-            Assert.AreEqual("Minerva House,", result.TechContact.Address[0]);
-            Assert.AreEqual("Edmund Halley Road,", result.TechContact.Address[1]);
-            Assert.AreEqual("Oxford Science Park,", result.TechContact.Address[2]);
-            Assert.AreEqual("Oxford,", result.TechContact.Address[3]);
-            Assert.AreEqual("OX4 4DQ", result.TechContact.Address[4]);
-            Assert.AreEqual("United Kingdom", result.TechContact.Address[5]);
-            Assert.AreEqual("+44.1865332211", result.TechContact.PhoneNumber);
-            Assert.AreEqual("registrytechnical@nominet.uk", result.TechContact.Email);
-            Assert.AreEqual(8, result.NameServers.Count);
-            Assert.AreEqual("DNS1.NIC.ABOGADO 213.248.217.13 2a01:618:401:0:0:0:0:13", result.NameServers[0]);
-            Assert.AreEqual("DNS2.NIC.ABOGADO 103.49.81.13 2401:fd80:401:0:0:0:0:13", result.NameServers[1]);
-            Assert.AreEqual("DNS3.NIC.ABOGADO 213.248.221.13 2a01:618:405:0:0:0:0:13", result.NameServers[2]);
-            Assert.AreEqual("DNS4.NIC.ABOGADO 2401:fd80:405:0:0:0:0:13 43.230.49.13", result.NameServers[3]);
-            Assert.AreEqual("DNSA.NIC.ABOGADO 156.154.100.3 2001:502:ad09:0:0:0:0:3", result.NameServers[4]);
-            Assert.AreEqual("DNSB.NIC.ABOGADO 156.154.101.3", result.NameServers[5]);
-            Assert.AreEqual("DNSC.NIC.ABOGADO 156.154.102.3", result.NameServers[6]);
-            Assert.AreEqual("DNSD.NIC.ABOGADO 156.154.103.3", result.NameServers[7]);
-            //Assert.AreEqual("55367 8 2 A3065C94F7700D7CAB948BBD4A39845E3881F70E61FFB1D9E71DE1AF566919C6", result.NameServers[8]);
-            Assert.AreEqual("whois.nic.abogado", result.Url);
-            Assert.AreEqual("Registration information: http://mm-registry.com", result.Remarks);
-            Assert.AreEqual(new DateTime(2014, 7, 10), result.Created);
-            Assert.AreEqual(new DateTime(2018, 6, 29), result.Changed);
+            AssertWriter.Write(result);
+
+            Assert.AreEqual("abogado", result.First("Tld"));
+            Assert.AreEqual("Minds + Machines Group Limited", result.First("Organization.Name"));
+
+            Assert.AreEqual(2, result.All("Organization.Address").Count);
+            Assert.AreEqual("Craigmuir Chambers, Road Town Tortola VG 1110", result.All("Organization.Address")[0]);
+            Assert.AreEqual("Virgin Islands, British", result.All("Organization.Address")[1]);
+
+            Assert.AreEqual("Admin Contact", result.First("AdminContact.Name"));
+            Assert.AreEqual("Minds + Machines Ltd", result.First("AdminContact.Organization"));
+
+            Assert.AreEqual(2, result.All("AdminContact.Address").Count);
+            Assert.AreEqual("32 Nassau St, Dublin 2", result.All("AdminContact.Address")[0]);
+            Assert.AreEqual("Ireland", result.All("AdminContact.Address")[1]);
+
+            Assert.AreEqual("+1-877-734-4783", result.First("AdminContact.TelephoneNumber"));
+            Assert.AreEqual("ops@mmx.co", result.First("AdminContact.Email"));
+            Assert.AreEqual("TLD Registry Services Technical", result.First("TechContact.Name"));
+            Assert.AreEqual("Nominet", result.First("TechContact.Organization"));
+
+            Assert.AreEqual(6, result.All("TechContact.Address").Count);
+            Assert.AreEqual("Minerva House,", result.All("TechContact.Address")[0]);
+            Assert.AreEqual("Edmund Halley Road,", result.All("TechContact.Address")[1]);
+            Assert.AreEqual("Oxford Science Park,", result.All("TechContact.Address")[2]);
+            Assert.AreEqual("Oxford,", result.All("TechContact.Address")[3]);
+            Assert.AreEqual("OX4 4DQ", result.All("TechContact.Address")[4]);
+            Assert.AreEqual("United Kingdom", result.All("TechContact.Address")[5]);
+
+            Assert.AreEqual("+44.1865332211", result.First("TechContact.TelephoneNumber"));
+            Assert.AreEqual("registrytechnical@nominet.uk", result.First("TechContact.Email"));
+
+            Assert.AreEqual(8, result.All("NameServers").Count);
+            Assert.AreEqual("DNS1.NIC.ABOGADO 213.248.217.13 2a01:618:401:0:0:0:0:13", result.All("NameServers")[0]);
+            Assert.AreEqual("DNS2.NIC.ABOGADO 103.49.81.13 2401:fd80:401:0:0:0:0:13", result.All("NameServers")[1]);
+            Assert.AreEqual("DNS3.NIC.ABOGADO 213.248.221.13 2a01:618:405:0:0:0:0:13", result.All("NameServers")[2]);
+            Assert.AreEqual("DNS4.NIC.ABOGADO 2401:fd80:405:0:0:0:0:13 43.230.49.13", result.All("NameServers")[3]);
+            Assert.AreEqual("DNSA.NIC.ABOGADO 156.154.100.3 2001:502:ad09:0:0:0:0:3", result.All("NameServers")[4]);
+            Assert.AreEqual("DNSB.NIC.ABOGADO 156.154.101.3", result.All("NameServers")[5]);
+            Assert.AreEqual("DNSC.NIC.ABOGADO 156.154.102.3", result.All("NameServers")[6]);
+            Assert.AreEqual("DNSD.NIC.ABOGADO 156.154.103.3", result.All("NameServers")[7]);
+
+            Assert.AreEqual("whois.nic.abogado", result.First("Url"));
+            Assert.AreEqual("Registration information: http://mm-registry.com", result.First("Remarks"));
+            Assert.AreEqual("2014-07-10", result.First("Created"));
+            Assert.AreEqual("2018-06-29", result.First("Changed"));
+            Assert.AreEqual("Found", result.First("Status"));
         }
 
         [Test]
-        public void TestFacebookRedirect()
+        public void TestVerisignRedirect()
         {
-            var pattern = Resources.Pattern_verisign_grs;
-            var input = Resources.Data_facebook_com_redirect;
+            var pattern = ReadTemplate("whois.verisign-grs.com");
+            var input = ReadData("facebook.com");
 
-            var result = tokenizer.Tokenize<WhoisRedirect>(pattern, input).Value;
+            var result = tokenizer.Tokenize(pattern, input);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("facebook.com", result.Domain);
-            Assert.AreEqual("whois.registrarsafe.com", result.Url);
+            Assert.AreEqual("facebook.com", result.First("WhoisRedirect.Domain"));
+            Assert.AreEqual("whois.registrarsafe.com", result.First("WhoisRedirect.Url"));
+            Assert.AreEqual("http://www.registrarsafe.com", result.First("WhoisRedirect.ReferralUrl"));
+            Assert.AreEqual(new DateTime(2018, 07, 23, 19, 17, 13, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
+            Assert.AreEqual(new DateTime(1997, 03, 29, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
+            Assert.AreEqual(new DateTime(2028, 03, 30, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
+            Assert.AreEqual("RegistrarSafe, LLC", result.First("WhoisRedirect.Registrar"));
+
+            Assert.AreEqual(2, result.All("WhoisRedirect.NameServers").Count);
+            Assert.AreEqual("A.NS.FACEBOOK.COM", result.All("WhoisRedirect.NameServers")[0]);
+            Assert.AreEqual("B.NS.FACEBOOK.COM", result.All("WhoisRedirect.NameServers")[1]);
 
         }
 
         [Test]
-        public void TestPlDomain()
+        public void TestWrongTemplate()
         {
-            var pattern = Resources.Pattern_nic_br;
-            var input = Resources.Data_08_pl;
+            var pattern = ReadTemplate("whois.nic.br");
+            var input = ReadData("08.pl");
 
-            var result = tokenizer.Tokenize<WhoisRecord>(pattern, input);
+            var result = tokenizer.Tokenize(pattern, input);
 
             Assert.IsFalse(result.Success);
-            Assert.AreEqual(null, result.Value.Domain);
-
         }
 
         [Test]
         public void TestSilOrgRedirect()
         {
-            var pattern = Resources.Pattern_verisign_grs;
-            var input = Resources.Data_sil_org_redirect;
+            var pattern = ReadTemplate("whois.verisign-grs.com");
+            var input = ReadData("sil.org");
 
-            var result = tokenizer.Tokenize<WhoisRedirect>(pattern, input).Value;
+            var result = tokenizer.Tokenize(pattern, input);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("sil.org", result.Domain);
+            Assert.AreEqual("sil.org", result.First("WhoisRedirect.Domain"));
+            Assert.AreEqual("whois.enom.com", result.First("WhoisRedirect.Url"));
+            Assert.AreEqual("http://www.enom.com", result.First("WhoisRedirect.ReferralUrl"));
+            Assert.AreEqual(new DateTime(2018, 03, 06, 00, 17, 46, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
+            Assert.AreEqual(new DateTime(1991, 04, 15, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
+            Assert.AreEqual(new DateTime(2020, 04, 16, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
+            Assert.AreEqual("eNom, Inc.", result.First("WhoisRedirect.Registrar"));
+
+            Assert.AreEqual(3, result.All("WhoisRedirect.NameServers").Count);
+            Assert.AreEqual("NSJ1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[0]);
+            Assert.AreEqual("NSC1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[1]);
+            Assert.AreEqual("NSD1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[2]);
         }
 
         [Test]
         public void TestAmazonCoJp()
         {
-            var template = ReadTemplate("Jprs");
+            var template = ReadTemplate("whois.jprs.jp");
             var input = ReadData("amazon.co.jp");
 
             var result = tokenizer.Tokenize(template, input);

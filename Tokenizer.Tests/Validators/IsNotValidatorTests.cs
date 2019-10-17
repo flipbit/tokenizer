@@ -48,8 +48,8 @@ namespace Tokens.Validators
         [Test]
         public void TestForDocumentation()
         {
-            var template = "Address: { Address : IsNot('N/A') }";
-            var input = "Address: N/A  Address: 10 Acacia Avenue";
+            var template = "Address: { Address : IsNot('N/A'), EOL }";
+            var input = "Address: N/A\nAddress: 10 Acacia Avenue";
 
             var result = new Tokenizer().Tokenize(template, input);
 

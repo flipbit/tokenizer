@@ -7,36 +7,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Samples\Data\08_pl.txt" />
-    <None Remove="Samples\Data\abogado.txt" />
-    <None Remove="Samples\Data\available.co.ca.txt" />
-    <None Remove="Samples\Data\bbc.co.uk.txt" />
-    <None Remove="Samples\Data\com.txt" />
-    <None Remove="Samples\Data\facebook_com_redirect.txt" />
-    <None Remove="Samples\Data\google.tr.txt" />
-    <None Remove="Samples\Data\moscowfood.coop.txt" />
-    <None Remove="Samples\Data\sil_org_redirect.txt" />
-    <None Remove="Samples\Patterns\Iana.txt" />
-    <None Remove="Samples\Patterns\NicBr.txt" />
-    <None Remove="Samples\Patterns\verisign-grs.com.txt" />
-    <None Remove="Samples\Patterns\whois.uk.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\Data\moscowfood.coop.txt" />
-    <EmbeddedResource Include="Samples\Data\available.co.ca.txt" />
-    <EmbeddedResource Include="Samples\Data\google.tr.txt" />
-    <EmbeddedResource Include="Samples\Data\sil_org_redirect.txt" />
-    <EmbeddedResource Include="Samples\Data\08_pl.txt" />
-    <EmbeddedResource Include="Samples\Data\abogado.txt" />
-    <EmbeddedResource Include="Samples\Data\bbc.co.uk.txt" />
-    <EmbeddedResource Include="Samples\Data\com.txt" />
-    <EmbeddedResource Include="Samples\Data\facebook_com_redirect.txt" />
-    <EmbeddedResource Include="Samples\Patterns\NicBr.txt" />
-    <EmbeddedResource Include="Samples\Patterns\Iana.txt" />
-    <EmbeddedResource Include="Samples\Patterns\whois.uk.txt" />
-    <EmbeddedResource Include="Samples\Patterns\verisign-grs.com.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />

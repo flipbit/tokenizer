@@ -30,6 +30,8 @@ namespace Tokens
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)
+            .ThenBy(r => r.Template.Tokens.Count)
+            .ThenBy(r => r.Template.Name)
             .FirstOrDefault();
     }
 
@@ -56,6 +58,8 @@ namespace Tokens
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)
+            .ThenBy(r => r.Template.Tokens.Count)
+            .ThenBy(r => r.Template.Name)
             .FirstOrDefault();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Tokens.Exceptions;
 
 namespace Tokens
 {
@@ -23,11 +24,21 @@ namespace Tokens
 
         public object First(string key)
         {
+            if (Matches.Any(m => m.Token.Name == key) == false)
+            {
+                throw new TokenizerException($"Token '{key}' was not found in the input text.");
+            }
+
             return Matches.First(m => m.Token.Name == key).Value;
         }
 
         public T First<T>(string key)
         {
+            if (Matches.Any(m => m.Token.Name == key) == false)
+            {
+                throw new TokenizerException($"Token '{key}' was not found in the input text.");
+            }
+
             return (T) Matches.First(m => m.Token.Name == key).Value;
         }
 

@@ -201,6 +201,24 @@ namespace Tokens
         }
 
         [Test]
+        public void TestParseTwoPatternsWithTagsSelectsBestMatchWithNoTags()
+        {
+            matcher.RegisterTemplate("Name: { Name $ }", "with-name");
+            matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }", "with-age");
+            matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }Location { Location $ }", "with-location");
+
+            var result = matcher.Match("Name: Alice\nAge: 30");
+
+            Assert.IsTrue(result.Success);
+
+            var match = result.BestMatch;
+
+            Assert.AreEqual("Alice", match.First("Name"));
+            Assert.AreEqual("30", match.First("Age"));
+            Assert.AreEqual("with-age", match.Template.Name);
+        }
+
+        [Test]
         public void TestDocumentationTags1()
         {
             var template1 = @"---

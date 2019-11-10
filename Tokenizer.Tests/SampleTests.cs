@@ -183,9 +183,9 @@ namespace Tokens
             Assert.AreEqual("facebook.com", result.First("WhoisRedirect.Domain"));
             Assert.AreEqual("whois.registrarsafe.com", result.First("WhoisRedirect.Url"));
             Assert.AreEqual("http://www.registrarsafe.com", result.First("WhoisRedirect.ReferralUrl"));
-            Assert.AreEqual(new DateTime(2018, 07, 23, 19, 17, 13, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
+            Assert.AreEqual(new DateTime(2018, 07, 23, 18, 17, 13, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
             Assert.AreEqual(new DateTime(1997, 03, 29, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
-            Assert.AreEqual(new DateTime(2028, 03, 30, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
+            Assert.AreEqual(new DateTime(2028, 03, 30, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
             Assert.AreEqual("RegistrarSafe, LLC", result.First("WhoisRedirect.Registrar"));
 
             Assert.AreEqual(2, result.All("WhoisRedirect.NameServers").Count);
@@ -217,8 +217,8 @@ namespace Tokens
             Assert.AreEqual("whois.enom.com", result.First("WhoisRedirect.Url"));
             Assert.AreEqual("http://www.enom.com", result.First("WhoisRedirect.ReferralUrl"));
             Assert.AreEqual(new DateTime(2018, 03, 06, 00, 17, 46, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
-            Assert.AreEqual(new DateTime(1991, 04, 15, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
-            Assert.AreEqual(new DateTime(2020, 04, 16, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
+            Assert.AreEqual(new DateTime(1991, 04, 15, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
+            Assert.AreEqual(new DateTime(2020, 04, 16, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
             Assert.AreEqual("eNom, Inc.", result.First("WhoisRedirect.Registrar"));
 
             Assert.AreEqual(3, result.All("WhoisRedirect.NameServers").Count);

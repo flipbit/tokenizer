@@ -330,7 +330,7 @@ namespace Tokens
             var result = tokenizer.Tokenize(template, input);
 
             Assert.IsTrue(result.Success);
-            Assert.AreEqual(51, result.Matches.Count);
+            Assert.AreEqual(52, result.Matches.Count);
 
             var nameServers = result.All("NameServers");
 

@@ -61,6 +61,8 @@ namespace Tokens.Parsers
             RegisterValidator<IsPhoneNumberValidator>();
             RegisterValidator<IsEmailValidator>();
             RegisterValidator<IsUrlValidator>();
+            RegisterValidator<IsLooseUrlValidator>();
+            RegisterValidator<IsLooseAbsoluteUrlValidator>();
             RegisterValidator<IsDateTimeValidator>();
             RegisterValidator<IsNotEmptyValidator>();
             RegisterValidator<IsNotValidator>();

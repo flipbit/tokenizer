@@ -22,7 +22,7 @@ namespace Tokens.Validators
 
             if (!result)
 			{
-                result = Uri.IsWellFormedUriString(string.Format("http://{0}", valueString), UriKind.Absolute);
+                result = Uri.IsWellFormedUriString($"http://{valueString}", UriKind.Absolute);
 			}
 
             return result;

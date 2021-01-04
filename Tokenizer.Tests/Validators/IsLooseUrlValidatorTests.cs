@@ -38,6 +38,14 @@ namespace Tokens.Validators
         }
 
         [Test]
+        public void TestValidateValueWhenRelativeUrl()
+        {
+            var result = validator.IsValid("/foo/bar.html");
+
+            Assert.IsTrue(result);
+        }
+
+        [Test]
         public void TestValidateValueWhenInvalidUrl()
         {
             var result = validator.IsValid("hello world");
@@ -64,12 +72,12 @@ namespace Tokens.Validators
         [Test]
         public void TestForDocumentation()
         {
-            var template = "Server: { ServerUrl : IsUrl, EOL }";
-            var input = "Server: 192.168.1.1\nServer: http://www.server.com";
+            var template = "Server: { ServerUrl : IsLooseUrl, EOL }";
+            var input = "Server: Not specified\nServer: www.server.com";
 
             var result = new Tokenizer().Tokenize(template, input);
 
-            Assert.AreEqual("http://www.server.com", result.First("ServerUrl"));
+            Assert.AreEqual("www.server.com", result.First("ServerUrl"));
         }
     }
 }

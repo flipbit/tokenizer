@@ -20,7 +20,7 @@ namespace Tokens
         [SetUp]
         public void SetUp()
         {
-            SerilogConfig.Init();
+            LogConfig.Init();
 
             tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
         }

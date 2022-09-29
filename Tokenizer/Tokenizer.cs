@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Tokens.Enumerators;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -18,7 +19,7 @@ namespace Tokens
     public class Tokenizer
     {
         private readonly TokenParser parser;
-        private readonly ILog log;
+        private readonly ILogger<Tokenizer> log;
 
         /// <summary>
         /// Gets or sets the options.

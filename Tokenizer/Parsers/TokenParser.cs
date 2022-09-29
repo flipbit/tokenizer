@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -20,7 +21,7 @@ namespace Tokens.Parsers
         private readonly List<Type> transformers;
         private readonly List<Type> validators;
 
-        private readonly ILog log;
+        private readonly ILogger<TokenParser> log;
 
         public TokenizerOptions Options { get; set; }
 

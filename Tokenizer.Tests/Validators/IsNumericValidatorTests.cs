@@ -11,7 +11,7 @@ namespace Tokens.Validators
         [SetUp]
         public void SetUp()
         {
-            SerilogConfig.Init();
+            LogConfig.Init();
 
             validator = new IsNumericValidator();
         }

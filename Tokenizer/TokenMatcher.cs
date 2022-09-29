@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Tokens.Exceptions;
 using Tokens.Logging;
 using Tokens.Parsers;
@@ -16,14 +17,14 @@ namespace Tokens
     {
         private readonly Tokenizer tokenizer;
         private readonly TokenParser parser;
-        private readonly ILog log;
+        private readonly ILogger<TokenMatcher> log;
 
         public TokenMatcher()
         {
             parser = new TokenParser();
             Templates = new TemplateCollection();
             tokenizer = new Tokenizer();
-            log = LogProvider.GetLogger(typeof(TokenMatcher));
+            log = LogProvider.For<TokenMatcher>();
         }
 
         public TokenMatcher(TokenizerOptions options) : this()
@@ -81,7 +82,7 @@ namespace Tokens
                             Template = template
                         };
 
-                        log.ErrorException($"Error processing template: {template.Name}", e);
+                        log.LogError($"Error processing template: {template.Name}", e);
 
                         throw exception;
                     }
@@ -145,7 +146,7 @@ namespace Tokens
                             Template = template
                         };
 
-                        log.ErrorException($"Error processing template: {template.Name}", e);
+                        log.LogError($"Error processing template: {template.Name}", e);
 
                         throw exception;
                     }

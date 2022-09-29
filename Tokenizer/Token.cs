@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
@@ -13,7 +14,7 @@ namespace Tokens
     /// </summary>
     public class Token
     {
-        private static readonly ILog Log;
+        private static readonly ILogger<Token> Log;
         private string content;
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Tokens
         /// </summary>
         static Token()
         {
-            Log = LogProvider.GetLogger(nameof(Token));
+            Log = LogProvider.For<Token>();
         }
 
         /// <summary>

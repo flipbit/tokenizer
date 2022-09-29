@@ -19,7 +19,7 @@ namespace Tokens
         [SetUp]
         public void SetUp()
         {
-            SerilogConfig.Init();
+            LogConfig.Init();
 
             matcher = new TokenMatcher();
             parser = new TokenParser();

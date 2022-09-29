@@ -11,7 +11,7 @@ namespace Tokens.Transformers
         [SetUp]
         public void SetUp()
         {
-            SerilogConfig.Init();
+            LogConfig.Init();
 
             @operator = new ToDateTimeUtcTransformer();
         }

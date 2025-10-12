@@ -1,6 +1,6 @@
-﻿using Xunit;
-using Tokens.Parsers;
+﻿using Tokens.Parsers;
 using Tokens.Transformers;
+using Xunit;
 
 namespace Tokens;
 

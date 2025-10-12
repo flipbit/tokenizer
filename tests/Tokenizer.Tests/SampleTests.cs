@@ -121,8 +121,6 @@ public class SampleTests
 
         var result = tokenizer.Tokenize(pattern, input);
 
-        AssertWriter.Write(result);
-
         Assert.Equal("abogado", result.First("Tld"));
         Assert.Equal("Minds + Machines Group Limited", result.First("Organization.Name"));
 
@@ -348,7 +346,6 @@ public class SampleTests
         var result = tokenizer.Tokenize(template, input);
 
         Assert.Equal(39, result.Matches.Count);
-        AssertWriter.Write(result);
     }
   
     [Fact]
@@ -397,7 +394,6 @@ public class SampleTests
 
         var result = tokenizer.Tokenize(template, input);
 
-        AssertWriter.Write(result);
         Assert.Equal("Rafael Perez", result.First("Registrant.Name"));
         Assert.Equal("aloespa.com.ve-dom", result.First("Registrant.RegistryId"));
         Assert.Equal("registro@tepuynet.com", result.First("Registrant.Email"));
@@ -461,7 +457,6 @@ public class SampleTests
 
         var result = tokenizer.Tokenize(template, input);
 
-        AssertWriter.Write(result);
         Assert.Equal("5662D-COOP", result.First("RegistryDomainId"));
         Assert.Equal("moscowfood.coop", result.First("DomainName"));
         Assert.Equal(new DateTime(2013, 01, 30, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));

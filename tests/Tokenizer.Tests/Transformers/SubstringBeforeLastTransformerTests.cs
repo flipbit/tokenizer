@@ -1,5 +1,5 @@
-﻿using Xunit;
-using Tokens.Exceptions;
+﻿using Tokens.Exceptions;
+using Xunit;
 
 namespace Tokens.Transformers;
 

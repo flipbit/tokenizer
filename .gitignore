@@ -33,3 +33,5 @@ artifacts/
 packages
 !packages/repositories.config
 .vs/*
+.idea
+.cursor

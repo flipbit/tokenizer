@@ -1,7 +1,7 @@
 ﻿using System;
-using Xunit;
 using Tokens.Enumerators;
 using Tokens.Validators;
+using Xunit;
 
 namespace Tokens;
 

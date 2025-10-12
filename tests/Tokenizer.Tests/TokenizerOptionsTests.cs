@@ -1,6 +1,6 @@
-﻿using Xunit;
-using System.Linq;
+﻿using System.Linq;
 using Tokens.Parsers;
+using Xunit;
 
 namespace Tokens;
 

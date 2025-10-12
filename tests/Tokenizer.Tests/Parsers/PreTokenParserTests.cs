@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Xunit;
 using Tokens.Exceptions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Tokens.Parsers;

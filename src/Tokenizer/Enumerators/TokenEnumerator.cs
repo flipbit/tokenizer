@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Tokens.Enumerators
 {
-    internal class TokenEnumerator
+    public class TokenEnumerator
     {
         private readonly string pattern;
         private readonly int patternLength;

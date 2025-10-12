@@ -7,7 +7,7 @@ namespace Tokens
     /// <summary>
     /// Holds a list of candidate tokens to match during a Tokenize operation.
     /// </summary>
-    internal class CandidateTokenList 
+    public class CandidateTokenList 
     {
         private readonly List<Token> tokens = new List<Token>();
 

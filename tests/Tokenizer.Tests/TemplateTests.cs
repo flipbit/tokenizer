@@ -1,5 +1,5 @@
-﻿using Xunit;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xunit;
 
 namespace Tokens;
 

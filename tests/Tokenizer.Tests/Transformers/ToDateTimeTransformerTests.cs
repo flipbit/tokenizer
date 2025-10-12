@@ -8,129 +8,201 @@ public class ToDateTimeTransformerTests
     private readonly ToDateTimeTransformer transformer = new();
 
     [Fact]
-    public void TestParseDate()
+    public void GivenValidDateStringWithFormat_WhenTransforming_ThenReturnsCorrectDateTime()
     {
-        var result =  transformer.CanTransform("2014-01-01", ["yyyy-MM-dd"], out var t);
+        // Arrange
+        var input = "2014-01-01";
+        var format = "yyyy-MM-dd";
 
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2014, 1, 1), dateTime);
         Assert.Equal(DateTimeKind.Unspecified, dateTime.Kind);
     }
 
     [Fact]
-    public void TestParseDateWithFormat()
+    public void GivenDateStringWithCustomFormat_WhenTransforming_ThenReturnsCorrectDateTime()
     {
-        var result = transformer.CanTransform("2 Mar 2012", ["d MMM yyyy"], out var t);
+        // Arrange
+        var input = "2 Mar 2012";
+        var format = "d MMM yyyy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2012, 3, 2), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithNoFormat()
+    public void GivenDateStringWithNoFormat_WhenTransforming_ThenUsesDefaultParsing()
     {
-        var result = transformer.CanTransform("2012-05-06", null, out var t);
+        // Arrange
+        var input = "2012-05-06";
+
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2012, 5, 6), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithInvalidFormat()
+    public void GivenDateStringWithInvalidFormat_WhenTransforming_ThenReturnsFalse()
     {
-        var result = transformer.CanTransform("2012-05-06", ["dd MMM yy"], out var t);
+        // Arrange
+        var input = "2012-05-06";
+        var format = "dd MMM yy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
             
+        // Assert
         Assert.False(result);
         Assert.Equal("2012-05-06", t);
     }
 
     [Fact]
-    public void TestParseDateWithFormatList()
+    public void GivenDateStringWithFormatList_WhenTransforming_ThenUsesFirstMatchingFormat()
     {
-        var result = transformer.CanTransform("2012-05-06", ["dd MMM yy", "yyyy-MM-dd"], out var t);
+        // Arrange
+        var input = "2012-05-06";
+        string[] formats = ["dd MMM yy", "yyyy-MM-dd"];
+
+        // Act
+        var result = transformer.CanTransform(input, formats, out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2012, 5 ,6), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithEmptyValue()
+    public void GivenEmptyString_WhenTransforming_ThenReturnsFalse()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var t);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.False(result);
         Assert.Equal(string.Empty, t);
     }
 
     [Fact]
-    public void TestParseDateWithNullValue()
+    public void GivenNullValue_WhenTransforming_ThenReturnsFalse()
     {
-        var result = transformer.CanTransform(null, null, out var t);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.False(result);
         Assert.Null(t);
     }
 
     [Fact]
-    public void TestParseDateWithUnixNewLine()
+    public void GivenDateStringWithUnixNewLine_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("2012-05-06\nHello", null, out var t);
+        // Arrange
+        var input = "2012-05-06\nHello";
+
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2012, 5, 6), t);
     }
 
     [Fact]
-    public void TestParseDateWithWindowsNewLine()
+    public void GivenDateStringWithWindowsNewLine_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("2012-05-06\r\nHello", null, out var t);
+        // Arrange
+        var input = "2012-05-06\r\nHello";
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2012, 5, 6), t);
     }
 
     [Fact]
-    public void TestParseDateWithDayOrdinalAtStart()
+    public void GivenDateStringWithDayOrdinalAtStart_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("01st August 2001", ["dd MMMM yyyy"], out var t);
+        // Arrange
+        var input = "01st August 2001";
+        var format = "dd MMMM yyyy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2001, 8 , 1), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithDayOrdinalInMiddle()
+    public void GivenDateStringWithDayOrdinalInMiddle_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("August 2nd 2001", ["MMMM d yyyy"], out var t);
+        // Arrange
+        var input = "August 2nd 2001";
+        var format = "MMMM d yyyy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2001, 8 , 2), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithSpanishFullMonth()
+    public void GivenDateStringWithSpanishFullMonth_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("Agosto 2nd 2001", ["MMMM d yyyy"], out var t);
+        // Arrange
+        var input = "Agosto 2nd 2001";
+        var format = "MMMM d yyyy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2001, 8 , 2), dateTime);
     }
 
     [Fact]
-    public void TestParseDateWithSpanishMonthAbbreviation()
+    public void GivenDateStringWithSpanishMonthAbbreviation_WhenTransforming_ThenParsesDateCorrectly()
     {
-        var result = transformer.CanTransform("16-abr-1997", ["dd-MMM-yyyy"], out var t);
+        // Arrange
+        var input = "16-abr-1997";
+        var format = "dd-MMM-yyyy";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(1997, 4 , 16), dateTime);
     }

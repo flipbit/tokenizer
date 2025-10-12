@@ -15,56 +15,82 @@ public class IsNumericValidatorTests
     }
 
     [Fact]
-    public void TestValidateValueWhenNumericInteger()
+    public void GivenNumericIntegerString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("100");
+        // Arrange
+        var input = "100";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNumericFloat()
+    public void GivenNumericFloatString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("10.0");
+        // Arrange
+        var input = "10.0";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNotNumeric()
+    public void GivenNonNumericString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestNotValidator()
+    public void GivenPatternWithNotNumericValidator_WhenInputIsNonNumeric_ThenExtractsValue()
     {
+        // Arrange
         var pattern = @"Age: { Age : !IsNumeric }";
         var input = "Age: ten";
 
+        // Act
         var result = new Tokenizer().Tokenize(pattern, input);
 
+        // Assert
         Assert.Equal("ten", result.First("Age"));
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithNumericValidator_WhenInputHasInvalidThenValidNumber_ThenUsesValidNumber()
     {
+        // Arrange
         var template = "Age: { Age : IsNumeric }";
         var input = "Age: Ten  Age: 10";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("10", result.First("Age"));
     }
 }

@@ -8,34 +8,54 @@ public class SubstringAfterTransformerTests
     private readonly SubstringAfterTransformer transformer = new();
 
     [Fact]
-    public void TestSubstringAfter()
+    public void GivenStringWithSubstring_WhenTransforming_ThenReturnsTextAfterSubstring()
     {
-        var result = transformer.CanTransform("one two three", ["two"], out var transformed);
+        // Arrange
+        var input = "one two three";
+        var substring = "two";
 
+        // Act
+        var result = transformer.CanTransform(input, [substring], out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(" three", transformed);
     }
 
     [Fact]
-    public void TestSubstringAfterWhenMissingArgument()
+    public void GivenTransformerWithMissingArgument_WhenTransforming_ThenThrowsTokenizerException()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null, out var t));
+        // Arrange
+        var input = "one two three";
+
+        // Act & Assert
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null, out var t));
     }
 
     [Fact]
-    public void TestSubstringAfterWhenEmpty()
+    public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var transformed);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }
 
     [Fact]
-    public void TestSubstringAfterWhenNull()
+    public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(null, null, out var transformed);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }

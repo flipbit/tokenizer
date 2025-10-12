@@ -20,15 +20,17 @@ public class SplitTests
     }
 
     [Fact]
-    public void TestSplitValue()
+    public void GivenCommaSeparatedNames_WhenTokenizingWithSplitTransformer_ThenReturnsListWithCorrectValues()
     {
+        // Arrange
         const string pattern = @"Names: { Names : Split(',') }";
         const string input = @"Names: Alice,Bob,Charles";
 
+        // Act
         var results = tokenizer.Tokenize<Foo>(pattern, input);
-
         var foo = results.Value;
 
+        // Assert
         Assert.Equal(3, foo.Names.Count);
         Assert.Equal("Alice", foo.Names[0]);
         Assert.Equal("Bob", foo.Names[1]);

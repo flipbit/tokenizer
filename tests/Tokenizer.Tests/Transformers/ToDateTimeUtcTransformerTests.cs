@@ -8,74 +8,102 @@ public class ToDateTimeUtcTransformerTests
     private readonly ToDateTimeUtcTransformer transformer = new();
 
     [Fact]
-    public void TestParseDateSetsKindToUtc()
+    public void GivenValidDateString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
     {
-        var result = transformer.CanTransform("2014-01-01", ["yyyy-MM-dd"], out var t);
+        // Arrange
+        var input = "2014-01-01";
+        var format = "yyyy-MM-dd";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2014, 1, 1), t);
         Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
     }
 
     [Fact]
-    public void TestParseDateAndTime()
+    public void GivenValidDateTimeString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
     {
-        var result = transformer.CanTransform("2014-01-01 10:00:00", ["yyyy-MM-dd hh:mm:ss"], out var t);
+        // Arrange
+        var input = "2014-01-01 10:00:00";
+        var format = "yyyy-MM-dd hh:mm:ss";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
         Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
     }
 
     [Fact]
-    public void TestParseDateAndTimeIsoFormat()
+    public void GivenIsoFormatDateTimeString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
     {
-        var result = transformer.CanTransform("2014-01-01T10:00:00Z", ["yyyy-MM-ddThh:mm:ssZ"], out var t);
+        // Arrange
+        var input = "2014-01-01T10:00:00Z";
+        var format = "yyyy-MM-ddThh:mm:ssZ";
+
+        // Act
+        var result = transformer.CanTransform(input, [format], out var t);
         var dateTime = (DateTime) t;
 
+        // Assert
         Assert.True(result);
         Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
         Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
     }
 
     [Fact]
-    public void TestTrimUtcDescription()
+    public void GivenDateWithUtcSuffix_WhenTokenizing_ThenTrimsUtcAndReturnsDateTime()
     {
+        // Arrange
         var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
         var input = "Date: 2000-01-01 UTC";
 
+        // Act
         var result = new Tokenizer().Tokenize(pattern, input);
 
+        // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
     }
 
     [Fact]
-    public void TestTrimUtcDescriptionInBrackets()
+    public void GivenDateWithUtcInBrackets_WhenTokenizing_ThenTrimsUtcAndReturnsDateTime()
     {
+        // Arrange
         var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
         var input = "Date: 2000-01-01 (UTC)";
 
+        // Act
         var result = new Tokenizer().Tokenize(pattern, input);
 
+        // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
     }
 
     [Fact]
-    public void TestWrongFormat()
+    public void GivenDateWithWrongFormat_WhenTokenizing_ThenDoesNotExtractDate()
     {
+        // Arrange
         var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
         var input = "Date: 2000-1-1 (UTC)";
 
+        // Act
         var result = new Tokenizer().Tokenize(pattern, input);
 
+        // Assert
         Assert.False(result.Contains("Date"));
     }
 
     [Fact]
-    public void TestMultipleTokenMultipleFormats()
+    public void GivenMultipleTokensWithDifferentFormats_WhenTokenizing_ThenUsesFirstMatchingFormat()
     {
+        // Arrange
         var pattern = """
                       ---
                       # End tokens on new lines
@@ -89,8 +117,10 @@ public class ToDateTimeUtcTransformerTests
                       """;
         var input = "Date: 2000-1-1 (UTC)";
 
+        // Act
         var result = new Tokenizer().Tokenize(pattern, input);
 
+        // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));
     }
 }

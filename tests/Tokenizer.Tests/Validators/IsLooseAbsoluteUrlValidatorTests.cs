@@ -7,61 +7,94 @@ public class IsLooseAbsoluteUrlValidatorTests
     private readonly IsLooseAbsoluteUrlValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenHttp()
+    public void GivenHttpUrl_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("http://github.com");
+        // Arrange
+        var input = "http://github.com";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenHttps()
+    public void GivenHttpsUrl_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("https://github.com");
+        // Arrange
+        var input = "https://github.com";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNoProtocol()
+    public void GivenUrlWithoutProtocol_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("github.com");
+        // Arrange
+        var input = "github.com";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalidUrl()
+    public void GivenInvalidUrl_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithLooseAbsoluteUrlValidator_WhenInputHasInvalidThenValidUrl_ThenUsesValidUrl()
     {
+        // Arrange
         var template = "Server: { ServerUrl : IsLooseAbsoluteUrl, EOL }";
         var input = "Server: Not Specified\nServer: www.server.com";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("www.server.com", result.First("ServerUrl"));
     }
 }

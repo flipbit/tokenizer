@@ -7,61 +7,94 @@ public class IsDateTimeValidatorTests
     private readonly IsDateTimeValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenValid()
+    public void GivenValidDateString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("1 May 2019");
+        // Arrange
+        var input = "1 May 2019";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNewIsoDate()
+    public void GivenValidIsoDateString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("2019-05-01");
+        // Arrange
+        var input = "2019-05-01";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenHasTime()
+    public void GivenValidDateTimeString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("2019-05-01 14:00:00");
+        // Arrange
+        var input = "2019-05-01 14:00:00";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalid()
+    public void GivenInvalidDateString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithDateTimeValidator_WhenInputHasInvalidThenValidDate_ThenUsesValidDate()
     {
+        // Arrange
         var template = "Date: { Date : IsDateTime('yyyy-MM-dd') }";
         var input = "Date: 3rd Oct 2019 Date: 2019-10-04";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("2019-10-04", result.First("Date"));
     }
 }

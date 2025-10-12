@@ -15,8 +15,9 @@ public class ListTests
     }
 
     [Fact]
-    public void TestExtractSingleValue()
+    public void GivenPatternWithRepeatingToken_WhenTokenizingMultipleValues_ThenExtractsAllValuesInList()
     {
+        // Arrange
         const string pattern = """
                                Domains:
                                { DomainName : Repeating, IsDomainName }
@@ -32,15 +33,15 @@ public class ListTests
                              secondary.com
                              """;
 
+        // Act
         var results = tokenizer.Tokenize(pattern, input);
-
         var domains = results.Matches.Where(m => m.Token.Name == "DomainName").ToList();
 
+        // Assert
         Assert.Equal(3, domains.Count);
         Assert.Equal("one.com", domains[0].Value);
         Assert.Equal("two.com", domains[1].Value);
         Assert.Equal("three.com", domains[2].Value);
-
         Assert.Equal("secondary.com", results.First("SecondaryDomain"));
     }
 }

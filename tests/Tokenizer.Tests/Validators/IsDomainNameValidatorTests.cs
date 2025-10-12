@@ -7,61 +7,94 @@ public class IsDomainNameValidatorTests
     private readonly IsDomainNameValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenValid()
+    public void GivenValidDomainName_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("github.com");
+        // Arrange
+        var input = "github.com";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNewTld()
+    public void GivenValidDomainNameWithNewTld_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello.ninja");
+        // Arrange
+        var input = "hello.ninja";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenHasSubdomain()
+    public void GivenValidDomainNameWithSubdomain_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("www.hello.ninja");
+        // Arrange
+        var input = "www.hello.ninja";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalidDomain()
+    public void GivenInvalidDomainName_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithDomainNameValidator_WhenInputHasInvalidThenValidDomain_ThenUsesValidDomain()
     {
+        // Arrange
         var template = "Web: { Domain : IsDomainName }";
         var input = "Web: n/a Web: www.flipbit.co.uk";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("www.flipbit.co.uk", result.First("Domain"));
     }
 }

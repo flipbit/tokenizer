@@ -24,8 +24,9 @@ public class MultilineTests
     }
 
     [Fact]
-    public void TestMultilineRepeating()
+    public void GivenMultilinePatternWithRepeatingToken_WhenTokenizingMultilineInput_ThenExtractsAllValues()
     {
+        // Arrange
         const string pattern = """
                                First Name:
                                  {FirstName $ }
@@ -51,8 +52,10 @@ public class MultilineTests
 
                              """;
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Equal("Alice", result.Value.FirstName);
         Assert.Equal(3, result.Value.Classes.Count);
         Assert.Equal("French", result.Value.Classes[0]);
@@ -62,8 +65,9 @@ public class MultilineTests
     }
 
     [Fact]
-    public void TestMultilineRepeatingIndented()
+    public void GivenIndentedMultilinePatternWithRepeatingToken_WhenTokenizingIndentedInput_ThenExtractsAllValues()
     {
+        // Arrange
         const string pattern = """
                                    Relevant dates:
                                        Registered on: {FirstName}
@@ -90,8 +94,10 @@ public class MultilineTests
                                      ns1.thdow.bbc.co.uk       212.58.240.163
                              """;
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Equal("Alice", result.Value.FirstName);
         Assert.Equal(3, result.Value.Classes.Count);
         Assert.Equal("ns1.rbsov.bbc.co.uk       212.58.241.67", result.Value.Classes[0]);

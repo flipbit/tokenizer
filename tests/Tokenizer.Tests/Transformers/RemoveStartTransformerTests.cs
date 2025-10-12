@@ -8,55 +8,84 @@ public class RemoveStartTransformerTests
     private readonly RemoveStartTransformer transformer = new();
 
     [Fact]
-    public void TestRemoveStart()
+    public void GivenStringStartingWithSubstring_WhenTransforming_ThenRemovesStartingSubstring()
     {
-        var result = transformer.CanTransform("one two three", ["one"], out var transformed);
+        // Arrange
+        var input = "one two three";
+        var prefixToRemove = "one";
 
+        // Act
+        var result = transformer.CanTransform(input, [prefixToRemove], out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(" two three", transformed);
     }
 
     [Fact]
-    public void TestRemoveStartWhenNotPresent()
+    public void GivenStringNotStartingWithSubstring_WhenTransforming_ThenReturnsOriginalString()
     {
-        var result = transformer.CanTransform("one two three", ["two"], out var transformed);
+        // Arrange
+        var input = "one two three";
+        var prefixToRemove = "two";
 
+        // Act
+        var result = transformer.CanTransform(input, [prefixToRemove], out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal("one two three", transformed);
     }
 
     [Fact]
-    public void TestSubstringAfterWhenMissingArgument()
+    public void GivenTransformerWithMissingArgument_WhenTransforming_ThenThrowsTokenizerException()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null, out var t));
+        // Arrange
+        var input = "one two three";
+
+        // Act & Assert
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null, out var t));
     }
 
     [Fact]
-    public void TestSubstringAfterWhenEmpty()
+    public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var transformed);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }
 
     [Fact]
-    public void TestSubstringAfterWhenNull()
+    public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(null, null, out var transformed);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithRemoveEndTransformer_WhenTokenizingInput_ThenRemovesEndCharacter()
     {
+        // Arrange
         var template = ": { DomainName : RemoveEnd('.') }";
         var input = "Domain Name: domain.com.";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("domain.com", result.First("DomainName"));
     }
 }

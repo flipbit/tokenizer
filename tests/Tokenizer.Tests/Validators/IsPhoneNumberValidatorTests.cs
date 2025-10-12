@@ -7,92 +7,145 @@ public class IsPhoneNumberValidatorTests
     private readonly IsPhoneNumberValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenValidUk()
+    public void GivenValidUkPhoneNumber_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("01603 123123");
+        // Arrange
+        var input = "01603 123123";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenValidUkWithCountryCode()
+    public void GivenValidUkPhoneNumberWithCountryCode_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("+44 (0) 1603 123123");
+        // Arrange
+        var input = "+44 (0) 1603 123123";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenValidWithDots()
+    public void GivenValidPhoneNumberWithDots_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("+44.1603.123123");
+        // Arrange
+        var input = "+44.1603.123123";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
             
     [Fact]
-    public void TestValidateValueWhenValidWithDashes()
+    public void GivenValidPhoneNumberWithDashes_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("+44-1603-123123");
+        // Arrange
+        var input = "+44-1603-123123";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
     [Fact]
-    public void TestValidateValueWhenValidUkWithNoAreaCode()
+    public void GivenValidUkPhoneNumberWithNoAreaCode_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("123123");
+        // Arrange
+        var input = "123123";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalid()
+    public void GivenInvalidPhoneNumber_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalidWithNumber()
+    public void GivenInvalidPhoneNumberWithNumbers_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world 0123456789");
+        // Arrange
+        var input = "hello world 0123456789";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenTooShort()
+    public void GivenPhoneNumberTooShort_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("12345");
+        // Arrange
+        var input = "12345";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithPhoneNumberValidator_WhenInputHasInvalidThenValidPhone_ThenUsesValidPhone()
     {
+        // Arrange
         var template = "Phone: { Phone : IsPhoneNumber }";
         var input = "Phone: Disconnected  Phone: +44 (0) 1603 555-1234";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("+44 (0) 1603 555-1234", result.First("Phone"));
     }
 }

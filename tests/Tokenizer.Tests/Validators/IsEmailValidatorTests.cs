@@ -7,45 +7,68 @@ public class IsEmailValidatorTests
     private readonly IsEmailValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenValid()
+    public void GivenValidEmailAddress_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello@example.com");
+        // Arrange
+        var input = "hello@example.com";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenInvalid()
+    public void GivenInvalidEmailAddress_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithEmailValidator_WhenInputHasInvalidThenValidEmail_ThenUsesValidEmail()
     {
+        // Arrange
         var template = "Email: { Email : IsEmail }";
         var input = "Email: webmaster at host.com Email: hello@domain.com";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("hello@domain.com", result.First("Email"));
     }
 }

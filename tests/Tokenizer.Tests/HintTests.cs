@@ -21,8 +21,9 @@ public class HintTests
     }
 
     [Fact]
-    public void TestOneHintFound()
+    public void GivenPatternWithHint_WhenHintFoundInInput_ThenExtractsValueAndRecordsHintMatch()
     {
+        // Arrange
         const string pattern = """
                                ---
                                Hint: First Name
@@ -31,20 +32,21 @@ public class HintTests
                                """;
         const string input = "First Name: Alice";
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Equal("Alice", result.Value.FirstName);
-
         Assert.Single(result.Hints.Matches);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
-
         Assert.Empty(result.Hints.Misses);
     }
 
     [Fact]
-    public void TestOneHintNotFound()
+    public void GivenPatternWithHint_WhenHintNotFoundInInput_ThenRecordsHintMiss()
     {
+        // Arrange
         const string pattern = """
                                ---
                                Hint: Last Name
@@ -53,20 +55,21 @@ public class HintTests
                                """;
         const string input = "First Name: Alice";
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Null(result.Value.FirstName);
-
         Assert.Empty(result.Hints.Matches);
-
         Assert.Single(result.Hints.Misses);
         Assert.Equal("Last Name", result.Hints.Misses[0].Text);
         Assert.False(result.Hints.Misses[0].Optional);
     }
 
     [Fact]
-    public void TestTwoHintsFound()
+    public void GivenPatternWithTwoHints_WhenBothHintsFoundInInput_ThenExtractsValuesAndRecordsBothMatches()
     {
+        // Arrange
         const string pattern = """
                                ---
                                Hint: First Name
@@ -76,23 +79,24 @@ public class HintTests
                                """;
         const string input = "First Name: Alice  Last Name: Smith";
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Equal("Alice", result.Value.FirstName);
         Assert.Equal("Smith", result.Value.LastName);
-
         Assert.Equal(2, result.Hints.Matches.Count);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
         Assert.Equal("Last Name", result.Hints.Matches[1].Text);
         Assert.True(result.Hints.Matches[1].Optional);
-
         Assert.Empty(result.Hints.Misses);
     }
         
     [Fact]
-    public void TestTwoHintsMixed()
+    public void GivenPatternWithTwoHints_WhenOnlyOneHintFoundInInput_ThenRecordsOneMatchAndOneMiss()
     {
+        // Arrange
         const string pattern = """
                                ---
                                Hint: First Name
@@ -102,15 +106,15 @@ public class HintTests
                                """;
         const string input = "First Name: Alice  Last Name: Smith";
 
+        // Act
         var result = tokenizer.Tokenize<Student>(pattern, input);
 
+        // Assert
         Assert.Equal("Alice", result.Value.FirstName);
         Assert.Equal("Smith", result.Value.LastName);
-
         Assert.Single(result.Hints.Matches);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
-
         Assert.Single(result.Hints.Misses);
         Assert.Equal("Middle Name", result.Hints.Misses[0].Text);
         Assert.True(result.Hints.Misses[0].Optional);

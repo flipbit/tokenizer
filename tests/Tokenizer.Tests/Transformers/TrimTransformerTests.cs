@@ -7,26 +7,41 @@ public class TrimTransformerTests
     private readonly TrimTransformer transformer = new();
 
     [Fact]
-    public void TestTrim()
+    public void GivenStringWithLeadingAndTrailingWhitespace_WhenTransforming_ThenTrimsWhitespace()
     {
-        transformer.CanTransform("  TEST  ", null, out var t);
+        // Arrange
+        var input = "  TEST  ";
 
+        // Act
+        transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.Equal("TEST", t);
     }
 
     [Fact]
-    public void TestTrimWhenEmpty()
+    public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var t);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.Equal(string.Empty, t);
     }
 
     [Fact]
-    public void TestTrimWhenNull()
+    public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(null, null, out var t);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var t);
+
+        // Assert
         Assert.Equal(string.Empty, t);
     }
 }

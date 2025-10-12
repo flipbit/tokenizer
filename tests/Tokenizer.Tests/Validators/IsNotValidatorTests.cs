@@ -7,45 +7,72 @@ public class IsNotValidatorTests
     private readonly IsNotValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenInvalid()
+    public void GivenStringThatMatchesExcludedValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world", "hello world");
+        // Arrange
+        var input = "hello world";
+        var excludedValue = "hello world";
 
+        // Act
+        var result = validator.IsValid(input, excludedValue);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenValid()
+    public void GivenStringThatDoesNotMatchExcludedValue_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello world", "hello");
+        // Arrange
+        var input = "hello world";
+        var excludedValue = "hello";
 
+        // Act
+        var result = validator.IsValid(input, excludedValue);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid(null, "hello");
+        // Arrange
+        string input = null;
+        var excludedValue = "hello";
 
+        // Act
+        var result = validator.IsValid(input, excludedValue);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid(string.Empty, "hello");
+        // Arrange
+        var input = string.Empty;
+        var excludedValue = "hello";
 
+        // Act
+        var result = validator.IsValid(input, excludedValue);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithIsNotValidator_WhenInputHasExcludedThenValidValue_ThenUsesValidValue()
     {
+        // Arrange
         var template = "Address: { Address : IsNot('N/A'), EOL }";
         var input = "Address: N/A\nAddress: 10 Acacia Avenue";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("10 Acacia Avenue", result.First("Address"));
     }
 }

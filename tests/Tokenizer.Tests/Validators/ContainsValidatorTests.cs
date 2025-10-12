@@ -8,51 +8,80 @@ public class ContainsValidatorTests
     private readonly ContainsValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenTrue()
+    public void GivenStringThatContainsSubstring_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello world", "o wor");
+        // Arrange
+        var input = "hello world";
+        var substring = "o wor";
 
+        // Act
+        var result = validator.IsValid(input, substring);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenFalse()
+    public void GivenStringThatDoesNotContainSubstring_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world", "spoon");
+        // Arrange
+        var input = "hello world";
+        var substring = "spoon";
 
+        // Act
+        var result = validator.IsValid(input, substring);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenMissingArgument()
+    public void GivenValidatorWithMissingArgument_WhenValidating_ThenThrowsTokenizerException()
     {
-        Assert.Throws<TokenizerException>(() => validator.IsValid("hello world"));
+        // Arrange
+        var input = "hello world";
+
+        // Act & Assert
+        Assert.Throws<TokenizerException>(() => validator.IsValid(input));
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithContainsValidator_WhenInputHasMultipleValues_ThenUsesFirstMatchingValue()
     {
+        // Arrange
         var template = "Name: { Name : Contains('B') }";
         var input = "Name: Alice Name: Bob";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("Bob", result.First("Name"));
     }
 }

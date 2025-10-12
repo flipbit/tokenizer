@@ -7,37 +7,55 @@ public class IsNotEmptyValidatorTests
     private readonly IsNotEmptyValidator validator = new();
 
     [Fact]
-    public void TestValidateValueWhenValid()
+    public void GivenNonEmptyString_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello world");
+        // Arrange
+        var input = "hello world";
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenNull()
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(null);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidateValueWhenEmpty()
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid(string.Empty);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = validator.IsValid(input);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithIsNotEmptyValidator_WhenFirstMatchIsEmpty_ThenUsesSecondMatch()
     {
+        // Arrange
         var template = "Middle Name: { MiddleName : IsNotEmpty, EOL }";
         var input = "Middle Name:\nMiddle Name: Charles";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("Charles", result.First("MiddleName"));
     }
 }

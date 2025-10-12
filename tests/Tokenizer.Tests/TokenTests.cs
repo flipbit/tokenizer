@@ -19,55 +19,63 @@ public class TokenTests
     }
 
     [Fact]
-    public void TestSetTokenValue()
+    public void GivenTokenWithValidValue_WhenAssigningToObject_ThenSetsPropertyValue()
     {
+        // Arrange
         var person = new Person();
-
         token.Name = "Person.Name";
 
+        // Act
         var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
+        // Assert
         Assert.True(assigned);
         Assert.Equal("Sue", person.Name);
     }
 
     [Fact]
-    public void TestSetTokenValueWithValidator()
+    public void GivenTokenWithNumericValidator_WhenAssigningValidNumber_ThenSetsPropertyValue()
     {
+        // Arrange
         var person = new Person();
-
         token.Name = "Person.Age";
         token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
+        // Act
         var assigned = token.Assign(person, "20", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
+        // Assert
         Assert.True(assigned);
         Assert.Equal(20, person.Age);
     }
 
     [Fact]
-    public void TestSetTokenValueWithValidatorWhenInvalid()
+    public void GivenTokenWithNumericValidator_WhenAssigningInvalidNumber_ThenFailsToAssign()
     {
+        // Arrange
         var person = new Person();
-
         token.Name = "Person.Age";
         token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
+        // Act
         var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
+        // Assert
         Assert.False(assigned);
         Assert.Equal(0, person.Age);
     }
 
     [Fact]
-    public void TestSetTokenValueWhenNull()
+    public void GivenTokenWithStringValue_WhenAssigningToObject_ThenSetsPropertyValue()
     {
+        // Arrange
         var person = new Person();
-
         token.Name = "Person.Name";
 
+        // Act
         var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value);
 
+        // Assert
         Assert.True(assigned);
         Assert.Equal("Sue", person.Name);
     }

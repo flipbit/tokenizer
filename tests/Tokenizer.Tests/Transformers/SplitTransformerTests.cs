@@ -8,14 +8,18 @@ public class SplitTransformerTests
     private readonly SplitTransformer transformer = new();
 
     [Fact]
-    public void TestSplitInput()
+    public void GivenCommaSeparatedString_WhenTransforming_ThenSplitsIntoArray()
     {
-        var result = transformer.CanTransform("1,2,3,4", [","], out var transformed);
+        // Arrange
+        var input = "1,2,3,4";
+        var separator = ",";
 
-        Assert.True(result);
-
+        // Act
+        var result = transformer.CanTransform(input, [separator], out var transformed);
         var list = transformed as string[];
 
+        // Assert
+        Assert.True(result);
         Assert.Equal(4, list.Length);
         Assert.Equal("1", list[0]);
         Assert.Equal("2", list[1]);
@@ -24,34 +28,54 @@ public class SplitTransformerTests
     }
 
     [Fact]
-    public void TestSplitInputWhenNoSeparator()
+    public void GivenStringWithoutSeparator_WhenTransforming_ThenReturnsOriginalString()
     {
-        var result = transformer.CanTransform("1-2-3-4", [","], out var transformed);
+        // Arrange
+        var input = "1-2-3-4";
+        var separator = ",";
 
+        // Act
+        var result = transformer.CanTransform(input, [separator], out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal("1-2-3-4", transformed);
     }
 
     [Fact]
-    public void TestSplitWhenMissingArgument()
+    public void GivenTransformerWithMissingArgument_WhenTransforming_ThenThrowsTokenizerException()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("1,2,3,4", null, out var t));
+        // Arrange
+        var input = "1,2,3,4";
+
+        // Act & Assert
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null, out var t));
     }
 
     [Fact]
-    public void TestSplitWhenEmptyInput()
+    public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var transformed);
+        // Arrange
+        var input = string.Empty;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }
 
     [Fact]
-    public void TestSplitWhenNullInput()
+    public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
-        var result = transformer.CanTransform(null, null, out var transformed);
+        // Arrange
+        string input = null;
 
+        // Act
+        var result = transformer.CanTransform(input, null, out var transformed);
+
+        // Assert
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }

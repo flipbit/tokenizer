@@ -8,41 +8,65 @@ public class MinLengthValidatorTests
     private readonly MinLengthValidator validator = new();
 
     [Fact]
-    public void TestValidMinimumLengthWhenValid()
+    public void GivenStringMeetingMinimumLength_WhenValidating_ThenReturnsTrue()
     {
-        var result = validator.IsValid("hello", "3");
+        // Arrange
+        var input = "hello";
+        var minLength = "3";
 
+        // Act
+        var result = validator.IsValid(input, minLength);
+
+        // Assert
         Assert.True(result);
     }
 
     [Fact]
-    public void TestValidMinimumLengthWhenInvalid()
+    public void GivenStringBelowMinimumLength_WhenValidating_ThenReturnsFalse()
     {
-        var result = validator.IsValid("hello world", "255");
+        // Arrange
+        var input = "hello world";
+        var minLength = "255";
 
+        // Act
+        var result = validator.IsValid(input, minLength);
+
+        // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void TestValidMinimumLengthWhenNoParameters()
+    public void GivenValidatorWithNoParameters_WhenValidating_ThenThrowsValidationException()
     {
-        Assert.Throws<ValidationException>(() => validator.IsValid("hello world"));
+        // Arrange
+        var input = "hello world";
+
+        // Act & Assert
+        Assert.Throws<ValidationException>(() => validator.IsValid(input));
     }
 
     [Fact]
-    public void TestValidMinimumLengthWhenParametersNotAnInteger()
+    public void GivenValidatorWithNonIntegerParameter_WhenValidating_ThenThrowsValidationException()
     {
-        Assert.Throws<ValidationException>(() => validator.IsValid("hello world", "hello"));
+        // Arrange
+        var input = "hello world";
+        var invalidParameter = "hello";
+
+        // Act & Assert
+        Assert.Throws<ValidationException>(() => validator.IsValid(input, invalidParameter));
     }
 
     [Fact]
-    public void TestForDocumentation()
+    public void GivenTemplateWithMinLengthValidator_WhenInputHasInvalidThenValidValue_ThenUsesValidValue()
     {
+        // Arrange
         var template = "Zip: { ZipCode : MinLength(5), EOL }";
         var input = "Zip: 123\nZip: 45678";
 
+        // Act
         var result = new Tokenizer().Tokenize(template, input);
 
+        // Assert
         Assert.Equal("45678", result.First("ZipCode"));
     }
 }

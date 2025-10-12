@@ -1,0 +1,66 @@
+﻿using Xunit;
+
+namespace Tokens.Types;
+
+public class EnumTests
+{
+    private readonly Tokenizer tokenizer;
+
+    private class Student
+    {
+        public string Name { get; set; }
+
+        public Grade Grade { get; set; }
+    }
+
+    private enum Grade
+    {
+        GradeA,
+        GradeB,
+        GradeC,
+    }
+
+    public EnumTests()
+    {
+        SerilogConfig.Init();
+
+        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+    }
+
+    [Fact]
+    public void TestSetEnumValue()
+    {
+        const string pattern = @"Name: {Name}, Grade: {Grade}";
+        const string input = @"Name: Alice, Grade: GradeB";
+
+        var result = tokenizer.Tokenize<Student>(pattern, input);
+
+        Assert.Equal("Alice", result.Value.Name);
+        Assert.Equal(Grade.GradeB, result.Value.Grade);
+    }
+
+    [Fact]
+    public void TestSetEnumValueWhenWrongCase()
+    {
+        const string pattern = @"Name: {Name}, Grade: {Grade}";
+        const string input = @"Name: Alice, Grade: Gradec";
+
+        var result = tokenizer.Tokenize<Student>(pattern, input);
+
+        Assert.Equal("Alice", result.Value.Name);
+        Assert.Equal(Grade.GradeC, result.Value.Grade);
+    }
+
+    [Fact]
+    public void TestSetEnumValueWhenIncorrectValue()
+    {
+        const string pattern = @"Name: {Name}, Grade: {Grade}";
+        const string input = @"Name: Alice, Grade: GradeE";
+
+        var result = tokenizer.Tokenize<Student>(pattern, input);
+
+        Assert.Equal("Alice", result.Value.Name);
+        Assert.Equal(Grade.GradeA, result.Value.Grade);
+        Assert.Single(result.Exceptions);
+    }
+}

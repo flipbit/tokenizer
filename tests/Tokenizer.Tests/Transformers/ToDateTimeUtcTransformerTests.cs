@@ -1,0 +1,96 @@
+﻿using System;
+using Xunit;
+
+namespace Tokens.Transformers;
+
+public class ToDateTimeUtcTransformerTests
+{
+    private readonly ToDateTimeUtcTransformer transformer = new();
+
+    [Fact]
+    public void TestParseDateSetsKindToUtc()
+    {
+        var result = transformer.CanTransform("2014-01-01", ["yyyy-MM-dd"], out var t);
+        var dateTime = (DateTime) t;
+
+        Assert.True(result);
+        Assert.Equal(new DateTime(2014, 1, 1), t);
+        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+    }
+
+    [Fact]
+    public void TestParseDateAndTime()
+    {
+        var result = transformer.CanTransform("2014-01-01 10:00:00", ["yyyy-MM-dd hh:mm:ss"], out var t);
+        var dateTime = (DateTime) t;
+
+        Assert.True(result);
+        Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
+        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+    }
+
+    [Fact]
+    public void TestParseDateAndTimeIsoFormat()
+    {
+        var result = transformer.CanTransform("2014-01-01T10:00:00Z", ["yyyy-MM-ddThh:mm:ssZ"], out var t);
+        var dateTime = (DateTime) t;
+
+        Assert.True(result);
+        Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
+        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+    }
+
+    [Fact]
+    public void TestTrimUtcDescription()
+    {
+        var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+        var input = "Date: 2000-01-01 UTC";
+
+        var result = new Tokenizer().Tokenize(pattern, input);
+
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
+    }
+
+    [Fact]
+    public void TestTrimUtcDescriptionInBrackets()
+    {
+        var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+        var input = "Date: 2000-01-01 (UTC)";
+
+        var result = new Tokenizer().Tokenize(pattern, input);
+
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
+    }
+
+    [Fact]
+    public void TestWrongFormat()
+    {
+        var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
+        var input = "Date: 2000-1-1 (UTC)";
+
+        var result = new Tokenizer().Tokenize(pattern, input);
+
+        Assert.False(result.Contains("Date"));
+    }
+
+    [Fact]
+    public void TestMultipleTokenMultipleFormats()
+    {
+        var pattern = """
+                      ---
+                      # End tokens on new lines
+                      outOfOrder: true
+
+                      # End tokens on new lines
+                      terminateOnNewLine: true
+                      ---
+                      Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }
+                      Date: { Date : ToDateTimeUtc('yyyy-M-d') }
+                      """;
+        var input = "Date: 2000-1-1 (UTC)";
+
+        var result = new Tokenizer().Tokenize(pattern, input);
+
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));
+    }
+}

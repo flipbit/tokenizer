@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace Tokens
+namespace Tokens.Compilation.Definitions
 {
     /// <summary>
     /// Holds parsed template input before being transformed into a
     /// <see cref="Template"/>.
     /// </summary>
-    internal class PreTemplate
+    internal class TemplateDefinition
     {
         /// <summary>
-        /// Creates a new instance of the <see cref="PreTemplate"/> class.
+        /// Creates a new instance of the <see cref="TemplateDefinition"/> class.
         /// </summary>
-        public PreTemplate()
+        public TemplateDefinition()
         {
-            Tokens = new List<PreToken>();
+            Tokens = new List<TokenDefinition>();
             Hints = new List<Hint>();
             Tags = new List<string>();
         }
@@ -24,9 +24,9 @@ namespace Tokens
         public TokenizerOptions Options { get; set; }
 
         /// <summary>
-        /// Contains a list of <see cref="PreToken"/> objects that were found in the input string
+        /// Contains a list of <see cref="TokenDefinition"/> objects that were found in the input string
         /// </summary>
-        public IList<PreToken> Tokens { get; }
+        public IList<TokenDefinition> Tokens { get; }
 
         /// <summary>
         /// Contains a list of <see cref="Hint"/> objects that were found in the input string

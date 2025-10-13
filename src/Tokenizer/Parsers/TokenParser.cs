@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Tokens.Compilation.Definitions;
+using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Logging;
@@ -106,7 +108,7 @@ namespace Tokens.Parsers
 
             log.Verbose("Start: Parsing Template: {0}", template.Name);
 
-            var preTemplate = new PreTokenParser().Parse(content, Options);
+            var preTemplate = new TemplateDefinitionParser().Parse(content, Options);
 
             template.Options = preTemplate.Options;
 
@@ -188,7 +190,7 @@ namespace Tokens.Parsers
             return template;
         }
 
-        private void ParseTokenDecorators(PreToken preToken, Token token)
+        private void ParseTokenDecorators(TokenDefinition preToken, Token token)
         {
             // If pre-token has value set, add transformer to set it when parsing
             if (string.IsNullOrEmpty(preToken.Value) == false)
@@ -272,7 +274,7 @@ namespace Tokens.Parsers
             }
         }
 
-        private bool IsConcatenationDecorator(string name, PreTokenDecorator decorator, out string joiningString)
+        private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string joiningString)
         { 
             joiningString = null;
 

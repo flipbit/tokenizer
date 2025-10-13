@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using Tokens.Enumerators;
 
-namespace Tokens
+namespace Tokens.Compilation.Definitions
 {
     /// <summary>
     /// Intermediate data structure that holds the syntactically verified
     /// template token data.
     /// </summary>
-    internal class PreToken
+    internal class TokenDefinition
     {
         private readonly StringBuilder preamble;
         private readonly StringBuilder name;
         private readonly StringBuilder value;
 
-        public PreToken()
+        public TokenDefinition()
         {
-            Decorators = new List<PreTokenDecorator>();
+            Decorators = new List<DecoratorDefinition>();
             preamble = new StringBuilder();
             name = new StringBuilder();
             value = new StringBuilder();
@@ -48,7 +48,7 @@ namespace Tokens
 
         public FileLocation Location { get; set; }
 
-        public IList<PreTokenDecorator> Decorators { get; }
+        public IList<DecoratorDefinition> Decorators { get; }
 
         public void AppendPreamble(string value)
         {
@@ -67,7 +67,7 @@ namespace Tokens
             this.value.Append(value);
         }
 
-        public void AppendDecorators(IEnumerable<PreTokenDecorator> decorators)
+        public void AppendDecorators(IEnumerable<DecoratorDefinition> decorators)
         {
             if (decorators == null) return;
 

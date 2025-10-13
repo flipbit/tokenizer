@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 
-namespace Tokens
+namespace Tokens.Compilation.Definitions
 {
-    internal class PreTokenDecorator
+    internal class DecoratorDefinition
     {
         private readonly StringBuilder name;
 
-        public PreTokenDecorator()
+        public DecoratorDefinition()
         {
             name = new StringBuilder();
             Args = new List<string>();

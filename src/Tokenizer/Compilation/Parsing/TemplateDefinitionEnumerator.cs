@@ -1,8 +1,9 @@
-﻿using System.Text;
+using System.Text;
+using Tokens.Enumerators;
 
-namespace Tokens.Enumerators
+namespace Tokens.Compilation.Parsing
 {
-    internal class PreTokenEnumerator
+    internal class TemplateDefinitionEnumerator
     {
         private readonly string pattern;
         private readonly int patternLength;
@@ -10,7 +11,7 @@ namespace Tokens.Enumerators
         private int currentLocation;
         private bool resetNextLine;
 
-        public PreTokenEnumerator(string pattern)
+        public TemplateDefinitionEnumerator(string pattern)
         {
             this.pattern = pattern;
 

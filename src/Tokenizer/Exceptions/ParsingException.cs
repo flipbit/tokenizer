@@ -1,11 +1,12 @@
 ﻿using System.Text;
+using Tokens.Compilation.Parsing;
 using Tokens.Enumerators;
 
 namespace Tokens.Exceptions
 {
     public class ParsingException : TokenizerException
     {
-        internal ParsingException(string message, PreTokenEnumerator enumerator) : this(message, enumerator.Location)
+        internal ParsingException(string message, TemplateDefinitionEnumerator enumerator) : this(message, enumerator.Location)
         {
         }
 

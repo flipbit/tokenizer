@@ -194,6 +194,11 @@ namespace Tokens.Compilation.Parsing
                         reader.Consume();
                         break;
                     }
+                    // Check for unexpected end of input
+                    if (next.Kind == LexerTokenKind.EndOfInput || next.Kind == LexerTokenKind.Newline)
+                    {
+                        throw TokenReader.CreateError(next, "Expected ')' to close decorator arguments.");
+                    }
                     // Disallow a leading comma before any argument
                     if (next.Kind == LexerTokenKind.Comma && args.Count == 0)
                     {

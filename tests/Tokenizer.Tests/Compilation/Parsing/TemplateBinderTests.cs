@@ -1,3 +1,4 @@
+using Tokens.Compilation.Binders;
 using Xunit;
 
 namespace Tokens.Compilation.Parsing

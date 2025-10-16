@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
 using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Parsing;
@@ -11,7 +8,7 @@ using Tokens.Logging;
 using Tokens.Transformers;
 using Tokens.Validators;
 
-namespace Tokens.Parsers
+namespace Tokens.Compilation
 {
     /// <summary>
     /// Parser that converts a string into a <see cref="Template"/> that can be
@@ -157,6 +154,20 @@ namespace Tokens.Parsers
                     token.Preamble = preToken.Preamble;
                 }
 
+                // New behavior: if TrimPreambleBeforeNewLine is enabled (from options or front matter),
+                // then trim any content before the last newline in the preamble. This aligns AST pipeline
+                // with legacy TemplateDefinitionParser behavior.
+                if (template.Options.TrimPreambleBeforeNewLine)
+                {
+                    var pre = token.Preamble;
+                    if (string.IsNullOrEmpty(pre) == false && pre.IndexOf('\n') > -1)
+                    {
+                        var idx = pre.LastIndexOf('\n');
+                        var tail = pre.Substring(idx + 1);
+                        token.Preamble = tail;
+                    }
+                }
+
                 token.Name = preToken.Name;
                 token.Optional = preToken.Optional;
                 token.Repeating = preToken.Repeating;
@@ -173,6 +184,12 @@ namespace Tokens.Parsers
                 if (template.Options.OutOfOrderTokens)
                 {
                     token.Optional = true;
+                }
+
+                // Apply global newline termination option from front matter if set
+                if (token.TerminateOnNewLine == false && template.Options.TerminateOnNewline)
+                {
+                    token.TerminateOnNewLine = true;
                 }
 
                 ParseTokenDecorators(preToken, token);

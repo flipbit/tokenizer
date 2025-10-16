@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Tokens.Exceptions;
-using Tokens.Parsers;
 using Tokens.Transformers;
 using Xunit;
 

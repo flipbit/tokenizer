@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Tokens.Parsers;
+using Tokens.Compilation;
 using Xunit;
 
 namespace Tokens;
@@ -21,6 +21,27 @@ public class TokenizerOptionsTests
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.Equal("Second: ", template.Tokens.ElementAt(1).Preamble);
     } 
+
+    private class Person
+    {
+        public int Age { get; set; }
+        public string Address { get; set; }
+    }
+
+    [Fact]
+    public void TestTerminateOnNewLineFromFrontMatter_AppliesToTokenValues()
+    {
+        const string content = "---\nTerminateOnNewLine: true\n---\nAge: { Age }\nAddress: { Address }";
+        const string input = "Age: 30\nAddress: London";
+
+        var tokenizer = new Tokenizer();
+
+        var result = tokenizer.Tokenize<Person>(content, input);
+
+        Assert.Equal(30, result.Value.Age);
+        Assert.Equal("London", result.Value.Address);
+        Assert.True(result.Template.Options.TerminateOnNewline);
+    }
 
     [Fact]
     public void TestTrimBeforePreambleWhenFalse()

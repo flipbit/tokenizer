@@ -1,3 +1,4 @@
+using Tokens.Compilation.Binders;
 using Tokens.Compilation.Parsing;
 using Xunit;
 
@@ -8,6 +9,21 @@ namespace Tokens.Tests.Compilation.Parsing.Binding
     /// </summary>
     public class TemplateBinderModifierTests
     {
+        [Fact]
+        public void GivenFrontMatterTerminateOnNewLine_WhenBinding_ThenAllTokensTerminateOnNewline()
+        {
+            // Arrange
+            var input = "---\nTerminateOnNewLine: true\n---\nA: {a}\nB: {b}";
+            var parser = new TemplateParser();
+            var doc = parser.Parse(input);
+
+            // Act
+            var def = TemplateBinder.Bind(doc);
+
+            // Assert
+            Assert.Equal(2, def.Tokens.Count);
+            Assert.All(def.Tokens, t => Assert.True(t.TerminateOnNewline));
+        }
         private readonly ITemplateDefinitionParser _parser = new AstTemplateDefinitionParser();
 
         [Fact]
@@ -106,6 +122,18 @@ namespace Tokens.Tests.Compilation.Parsing.Binding
             var token = Assert.Single(template.Tokens);
             Assert.True(token.Repeating);
             Assert.True(token.Optional);
+        }
+
+        [Fact]
+        public void GivenOnceDecorator_WhenBinding_ThenSetsConsiderOnce()
+        {
+            // Arrange & Act
+            var template = _parser.Parse("{name : Once}");
+
+            // Assert
+            var token = Assert.Single(template.Tokens);
+            Assert.True(token.ConsiderOnce);
+            Assert.Empty(token.Decorators);
         }
     }
 }

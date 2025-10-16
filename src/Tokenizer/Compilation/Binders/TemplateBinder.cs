@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using Tokens.Extensions;
 using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Nodes;
 using Tokens.Exceptions;
+using Tokens.Extensions;
 
-namespace Tokens.Compilation.Parsing
+namespace Tokens.Compilation.Binders
 {
     /// <summary>
     /// Binds a parsed TemplateDocument AST (syntax only) to a TemplateDefinition structure.
@@ -17,6 +15,10 @@ namespace Tokens.Compilation.Parsing
             var result = new TemplateDefinition();
             var tokens = new List<TokenDefinition>();
             var preambleBuilder = new System.Text.StringBuilder();
+
+            // Read relevant front matter options to influence binding
+            var globalTrimPreambleBeforeNewLine = IsFrontMatterOptionTrue(document, "trimpreamblebeforenewline");
+            var globalTerminateOnNewline = IsFrontMatterOptionTrue(document, "terminateonnewline");
 
             foreach (var node in document.Content)
             {
@@ -41,7 +43,12 @@ namespace Tokens.Compilation.Parsing
                     // Attach accumulated preamble before this token
                     if (preambleBuilder.Length > 0)
                     {
-                        def.AppendPreamble(preambleBuilder.ToString());
+                        var pre = preambleBuilder.ToString();
+                        if (globalTrimPreambleBeforeNewLine && pre.IndexOf('\n') > -1)
+                        {
+                            pre = pre.Substring(pre.LastIndexOf('\n') + 1);
+                        }
+                        def.AppendPreamble(pre);
                         preambleBuilder.Clear();
                     }
 
@@ -88,6 +95,12 @@ namespace Tokens.Compilation.Parsing
                                 def.Required = true;
                                 continue;
                             }
+                            // Longhand modifier: Once => ConsiderOnce semantics
+                            if (lower == "once")
+                            {
+                                def.ConsiderOnce = true;
+                                continue;
+                            }
                         }
 
                         var d = new DecoratorDefinition();
@@ -105,6 +118,12 @@ namespace Tokens.Compilation.Parsing
                     if (def.Required && optionalExplicit)
                     {
                         throw new ParsingException($"Optional token {def.Name} can't be Required", def.Location);
+                    }
+
+                    // Apply global terminate option if set in front matter
+                    if (globalTerminateOnNewline)
+                    {
+                        def.TerminateOnNewline = true;
                     }
 
                     // Legacy behavior: expand repeating token with multiline preamble tail
@@ -148,6 +167,10 @@ namespace Tokens.Compilation.Parsing
             {
                 var tail = new TokenDefinition();
                 tail.AppendName(string.Empty);
+                if (globalTrimPreambleBeforeNewLine && trailingPreamble.IndexOf('\n') > -1)
+                {
+                    trailingPreamble = trailingPreamble.Substring(trailingPreamble.LastIndexOf('\n') + 1);
+                }
                 tail.AppendPreamble(trailingPreamble);
                 tokens.Add(tail);
             }
@@ -155,6 +178,11 @@ namespace Tokens.Compilation.Parsing
             foreach (var t in tokens)
             {
                 result.Tokens.Add(t);
+            }
+            // Assign sequential, 1-based Ids to all tokens to preserve stable ordering semantics
+            for (int i = 0; i < result.Tokens.Count; i++)
+            {
+                result.Tokens[i].Id = i + 1;
             }
             return result;
         }
@@ -223,6 +251,25 @@ namespace Tokens.Compilation.Parsing
             }
 
             return null;
+        }
+
+        private static bool IsFrontMatterOptionTrue(TemplateDocument document, string key)
+        {
+            if (document?.FrontMatter == null) return false;
+            foreach (var entry in document.FrontMatter.Entries)
+            {
+                if (entry is FrontMatterEntry e)
+                {
+                    var k = (e.Key ?? string.Empty).Trim().ToLowerInvariant();
+                    if (k == key)
+                    {
+                        var v = (e.Value ?? string.Empty).Trim().ToLowerInvariant();
+                        if (v == "true" || v == "yes" || v == "on") return true;
+                        if (v == "false" || v == "no" || v == "off") return false;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

@@ -1,12 +1,9 @@
-using System;
-using System.Globalization;
-using System.Linq;
 using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Nodes;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
 
-namespace Tokens.Compilation.Parsing
+namespace Tokens.Compilation.Binders
 {
     /// <summary>
     /// Binds front matter AST nodes onto <see cref="TemplateDefinition"/> and its <see cref="TokenizerOptions"/>.

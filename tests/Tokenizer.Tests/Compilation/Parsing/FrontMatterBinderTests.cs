@@ -1,4 +1,5 @@
 using System.Linq;
+using Tokens.Compilation.Binders;
 using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Nodes;
 using Tokens.Enumerators;

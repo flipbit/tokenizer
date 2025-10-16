@@ -1,6 +1,7 @@
 using System.Linq;
 using Tokens.Compilation.Parsing;
 using Xunit;
+using Tokens.Compilation.Binders;
 
 namespace Tokens.Tests.Compilation.Parsing.Template
 {
@@ -9,6 +10,21 @@ namespace Tokens.Tests.Compilation.Parsing.Template
     /// </summary>
     public class TemplateParserWhitespaceTests
     {
+        [Fact]
+        public void GivenFrontMatterTrimPreamble_WhenParsing_ThenTrimsPreambleBeforeNewLine()
+        {
+            // Arrange
+            var input = "---\nTrimPreambleBeforeNewLine: true\n---\nShould be trimmed\r\nPreamble: { Name }";
+            var parser = new TemplateParser();
+
+            // Act
+            var doc = parser.Parse(input);
+            var def = TemplateBinder.Bind(doc);
+
+            // Assert
+            Assert.Single(def.Tokens);
+            Assert.Equal("Preamble: ", def.Tokens[0].Preamble);
+        }
         private readonly ITemplateDefinitionParser _parser = new AstTemplateDefinitionParser();
 
         [Fact]

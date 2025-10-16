@@ -108,7 +108,7 @@ namespace Tokens.Parsers
 
             log.Verbose("Start: Parsing Template: {0}", template.Name);
 
-            var preTemplate = new TemplateDefinitionParser().Parse(content, Options);
+            var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
 
             template.Options = preTemplate.Options;
 

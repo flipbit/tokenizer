@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using Tokens.Compilation.Definitions;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Definitions;
+namespace Tokens.Compilation.Definitions;
 
 public class TemplateDefinitionTests
 {

@@ -399,7 +399,7 @@ public class TokenizationEngineTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(0, result.Tokens.Matches.Count);
+        Assert.Empty(result.Tokens.Matches);
     }
 
     [Fact]

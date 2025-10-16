@@ -569,6 +569,37 @@ namespace Tokens.Compilation.Lexer
                     break;
                 }
 
+                // Handle escape sequences (only quote and backslash are supported)
+                if ((char)p == '\\')
+                {
+                    // consume backslash
+                    reader.ReadChar();
+                    raw.Append('\\');
+                    location.Increment("\\");
+                    absolutePosition++;
+
+                    var next = reader.PeekChar();
+                    if (next == -1)
+                    {
+                        throw new LexerException("Unclosed quoted string after escape.", location.Clone());
+                    }
+
+                    var nextChar = (char)next;
+                    // Only allow escaping the quote character in use, or a backslash
+                    if (nextChar == quote || nextChar == '\\')
+                    {
+                        reader.ReadChar();
+                        raw.Append(nextChar);
+                        inner.Append(nextChar);
+                        location.Increment(nextChar.ToString());
+                        absolutePosition++;
+                        continue;
+                    }
+
+                    // Invalid escape sequence
+                    throw new LexerException($"Invalid escape sequence '\\{nextChar}' in quoted string.", location.Clone());
+                }
+
                 var ch = (char)reader.ReadChar();
                 raw.Append(ch);
                 inner.Append(ch);

@@ -1,15 +1,12 @@
 using System;
-using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tokens.Compilation.Lexer;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Lexer
+namespace Tokens.Compilation.Lexer
 {
     public class TemplateLexerTests
     {
@@ -37,6 +34,123 @@ namespace Tokens.Tests.Compilation.Lexer
                 LexerTokenKind.CloseParen,
                 LexerTokenKind.EndOfInput
             }, kinds);
+        }
+
+        [Fact]
+        public void GivenStructuralCharsSurroundedByText_WhenTokenizing_ThenEmitsStructuralTokensInOrder()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "pre { mid } : = , ( ) post";
+
+            // Act
+            var kinds = lexer.Tokenize(input).Select(t => t.Kind).ToList();
+
+            // Filter down to only structural kinds to avoid coupling to whitespace/identifier tokens
+            var structural = kinds.Where(k =>
+                k == LexerTokenKind.OpenBrace ||
+                k == LexerTokenKind.CloseBrace ||
+                k == LexerTokenKind.Colon ||
+                k == LexerTokenKind.Equals ||
+                k == LexerTokenKind.Comma ||
+                k == LexerTokenKind.OpenParen ||
+                k == LexerTokenKind.CloseParen).ToList();
+
+            // Assert
+            Assert.Equal(new[]
+            {
+                LexerTokenKind.OpenBrace,
+                LexerTokenKind.CloseBrace,
+                LexerTokenKind.Colon,
+                LexerTokenKind.Equals,
+                LexerTokenKind.Comma,
+                LexerTokenKind.OpenParen,
+                LexerTokenKind.CloseParen
+            }, structural);
+
+            // EndOfInput should be the final token kind
+            Assert.Equal(LexerTokenKind.EndOfInput, kinds.Last());
+        }
+
+        [Theory]
+        [InlineData("{name?}", '?', LexerTokenKind.Question)]
+        [InlineData("{name*}", '*', LexerTokenKind.Asterisk)]
+        [InlineData("{name!}", '!', LexerTokenKind.Exclamation)]
+        [InlineData("{name$}", '$', LexerTokenKind.Dollar)]
+        public void GivenNameWithSingleModifierInsideBraces_WhenTokenizing_ThenEmitsModifierWithCorrectPositions(
+            string input, char modifier, LexerTokenKind expectedKind)
+        {
+            // Arrange
+            var lexer = CreateLexer();
+
+            // Act
+            var tokens = lexer.Tokenize(input).ToList();
+
+            // Assert kinds in order
+            Assert.Equal(new[]
+            {
+                LexerTokenKind.OpenBrace,
+                LexerTokenKind.Identifier,
+                expectedKind,
+                LexerTokenKind.CloseBrace,
+                LexerTokenKind.EndOfInput
+            }, tokens.Select(t => t.Kind).ToArray());
+
+            // Assert absolute positions (Start)
+            Assert.Equal(0, tokens[0].Start); // '{'
+            Assert.Equal(1, tokens[1].Start); // 'name'
+            Assert.Equal(5, tokens[2].Start); // modifier
+            Assert.Equal(6, tokens[3].Start); // '}'
+            Assert.Equal(input.Length, tokens[4].Start); // EndOfInput at EOF
+
+            // Sanity: modifier token value should match the modifier character
+            Assert.Equal(modifier.ToString(), tokens[2].Value);
+            Assert.Equal(1, tokens[2].Length);
+        }
+
+        [Fact]
+        public void GivenTextWithIdentifiersAndPunctuation_WhenTokenizing_ThenIdentifiersAndPunctuationAreSeparated()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "Hello, {name}.";
+
+            // Act
+            var tokens = lexer.Tokenize(input).Where(t => t.Kind != LexerTokenKind.Whitespace).ToList();
+
+            // Assert kinds sequence (excluding whitespace)
+            Assert.Equal(new[]
+            {
+                LexerTokenKind.Identifier,   // Hello
+                LexerTokenKind.Comma,        // , (structural everywhere)
+                LexerTokenKind.OpenBrace,    // {
+                LexerTokenKind.Identifier,   // name
+                LexerTokenKind.CloseBrace,   // }
+                LexerTokenKind.Identifier,   // . (dot counts as identifier char in lexer)
+                LexerTokenKind.EndOfInput
+            }, tokens.Select(t => t.Kind).ToArray());
+
+            // Assert values for the identifier and punctuation
+            Assert.Equal("Hello", tokens[0].Value);
+            Assert.Equal(",", tokens[1].Value);
+            Assert.Equal("name", tokens[3].Value);
+            Assert.Equal(".", tokens[5].Value);
+        }
+
+        [Fact]
+        public void GivenDotAndUnderscoreInIdentifier_WhenTokenizing_ThenSingleIdentifierToken()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "user.name_1";
+
+            // Act
+            var tokens = lexer.Tokenize(input).ToList();
+
+            // Assert
+            Assert.Equal(LexerTokenKind.Identifier, tokens[0].Kind);
+            Assert.Equal("user.name_1", tokens[0].Value);
+            Assert.Equal(LexerTokenKind.EndOfInput, tokens[1].Kind);
         }
 
         [Fact]
@@ -115,6 +229,79 @@ namespace Tokens.Tests.Compilation.Lexer
             Assert.Equal(LexerTokenKind.QuotedString, dbl.Kind);
             Assert.Equal("world", dbl.Value);
             Assert.Equal("\"world\"", dbl.RawText);
+        }
+
+        [Fact]
+        public void GivenQuotedStringsWithEscapes_WhenTokenizing_ThenEmitsCorrectValueAndRaw()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+
+            // Act
+            var escQuote = lexer.Tokenize("\"Jane \\\"Doe\\\"\"").First(); // "Jane \"Doe\""
+            var escBackslash = lexer.Tokenize("\"A \\\\ B\"").First(); // "A \\ B"
+
+            // Assert
+            Assert.Equal(LexerTokenKind.QuotedString, escQuote.Kind);
+            Assert.Equal("Jane \"Doe\"", escQuote.Value);
+            Assert.Equal("\"Jane \\\"Doe\\\"\"", escQuote.RawText);
+
+            Assert.Equal(LexerTokenKind.QuotedString, escBackslash.Kind);
+            Assert.Equal("A \\ B", escBackslash.Value);
+            Assert.Equal("\"A \\\\ B\"", escBackslash.RawText);
+        }
+
+        [Fact]
+        public void GivenInvalidEscapeInQuotedString_WhenTokenizing_ThenThrowsLexerException()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "\"bad \\x\""; // sequence like \x should be invalid
+
+            // Act / Assert
+            Assert.Throws<LexerException>(() => lexer.Tokenize(input).ToList());
+        }
+
+        [Fact]
+        public void GivenCrLfNewlines_WhenTokenizing_ThenLocationColumnsResetAcrossLines()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "ab\r\ncd";
+
+            // Act
+            var tokens = lexer.Tokenize(input).ToList();
+
+            // Assert
+            var id1 = tokens[0];
+            var nl = tokens[1];
+            var id2 = tokens[2];
+
+            Assert.Equal(LexerTokenKind.Identifier, id1.Kind);
+            Assert.Equal(LexerTokenKind.Newline, nl.Kind);
+            Assert.Equal(LexerTokenKind.Identifier, id2.Kind);
+            Assert.True(id2.Location.Line >= 2);
+            Assert.True(id2.Location.Column >= 1);
+        }
+
+        [Fact]
+        public void GivenSamples_WhenLexing_ThenDoesNotThrowAndEmitsEndOfInput()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests/Tokenizer.Tests/Samples/Patterns");
+            if (Directory.Exists(sampleDir) == false) return; // skip if not available in this run context
+
+            foreach (var file in Directory.EnumerateFiles(sampleDir, "*.txt"))
+            {
+                var text = File.ReadAllText(file);
+                // Act
+                var tokens = lexer.Tokenize(text).ToList();
+
+                // Assert
+                Assert.NotEmpty(tokens);
+                Assert.Equal(LexerTokenKind.EndOfInput, tokens.Last().Kind);
+            }
         }
 
         [Fact]

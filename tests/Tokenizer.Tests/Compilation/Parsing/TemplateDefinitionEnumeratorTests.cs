@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing;
+namespace Tokens.Compilation.Parsing;
 
 public class TemplateDefinitionEnumeratorTests
 {
@@ -236,7 +235,7 @@ public class TemplateDefinitionEnumeratorTests
 
         // Act & Assert
         Assert.Equal(1, enumerator.Location.Line);
-        Assert.Equal(0, enumerator.Location.Column);
+        Assert.Equal(1, enumerator.Location.Column);
 
         // Read "Line1"
         for (int i = 0; i < 5; i++)
@@ -244,12 +243,12 @@ public class TemplateDefinitionEnumeratorTests
             enumerator.Next();
         }
         Assert.Equal(1, enumerator.Location.Line);
-        Assert.Equal(5, enumerator.Location.Column);
+        Assert.Equal(6, enumerator.Location.Column);
 
         // Read newline
         enumerator.Next();
         Assert.Equal(1, enumerator.Location.Line);
-        Assert.Equal(5, enumerator.Location.Column);
+        Assert.Equal(6, enumerator.Location.Column);
 
         // Read "Line2"
         enumerator.Next(); // This should trigger the line increment

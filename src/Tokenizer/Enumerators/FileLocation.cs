@@ -27,7 +27,7 @@
         /// </summary>
         public FileLocation()
         {
-            Column = 0;
+            Column = 1;
             Line = 1;
             Paragraph = 1;
         }
@@ -71,7 +71,7 @@
         /// </summary>
         internal void Reset()
         {
-            Column = 0;
+            Column = 1;
             Line = 1;
             Paragraph = 1;
         }

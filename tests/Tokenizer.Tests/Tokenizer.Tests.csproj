@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Tokenizer\Tokenizer.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Parsers\" />
+  </ItemGroup>
 </Project>

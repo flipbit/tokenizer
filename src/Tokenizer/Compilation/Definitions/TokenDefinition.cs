@@ -8,7 +8,7 @@ namespace Tokens.Compilation.Definitions
     /// Intermediate data structure that holds the syntactically verified
     /// template token data.
     /// </summary>
-    internal class TokenDefinition
+    public class TokenDefinition
     {
         private readonly StringBuilder preamble;
         private readonly StringBuilder name;

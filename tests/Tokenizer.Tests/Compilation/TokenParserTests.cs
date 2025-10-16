@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using Tokens.Exceptions;
+using Tokens.Parsers;
 using Tokens.Transformers;
 using Xunit;
 
-namespace Tokens.Parsers;
+namespace Tokens.Compilation;
 
 public class TokenParserTests
 {

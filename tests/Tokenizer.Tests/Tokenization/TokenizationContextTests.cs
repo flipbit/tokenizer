@@ -169,8 +169,8 @@ public class TokenizationContextTests
         // Assert
         Assert.False(context.Candidates.Any);
         Assert.Equal(0, context.Replacement.Length);
-        Assert.Equal(0, context.MatchIds.Count);
-        Assert.Equal(0, context.DisabledRepeatingTokens.Count);
+        Assert.Empty(context.MatchIds);
+        Assert.Empty(context.DisabledRepeatingTokens);
         Assert.NotNull(context.ReplacementLocation);
     }
 

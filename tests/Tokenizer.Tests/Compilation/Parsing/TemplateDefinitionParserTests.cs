@@ -1,41 +1,49 @@
 using System;
 using System.Linq;
-using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests.Compilation.Parsing;
+namespace Tokens.Compilation.Parsing;
 
-public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
+public class AstTemplateDefinitionParserTests(ITestOutputHelper testOutputHelper) : BaseTemplateDefinitionParserTests(testOutputHelper)
 {
-    private readonly TemplateDefinitionParser parser = new();
+    protected override ITemplateDefinitionParser Parser { get; } = new AstTemplateDefinitionParser();
+}
+
+/*
+public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper) : BaseTemplateDefinitionParserTests(testOutputHelper)
+{
+    protected override ITemplateDefinitionParser Parser { get; } = new TemplateDefinitionParser();
+}
+*/
+
+public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
+{
+    protected abstract ITemplateDefinitionParser Parser { get; }
 
     [Fact]
     public void GivenEmptyString_WhenParsing_ThenReturnsEmptyTemplate()
     {
         // Arrange & Act
-        var template = parser.Parse(string.Empty);
+        var template = Parser.Parse(string.Empty);
 
         // Assert
         Assert.Empty(template.Tokens);
     }
 
     [Fact]
-    public void GivenNullString_WhenParsing_ThenReturnsEmptyTemplate()
+    public void GivenNullString_WhenParsing_ThenThrowsArgumentNullException()
     {
-        // Arrange & Act
-        var template = parser.Parse(null);
-
-        // Assert
-        Assert.Empty(template.Tokens);
+        // Arrange, Act & Assert
+        Assert.Throws<ArgumentNullException>(() => Parser.Parse(null!));
     }
 
     [Fact]
     public void GivenSingleToken_WhenParsing_ThenReturnsCorrectToken()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{TokenName}");
+        var template = Parser.Parse("This is the preamble{TokenName}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -53,14 +61,14 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithInvalidName_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{Token Name}"));
+        Assert.Throws<ParsingException>(() => Parser.Parse("This is the preamble{Token Name}"));
     }
 
     [Fact]
     public void GivenTwoTokens_WhenParsing_ThenReturnsBothTokens()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{TokenName}Preamble 2 {TokenName2}");
+        var template = Parser.Parse("This is the preamble{TokenName}Preamble 2 {TokenName2}");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -86,7 +94,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithNewLineTerminator_WhenParsing_ThenSetsTerminateOnNewline()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName$}");
+        var template = Parser.Parse("Preamble{TokenName$}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -104,14 +112,14 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithInvalidNewLineTerminator_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{Token Name$$}"));
+        Assert.Throws<ParsingException>(() => Parser.Parse("This is the preamble{Token Name$$}"));
     }
 
     [Fact]
     public void GivenTokenWithOptionalTerminator_WhenParsing_ThenSetsOptional()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName?}");
+        var template = Parser.Parse("Preamble{TokenName?}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -130,7 +138,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithRequiredTerminator_WhenParsing_ThenSetsRequired()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName!}");
+        var template = Parser.Parse("Preamble{TokenName!}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -148,7 +156,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
         // Arrange, Act & Assert
         try
         {
-            parser.Parse("This is the preamble{TokenName!?}");
+            Parser.Parse("This is the preamble{TokenName!?}");
 
             Assert.Fail("No exception thrown.");
         }
@@ -168,7 +176,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
         // Arrange, Act & Assert
         try
         {
-            parser.Parse("This is the preamble{TokenName?!}");
+            Parser.Parse("This is the preamble{TokenName?!}");
 
             Assert.Fail("No exception thrown.");
         }
@@ -186,7 +194,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithOptionalAndNewLineTerminator_WhenParsing_ThenSetsBothFlags()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName$?}");
+        var template = Parser.Parse("Preamble{TokenName$?}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -204,7 +212,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithDecorator_WhenParsing_ThenAddsDecorator()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName:ToDateTime}");
+        var template = Parser.Parse("Preamble{TokenName:ToDateTime}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -227,7 +235,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithMultipleDecorators_WhenParsing_ThenAddsAllDecorators()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName:Trim,IsNotNullOrEmpty}");
+        var template = Parser.Parse("Preamble{TokenName:Trim,IsNotNullOrEmpty}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -254,7 +262,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithDecoratorWithArgument_WhenParsing_ThenAddsDecoratorWithArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName:ToDateTime(yyyy-MM-dd)}");
+        var template = Parser.Parse("Preamble{TokenName:ToDateTime(yyyy-MM-dd)}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -272,7 +280,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithDecoratorWithSingleQuotedArgument_WhenParsing_ThenAddsDecoratorWithArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble{TokenName: ToDateTime ( 'yyyy-MM-dd' )}");
+        var template = Parser.Parse("Preamble{TokenName: ToDateTime ( 'yyyy-MM-dd' )}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -290,7 +298,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithDecoratorWithDoubleQuotedArgument_WhenParsing_ThenAddsDecoratorWithArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("""Preamble{TokenName: ToDateTime ( "yyyy-MM-dd" )}""");
+        var template = Parser.Parse("""Preamble{TokenName: ToDateTime ( "yyyy-MM-dd" )}""");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -308,7 +316,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithDecoratorWithThreeArguments_WhenParsing_ThenAddsDecoratorWithAllArguments()
     {
         // Arrange & Act
-        var template = parser.Parse(@"Preamble{TokenName:Decorator(One, Two Arg ,Three )}");
+        var template = Parser.Parse(@"Preamble{TokenName:Decorator(One, Two Arg ,Three )}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -328,7 +336,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithTrailingText_WhenParsing_ThenCreatesSecondToken()
     {
         // Arrange & Act
-        var template = parser.Parse(@"Preamble{TokenName} Postamble");
+        var template = Parser.Parse(@"Preamble{TokenName} Postamble");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -345,7 +353,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithWindowsLineEndings_WhenParsing_ThenConvertsToUnixLineEndings()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble\r\n{TokenName}\r\nPostamble");
+        var template = Parser.Parse("Preamble\r\n{TokenName}\r\nPostamble");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -363,7 +371,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithUnixLineEndings_WhenParsing_ThenPreservesUnixLineEndings()
     {
         // Arrange & Act
-        var template = parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r\n");
+        var template = Parser.Parse("Preamble\n{TokenName}\nPostamble with linefeed: \r\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -381,7 +389,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatter_WhenParsing_ThenSetsOptions()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nCaseSensitive: true\n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nCaseSensitive: true\n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Equal(StringComparison.InvariantCulture, template.Options.TokenStringComparison);
@@ -396,7 +404,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithWindowsLineEndings_WhenParsing_ThenSetsOptions()
     {
         // Arrange & Act
-        var template = parser.Parse("---\r\n# Comment\r\nCaseSensitive: false\r\n---\r\nPreamble\r\n{TokenName}\r\n");
+        var template = Parser.Parse("---\r\n# Comment\r\nCaseSensitive: false\r\n---\r\nPreamble\r\n{TokenName}\r\n");
 
         // Assert
         Assert.Equal(StringComparison.InvariantCultureIgnoreCase, template.Options.TokenStringComparison);
@@ -411,7 +419,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithName_WhenParsing_ThenSetsTemplateName()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nName: My Template\n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nName: My Template\n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Equal("My Template", template.Name);
@@ -425,7 +433,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithRequiredHint_WhenParsing_ThenAddsRequiredHint()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nHint: My Hint   \n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nHint: My Hint   \n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Single(template.Hints);
@@ -437,7 +445,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithOptionalHint_WhenParsing_ThenAddsOptionalHint()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nHint?: My Hint   \n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nHint?: My Hint   \n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Single(template.Hints);
@@ -449,7 +457,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithMultipleHints_WhenParsing_ThenAddsAllHints()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nHint: My Hint   \nHint: Second Hint\n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nHint: My Hint   \nHint: Second Hint\n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Equal(2, template.Hints.Count);
@@ -463,7 +471,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithEscapedBrackets_WhenParsing_ThenUnescapesBrackets()
     {
         // Arrange & Act
-        var template = parser.Parse("This {{is}} the preamble{TokenName}");
+        var template = Parser.Parse("This {{is}} the preamble{TokenName}");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -483,7 +491,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
         // Arrange, Act & Assert
         try
         {
-            parser.Parse("This {{is} the preamble{TokenName}");
+            Parser.Parse("This {{is} the preamble{TokenName}");
 
             Assert.Fail("Should of thrown.");
         }
@@ -498,7 +506,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithWhitespace_WhenParsing_ThenAllowsWhitespace()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName $ ! * : IsDomain , IsUrl }");
+        var template = Parser.Parse("This is the preamble{ TokenName $ ! * : IsDomain , IsUrl }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -517,7 +525,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenRepeatingTokenWithNewLine_WhenParsing_ThenExpandsNewLine()
     {
         // Arrange & Act
-        var template = parser.Parse("""
+        var template = Parser.Parse("""
                                     Repeating Token:
                                         { TokenName * }
                                     """);
@@ -542,7 +550,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenRepeatingTokenWithoutNewLine_WhenParsing_ThenDoesNotExpandNewLine()
     {
         // Arrange & Act
-        var template = parser.Parse(@"Repeating Token:    { TokenName * }");
+        var template = Parser.Parse(@"Repeating Token:    { TokenName * }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -558,7 +566,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithRequiredLonghand_WhenParsing_ThenSetsRequired()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName : Required }");
+        var template = Parser.Parse("This is the preamble{ TokenName : Required }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -575,7 +583,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithOptionalLonghand_WhenParsing_ThenSetsOptional()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName : Optional }");
+        var template = Parser.Parse("This is the preamble{ TokenName : Optional }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -592,7 +600,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithRepeatingLonghand_WhenParsing_ThenSetsRepeating()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName : Repeating }");
+        var template = Parser.Parse("This is the preamble{ TokenName : Repeating }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -609,7 +617,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithNewLineLonghand_WhenParsing_ThenSetsTerminateOnNewline()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName : EOL }");
+        var template = Parser.Parse("This is the preamble{ TokenName : EOL }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -626,7 +634,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithTag_WhenParsing_ThenAddsTag()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nTag: My Tag   \n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nTag: My Tag   \n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Single(template.Tags);
@@ -637,7 +645,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithMultipleTags_WhenParsing_ThenAddsAllTags()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nTag: Tag One   \nTag: Tag Two  \n---\nPreamble\n{TokenName}\n");
+        var template = Parser.Parse("---\n# Comment\nTag: Tag One   \nTag: Tag Two  \n---\nPreamble\n{TokenName}\n");
 
         // Assert
         Assert.Equal(2, template.Tags.Count);
@@ -649,7 +657,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithSetValue_WhenParsing_ThenSetsValue()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName = Foo }");
+        var template = Parser.Parse("This is the preamble{ TokenName = Foo }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -666,7 +674,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithSetValueAndDecorator_WhenParsing_ThenSetsValueAndDecorator()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName = Foo : Bar }");
+        var template = Parser.Parse("This is the preamble{ TokenName = Foo : Bar }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -684,21 +692,21 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithSetValueContainingSpaces_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{ TokenName = Foo Bar }"));
+        Assert.Throws<ParsingException>(() => Parser.Parse("This is the preamble{ TokenName = Foo Bar }"));
     }
 
     [Fact]
     public void GivenTokenWithSetValueContainingInvalidCharacters_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse("This is the preamble{ TokenName = Foo{Bar }"));
+        Assert.Throws<ParsingException>(() => Parser.Parse("This is the preamble{ TokenName = Foo{Bar }"));
     }
 
     [Fact]
     public void GivenTokenWithSetValueInDoubleQuotes_WhenParsing_ThenSetsValue()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName = \" { Foo } \" }");
+        var template = Parser.Parse("This is the preamble{ TokenName = \" { Foo } \" }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -715,7 +723,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithSetValueInSingleQuotes_WhenParsing_ThenSetsValue()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' }");
+        var template = Parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -732,7 +740,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenTokenWithSetValueInSingleQuotesAndDecorator_WhenParsing_ThenSetsValueAndDecorator()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' : Bar } Next preamble");
+        var template = Parser.Parse("This is the preamble{ TokenName = ' { Foo } \" ' : Bar } Next preamble");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -750,7 +758,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetToken_WhenParsing_ThenCreatesFrontMatterToken()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -762,7 +770,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndDecorator_WhenParsing_ThenCreatesFrontMatterTokenWithDecorator()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken : MyDecorator \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -776,7 +784,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndDecoratorWithArgument_WhenParsing_ThenCreatesFrontMatterTokenWithDecoratorAndArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1) \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1) \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -792,7 +800,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndDecoratorWithMultipleArguments_WhenParsing_ThenCreatesFrontMatterTokenWithDecoratorAndAllArguments()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1, Arg2) \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(Arg1, Arg2) \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -809,7 +817,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndDecoratorWithDoubleQuotedArgument_WhenParsing_ThenCreatesFrontMatterTokenWithDecoratorAndArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(\"Arg1, Arg2\") \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken : MyDecorator(\"Arg1, Arg2\") \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -825,7 +833,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndDecoratorWithSingleQuotedArgument_WhenParsing_ThenCreatesFrontMatterTokenWithDecoratorAndArgument()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken : MyDecorator('Arg1, Arg2') \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken : MyDecorator('Arg1, Arg2') \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -841,7 +849,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndAssignment_WhenParsing_ThenCreatesFrontMatterTokenWithValue()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken = Foo \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken = Foo \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -854,7 +862,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndAssignmentInSingleQuotes_WhenParsing_ThenCreatesFrontMatterTokenWithValue()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken = 'Foo Bar' \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken = 'Foo Bar' \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -867,7 +875,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithSetTokenAndAssignmentInDoubleQuotes_WhenParsing_ThenCreatesFrontMatterTokenWithValue()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -880,7 +888,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenFrontMatterWithMultipleSetTokens_WhenParsing_ThenCreatesAllFrontMatterTokens()
     {
         // Arrange & Act
-        var template = parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n  Set  : this = that : ToUpper \n---\nPreamble\n");
+        var template = Parser.Parse("---\n# Comment\nset: MyToken = \"Foo Bar\" \n  Set  : this = that : ToUpper \n---\nPreamble\n");
 
         // Assert
         Assert.Equal(3, template.Tokens.Count);
@@ -916,7 +924,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
                       """;
 
         // Act
-        var template = parser.Parse(content);
+        var template = Parser.Parse(content);
 
         // Assert
         Assert.Equal(2, template.Tags.Count);
@@ -926,7 +934,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenNullToken_WhenParsing_ThenSetsIsNull()
     {
         // Arrange & Act
-        var template = parser.Parse("This is the preamble{ Null } Next preamble");
+        var template = Parser.Parse("This is the preamble{ Null } Next preamble");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -942,7 +950,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenNotDecorator_WhenParsing_ThenSetsIsNotDecorator()
     {
         // Arrange & Act
-        var template = parser.Parse("{ MyToken : !MyDecorator }");
+        var template = Parser.Parse("{ MyToken : !MyDecorator }");
 
         // Assert
         Assert.Single(template.Tokens);
@@ -956,7 +964,7 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
     public void GivenInvalidNotDecorator_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse("{ MyToken : Invalid!MyDecorator }"));
+        Assert.Throws<ParsingException>(() => Parser.Parse("{ MyToken : Invalid!MyDecorator }"));
     }
         
     [Fact]
@@ -975,37 +983,37 @@ public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
                       """;
 
         // Act
-        var template = parser.Parse(content);
+        var template = Parser.Parse(content);
 
         // Assert
         Assert.Equal(6, template.Tokens.Count);
 
-        Assert.Equal("""{ First : Decorator('One'), Two , Three (" Four ") }""", template.Tokens[0].ToString());
+        Assert.Equal("""{ First : Decorator('One'), Two, Three(' Four ') }""", template.Tokens[0].ToString());
         Assert.Equal(1, template.Tokens[0].Location.Column);
         Assert.Equal(1, template.Tokens[0].Location.Line);
         Assert.Equal(1, template.Tokens[0].Location.Paragraph);
 
-        Assert.Equal(@"{Second}", template.Tokens[1].ToString());
+        Assert.Equal(@"{ Second }", template.Tokens[1].ToString());
         Assert.Equal(1, template.Tokens[1].Location.Column);
         Assert.Equal(2, template.Tokens[1].Location.Line);
         Assert.Equal(1, template.Tokens[1].Location.Paragraph);
 
-        Assert.Equal(@"{Third}", template.Tokens[2].ToString());
+        Assert.Equal(@"{ Third }", template.Tokens[2].ToString());
         Assert.Equal(10, template.Tokens[2].Location.Column);
         Assert.Equal(2, template.Tokens[2].Location.Line);
         Assert.Equal(1, template.Tokens[2].Location.Paragraph);
 
-        Assert.Equal(@"{Fourth}", template.Tokens[3].ToString());
+        Assert.Equal(@"{ Fourth }", template.Tokens[3].ToString());
         Assert.Equal(1, template.Tokens[3].Location.Column);
         Assert.Equal(4, template.Tokens[3].Location.Line);
         Assert.Equal(2, template.Tokens[3].Location.Paragraph);
 
-        Assert.Equal(@"{Fifth}", template.Tokens[4].ToString());
+        Assert.Equal(@"{ Fifth }", template.Tokens[4].ToString());
         Assert.Equal(1, template.Tokens[4].Location.Column);
         Assert.Equal(5, template.Tokens[4].Location.Line);
         Assert.Equal(2, template.Tokens[4].Location.Paragraph);
 
-        Assert.Equal(@"{Sixth}", template.Tokens[5].ToString());
+        Assert.Equal(@"{ Sixth }", template.Tokens[5].ToString());
         Assert.Equal(1, template.Tokens[5].Location.Column);
         Assert.Equal(8, template.Tokens[5].Location.Line);
         Assert.Equal(3, template.Tokens[5].Location.Paragraph);

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Tokens.Compilation.Definitions
 {
-    internal class DecoratorDefinition
+    public class DecoratorDefinition
     {
         private readonly StringBuilder name;
 

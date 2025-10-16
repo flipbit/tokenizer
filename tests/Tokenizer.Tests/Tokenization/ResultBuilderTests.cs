@@ -135,7 +135,7 @@ public class ResultBuilderTests
         _builder.BuildUnmatchedTokens(template, result);
 
         // Assert
-        Assert.Equal(1, result.Tokens.Misses.Count);
+        Assert.Single(result.Tokens.Misses);
         Assert.Equal("Age", result.Tokens.Misses[0].Name);
     }
 

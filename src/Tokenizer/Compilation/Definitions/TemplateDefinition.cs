@@ -6,7 +6,7 @@ namespace Tokens.Compilation.Definitions
     /// Holds parsed template input before being transformed into a
     /// <see cref="Template"/>.
     /// </summary>
-    internal class TemplateDefinition
+    public class TemplateDefinition
     {
         /// <summary>
         /// Creates a new instance of the <see cref="TemplateDefinition"/> class.

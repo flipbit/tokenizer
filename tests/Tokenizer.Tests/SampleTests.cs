@@ -223,7 +223,8 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("NSD1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[2]);
     }
 
-    [Fact(Skip = "Ignore until debug processing is finished")]
+    [Fact()]
+    //[Fact(Skip = "Ignore until debug processing is finished")]
     public void TestAmazonCoJp()
     {
         var template = ReadTemplate("whois.jprs.jp");
@@ -386,7 +387,8 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal(new DateTime(2001, 08, 23), result.First("Registered"));
     }
 
-    [Fact(Skip = "Ignore until debug process is finished")]
+    [Fact()]
+    //[Fact(Skip = "Ignore until debug process is finished")]
     public void TestWhoisVe()
     {
         var template = ReadTemplate("whois.ve");
@@ -449,6 +451,30 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("Found", result.First("Status"));
     }
 
+    [Fact()]
+    //[Fact(Skip = "Ignore until debug process is finished")]
+    public void TestWhoisVeDates()
+    {
+        var template = """
+                          Fecha de Vencimiento: { Expiration ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                          Ultima Actualizacion: { Updated ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                          Fecha de Creacion: { Registered ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                       """;
+        var input = """
+                       Fecha de Vencimiento: 2010-11-21 15:21:32
+                       Ultima Actualizacion: 2006-06-08 21:54:41
+                       Fecha de Creacion: 2005-11-21 15:21:32
+                    """;
+            
+            ReadData("aloespa.com.ve");
+
+        var result = tokenizer.Tokenize(template, input);
+
+        Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
+        Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
+        Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
+    }
+    
     [Fact]
     public void TestWhoisCoop()
     {

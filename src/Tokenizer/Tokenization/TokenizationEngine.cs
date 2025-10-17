@@ -47,10 +47,10 @@ namespace Tokens.Tokenization
         /// <param name="context">The tokenization context containing shared state</param>
         /// <param name="result">The result object to populate with matches and misses</param>
         public void ProcessTokenization(
-            Template template, 
-            string input, 
-            object? targetObject, 
-            ITokenizationContext context, 
+            Template template,
+            string input,
+            object? targetObject,
+            ITokenizationContext context,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(template, nameof(template));
@@ -59,11 +59,40 @@ namespace Tokens.Tokenization
             ArgumentValidation.ThrowIfNull(context, nameof(context));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
+            // Layer 1: Entry Point Validation
+            // Validate that targetObject has settable properties if it's not null and not a dictionary
+            if (targetObject != null && !(targetObject is System.Collections.Generic.IDictionary<string, object>))
+            {
+                var properties = targetObject.GetType().GetProperties();
+                var hasSettableProperty = properties.Any(p => p.CanWrite && p.GetSetMethod() != null);
+
+                // Layer 4: Debug Instrumentation
+                // Log target object details for forensics
+                log.LogDebug("Target object type: {TypeName}, Properties: {PropertyCount}, Settable: {SettableCount}",
+                    targetObject.GetType().Name,
+                    properties.Length,
+                    properties.Count(p => p.CanWrite && p.GetSetMethod() != null));
+
+                if (!hasSettableProperty)
+                {
+                    throw new ArgumentException(
+                        $"Target object of type '{targetObject.GetType().Name}' has no settable properties. " +
+                        "Anonymous types and objects with read-only properties cannot be used as tokenization targets. " +
+                        "Consider using a class with writable properties or passing null as the target.",
+                        nameof(targetObject));
+                }
+            }
+
             log.LogTrace("Start: Processing: {TemplateName}", template.Name);
             log.LogDebug("Tokenization started for template '{TemplateName}' with input length {InputLength}",
                 template.Name, input.Length);
 
             context.Initialize(input);
+
+            // Initialize line tracker if line-by-line logging is enabled
+            LineTracker? lineTracker = template.Options.EnableLineByLineLogging
+                ? new LineTracker(template, log)
+                : null;
 
             log.LogDebug("Phase: Initialization completed. Starting main tokenization loop with {TokenCount} tokens",
                 template.Tokens.Count);
@@ -72,119 +101,79 @@ namespace Tokens.Tokenization
                 while (context.Enumerator.IsEmpty == false)
                 {
                     var next = context.Enumerator.Peek();
-                    log.LogTrace("Enumerator position: Line {Line}, Column {Column}, Peeking character '{NextChar}'",
-                        context.Enumerator.Location.Line, context.Enumerator.Location.Column,
-                        next == "\n" ? "\\n" : next == "\r" ? "\\r" : next);
 
                     // Handle Windows new lines (normalize to Unix)
-                    if (next == "\r" && context.Enumerator.Peek(1) == "\n")
-                    {
-                        log.LogTrace("Normalizing Windows line ending (CRLF) to Unix (LF) at position Line {Line}, Column {Column}",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column);
-                        context.Enumerator.Next();
-                        next = "\n";
-                    }
+                    next = HandleWindowsNewlines(context.Enumerator, next);
 
                     // Check for repeated current token
-                    if (context.Candidates.Any && context.Enumerator.Match(context.Candidates.Preamble) && context.Candidates.Preamble.Length > 0)
+                    if (ShouldProcessRepeatedToken(context))
                     {
-                        log.LogTrace("Attempting to match repeated token with preamble '{Preamble}' at Line {Line}, Column {Column}",
-                            context.Candidates.Preamble, context.Enumerator.Location.Line, context.Enumerator.Location.Column);
-
-                        if (!ProcessRepeatedTokens(context.Candidates, context.Enumerator, context.Replacement,
-                            result, context.DisabledRepeatingTokens, context.MatchIds, template))
+                        if (!HandleRepeatedTokenMatching(context, template, result, targetObject))
                         {
-                            log.LogTrace("Repeated token processing resulted in backtrack. Clearing candidates and continuing.");
                             continue;
                         }
                     }
 
                     // Assign newline terminated token
-                    if (context.Candidates.Any && context.Candidates.TerminateOnNewLine && next == "\n")
+                    if (ShouldProcessNewlineTerminatedToken(context, next))
                     {
-                        log.LogTrace("Newline detected at Line {Line}, Column {Column}. Processing newline-terminated token with {CandidateCount} candidates",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column, context.Candidates.Tokens.Count);
-
-                        ProcessNewlineTerminatedTokens(context.Candidates, targetObject, context.Replacement,
-                            template.Options, context.Enumerator.Location, result, template,
-                            context.MatchIds, context.Enumerator, context.DisabledRepeatingTokens);
-
-                        context.ClearCandidates();
-                        context.ClearReplacement();
-                        context.ReplacementLocation = context.Enumerator.Location;
+                        HandleNewlineTerminatedToken(context, template, targetObject, result);
+                        continue;
                     }
 
                     // Check for next token
                     if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens), template.Options.OutOfOrderTokens, out var matches))
                     {
-                        log.LogTrace("Token match found at Line {Line}, Column {Column}. Matched {MatchCount} token(s): {TokenNames}",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column,
-                            matches.Count, string.Join(", ", matches.Select(m => m.Name)));
+                        log.LogTrace
+                        (
+                            "Token match found at Line {Line}, Column {Column}. Matched {MatchCount} token(s): {TokenNames}",
+                            context.Enumerator.Location.Line, 
+                            context.Enumerator.Location.Column,
+                            matches.Count, 
+                            string.Join(", ", matches.Select(m => m.Name))
+                        );
 
                         // Special case: first token found, just prepare to read token value
                         if (context.Candidates.Any == false)
                         {
-                            log.LogTrace("First token match. Adding {MatchCount} candidates and advancing {AdvanceLength} positions",
-                                matches.Count, matches.First().Preamble.Length);
-
-                            context.Candidates.AddRange(matches);
-                            context.ClearReplacement();
-                            context.Enumerator.Advance(context.Candidates.Preamble.Length);
-
-                            log.LogTrace("Enumerator advanced to Line {Line}, Column {Column}",
-                                context.Enumerator.Location.Line, context.Enumerator.Location.Column);
+                            HandleFirstTokenMatch(context, matches);
                             continue;
                         }
-
-                        if (context.Replacement.Length > 0)
+                        
+                        // Check candidates hasn't changed
                         {
-                            log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
-                                context.Replacement.ToString(), context.Candidates.Tokens.Count);
-
-                            TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
-                                template.Options, context.ReplacementLocation, result, template, context.MatchIds);
-
-                            context.ClearCandidates();
-                            context.Candidates.AddRange(matches);
-                            context.ClearReplacement();
-                            context.Enumerator.Advance(context.Candidates.Preamble.Length);
-                            context.ReplacementLocation = context.Enumerator.Location;
-
-                            log.LogTrace("Switched to new token. Enumerator advanced to Line {Line}, Column {Column}",
-                                context.Enumerator.Location.Line, context.Enumerator.Location.Column);
-                            continue;
+                            
                         }
+                        
+                        
 
-                        log.LogTrace("Appending character to replacement buffer at Line {Line}, Column {Column}",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column);
-                        context.Replacement.Append(next);
-                        context.Enumerator.Next();
+                        // We have candidates and found a new token -> always switch
+                        HandleTokenSwitch(context, template, targetObject, result, matches, lineTracker);
                     }
                     else
                     {
-                        log.LogTrace("No token match at Line {Line}, Column {Column}. Appending character '{NextChar}' to replacement buffer",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column,
-                            next == "\n" ? "\\n" : next == "\r" ? "\\r" : next);
-
-                        // Append to replacement
-                        context.Replacement.Append(next);
-                        context.Enumerator.Next();
-
-                        log.LogTrace("Enumerator moved to Line {Line}, Column {Column}",
-                            context.Enumerator.Location.Line, context.Enumerator.Location.Column);
+                        HandleNoTokenMatch(context, next);
                     }
                 }
 
                 log.LogDebug("Phase: Main tokenization loop completed. Processing remaining candidates and front matter");
 
                 // Handle remaining candidates
-                if (context.Candidates.Any && context.Replacement.Length > 0 && !context.Candidates.IsNullToken)
+                if (ShouldProcessRemainingCandidates(context))
                 {
                     log.LogTrace("Processing {CandidateCount} remaining candidates with replacement value '{ReplacementValue}'",
                         context.Candidates.Tokens.Count, context.Replacement.ToString());
 
+                    var previousMatchCount = result.Tokens.Matches.Count;
                     TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
                         template.Options, context.ReplacementLocation, result, template, context.MatchIds);
+
+                    // Record match with line tracker if a new match was added
+                    if (lineTracker != null && result.Tokens.Matches.Count > previousMatchCount)
+                    {
+                        var match = result.Tokens.Matches.Last();
+                        lineTracker.RecordMatch(match.Token.Name, match.Location.Line, context.MatchIds);
+                    }
                 }
                 else if (context.Candidates.Any)
                 {
@@ -195,6 +184,9 @@ namespace Tokens.Tokenization
                 // Process front matter tokens
                 log.LogDebug("Phase: Processing front matter tokens");
                 ProcessFrontMatterTokens(template, targetObject, context.Enumerator.Location, result);
+
+                // Finalize line tracker
+                lineTracker?.Finalize(context.MatchIds);
 
                 log.LogTrace("Found {MatchCount} matches.", result.Tokens.Matches.Count);
                 log.LogTrace("{MissingCount} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
@@ -347,6 +339,24 @@ namespace Tokens.Tokenization
                 log.LogTrace("Backtracking: None of the {CandidateCount} candidates can assign the replacement value at Line {Line}, Column {Column}",
                     candidates.Tokens.Count, enumerator.Location.Line, enumerator.Location.Column);
 
+                // Layer 3: Environment Guards
+                // Prevent infinite loop when backtracking with empty preamble
+                var advanceLength = candidates.Preamble.Length;
+                if (advanceLength == 0 && candidates.Tokens.Count > 0)
+                {
+                    var tokenNames = string.Join(", ", candidates.Tokens.Select(t => t.Name));
+                    log.LogError(
+                        "Infinite loop detected: Cannot backtrack with empty preamble for tokens [{TokenNames}]. " +
+                        "This occurs when consecutive tokens have no separator and assignment fails. " +
+                        "Current position: Line {Line}, Column {Column}",
+                        tokenNames, enumerator.Location.Line, enumerator.Location.Column);
+
+                    throw new InvalidOperationException(
+                        $"Tokenization cannot proceed: tokens with empty preambles ({tokenNames}) cannot be " +
+                        $"distinguished from each other. Add separators (preambles) between consecutive tokens, " +
+                        $"or ensure the target object has writable properties.");
+                }
+
                 for (var i = 0; i < candidates.Tokens.Count; i++)
                 {
                     // If repeated token was the last match, then this non-match will stop it
@@ -381,7 +391,6 @@ namespace Tokens.Tokenization
                 }
 
                 replacement.Clear();
-                var advanceLength = candidates.Preamble.Length;
                 log.LogTrace("Backtracking: Advancing {AdvanceLength} positions to retry from Line {Line}, Column {Column}",
                     advanceLength, enumerator.Location.Line, enumerator.Location.Column);
                 enumerator.Advance(advanceLength);
@@ -489,6 +498,157 @@ namespace Tokens.Tokenization
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Handles Windows line ending normalization (CRLF to LF).
+        /// </summary>
+        /// <param name="enumerator">The token enumerator</param>
+        /// <param name="next">The current character</param>
+        /// <returns>The normalized character</returns>
+        private string HandleWindowsNewlines(TokenEnumerator enumerator, string next)
+        {
+            if (next == "\r" && enumerator.Peek(1) == "\n")
+            {
+                log.LogTrace("Normalizing Windows line ending (CRLF) to Unix (LF) at position Line {Line}, Column {Column}",
+                    enumerator.Location.Line, enumerator.Location.Column);
+                enumerator.Next();
+                return "\n";
+            }
+            return next;
+        }
+
+        /// <summary>
+        /// Determines if a repeated token should be processed.
+        /// </summary>
+        private bool ShouldProcessRepeatedToken(ITokenizationContext context)
+        {
+            return context.Candidates.Any &&
+                   context.Enumerator.Match(context.Candidates.Preamble) &&
+                   context.Candidates.Preamble.Length > 0;
+        }
+
+        /// <summary>
+        /// Handles matching of repeated tokens.
+        /// </summary>
+        private bool HandleRepeatedTokenMatching(ITokenizationContext context, Template template, TokenizeResultBase result, object targetObject)
+        {
+            log.LogTrace("Attempting to match repeated token with preamble '{Preamble}' at Line {Line}, Column {Column}",
+                context.Candidates.Preamble, context.Enumerator.Location.Line, context.Enumerator.Location.Column);
+
+            if (!ProcessRepeatedTokens(context.Candidates, context.Enumerator, context.Replacement,
+                result, context.DisabledRepeatingTokens, context.MatchIds, template))
+            {
+                log.LogTrace("Repeated token processing resulted in backtrack. Clearing candidates and continuing.");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Determines if a newline-terminated token should be processed.
+        /// </summary>
+        private bool ShouldProcessNewlineTerminatedToken(ITokenizationContext context, string next)
+        {
+            return context.Candidates.Any && context.Candidates.TerminateOnNewLine && next == "\n";
+        }
+
+        /// <summary>
+        /// Determines if remaining candidates should be processed after the main loop.
+        /// </summary>
+        private bool ShouldProcessRemainingCandidates(ITokenizationContext context)
+        {
+            return context.Candidates.Any && context.Replacement.Length > 0 && !context.Candidates.IsNullToken;
+        }
+
+        /// <summary>
+        /// Handles processing of newline-terminated tokens.
+        /// </summary>
+        private void HandleNewlineTerminatedToken(ITokenizationContext context, Template template, object targetObject, TokenizeResultBase result)
+        {
+            log.LogTrace("Newline detected at Line {Line}, Column {Column}. Processing newline-terminated token with {CandidateCount} candidates",
+                context.Enumerator.Location.Line, context.Enumerator.Location.Column, context.Candidates.Tokens.Count);
+
+            ProcessNewlineTerminatedTokens(context.Candidates, targetObject, context.Replacement,
+                template.Options, context.Enumerator.Location, result, template,
+                context.MatchIds, context.Enumerator, context.DisabledRepeatingTokens);
+
+            context.ClearCandidates();
+            context.ClearReplacement();
+            context.ReplacementLocation = context.Enumerator.Location;
+        }
+
+        /// <summary>
+        /// Handles the first token match in the input, preparing the context for value collection.
+        /// </summary>
+        /// <param name="context">The tokenization context</param>
+        /// <param name="matches">The matched tokens</param>
+        private void HandleFirstTokenMatch(ITokenizationContext context, IList<Token> matches)
+        {
+            log.LogTrace("First token match. Adding {MatchCount} candidates and advancing {AdvanceLength} positions",
+                matches.Count, matches.First().Preamble.Length);
+
+            context.Candidates.AddRange(matches);
+            context.ClearReplacement();
+            context.Enumerator.Advance(context.Candidates.Preamble.Length);
+
+            log.LogTrace("Enumerator advanced to Line {Line}, Column {Column}",
+                context.Enumerator.Location.Line, context.Enumerator.Location.Column);
+        }
+
+        /// <summary>
+        /// Handles switching from one token to another, assigning the previous token's value
+        /// and preparing to collect the new token's value.
+        /// </summary>
+        /// <param name="context">The tokenization context</param>
+        /// <param name="template">The template containing token definitions</param>
+        /// <param name="targetObject">The object to populate with matched token values</param>
+        /// <param name="result">The result object to populate with matches</param>
+        /// <param name="matches">The newly matched tokens</param>
+        /// <param name="lineTracker">Optional line tracker for line-by-line logging</param>
+        private void HandleTokenSwitch(ITokenizationContext context, Template template, object targetObject, TokenizeResultBase result, IList<Token> matches, LineTracker? lineTracker)
+        {
+            log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
+                context.Replacement.ToString(), context.Candidates.Tokens.Count);
+
+            var previousMatchCount = result.Tokens.Matches.Count;
+            TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
+                template.Options, context.ReplacementLocation, result, template, context.MatchIds);
+
+            // Record match with line tracker if a new match was added
+            if (lineTracker != null && result.Tokens.Matches.Count > previousMatchCount)
+            {
+                var match = result.Tokens.Matches.Last();
+                lineTracker.RecordMatch(match.Token.Name, match.Location.Line, context.MatchIds);
+            }
+
+            context.ClearCandidates();
+            context.Candidates.AddRange(matches);
+            context.ClearReplacement();
+            context.Enumerator.Advance(context.Candidates.Preamble.Length);
+            context.ReplacementLocation = context.Enumerator.Location;
+
+            log.LogTrace("Switched to new token. Enumerator advanced to Line {Line}, Column {Column}",
+                context.Enumerator.Location.Line, context.Enumerator.Location.Column);
+        }
+
+        /// <summary>
+        /// Handles characters that don't match any token preamble, accumulating them in the replacement buffer.
+        /// </summary>
+        /// <param name="context">The tokenization context</param>
+        /// <param name="next">The current character to append</param>
+        private void HandleNoTokenMatch(ITokenizationContext context, string next)
+        {
+            context.Replacement.Append(next);
+            context.Enumerator.Next();
+
+            log.LogTrace
+            (
+                "Enumerator moved to Line {Line}, Column {Column} : Buffer: {Replacement}",
+                context.Enumerator.Location.Line, 
+                context.Enumerator.Location.Column,
+                context.Replacement
+            );
         }
     }
 }

@@ -220,10 +220,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { FirstName = "", LastName = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "JohnDoe", value, context, result);
+        _engine.ProcessTokenization(template, "JohnDoe", null, context, result);
 
         // Assert
         // Without separator, tokens can't distinguish boundaries - expect specific behavior

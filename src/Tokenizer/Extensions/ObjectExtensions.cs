@@ -51,6 +51,22 @@ namespace Tokens.Extensions
 
                 set = true;
 
+                // Layer 4: Debug Instrumentation
+                // Log property details before attempting assignment for forensics
+                System.Diagnostics.Debug.WriteLine(
+                    $"[SetValue] Attempting to set property '{propertyInfo.Name}' on type '{@object.GetType().Name}'. " +
+                    $"CanWrite: {propertyInfo.CanWrite}, HasSetter: {propertyInfo.GetSetMethod() != null}, " +
+                    $"PropertyType: {propertyInfo.PropertyType.Name}, ValueType: {value?.GetType().Name ?? "null"}");
+
+                // Layer 2: Business Logic Validation
+                // Check if property is writable before attempting to set it
+                if (!propertyInfo.CanWrite || propertyInfo.GetSetMethod() == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot set property '{propertyInfo.Name}' on type '{@object.GetType().Name}': " +
+                        "property is read-only. Anonymous types and read-only properties cannot be modified.");
+                }
+
                 if (path.Count == 1)
                 {
                     if (propertyInfo.PropertyType.IsGenericType && 

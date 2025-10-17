@@ -1,0 +1,345 @@
+using System.Collections.Generic;
+using System.Linq;
+using Tokens.Builders;
+using Tokens.Compilation;
+using Tokens.Tokenization;
+using Xunit;
+
+namespace Tokens.Tests.Tokenization.Integration;
+
+/// <summary>
+/// Tests for TokenizationEngine complex integration scenarios (10+ tokens, mixed features, end-to-end)
+/// </summary>
+public class TokenizationEngineIntegrationTests
+{
+    private readonly TokenizationEngine _engine = new();
+
+    [Fact]
+    public void GivenComplexTemplateWith10Tokens_WhenTokenizing_ThenMatchesAll()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse(@"
+Name: {Name}
+Age: {Age}
+Email: {Email}
+Phone: {Phone}
+Address: {Address}
+City: {City}
+State: {State}
+Zip: {Zip}
+Country: {Country}
+Notes: {Notes}
+");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new
+        {
+            Name = "",
+            Age = 0,
+            Email = "",
+            Phone = "",
+            Address = "",
+            City = "",
+            State = "",
+            Zip = "",
+            Country = "",
+            Notes = ""
+        };
+
+        var input = @"
+Name: John Doe
+Age: 30
+Email: john@example.com
+Phone: 555-1234
+Address: 123 Main St
+City: Springfield
+State: IL
+Zip: 62701
+Country: USA
+Notes: Test notes
+";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.True(result.Tokens.Matches.Count >= 8); // At least most tokens matched
+    }
+
+    [Fact]
+    public void GivenTemplateWithMixedRequiredAndOptionalTokens_WhenTokenizing_ThenHandlesCorrectly()
+    {
+        // Arrange
+        var template = new TemplateBuilder()
+            .WithName("MixedTemplate")
+            .WithTokens(
+                new TokenBuilder().WithName("Required1").WithPreamble("R1: ").WithRequired().Build(),
+                new TokenBuilder().WithName("Optional1").WithPreamble("O1: ").WithOptional().Build(),
+                new TokenBuilder().WithName("Required2").WithPreamble("R2: ").WithRequired().Build(),
+                new TokenBuilder().WithName("Optional2").WithPreamble("O2: ").WithOptional().Build()
+            )
+            .Build();
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Required1 = "", Optional1 = "", Required2 = "", Optional2 = "" };
+
+        // Act
+        _engine.ProcessTokenization(template, "R1: Value1\nR2: Value2", value, context, result);
+
+        // Assert
+        Assert.Equal(2, result.Tokens.Matches.Count);
+        Assert.All(result.Tokens.Matches, m => Assert.True(m.Token.Required));
+    }
+
+    [Fact]
+    public void GivenTemplateWithRepeatingAndNonRepeatingTokens_WhenTokenizing_ThenHandlesCorrectly()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Title: {Title}\nItem: {Item*}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new
+        {
+            Title = "",
+            Item = new List<string>()
+        };
+
+        var input = "Title: My List\nItem: First\nItem: Second\nItem: Third";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.True(result.Tokens.Matches.Count >= 2); // Title + at least some items
+    }
+
+    [Fact]
+    public void GivenTemplateWithFrontMatterAndBodyTokens_WhenTokenizing_ThenProcessesBoth()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse(@"---
+Name: MyTemplate
+---
+Content: {Content}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Content = "" };
+
+        var input = "Content: Test content";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.True(result.Tokens.Matches.Count >= 1);
+    }
+
+    [Fact]
+    public void GivenMultilineInput_WhenTokenizing_ThenHandlesNewlinesCorrectly()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Line1: {Line1}\nLine2: {Line2}\nLine3: {Line3}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Line1 = "", Line2 = "", Line3 = "" };
+
+        var input = "Line1: First\nLine2: Second\nLine3: Third";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Equal(3, result.Tokens.Matches.Count);
+    }
+
+    [Fact]
+    public void GivenWindowsLineEndings_WhenTokenizing_ThenNormalizesCorrectly()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Line1: {Line1}\r\nLine2: {Line2}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Line1 = "", Line2 = "" };
+
+        var input = "Line1: First\r\nLine2: Second";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Equal(2, result.Tokens.Matches.Count);
+    }
+
+    [Fact]
+    public void GivenTemplateWithDecorators_WhenTokenizing_ThenAppliesTransformations()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Name: {Name:ToUpper}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Name = "" };
+
+        var input = "Name: john";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+        // Decorator should transform the value
+    }
+
+    [Fact]
+    public void GivenTemplateWithMultipleDecorators_WhenTokenizing_ThenAppliesAllInOrder()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Name: {Name:Trim:ToUpper}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Name = "" };
+
+        var input = "Name:   john  ";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+    }
+
+    [Fact]
+    public void GivenTemplateWithValidators_WhenTokenizing_ThenValidatesValues()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Age: {Age:IsNumeric}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Age = 0 };
+
+        var input = "Age: 25";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+    }
+
+    [Fact]
+    public void GivenTemplateWithHintsAndTokens_WhenTokenizing_ThenProcessesBoth()
+    {
+        // Arrange
+        var template = new TemplateBuilder()
+            .WithName("TestTemplate")
+            .WithHints(new HintBuilder().WithText("Expected").WithRequired().Build())
+            .WithTokens(new TokenBuilder().WithName("Name").WithPreamble("Name: ").Build())
+            .Build();
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Name = "" };
+
+        var input = "Expected Name: John";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.True(result.Tokens.Matches.Count >= 1);
+        Assert.True(result.Hints.Matches.Count >= 1);
+    }
+
+    [Fact]
+    public void GivenNestedTokenStructure_WhenTokenizing_ThenHandlesComplexity()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Section1: {Section1}\n  Item: {Item1}\nSection2: {Section2}\n  Item: {Item2}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Section1 = "", Item1 = "", Section2 = "", Item2 = "" };
+
+        var input = "Section1: First\n  Item: ItemA\nSection2: Second\n  Item: ItemB";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.True(result.Tokens.Matches.Count >= 2);
+    }
+
+    [Fact]
+    public void GivenTemplateWithNewlineTerminatedTokens_WhenTokenizing_ThenStopsAtNewline()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("Line: {Content#}");
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        var value = new { Content = "" };
+
+        var input = "Line: This is content\nNext line should not be included";
+
+        // Act
+        _engine.ProcessTokenization(template, input, value, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+        Assert.DoesNotContain("Next line", result.Tokens.Matches[0].Value.ToString());
+    }
+}

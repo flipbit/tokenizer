@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TemplateCollectionTests
+public class TemplateCollectionTests : Tests.TokenizerTestBase
 {
+    public TemplateCollectionTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly TemplateCollection collection = new();
 
     [Fact]

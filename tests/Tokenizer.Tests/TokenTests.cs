@@ -2,11 +2,16 @@
 using Tokens.Enumerators;
 using Tokens.Validators;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenTests
+public class TokenTests : Tests.TokenizerTestBase
 {
+    public TokenTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly Token token = new("Test");
 
     public class Person

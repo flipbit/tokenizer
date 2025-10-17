@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class MaxLengthValidatorTests
+public class MaxLengthValidatorTests : Tests.TokenizerTestBase
 {
+    public MaxLengthValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly MaxLengthValidator validator = new();
 
     [Fact]
@@ -64,7 +69,7 @@ public class MaxLengthValidatorTests
         var input = "Zip: 123456  Zip: 78912";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("78912", result.First("ZipCode"));

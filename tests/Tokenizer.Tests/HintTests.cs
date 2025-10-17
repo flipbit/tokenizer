@@ -1,8 +1,9 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class HintTests
+public class HintTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -13,11 +14,9 @@ public class HintTests
         public string LastName { get; set; }
     }
 
-    public HintTests()
+    public HintTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

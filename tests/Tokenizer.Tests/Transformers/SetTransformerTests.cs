@@ -1,10 +1,15 @@
 ﻿using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Transformers;
 
-public class SetTransformerTests
+public class SetTransformerTests : Tests.TokenizerTestBase
 {
+    public SetTransformerTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly SetTransformer transformer = new();
 
     [Fact]
@@ -51,7 +56,7 @@ public class SetTransformerTests
         var input = "Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal("Alice", result.First("Name"));
@@ -65,7 +70,7 @@ public class SetTransformerTests
         var input = "Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal("ALICE", result.First("Name"));

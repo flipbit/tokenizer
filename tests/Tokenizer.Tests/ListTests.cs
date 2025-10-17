@@ -1,17 +1,16 @@
 ﻿using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class ListTests
+public class ListTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
-    public ListTests()
+    public ListTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

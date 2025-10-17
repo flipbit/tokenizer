@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class MinLengthValidatorTests
+public class MinLengthValidatorTests : Tests.TokenizerTestBase
 {
+    public MinLengthValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly MinLengthValidator validator = new();
 
     [Fact]
@@ -64,7 +69,7 @@ public class MinLengthValidatorTests
         var input = "Zip: 123\nZip: 45678";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("45678", result.First("ZipCode"));

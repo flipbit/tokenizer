@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsUrlValidatorTests
+public class IsUrlValidatorTests : Tests.TokenizerTestBase
 {
+    public IsUrlValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsUrlValidator validator = new();
 
     [Fact]
@@ -79,7 +84,7 @@ public class IsUrlValidatorTests
         var input = "Server: 192.168.1.1\nServer: http://www.server.com";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("http://www.server.com", result.First("ServerUrl"));

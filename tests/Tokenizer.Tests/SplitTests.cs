@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class SplitTests
+public class SplitTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -12,11 +13,9 @@ public class SplitTests
         public List<string> Names { get; set; }
     }
 
-    public SplitTests()
+    public SplitTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class CandidateTokenListTests
+public class CandidateTokenListTests : Tests.TokenizerTestBase
 {
+    public CandidateTokenListTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Fact]
     public void GivenTokenWithPreamble_WhenAddingToList_ThenListContainsTokenAndSetsPreamble()
     {

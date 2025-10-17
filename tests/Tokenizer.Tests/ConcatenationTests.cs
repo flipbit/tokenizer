@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class ConcatenationTests
+public class ConcatenationTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -13,11 +14,9 @@ public class ConcatenationTests
         public string Name { get; set; }
     }
 
-    public ConcatenationTests()
+    public ConcatenationTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

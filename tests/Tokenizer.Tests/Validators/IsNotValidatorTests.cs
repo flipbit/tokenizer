@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsNotValidatorTests
+public class IsNotValidatorTests : Tests.TokenizerTestBase
 {
+    public IsNotValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsNotValidator validator = new();
 
     [Fact]
@@ -70,7 +75,7 @@ public class IsNotValidatorTests
         var input = "Address: N/A\nAddress: 10 Acacia Avenue";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("10 Acacia Avenue", result.First("Address"));

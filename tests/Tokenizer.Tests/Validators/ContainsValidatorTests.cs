@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class ContainsValidatorTests
+public class ContainsValidatorTests : Tests.TokenizerTestBase
 {
+    public ContainsValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly ContainsValidator validator = new();
 
     [Fact]
@@ -79,7 +84,7 @@ public class ContainsValidatorTests
         var input = "Name: Alice Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("Bob", result.First("Name"));

@@ -1,11 +1,16 @@
 ﻿using System.Linq;
 using Tokens.Compilation;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenizerOptionsTests
+public class TokenizerOptionsTests : Tests.TokenizerTestBase
 {
+    public TokenizerOptionsTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Fact]
     public void TestTrimBeforePreambleWhenTrue()
     {
@@ -34,7 +39,7 @@ public class TokenizerOptionsTests
         const string content = "---\nTerminateOnNewLine: true\n---\nAge: { Age }\nAddress: { Address }";
         const string input = "Age: 30\nAddress: London";
 
-        var tokenizer = new Tokenizer();
+        var tokenizer = Tokenizer.Create();
 
         var result = tokenizer.Tokenize<Person>(content, input);
 

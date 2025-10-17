@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TemplateTests
+public class TemplateTests : Tests.TokenizerTestBase
 {
+    public TemplateTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Fact]
     public void TestHasTagWhenTrue()
     {

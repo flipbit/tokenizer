@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class StartsWithValidatorTests
+public class StartsWithValidatorTests : Tests.TokenizerTestBase
 {
+    public StartsWithValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly StartsWithValidator validator = new();
 
     [Fact]
@@ -79,7 +84,7 @@ public class StartsWithValidatorTests
         var input = "Ip: 80.34.123.45  Ip: 192.168.1.1";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("192.168.1.1", result.First("InternalIpAddress"));

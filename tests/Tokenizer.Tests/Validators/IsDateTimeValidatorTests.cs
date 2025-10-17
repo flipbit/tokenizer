@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsDateTimeValidatorTests
+public class IsDateTimeValidatorTests : Tests.TokenizerTestBase
 {
+    public IsDateTimeValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsDateTimeValidator validator = new();
 
     [Fact]
@@ -92,7 +97,7 @@ public class IsDateTimeValidatorTests
         var input = "Date: 3rd Oct 2019 Date: 2019-10-04";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("2019-10-04", result.First("Date"));

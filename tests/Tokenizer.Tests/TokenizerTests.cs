@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Tokens.Compilation;
 using Tokens.Exceptions;
+using Tokens.Tests;
 using Tokens.Transformers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenizerTests
+public class TokenizerTests : TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -43,11 +45,9 @@ public class TokenizerTests
         public List<string> Class { get; set; }
     }
 
-    public TokenizerTests()
+    public TokenizerTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -552,11 +552,14 @@ public class TokenizerTests
                                ...
                                """;
         const string input = "First Name: John    ";
+
+        // Create tokenizer with TrimTrailingWhiteSpace = false
         // Should get overridden by embedded pattern declaration
-        tokenizer.Options.TrimTrailingWhiteSpace = false;
+        var options = new TokenizerOptions { TrimTrailingWhiteSpace = false };
+        var testTokenizer = CreateTokenizer(options);
 
         // Act
-        var student = tokenizer.Tokenize<Student>(pattern, input).Value;
+        var student = testTokenizer.Tokenize<Student>(pattern, input).Value;
 
         // Assert
         Assert.Equal("John", student.FirstName);
@@ -570,7 +573,7 @@ public class TokenizerTests
         const string input = "Age: Ten, Age: 11";
 
         // Act
-        var person = new Tokenizer().Tokenize<TokenTests.Person>(pattern, input).Value;
+        var person = Tokenizer.Create().Tokenize<TokenTests.Person>(pattern, input).Value;
 
         // Assert
         Assert.Equal(person.Age, 11);

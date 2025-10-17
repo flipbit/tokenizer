@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsDomainNameValidatorTests
+public class IsDomainNameValidatorTests : Tests.TokenizerTestBase
 {
+    public IsDomainNameValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsDomainNameValidator validator = new();
 
     [Fact]
@@ -92,7 +97,7 @@ public class IsDomainNameValidatorTests
         var input = "Web: n/a Web: www.flipbit.co.uk";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("www.flipbit.co.uk", result.First("Domain"));

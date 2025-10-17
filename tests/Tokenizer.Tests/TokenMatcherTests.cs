@@ -1,10 +1,11 @@
 ﻿using Tokens.Compilation;
 using Tokens.Transformers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenMatcherTests
+public class TokenMatcherTests : Tests.TokenizerTestBase
 {
     private readonly TokenMatcher matcher;
     private readonly TokenParser parser;
@@ -15,10 +16,8 @@ public class TokenMatcherTests
         public int Age { get; set; }
     }
 
-    public TokenMatcherTests()
+    public TokenMatcherTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
         matcher = new TokenMatcher();
         parser = new TokenParser();
     }

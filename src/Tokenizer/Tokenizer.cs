@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation;
 using Tokens.Enumerators;
-using Tokens.Logging;
 using Tokens.Tokenization;
 using Tokens.Transformers;
 using Tokens.Validators;
@@ -19,28 +20,63 @@ namespace Tokens
     public class Tokenizer
     {
         private readonly TokenParser parser;
-        private readonly ILog log;
+        private readonly ILogger<Tokenizer> log;
         private readonly ITokenizationEngine tokenizationEngine;
         private readonly IHintProcessor hintProcessor;
         private readonly IResultBuilder resultBuilder;
 
-        /// <summary>Gets or sets the options.</summary>
-        public TokenizerOptions Options { get; set; }
+        /// <summary>Gets the options.</summary>
+        public TokenizerOptions Options { get; }
 
-        /// <summary>Initializes a new instance of the <see cref="Tokenizer"/> class.</summary>
-        public Tokenizer() : this(TokenizerOptions.Defaults) { }
-
-        public Tokenizer(TokenizerOptions options)
+        /// <summary>
+        /// Internal constructor for dependency injection.
+        /// </summary>
+        internal Tokenizer(
+            TokenizerOptions options,
+            ILogger<Tokenizer> logger,
+            TokenParser parser,
+            ITokenizationEngine tokenizationEngine,
+            IHintProcessor hintProcessor,
+            IResultBuilder resultBuilder)
         {
-            parser = new TokenParser(options);
-
             Options = options;
-            log = LogProvider.For<Tokenizer>();
-            
-            // Create service instances
-            tokenizationEngine = new TokenizationEngine();
-            hintProcessor = new HintProcessor();
-            resultBuilder = new ResultBuilder();
+            log = logger;
+            this.parser = parser;
+            this.tokenizationEngine = tokenizationEngine;
+            this.hintProcessor = hintProcessor;
+            this.resultBuilder = resultBuilder;
+        }
+
+        /// <summary>
+        /// Creates a new Tokenizer with default options.
+        /// </summary>
+        public static Tokenizer Create()
+        {
+            return Create(TokenizerOptions.Defaults, null);
+        }
+
+        /// <summary>
+        /// Creates a new Tokenizer with the specified options.
+        /// </summary>
+        public static Tokenizer Create(TokenizerOptions options)
+        {
+            return Create(options, null);
+        }
+
+        /// <summary>
+        /// Creates a new Tokenizer with the specified options and logger factory.
+        /// </summary>
+        public static Tokenizer Create(TokenizerOptions options, ILoggerFactory? loggerFactory)
+        {
+            loggerFactory ??= NullLoggerFactory.Instance;
+
+            var logger = loggerFactory.CreateLogger<Tokenizer>();
+            var parser = new TokenParser(options, loggerFactory.CreateLogger<TokenParser>());
+            var tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
+            var hintProcessor = new HintProcessor(loggerFactory.CreateLogger<HintProcessor>());
+            var resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
+
+            return new Tokenizer(options, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
         }
 
         public TokenizeResult Tokenize(string template, string input)
@@ -78,34 +114,56 @@ namespace Tokens
 
         private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
         {
-            log.Verbose($"Start: Processing: {template.Name}");
-
-            using (new LogIndentation())
+            using (log.BeginScope(new Dictionary<string, object>
             {
+                ["TemplateName"] = template.Name,
+                ["InputLength"] = input.Length,
+                ["TokenCount"] = template.Tokens.Count,
+                ["Operation"] = "Tokenize"
+            }))
+            {
+                log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
+                log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
+                    template.Tokens.Count, input.Length);
+
                 // Create and initialize the tokenization context
                 using (var context = new TokenizationContext())
                 {
                     context.Initialize(input);
+                    log.LogTrace("Tokenization context initialized");
 
                     // Process hints first
+                    log.LogTrace("Processing hints");
                     var hintsMissing = hintProcessor.FindAndValidateHints(template, context.Enumerator, result);
 
-                    // Only proceed with tokenization if hints are not missing
-                    if (!hintsMissing)
+                    if (hintsMissing)
                     {
+                        log.LogWarning("Required hints are missing, skipping tokenization");
+                    }
+                    else
+                    {
+                        log.LogTrace("Hints validated successfully, proceeding with tokenization");
                         // Process the main tokenization using the engine
                         tokenizationEngine.ProcessTokenization(template, input, value, context, result);
                     }
 
                     // Build unmatched tokens collection
+                    log.LogTrace("Building unmatched tokens collection");
                     resultBuilder.BuildUnmatchedTokens(template, result);
 
-                    log.Verbose($"Found {result.Tokens.Matches.Count} matches.");
-                    log.Verbose("{0} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
-                }
-            }
+                    var requiredMissingCount = result.Tokens.Misses.Count(t => t.Required);
+                    log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                        result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
 
-            log.Verbose($"Finished: Processing: {template.Name}");
+                    if (requiredMissingCount > 0)
+                    {
+                        log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
+                    }
+                }
+
+                log.LogInformation("Tokenization {Result} for template {TemplateName}",
+                    result.Success ? "succeeded" : "failed", template.Name);
+            }
         }
 
         public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer

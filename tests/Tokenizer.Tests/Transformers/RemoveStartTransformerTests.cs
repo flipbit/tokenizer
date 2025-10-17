@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Transformers;
 
-public class RemoveStartTransformerTests
+public class RemoveStartTransformerTests : Tests.TokenizerTestBase
 {
+    public RemoveStartTransformerTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly RemoveStartTransformer transformer = new();
 
     [Fact]
@@ -83,7 +88,7 @@ public class RemoveStartTransformerTests
         var input = "Domain Name: domain.com.";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("domain.com", result.First("DomainName"));

@@ -1,6 +1,7 @@
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Enumerators;
-using Tokens.Logging;
 
 namespace Tokens.Tokenization
 {
@@ -10,14 +11,18 @@ namespace Tokens.Tokenization
     /// </summary>
     public class HintProcessor : IHintProcessor
     {
-        private readonly ILog log;
+        private readonly ILogger<HintProcessor> log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HintProcessor"/> class.
         /// </summary>
-        public HintProcessor()
+        public HintProcessor() : this(null)
         {
-            log = LogProvider.For<HintProcessor>();
+        }
+
+        public HintProcessor(ILogger<HintProcessor>? logger)
+        {
+            log = logger ?? NullLogger<HintProcessor>.Instance;
         }
 
         /// <summary>
@@ -28,41 +33,71 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to populate with hint matches and misses</param>
         /// <returns>True if any required hints are missing, false if all required hints are found</returns>
         public bool FindAndValidateHints(
-            Template template, 
-            TokenEnumerator enumerator, 
+            Template template,
+            TokenEnumerator enumerator,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(template, nameof(template));
             ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-            if (template.Hints.Count == 0) return false;
+            if (template.Hints.Count == 0)
+            {
+                log.LogDebug("No hints defined in template, skipping hint processing");
+                return false;
+            }
+
+            log.LogDebug("Starting hint processing with {HintCount} hint(s) defined", template.Hints.Count);
 
             while (enumerator.IsEmpty == false)
             {
                 // Check hints
                 foreach (var hint in template.Hints)
                 {
+                    log.LogTrace("Checking hint '{HintText}' at position Line:{Line} Col:{Column}",
+                        hint.Text, enumerator.Location.Line, enumerator.Location.Column);
+
                     if (IsHintMatch(hint, enumerator) && AddHintMatch(hint, enumerator, result))
                     {
-                        log.Verbose("  -> Ln:{0} Col:{1} Found Hint: {2}", enumerator.Location.Line, enumerator.Location.Column, hint.Text);
+                        log.LogTrace("Hint matched and added: '{HintText}' at Line:{Line} Col:{Column}, Optional:{Optional}",
+                            hint.Text, enumerator.Location.Line, enumerator.Location.Column, hint.Optional);
                     }
                 }
 
                 // Exit early if all hints found
-                if (result.Hints.Matches.Count == template.Hints.Count) break;
+                if (result.Hints.Matches.Count == template.Hints.Count)
+                {
+                    log.LogDebug("All {HintCount} hint(s) found, ending search early", template.Hints.Count);
+                    break;
+                }
 
                 enumerator.Next();
             }
+
+            log.LogDebug("Hint search complete. Found {MatchCount} of {TotalCount} hint(s)",
+                result.Hints.Matches.Count, template.Hints.Count);
 
             // Build unmatched hint collection
             foreach (var hint in template.Hints)
             {
                 if (AddHintMiss(hint, result))
                 {
-                    log.Verbose("  -> Missing Hint: {0}", hint.Text);
+                    if (hint.Optional)
+                    {
+                        log.LogWarning("Optional hint not found: '{HintText}'", hint.Text);
+                    }
+                    else
+                    {
+                        log.LogError("Required hint missing: '{HintText}'", hint.Text);
+                    }
                 }
             }
+
+            var missingRequiredCount = result.Hints.Misses.Count(h => h.Optional == false);
+            var missingOptionalCount = result.Hints.Misses.Count(h => h.Optional);
+
+            log.LogDebug("Hint validation complete. Missing required: {MissingRequired}, Missing optional: {MissingOptional}",
+                missingRequiredCount, missingOptionalCount);
 
             ResetEnumeratorAfterHintProcessing(enumerator);
 
@@ -76,7 +111,7 @@ namespace Tokens.Tokenization
         /// <param name="enumerator">The token enumerator at the position to check</param>
         /// <returns>True if the hint matches at the current position</returns>
         public bool IsHintMatch(
-            Hint hint, 
+            Hint hint,
             TokenEnumerator enumerator)
         {
             ArgumentValidation.ThrowIfNull(hint, nameof(hint));
@@ -84,9 +119,15 @@ namespace Tokens.Tokenization
 
             // Return false for null or empty hint text
             if (string.IsNullOrEmpty(hint.Text))
+            {
+                log.LogTrace("Hint validation failed: hint text is null or empty");
                 return false;
+            }
 
-            return enumerator.Match(hint.Text);
+            var isMatch = enumerator.Match(hint.Text);
+            log.LogTrace("Hint match validation for '{HintText}': {IsMatch}", hint.Text, isMatch);
+
+            return isMatch;
         }
 
         /// <summary>
@@ -97,15 +138,26 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to add the match to</param>
         /// <returns>True if the hint was successfully added as a match</returns>
         public bool AddHintMatch(
-            Hint hint, 
-            TokenEnumerator enumerator, 
+            Hint hint,
+            TokenEnumerator enumerator,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(hint, nameof(hint));
             ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-            return result.Hints.AddMatch(hint, enumerator);
+            var added = result.Hints.AddMatch(hint, enumerator);
+
+            if (added)
+            {
+                log.LogTrace("Successfully added hint match for '{HintText}' to result", hint.Text);
+            }
+            else
+            {
+                log.LogTrace("Hint match for '{HintText}' was not added (likely already exists)", hint.Text);
+            }
+
+            return added;
         }
 
         /// <summary>
@@ -115,13 +167,24 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to add the miss to</param>
         /// <returns>True if the hint was successfully added as a miss</returns>
         public bool AddHintMiss(
-            Hint hint, 
+            Hint hint,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(hint, nameof(hint));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-            return result.Hints.AddMiss(hint);
+            var added = result.Hints.AddMiss(hint);
+
+            if (added)
+            {
+                log.LogTrace("Added hint miss for '{HintText}', Optional:{Optional}", hint.Text, hint.Optional);
+            }
+            else
+            {
+                log.LogTrace("Hint '{HintText}' was already matched, not adding as miss", hint.Text);
+            }
+
+            return added;
         }
 
         /// <summary>
@@ -132,6 +195,7 @@ namespace Tokens.Tokenization
         {
             ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
 
+            log.LogTrace("Resetting enumerator after hint processing");
             enumerator.Reset();
         }
     }

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Enumerators;
-using Tokens.Logging;
 
 namespace Tokens.Tokenization
 {
@@ -12,14 +13,18 @@ namespace Tokens.Tokenization
     /// </summary>
     public class ResultBuilder : IResultBuilder
     {
-        private readonly ILog log;
+        private readonly ILogger<ResultBuilder> log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResultBuilder"/> class.
         /// </summary>
-        public ResultBuilder()
+        public ResultBuilder() : this(null)
         {
-            log = LogProvider.For<ResultBuilder>();
+        }
+
+        public ResultBuilder(ILogger<ResultBuilder>? logger)
+        {
+            log = logger ?? NullLogger<ResultBuilder>.Instance;
         }
 
         /// <summary>
@@ -55,15 +60,23 @@ namespace Tokens.Tokenization
         /// <param name="location">The location where the token was found</param>
         /// <param name="result">The result object to add the match to</param>
         public void AddTokenMatch(
-            Token token, 
-            object assignedValue, 
-            FileLocation location, 
+            Token token,
+            object assignedValue,
+            FileLocation location,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(token, nameof(token));
             ArgumentValidation.ThrowIfNull(assignedValue, nameof(assignedValue));
             ArgumentValidation.ThrowIfNull(location, nameof(location));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
+
+            log.LogTrace(
+                "Adding token match: TokenId={TokenId}, TokenName={TokenName}, Value={Value}, Line={Line}, Column={Column}",
+                token.Id,
+                token.Name,
+                assignedValue,
+                location.Line,
+                location.Column);
 
             result.Tokens.AddMatch(token, assignedValue, location);
         }
@@ -74,11 +87,17 @@ namespace Tokens.Tokenization
         /// <param name="token">The token that was not found</param>
         /// <param name="result">The result object to add the miss to</param>
         public void AddTokenMiss(
-            Token token, 
+            Token token,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(token, nameof(token));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
+
+            log.LogTrace(
+                "Adding token miss: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
+                token.Id,
+                token.Name,
+                token.Required);
 
             result.Tokens.AddMiss(token);
         }
@@ -105,19 +124,39 @@ namespace Tokens.Tokenization
         /// <param name="template">The template containing all token definitions</param>
         /// <param name="result">The result object to populate with unmatched tokens</param>
         public void BuildUnmatchedTokens(
-            Template template, 
+            Template template,
             TokenizeResultBase result)
         {
             ArgumentValidation.ThrowIfNull(template, nameof(template));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
+            log.LogDebug("Building unmatched tokens for template: TemplateName={TemplateName}", template.Name);
+
+            var unmatchedCount = 0;
             foreach (var token in template.Tokens)
             {
                 if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
                 {
+                    log.LogDebug(
+                        "Token not matched: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
+                        token.Id,
+                        token.Name,
+                        token.Required);
+
                     result.Tokens.Misses.Add(token);
+                    unmatchedCount++;
                 }
             }
+
+            var matchCount = result.Tokens.Matches.Count;
+            var requiredMissCount = result.Tokens.Misses.Count(t => t.Required);
+
+            log.LogDebug(
+                "Tokenization results summary: TotalMatches={TotalMatches}, TotalMisses={TotalMisses}, RequiredMisses={RequiredMisses}, Success={Success}",
+                matchCount,
+                unmatchedCount,
+                requiredMissCount,
+                result.Success);
         }
 
         /// <summary>

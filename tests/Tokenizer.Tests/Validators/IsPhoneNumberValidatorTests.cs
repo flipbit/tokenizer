@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsPhoneNumberValidatorTests
+public class IsPhoneNumberValidatorTests : Tests.TokenizerTestBase
 {
+    public IsPhoneNumberValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsPhoneNumberValidator validator = new();
 
     [Fact]
@@ -143,7 +148,7 @@ public class IsPhoneNumberValidatorTests
         var input = "Phone: Disconnected  Phone: +44 (0) 1603 555-1234";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("+44 (0) 1603 555-1234", result.First("Phone"));

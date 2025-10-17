@@ -1,10 +1,15 @@
 ﻿using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Transformers;
 
-public class ToDateTimeUtcTransformerTests
+public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
 {
+    public ToDateTimeUtcTransformerTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly ToDateTimeUtcTransformer transformer = new();
 
     [Fact]
@@ -66,7 +71,7 @@ public class ToDateTimeUtcTransformerTests
         var input = "Date: 2000-01-01 UTC";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
@@ -80,7 +85,7 @@ public class ToDateTimeUtcTransformerTests
         var input = "Date: 2000-01-01 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
@@ -94,7 +99,7 @@ public class ToDateTimeUtcTransformerTests
         var input = "Date: 2000-1-1 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.False(result.Contains("Date"));
@@ -118,7 +123,7 @@ public class ToDateTimeUtcTransformerTests
         var input = "Date: 2000-1-1 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var result = Tokenizer.Create().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));

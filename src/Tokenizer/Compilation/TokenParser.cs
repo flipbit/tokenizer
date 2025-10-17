@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Tokens.Extensions;
-using Tokens.Logging;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -19,7 +20,7 @@ namespace Tokens.Compilation
         private readonly List<Type> transformers;
         private readonly List<Type> validators;
 
-        private readonly ILog log;
+        private readonly ILogger<TokenParser> log;
 
         public TokenizerOptions Options { get; set; }
 
@@ -27,9 +28,13 @@ namespace Tokens.Compilation
         {
         }
 
-        public TokenParser(TokenizerOptions options)
+        public TokenParser(TokenizerOptions options) : this(options, null)
         {
-            log = LogProvider.For<TokenParser>();
+        }
+
+        public TokenParser(TokenizerOptions options, ILogger<TokenParser>? logger)
+        {
+            log = logger ?? NullLogger<TokenParser>.Instance;
 
             Options = options;
 
@@ -74,12 +79,16 @@ namespace Tokens.Compilation
         {
             transformers.Add(typeof(T));
 
+            log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
+
             return this;
         }
 
         public TokenParser RegisterValidator<T>() where T : ITokenValidator
         {
             validators.Add(typeof(T));
+
+            log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
 
             return this;
         }
@@ -93,25 +102,33 @@ namespace Tokens.Compilation
 
         public Template Parse(string content, string name)
         {
-            Stopwatch stopwatch = null;
+            Stopwatch? stopwatch = null;
 
-            if (log.IsDebugEnabled())
+            if (log.IsEnabled(LogLevel.Trace))
             {
                 stopwatch = new Stopwatch();
                 stopwatch.Start();
             }
 
+            log.LogInformation("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
+
             var template = new Template(name, content);
 
-            log.Verbose("Start: Parsing Template: {0}", template.Name);
+            log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
 
-            var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
+            try
+            {
+                var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
 
-            template.Options = preTemplate.Options;
+                template.Options = preTemplate.Options;
+
+                log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
+                    preTemplate.Tokens.Count, template.Name);
 
             if (string.IsNullOrWhiteSpace(preTemplate.Name) == false)
             {
                 template.Name = preTemplate.Name;
+                log.LogDebug("Template name set from front matter: {TemplateName}", template.Name);
             }
 
             foreach (var hint in preTemplate.Hints)
@@ -119,6 +136,7 @@ namespace Tokens.Compilation
                 if (template.Hints.Any(t => t == hint) == false)
                 {
                     template.Hints.Add(hint);
+                    log.LogDebug("Added hint to template {TemplateName}: {Hint}", template.Name, hint);
                 }
             }
 
@@ -127,11 +145,15 @@ namespace Tokens.Compilation
                 if (template.Tags.Any(t => t == tag) == false)
                 {
                     template.Tags.Add(tag);
+                    log.LogDebug("Added tag to template {TemplateName}: {Tag}", template.Name, tag);
                 }
             }
 
             foreach (var preToken in preTemplate.Tokens)
             {
+                log.LogTrace("Parsing token {TokenId}: Name={TokenName}, Content={TokenContent}, Optional={Optional}, Repeating={Repeating}",
+                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.Optional, preToken.Repeating);
+
                 var token = new Token(preToken.Content);
 
                 if (Options.TrimLeadingWhitespaceInTokenPreamble)
@@ -148,6 +170,9 @@ namespace Tokens.Compilation
                     {
                         token.Preamble = preToken.Preamble.TrimStart();
                     }
+
+                    log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
+                        preToken.Id, preToken.Preamble.Length, token.Preamble.Length);
                 }
                 else
                 {
@@ -165,6 +190,9 @@ namespace Tokens.Compilation
                         var idx = pre.LastIndexOf('\n');
                         var tail = pre.Substring(idx + 1);
                         token.Preamble = tail;
+
+                        log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
+                            preToken.Id, pre.Length, tail.Length);
                     }
                 }
 
@@ -184,12 +212,14 @@ namespace Tokens.Compilation
                 if (template.Options.OutOfOrderTokens)
                 {
                     token.Optional = true;
+                    log.LogTrace("Token {TokenId} marked as optional due to OutOfOrderTokens option", token.Id);
                 }
 
                 // Apply global newline termination option from front matter if set
                 if (token.TerminateOnNewLine == false && template.Options.TerminateOnNewline)
                 {
                     token.TerminateOnNewLine = true;
+                    log.LogTrace("Token {TokenId} TerminateOnNewLine applied from global option", token.Id);
                 }
 
                 ParseTokenDecorators(preToken, token);
@@ -198,23 +228,45 @@ namespace Tokens.Compilation
 
                 if (string.IsNullOrEmpty(token.Name) == false)
                 {
-                    log.Verbose("  -> Token[{0:000}]: {1}", token.Id, token);
+                    log.LogTrace("Token[{TokenId:000}]: {Token}", token.Id, token);
                 }
             }
 
-            log.Verbose("Parsed '{0}' - {1:###,###,###,##0} byte(s) in {2}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
+            log.LogTrace("Parsed '{TemplateName}' - {ContentLength} byte(s) in {Elapsed}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
+
+            log.LogInformation("Template parsing complete: {TemplateName}, TotalTokens: {TokenCount}, Duration: {Duration}",
+                template.Name, template.Tokens.Count, stopwatch?.Elapsed.TotalMilliseconds ?? 0);
 
             return template;
+            }
+            catch (TokenizerException ex)
+            {
+                log.LogError(ex, "Template parsing failed for {TemplateName}: {ErrorMessage}, Pattern: {Pattern}",
+                    name, ex.Message, content);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Unexpected error during template parsing: {TemplateName}, Pattern: {Pattern}",
+                    name, content);
+                throw;
+            }
         }
 
         private void ParseTokenDecorators(TokenDefinition preToken, Token token)
         {
+            log.LogTrace("Parsing decorators for token {TokenId} ({TokenName}): {DecoratorCount} decorator(s) found",
+                preToken.Id, preToken.Name ?? "(unnamed)", preToken.Decorators.Count);
+
             // If pre-token has value set, add transformer to set it when parsing
             if (string.IsNullOrEmpty(preToken.Value) == false)
             {
                 var setContext = new TokenDecoratorContext(typeof(SetTransformer));
                 setContext.Parameters.Add(preToken.Value);
                 token.Decorators.Add(setContext);
+
+                log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
+                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
             }
 
             foreach (var decorator in preToken.Decorators)
@@ -223,6 +275,9 @@ namespace Tokens.Compilation
                 {
                     token.Concatenate = true;
                     token.ConcatenationString = joiningString;
+
+                    log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",
+                        preToken.Id, preToken.Name ?? "(unnamed)", joiningString ?? "(empty)");
 
                     continue;
                 }
@@ -236,6 +291,8 @@ namespace Tokens.Compilation
                     {
                         if (decorator.IsNotDecorator)
                         {
+                            log.LogError("Token {TokenId} ({TokenName}): Transformer {TransformerName} cannot be prefixed with '!' character",
+                                preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
                             throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
                         }
 
@@ -247,7 +304,10 @@ namespace Tokens.Compilation
                         }
 
                         token.Decorators.Add(context);
-    
+
+                        log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
+                            preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
+
                         break;
                     }
                 }
@@ -269,13 +329,18 @@ namespace Tokens.Compilation
                         context.IsNotValidator = decorator.IsNotDecorator;
 
                         token.Decorators.Add(context);
-    
+
+                        log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
+                            preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);
+
                         break;
                     }
                 }
 
                 if (context == null)
                 {
+                    log.LogError("Token {TokenId} ({TokenName}): Unknown decorator/operation: {DecoratorName}",
+                        preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
                     throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
                 }
             }
@@ -286,13 +351,20 @@ namespace Tokens.Compilation
 
                 if (hasSetTransformer == false)
                 {
+                    log.LogError("Token {TokenId} ({TokenName}): Front matter token missing required assignment operation",
+                        preToken.Id, preToken.Name ?? "(unnamed)");
                     throw new TokenizerException($"Front Matter Token '{preToken.Name}' must have an assignment operation.");
+                }
+                else
+                {
+                    log.LogTrace("Token {TokenId} ({TokenName}): Front matter token validation passed",
+                        preToken.Id, preToken.Name ?? "(unnamed)");
                 }
             }
         }
 
         private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string joiningString)
-        { 
+        {
             joiningString = null;
 
             if (string.Compare("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase) != 0) return false;
@@ -300,10 +372,19 @@ namespace Tokens.Compilation
             if (decorator.Args.Count == 1)
             {
                 joiningString = decorator.Args[0];
+                log.LogTrace("Concat decorator detected for token {TokenName} with joining string: {JoiningString}",
+                    name ?? "(unnamed)", joiningString);
+            }
+            else if (decorator.Args.Count == 0)
+            {
+                log.LogTrace("Concat decorator detected for token {TokenName} with no joining string (will use empty string)",
+                    name ?? "(unnamed)");
             }
 
             if (decorator.Args.Count > 1)
             {
+                log.LogError("Token {TokenName}: Concat() decorator has {ArgCount} arguments, expected 0 or 1",
+                    name ?? "(unnamed)", decorator.Args.Count);
                 throw new TokenizerException($"Token '{name}' Concat() must have a single argument.");
             }
 

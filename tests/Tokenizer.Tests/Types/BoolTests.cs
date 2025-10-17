@@ -1,8 +1,9 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Types;
 
-public class BoolTests
+public class BoolTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -13,11 +14,9 @@ public class BoolTests
         public bool Enrolled { get; set; }
     }
 
-    public BoolTests()
+    public BoolTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

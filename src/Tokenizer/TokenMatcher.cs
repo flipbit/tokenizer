@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation;
 using Tokens.Exceptions;
-using Tokens.Logging;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -16,19 +17,24 @@ namespace Tokens
     {
         private readonly Tokenizer tokenizer;
         private readonly TokenParser parser;
-        private readonly ILog log;
+        private readonly ILogger<TokenMatcher> log;
 
-        public TokenMatcher()
+        public TokenMatcher() : this(TokenizerOptions.Defaults, (ILoggerFactory?)null)
         {
-            parser = new TokenParser();
-            Templates = new TemplateCollection();
-            tokenizer = new Tokenizer();
-            log = LogProvider.GetLogger(typeof(TokenMatcher));
         }
 
-        public TokenMatcher(TokenizerOptions options) : this()
+        public TokenMatcher(TokenizerOptions options) : this(options, (ILoggerFactory?)null)
         {
-            tokenizer.Options = options;
+        }
+
+        public TokenMatcher(TokenizerOptions options, ILoggerFactory? loggerFactory)
+        {
+            loggerFactory ??= NullLoggerFactory.Instance;
+
+            log = loggerFactory.CreateLogger<TokenMatcher>();
+            parser = new TokenParser(options, loggerFactory.CreateLogger<TokenParser>());
+            Templates = new TemplateCollection();
+            tokenizer = Tokenizer.Create(options, loggerFactory);
         }
 
         public TemplateCollection Templates { get; }
@@ -48,46 +54,38 @@ namespace Tokens
             {
                 if (!Templates.TryGet(name, out var template)) continue;
 
-                log.Verbose("Start: Matching: {0}", template.Name);
+                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
 
-                using (new LogIndentation())
+                // Check template has tags
+                if (CheckTemplateTags(template, tags) == false)
                 {
-                    // Check template has tags
-                    if (CheckTemplateTags(template, tags) == false)
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        TokenizeResult result;
-
-                        using (new LogIndentation())
-                        {
-                            result = tokenizer.Tokenize(template, input);
-                        }
-
-                        results.Results.Add(result);
-
-                        log.Verbose("Match Success: {0}", result.Success);
-                        log.Verbose("Total Matches: {0}", result.Tokens.Matches.Count);
-                        log.Verbose("Total Errors : {0}", result.Exceptions.Count);
-
-                    }
-                    catch (Exception e)
-                    {
-                        var exception = new TokenMatcherException(e.Message, e)
-                        {
-                            Template = template
-                        };
-
-                        log.ErrorException($"Error processing template: {template.Name}", e);
-
-                        throw exception;
-                    }
+                    continue;
                 }
 
-                log.Verbose("Finish: Matching: {0}", template.Name);
+                try
+                {
+                    var result = tokenizer.Tokenize(template, input);
+
+                    results.Results.Add(result);
+
+                    log.LogTrace("Match Success: {Success}", result.Success);
+                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
+                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+
+                }
+                catch (Exception e)
+                {
+                    var exception = new TokenMatcherException(e.Message, e)
+                    {
+                        Template = template
+                    };
+
+                    log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+
+                    throw exception;
+                }
+
+                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
             }
 
             // Assign best match
@@ -112,46 +110,38 @@ namespace Tokens
             {
                 if (!Templates.TryGet(name, out var template)) continue;
 
-                log.Verbose("Start: Matching: {0}", template.Name);
+                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
 
-                using (new LogIndentation())
+                // Check template has tags
+                if (CheckTemplateTags(template, tags) == false)
                 {
-                    // Check template has tags
-                    if (CheckTemplateTags(template, tags) == false)
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        TokenizeResult<T> result;
-
-                        using (new LogIndentation())
-                        {
-                            result = tokenizer.Tokenize<T>(template, input);
-                        }
-
-                        results.Results.Add(result);
-
-                        log.Verbose("Match Success: {0}", result.Success);
-                        log.Verbose("Total Matches: {0}", result.Tokens.Matches.Count);
-                        log.Verbose("Total Errors : {0}", result.Exceptions.Count);
-
-                    }
-                    catch (Exception e)
-                    {
-                        var exception = new TokenMatcherException(e.Message, e)
-                        {
-                            Template = template
-                        };
-
-                        log.ErrorException($"Error processing template: {template.Name}", e);
-
-                        throw exception;
-                    }
+                    continue;
                 }
 
-                log.Verbose("Finish: Matching: {0}", template.Name);
+                try
+                {
+                    var result = tokenizer.Tokenize<T>(template, input);
+
+                    results.Results.Add(result);
+
+                    log.LogTrace("Match Success: {Success}", result.Success);
+                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
+                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+
+                }
+                catch (Exception e)
+                {
+                    var exception = new TokenMatcherException(e.Message, e)
+                    {
+                        Template = template
+                    };
+
+                    log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+
+                    throw exception;
+                }
+
+                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
             }
 
             // Assign best match
@@ -201,13 +191,13 @@ namespace Tokens
             if (template.Tags.Any())
             {
                 if (template.HasTags(tags, out var missing) == false)
-                { 
-                    log.Verbose("No tags matching: {0}", missing);
-                    log.Verbose("Finish: Matching: {0}", template.Name);
+                {
+                    log.LogTrace("No tags matching: {MissingTags}", missing);
+                    log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
                     return false;
                 }
-                
-                log.Verbose("Found tag matching: {0}", string.Join(", ", tags));
+
+                log.LogTrace("Found tag matching: {Tags}", string.Join(", ", tags));
                 return true;
             }
 

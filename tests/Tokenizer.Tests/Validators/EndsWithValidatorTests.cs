@@ -1,10 +1,15 @@
 ﻿using Tokens.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class EndsWithValidatorTests
+public class EndsWithValidatorTests : Tests.TokenizerTestBase
 {
+    public EndsWithValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly EndsWithValidator validator = new();
 
     [Fact]
@@ -79,7 +84,7 @@ public class EndsWithValidatorTests
         var input = "Email: alice@customer.com Email: bob@admin.com";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("bob@admin.com", result.First("AdminEmail"));

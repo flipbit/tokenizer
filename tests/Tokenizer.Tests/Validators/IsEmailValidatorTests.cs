@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsEmailValidatorTests
+public class IsEmailValidatorTests : Tests.TokenizerTestBase
 {
+    public IsEmailValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsEmailValidator validator = new();
 
     [Fact]
@@ -66,7 +71,7 @@ public class IsEmailValidatorTests
         var input = "Email: webmaster at host.com Email: hello@domain.com";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("hello@domain.com", result.First("Email"));

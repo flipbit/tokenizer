@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsNotEmptyValidatorTests
+public class IsNotEmptyValidatorTests : Tests.TokenizerTestBase
 {
+    public IsNotEmptyValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsNotEmptyValidator validator = new();
 
     [Fact]
@@ -53,7 +58,7 @@ public class IsNotEmptyValidatorTests
         var input = "Middle Name:\nMiddle Name: Charles";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("Charles", result.First("MiddleName"));

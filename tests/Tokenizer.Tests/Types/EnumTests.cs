@@ -1,8 +1,9 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Types;
 
-public class EnumTests
+public class EnumTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -20,11 +21,9 @@ public class EnumTests
         GradeC,
     }
 
-    public EnumTests()
+    public EnumTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

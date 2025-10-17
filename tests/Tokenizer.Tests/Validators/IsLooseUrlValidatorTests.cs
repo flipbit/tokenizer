@@ -1,9 +1,14 @@
 ﻿using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsLooseUrlValidatorTests
+public class IsLooseUrlValidatorTests : Tests.TokenizerTestBase
 {
+    public IsLooseUrlValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     private readonly IsLooseUrlValidator validator = new();
 
     [Fact]
@@ -105,7 +110,7 @@ public class IsLooseUrlValidatorTests
         var input = "Server: Not specified\nServer: www.server.com";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var result = Tokenizer.Create().Tokenize(template, input);
 
         // Assert
         Assert.Equal("www.server.com", result.First("ServerUrl"));

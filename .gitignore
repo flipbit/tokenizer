@@ -36,3 +36,5 @@ packages
 .idea
 .cursor
 specs
+.DS_Store
+.claude

@@ -11,7 +11,15 @@ namespace Tokens
 
         public TokenizerOptions()
         {
-            ResetDefaults();
+            // Set defaults
+            TrimLeadingWhitespaceInTokenPreamble = true;
+            TrimPreambleBeforeNewLine = false;
+            TrimTrailingWhiteSpace = true;
+            TokenStringComparison = StringComparison.InvariantCulture;
+            OutOfOrderTokens = false;
+            EnableLogging = false;
+            TerminateOnNewline = false;
+            IgnoreMissingProperties = false;
         }
 
         public bool IgnoreMissingProperties { get; set; }
@@ -35,21 +43,6 @@ namespace Tokens
         /// If set, token values will be extracted up till the first new line character.
         /// </summary>
         public bool TerminateOnNewline { get; set; }
-
-        /// <summary>
-        /// Resets the options to their default values 
-        /// </summary>
-        public void ResetDefaults()
-        {
-            TrimLeadingWhitespaceInTokenPreamble = true;
-            TrimPreambleBeforeNewLine = false;
-            TrimTrailingWhiteSpace = true;
-            TokenStringComparison = StringComparison.InvariantCulture;
-            OutOfOrderTokens = false;
-            EnableLogging = false;
-            TerminateOnNewline = false;
-            IgnoreMissingProperties = false;
-        }
 
         public TokenizerOptions Clone()
         {

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class MultilineTests
+public class MultilineTests : Tests.TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 
@@ -16,11 +17,9 @@ public class MultilineTests
         public List<string> Classes { get; set; }
     }
 
-    public MultilineTests()
+    public MultilineTests(ITestOutputHelper output) : base(output)
     {
-        SerilogConfig.Init();
-
-        tokenizer = new Tokenizer(new TokenizerOptions{ EnableLogging = true });
+        tokenizer = CreateTokenizer();
     }
 
     [Fact]

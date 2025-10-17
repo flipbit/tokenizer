@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
-using Tokens.Logging;
 using Tokens.Transformers;
 
 namespace Tokens
@@ -13,16 +14,8 @@ namespace Tokens
     /// </summary>
     public class Token
     {
-        private static readonly ILog Log;
+        private static readonly ILogger<Token> Log = NullLogger<Token>.Instance;
         private string content;
-
-        /// <summary>
-        /// Sets the token logger
-        /// </summary>
-        static Token()
-        {
-            Log = LogProvider.GetLogger(nameof(Token));
-        }
 
         /// <summary>
         /// Creates a new instance of the <see cref="Token"/> class.
@@ -143,7 +136,7 @@ namespace Tokens
                 }
             }
 
-            Log.Verbose("-> Ln: {0} Col: {1} : Assigning {2}[{3}] as {4}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
+            Log.LogTrace("Ln: {Line} Col: {Column} : Assigning {TokenName}[{TokenId}] as {Value}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
 
             if (options.TrimTrailingWhiteSpace)
             {
@@ -152,53 +145,50 @@ namespace Tokens
 
             assignedValue = value;
 
-            using (new LogIndentation())
+            foreach (var decorator in Decorators)
             {
-                foreach (var decorator in Decorators)
+                if (decorator.IsTransformer)
                 {
-                    if (decorator.IsTransformer)
+                    var transformed = decorator.CanTransform(assignedValue, out var output);
+
+                    if (transformed == false)
                     {
-                        var transformed = decorator.CanTransform(assignedValue, out var output);
+                        Log.LogTrace("{DecoratorName}: Unable to transform value '{AssignedValue}'!", decorator.DecoratorType.Name, assignedValue);
 
-                        if (transformed == false)
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Unable to transform value '{assignedValue}'!");
-                            
-                            return false;
-                        }
-
-                        if (decorator.DecoratorType == typeof(SetTransformer))
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Set value to '{output}'");
-                        }
-                        else if (output is DateTime time)
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{assignedValue}' to {time:yyyy-MM-dd HH:mm:ss} ({time.Kind})");
-                        }
-                        else if (output is IEnumerable<string> list)
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Split '{assignedValue}' into [] {{ {string.Join(", ", list)} }}");
-                        }
-                        else
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name}: Transformed '{assignedValue}' to '{output}' ({output.GetType().Name})");
-                        }
-
-                        assignedValue = output;
+                        return false;
                     }
 
-                    if (decorator.IsValidator)
+                    if (decorator.DecoratorType == typeof(SetTransformer))
                     {
-                        if (decorator.Validate(assignedValue))
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name} OK!");
-                        }
-                        else
-                        {
-                            Log.Verbose($"-> {decorator.DecoratorType.Name} Validation Failure: {value}");
+                        Log.LogTrace("{DecoratorName}: Set value to '{Output}'", decorator.DecoratorType.Name, output);
+                    }
+                    else if (output is DateTime time)
+                    {
+                        Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to {Time:yyyy-MM-dd HH:mm:ss} ({Kind})", decorator.DecoratorType.Name, assignedValue, time, time.Kind);
+                    }
+                    else if (output is IEnumerable<string> list)
+                    {
+                        Log.LogTrace("{DecoratorName}: Split '{AssignedValue}' into [] {{ {List} }}", decorator.DecoratorType.Name, assignedValue, string.Join(", ", list));
+                    }
+                    else
+                    {
+                        Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to '{Output}' ({TypeName})", decorator.DecoratorType.Name, assignedValue, output, output.GetType().Name);
+                    }
 
-                            return false;
-                        }
+                    assignedValue = output;
+                }
+
+                if (decorator.IsValidator)
+                {
+                    if (decorator.Validate(assignedValue))
+                    {
+                        Log.LogTrace("{DecoratorName} OK!", decorator.DecoratorType.Name);
+                    }
+                    else
+                    {
+                        Log.LogTrace("{DecoratorName} Validation Failure: {Value}", decorator.DecoratorType.Name, value);
+
+                        return false;
                     }
                 }
             }
@@ -238,7 +228,7 @@ namespace Tokens
             }
             catch (MissingMemberException)
             {
-                Log.Verbose($"Missing property on target: {Name}");
+                Log.LogTrace("Missing property on target: {PropertyName}", Name);
 
                 if (options.IgnoreMissingProperties == false)
                 {
@@ -247,7 +237,7 @@ namespace Tokens
             }
             catch (TypeConversionException ex)
             {
-                Log.Verbose($"{ex.Message}");
+                Log.LogTrace("{Message}", ex.Message);
 
                 return false;
             }

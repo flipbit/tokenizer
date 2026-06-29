@@ -25,10 +25,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { FirstName = "", LastName = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Name: John\nName: Doe", value, context, result);
+        _engine.ProcessTokenization(template, "Name: John\nName: Doe", null, context, result);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -59,10 +57,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Required = "", Optional = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Req: Value", value, context, result);
+        _engine.ProcessTokenization(template, "Req: Value", null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -81,10 +77,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "John is here", value, context, result);
+        _engine.ProcessTokenization(template, "John is here", null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -103,10 +97,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Name is John", value, context, result);
+        _engine.ProcessTokenization(template, "Name is John", null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -125,10 +117,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Item = new System.Collections.Generic.List<string>() };
-
         // Act
-        _engine.ProcessTokenization(template, "Item: Apple\nItem: Banana\nItem: Cherry", value, context, result);
+        _engine.ProcessTokenization(template, "Item: Apple\nItem: Banana\nItem: Cherry", null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -146,10 +136,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Item = new System.Collections.Generic.List<string>() };
-
         // Act
-        _engine.ProcessTokenization(template, "Apple\nBanana\n\nCherry", value, context, result);
+        _engine.ProcessTokenization(template, "Apple\nBanana\n\nCherry", null, context, result);
 
         // Assert - Should stop at the blank line
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -167,10 +155,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "", Age = 0 };
-
         // Act
-        _engine.ProcessTokenization(template, "Name: Age: 25", value, context, result);
+        _engine.ProcessTokenization(template, "Name: Age: 25", null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0 || result.Tokens.Misses.Count > 0);
@@ -199,10 +185,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Token1 = "", Token2 = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Value: Test", value, context, result);
+        _engine.ProcessTokenization(template, "Value: Test", null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -240,10 +224,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { FirstName = "", Remaining = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Name: John everything else", value, context, result);
+        _engine.ProcessTokenization(template, "Name: John everything else", null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -269,10 +251,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Optional = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "No optional here", value, context, result);
+        _engine.ProcessTokenization(template, "No optional here", null, context, result);
 
         // Assert
         Assert.Empty(result.Tokens.Matches);
@@ -291,10 +271,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "", Age = 0 };
-
         // Act - Provide input in reverse order
-        _engine.ProcessTokenization(template, "Name: John\nAge: 25", value, context, result);
+        _engine.ProcessTokenization(template, "Name: John\nAge: 25", null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -313,10 +291,8 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "", Age = 0 };
-
         // Act - Provide input in reverse order
-        _engine.ProcessTokenization(template, "Name: John\nAge: 25", value, context, result);
+        _engine.ProcessTokenization(template, "Name: John\nAge: 25", null, context, result);
 
         // Assert - Behavior depends on strict ordering
         Assert.NotNull(result);

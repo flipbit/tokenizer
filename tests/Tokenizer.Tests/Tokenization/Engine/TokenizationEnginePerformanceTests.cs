@@ -31,10 +31,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         // Act
-        _engine.ProcessTokenization(template, largeInput.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, largeInput.ToString(), null, context, result);
 
         // Assert
         Assert.NotNull(result);
@@ -55,10 +53,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Content = "" };
-
         // Act
-        _engine.ProcessTokenization(template, largeInput, value, context, result);
+        _engine.ProcessTokenization(template, largeInput, null, context, result);
 
         // Assert
         Assert.NotNull(result);
@@ -92,10 +88,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 50); // At least half matched
@@ -119,10 +113,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Item = "" };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.NotNull(result);
@@ -147,10 +139,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Item = new List<string>() };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.NotNull(result);
@@ -179,10 +169,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 25); // At least half matched
@@ -211,10 +199,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.NotNull(result);
@@ -235,10 +221,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Content = "" };
-
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -262,10 +246,8 @@ public class TokenizationEnginePerformanceTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), value, context, result);
+        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -289,9 +271,7 @@ public class TokenizationEnginePerformanceTests
                 .WithTemplate(template)
                 .Build();
 
-            var value = new { Name = "", Age = 0 };
-
-            _engine.ProcessTokenization(template, input, value, context, result);
+            _engine.ProcessTokenization(template, input, null, context, result);
             results.Add(result);
         }
 
@@ -317,8 +297,7 @@ public class TokenizationEnginePerformanceTests
             var result = new TokenizeResultBuilder()
                 .WithTemplate(template)
                 .Build();
-            var value = new { Name = "" };
-            _engine.ProcessTokenization(template, "Name: Test", value, c, result);
+            _engine.ProcessTokenization(template, "Name: Test", null, c, result);
             return result;
         }).ToList();
 

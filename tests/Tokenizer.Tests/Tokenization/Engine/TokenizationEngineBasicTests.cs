@@ -57,10 +57,8 @@ public class TokenizationEngineBasicTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "Hello World", value, context, result);
+        _engine.ProcessTokenization(template, "Hello World", null, context, result);
 
         // Assert
         Assert.NotNull(result);

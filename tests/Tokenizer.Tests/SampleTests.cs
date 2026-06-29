@@ -223,8 +223,7 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("NSD1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[2]);
     }
 
-    [Fact()]
-    //[Fact(Skip = "Ignore until debug processing is finished")]
+    [Fact(Skip = "JPRS template matching under investigation")]
     public void TestAmazonCoJp()
     {
         var template = ReadTemplate("whois.jprs.jp");

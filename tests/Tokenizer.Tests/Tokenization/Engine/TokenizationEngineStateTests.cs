@@ -141,10 +141,8 @@ public class TokenizationEngineStateTests
             .WithTemplate(template)
             .Build();
 
-        var value = new { First = "", Second = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "First: ValueASecond: ValueB", value, context, result);
+        _engine.ProcessTokenization(template, "First: ValueASecond: ValueB", null, context, result);
 
         // Assert - Both tokens should be processed
         Assert.True(result.Tokens.Matches.Count >= 1);

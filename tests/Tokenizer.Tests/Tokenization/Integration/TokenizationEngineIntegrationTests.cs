@@ -37,20 +37,6 @@ Notes: {Notes}
             .WithTemplate(template)
             .Build();
 
-        var value = new
-        {
-            Name = "",
-            Age = 0,
-            Email = "",
-            Phone = "",
-            Address = "",
-            City = "",
-            State = "",
-            Zip = "",
-            Country = "",
-            Notes = ""
-        };
-
         var input = @"
 Name: John Doe
 Age: 30
@@ -65,7 +51,7 @@ Notes: Test notes
 ";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 8); // At least most tokens matched
@@ -90,10 +76,8 @@ Notes: Test notes
             .WithTemplate(template)
             .Build();
 
-        var value = new { Required1 = "", Optional1 = "", Required2 = "", Optional2 = "" };
-
         // Act
-        _engine.ProcessTokenization(template, "R1: Value1\nR2: Value2", value, context, result);
+        _engine.ProcessTokenization(template, "R1: Value1\nR2: Value2", null, context, result);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -112,16 +96,10 @@ Notes: Test notes
             .WithTemplate(template)
             .Build();
 
-        var value = new
-        {
-            Title = "",
-            Item = new List<string>()
-        };
-
         var input = "Title: My List\nItem: First\nItem: Second\nItem: Third";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2); // Title + at least some items
@@ -142,12 +120,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Content = "" };
-
         var input = "Content: Test content";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -165,12 +141,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Line1 = "", Line2 = "", Line3 = "" };
-
         var input = "Line1: First\nLine2: Second\nLine3: Third";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -188,12 +162,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Line1 = "", Line2 = "" };
-
         var input = "Line1: First\r\nLine2: Second";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -211,12 +183,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         var input = "Name: john";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -235,12 +205,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         var input = "Name:   john  ";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -258,12 +226,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Age = 0 };
-
         var input = "Age: 25";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -284,12 +250,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Name = "" };
-
         var input = "Expected Name: John";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -308,12 +272,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Section1 = "", Item1 = "", Section2 = "", Item2 = "" };
-
         var input = "Section1: First\n  Item: ItemA\nSection2: Second\n  Item: ItemB";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2);
@@ -331,12 +293,10 @@ Content: {Content}");
             .WithTemplate(template)
             .Build();
 
-        var value = new { Content = "" };
-
         var input = "Line: This is content\nNext line should not be included";
 
         // Act
-        _engine.ProcessTokenization(template, input, value, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.Single(result.Tokens.Matches);

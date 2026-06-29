@@ -55,4 +55,94 @@ public class TokenizerSafetyLimitTests
         // Assert
         Assert.NotNull(result);
     }
+
+    [Fact]
+    public void GivenTemplateExceedingMaxLength_WhenParsing_ThenThrowsParsingException()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxTemplateLength = 50;
+        var tokenizer = Tokenizer.Create(options);
+        var longTemplate = "Name: {Name}" + new string(' ', 50);
+
+        // Act & Assert
+        var ex = Assert.Throws<ParsingException>(() =>
+            tokenizer.Tokenize(longTemplate, "Name: John"));
+        Assert.Contains("MaxTemplateLength", ex.Message);
+    }
+
+    [Fact]
+    public void GivenTemplateAtMaxLength_WhenParsing_ThenProcessesSuccessfully()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxTemplateLength = 100;
+        var tokenizer = Tokenizer.Create(options);
+        var template = "Name: {Name}";
+
+        // Act
+        var result = tokenizer.Tokenize(template, "Name: John");
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public void GivenMaxTemplateLengthDisabled_WhenParsingLargeTemplate_ThenProcessesSuccessfully()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxTemplateLength = 0;
+        var tokenizer = Tokenizer.Create(options);
+        var template = "Name: {Name}" + new string(' ', 100_000);
+
+        // Act
+        var result = tokenizer.Tokenize(template, "Name: John");
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public void GivenTemplateExceedingMaxTokenCount_WhenParsing_ThenThrowsParsingException()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxTokenCount = 5;
+        var tokenizer = Tokenizer.Create(options);
+
+        var templateBuilder = new System.Text.StringBuilder();
+        for (int i = 0; i < 6; i++)
+        {
+            templateBuilder.Append($"T{i}: {{Token{i}}}\n");
+        }
+
+        // Act & Assert
+        var ex = Assert.Throws<ParsingException>(() =>
+            tokenizer.Tokenize(templateBuilder.ToString(), "T0: Value"));
+        Assert.Contains("6", ex.Message);
+        Assert.Contains("5", ex.Message);
+        Assert.Contains("MaxTokenCount", ex.Message);
+    }
+
+    [Fact]
+    public void GivenTemplateAtMaxTokenCount_WhenParsing_ThenProcessesSuccessfully()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxTokenCount = 5;
+        var tokenizer = Tokenizer.Create(options);
+
+        var templateBuilder = new System.Text.StringBuilder();
+        for (int i = 0; i < 5; i++)
+        {
+            templateBuilder.Append($"T{i}: {{Token{i}}}\n");
+        }
+
+        // Act
+        var result = tokenizer.Tokenize(templateBuilder.ToString(), "T0: Value0\nT1: Value1");
+
+        // Assert
+        Assert.NotNull(result);
+    }
 }

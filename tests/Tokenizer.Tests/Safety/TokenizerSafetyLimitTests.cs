@@ -145,4 +145,63 @@ public class TokenizerSafetyLimitTests
         // Assert
         Assert.NotNull(result);
     }
+
+    [Fact]
+    public void GivenMaxIterationsExceeded_WhenTokenizing_ThenThrowsTokenizerException()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxIterations = 5;
+        var tokenizer = Tokenizer.Create(options);
+
+        // Act & Assert
+        var ex = Assert.Throws<TokenizerException>(() =>
+            tokenizer.Tokenize("Name: {Name}", "Name: John Doe"));
+        Assert.Contains("MaxIterations", ex.Message);
+    }
+
+    [Fact]
+    public void GivenAutoMaxIterations_WhenTokenizingNormalInput_ThenProcessesSuccessfully()
+    {
+        // Arrange — default MaxIterations=0 means auto (input.Length * 2)
+        var options = TokenizerOptions.Defaults;
+        var tokenizer = Tokenizer.Create(options);
+
+        // Act
+        var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Tokens.Matches.Count >= 1);
+    }
+
+    [Fact]
+    public void GivenCustomMaxIterations_WhenWithinLimit_ThenProcessesSuccessfully()
+    {
+        // Arrange
+        var options = TokenizerOptions.Defaults;
+        options.MaxIterations = 10000;
+        var tokenizer = Tokenizer.Create(options);
+
+        // Act
+        var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Tokens.Matches.Count >= 1);
+    }
+
+    [Fact]
+    public void GivenDefaultOptions_WhenTokenizingNormalInput_ThenProcessesSuccessfully()
+    {
+        // Arrange — verify defaults don't interfere with normal usage
+        var tokenizer = Tokenizer.Create();
+
+        // Act
+        var result = tokenizer.Tokenize("Name: {Name}\nAge: {Age}", "Name: John\nAge: 30");
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal(2, result.Tokens.Matches.Count);
+    }
 }

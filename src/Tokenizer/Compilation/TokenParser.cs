@@ -112,6 +112,14 @@ namespace Tokens.Compilation
 
             log.LogInformation("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
 
+            if (Options.MaxTemplateLength > 0 && content.Length > Options.MaxTemplateLength)
+            {
+                throw new ParsingException(
+                    $"Template length {content.Length:N0} exceeds maximum allowed length of {Options.MaxTemplateLength:N0}. " +
+                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.",
+                    new Tokens.Enumerators.FileLocation());
+            }
+
             var template = new Template(name, content);
 
             log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
@@ -230,6 +238,14 @@ namespace Tokens.Compilation
                 {
                     log.LogTrace("Token[{TokenId:000}]: {Token}", token.Id, token);
                 }
+            }
+
+            if (Options.MaxTokenCount > 0 && template.Tokens.Count > Options.MaxTokenCount)
+            {
+                throw new ParsingException(
+                    $"Template contains {template.Tokens.Count} tokens, exceeding maximum of {Options.MaxTokenCount:N0}. " +
+                    "Increase TokenizerOptions.MaxTokenCount to allow more tokens.",
+                    new Tokens.Enumerators.FileLocation());
             }
 
             log.LogTrace("Parsed '{TemplateName}' - {ContentLength} byte(s) in {Elapsed}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));

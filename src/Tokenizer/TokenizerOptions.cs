@@ -56,6 +56,18 @@ namespace Tokens
         /// </summary>
         public int MaxInputLength { get; set; } = 1_048_576;
 
+        /// <summary>
+        /// Maximum allowed length for template pattern text. Default: 65,536 (64KB).
+        /// Set to 0 to disable.
+        /// </summary>
+        public int MaxTemplateLength { get; set; } = 65_536;
+
+        /// <summary>
+        /// Maximum number of tokens allowed in a template. Default: 500.
+        /// Set to 0 to disable.
+        /// </summary>
+        public int MaxTokenCount { get; set; } = 500;
+
         public TokenizerOptions Clone()
         {
             return new TokenizerOptions
@@ -69,7 +81,9 @@ namespace Tokens
                 TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
                 TerminateOnNewline = TerminateOnNewline,
                 IgnoreMissingProperties = IgnoreMissingProperties,
-                MaxInputLength = MaxInputLength
+                MaxInputLength = MaxInputLength,
+                MaxTemplateLength = MaxTemplateLength,
+                MaxTokenCount = MaxTokenCount
             };
         }
     }

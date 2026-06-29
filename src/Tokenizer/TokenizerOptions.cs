@@ -50,6 +50,12 @@ namespace Tokens
         /// </summary>
         public bool TerminateOnNewline { get; set; }
 
+        /// <summary>
+        /// Maximum allowed length for input text. Default: 1,048,576 (1MB).
+        /// Set to 0 to disable.
+        /// </summary>
+        public int MaxInputLength { get; set; } = 1_048_576;
+
         public TokenizerOptions Clone()
         {
             return new TokenizerOptions
@@ -62,7 +68,8 @@ namespace Tokens
                 EnableLineByLineLogging = EnableLineByLineLogging,
                 TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
                 TerminateOnNewline = TerminateOnNewline,
-                IgnoreMissingProperties = IgnoreMissingProperties
+                IgnoreMissingProperties = IgnoreMissingProperties,
+                MaxInputLength = MaxInputLength
             };
         }
     }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation;
 using Tokens.Enumerators;
+using Tokens.Exceptions;
 using Tokens.Tokenization;
 using Tokens.Transformers;
 using Tokens.Validators;
@@ -114,6 +115,14 @@ namespace Tokens
 
         private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
         {
+            // Safety limit: maximum input length
+            if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
+            {
+                throw new TokenizerException(
+                    $"Input length {input.Length:N0} exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
+                    "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+            }
+
             using (log.BeginScope(new Dictionary<string, object>
             {
                 ["TemplateName"] = template.Name,

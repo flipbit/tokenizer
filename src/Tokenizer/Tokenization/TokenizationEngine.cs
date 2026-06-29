@@ -99,7 +99,7 @@ namespace Tokens.Tokenization
                 template.Tokens.Count);
 
             var iterationCount = 0;
-            var maxIterations = template.Options.MaxIterations > 0
+            var maxIterations = template.Options?.MaxIterations > 0
                 ? template.Options.MaxIterations
                 : input.Length * 2;
 

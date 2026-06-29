@@ -147,8 +147,15 @@ namespace Tokens.Tokenization
                         
                         
 
-                        // We have candidates and found a new token -> always switch
-                        HandleTokenSwitch(context, template, targetObject, result, matches, lineTracker);
+                        // Only switch if we've accumulated a value — otherwise consume a character first
+                        if (context.Replacement.Length > 0)
+                        {
+                            HandleTokenSwitch(context, template, targetObject, result, matches, lineTracker);
+                        }
+                        else
+                        {
+                            HandleNoTokenMatch(context, next);
+                        }
                     }
                     else
                     {

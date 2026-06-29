@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Enumerators;
+using Tokens.Exceptions;
 
 namespace Tokens.Tokenization
 {
@@ -97,9 +98,23 @@ namespace Tokens.Tokenization
             log.LogDebug("Phase: Initialization completed. Starting main tokenization loop with {TokenCount} tokens",
                 template.Tokens.Count);
 
+            var iterationCount = 0;
+            var maxIterations = template.Options.MaxIterations > 0
+                ? template.Options.MaxIterations
+                : input.Length * 2;
+
                 // Main tokenization loop
                 while (context.Enumerator.IsEmpty == false)
                 {
+                    iterationCount++;
+                    if (iterationCount > maxIterations)
+                    {
+                        throw new TokenizerException(
+                            $"Tokenization exceeded maximum iteration count of {maxIterations:N0}. " +
+                            "This may indicate a problematic template pattern. " +
+                            "Increase TokenizerOptions.MaxIterations to allow more iterations.");
+                    }
+
                     var next = context.Enumerator.Peek();
 
                     // Handle Windows new lines (normalize to Unix)

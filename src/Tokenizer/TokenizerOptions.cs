@@ -68,6 +68,13 @@ namespace Tokens
         /// </summary>
         public int MaxTokenCount { get; set; } = 500;
 
+        /// <summary>
+        /// Maximum number of iterations in the tokenization loop.
+        /// Default: 0 (auto-calculated as input.Length * 2).
+        /// Set to a positive value to override.
+        /// </summary>
+        public int MaxIterations { get; set; } = 0;
+
         public TokenizerOptions Clone()
         {
             return new TokenizerOptions
@@ -83,7 +90,8 @@ namespace Tokens
                 IgnoreMissingProperties = IgnoreMissingProperties,
                 MaxInputLength = MaxInputLength,
                 MaxTemplateLength = MaxTemplateLength,
-                MaxTokenCount = MaxTokenCount
+                MaxTokenCount = MaxTokenCount,
+                MaxIterations = MaxIterations
             };
         }
     }

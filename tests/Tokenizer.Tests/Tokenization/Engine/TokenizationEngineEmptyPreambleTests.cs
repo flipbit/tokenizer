@@ -1,0 +1,144 @@
+using Tokens.Compilation;
+using Tokens.Tokenization;
+using Tokens.Builders;
+using Xunit;
+
+namespace Tokens.Tests.Tokenization.Engine;
+
+public class TokenizationEngineEmptyPreambleTests
+{
+    private readonly TokenizationEngine _engine = new();
+
+    [Fact]
+    public void GivenConsecutiveTokensWithNoPreambles_WhenTokenizing_ThenAssignsOneCharEach()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("{a}{b}{c}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "abc", null, context, result);
+
+        // Assert
+        Assert.Equal(3, result.Tokens.Matches.Count);
+        Assert.Equal("a", result.Tokens.Matches[0].Value);
+        Assert.Equal("b", result.Tokens.Matches[1].Value);
+        Assert.Equal("c", result.Tokens.Matches[2].Value);
+    }
+
+    [Fact]
+    public void GivenConsecutiveTokensWithNoPreambles_WhenInputLongerThanTokens_ThenLastTokenGetsRemainder()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("{a}{b}{c}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "abcdef", null, context, result);
+
+        // Assert
+        Assert.Equal(3, result.Tokens.Matches.Count);
+        Assert.Equal("a", result.Tokens.Matches[0].Value);
+        Assert.Equal("b", result.Tokens.Matches[1].Value);
+        Assert.Equal("cdef", result.Tokens.Matches[2].Value);
+    }
+
+    [Fact]
+    public void GivenConsecutiveTokensWithNoPreambles_WhenInputShorterThanTokens_ThenUnmatchedTokensAreMisses()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("{a}{b}{c}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "ab", null, context, result);
+
+        // Assert
+        Assert.Equal(2, result.Tokens.Matches.Count);
+        Assert.Equal("a", result.Tokens.Matches[0].Value);
+        Assert.Equal("b", result.Tokens.Matches[1].Value);
+    }
+
+    [Fact]
+    public void GivenSingleTokenWithNoPreamble_WhenTokenizing_ThenGetsEntireInput()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("{a}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "hello", null, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+        Assert.Equal("hello", result.Tokens.Matches[0].Value);
+    }
+
+    [Fact]
+    public void GivenMixedPreambleAndNoPreambleTokens_WhenTokenizing_ThenMatchesCorrectly()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("X{a}{b}Y{c}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "XabYc", null, context, result);
+
+        // Assert
+        Assert.Equal(3, result.Tokens.Matches.Count);
+        Assert.Equal("a", result.Tokens.Matches[0].Value);
+        Assert.Equal("b", result.Tokens.Matches[1].Value);
+        Assert.Equal("c", result.Tokens.Matches[2].Value);
+    }
+
+    [Fact]
+    public void GivenTwoConsecutiveTokens_WhenSingleCharInput_ThenFirstTokenMatchesSecondMisses()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("{a}{b}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        // Act
+        _engine.ProcessTokenization(template, "x", null, context, result);
+
+        // Assert
+        Assert.Single(result.Tokens.Matches);
+        Assert.Equal("x", result.Tokens.Matches[0].Value);
+    }
+
+    [Fact]
+    public void GivenManyConsecutiveTokensWithNoPreambles_WhenTokenizing_ThenCompletes()
+    {
+        // Arrange
+        var templateBuilder = new System.Text.StringBuilder();
+        for (int i = 0; i < 100; i++)
+        {
+            templateBuilder.Append($"{{t{i}}}");
+        }
+
+        var parser = new TokenParser();
+        var template = parser.Parse(templateBuilder.ToString());
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        var input = new string('x', 100);
+
+        // Act
+        _engine.ProcessTokenization(template, input, null, context, result);
+
+        // Assert — the key thing is that this completes (does not hang)
+        Assert.Equal(100, result.Tokens.Matches.Count);
+    }
+}

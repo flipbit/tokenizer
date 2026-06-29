@@ -19,6 +19,7 @@ namespace Tokens
             tokens = new List<Token>();
             Hints = new List<Hint>();
             Tags = new List<string>();
+            Options = new TokenizerOptions();
         }
 
         public Template(string name, string content) : this()

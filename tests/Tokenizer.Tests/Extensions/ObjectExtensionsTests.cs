@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Tokens.Extensions;
@@ -17,6 +18,11 @@ public class ObjectExtensionsTests
     private class Bar
     {
         public int Age { get; set; }
+    }
+
+    private class GetterOnlyCollectionTarget
+    {
+        public IList<string> Tags { get; } = new List<string>();
     }
 
     [Fact]
@@ -128,5 +134,21 @@ public class ObjectExtensionsTests
         var result = foo.GetValue("Boo");
 
         Assert.Equal(5, result);
+    }
+
+    [Fact]
+    public void GivenGetterOnlyListProperty_WhenSetValue_ThenAddsToExistingCollection()
+    {
+        // Arrange
+        var target = new GetterOnlyCollectionTarget();
+
+        // Act
+        target.SetValue("Tags", "first");
+        target.SetValue("Tags", "second");
+
+        // Assert
+        Assert.Equal(2, target.Tags.Count);
+        Assert.Equal("first", target.Tags[0]);
+        Assert.Equal("second", target.Tags[1]);
     }
 }

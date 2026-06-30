@@ -57,18 +57,9 @@ namespace Tokens.Extensions
                     $"CanWrite: {propertyInfo.CanWrite}, HasSetter: {propertyInfo.GetSetMethod() != null}, " +
                     $"PropertyType: {propertyInfo.PropertyType.Name}, ValueType: {value?.GetType().Name ?? "null"}");
 
-                // Layer 2: Business Logic Validation
-                // Check if property is writable before attempting to set it
-                if (!propertyInfo.CanWrite || propertyInfo.GetSetMethod() == null)
-                {
-                    throw new InvalidOperationException(
-                        $"Cannot set property '{propertyInfo.Name}' on type '{@object.GetType().Name}': " +
-                        "property is read-only. Anonymous types and read-only properties cannot be modified.");
-                }
-
                 if (path.Count == 1)
                 {
-                    if (propertyInfo.PropertyType.IsGenericType && 
+                    if (propertyInfo.PropertyType.IsGenericType &&
                        (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>) ||
                         propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
                     {
@@ -76,6 +67,13 @@ namespace Tokens.Extensions
 
                         if (list == null)
                         {
+                            if (!propertyInfo.CanWrite || propertyInfo.GetSetMethod() == null)
+                            {
+                                throw new InvalidOperationException(
+                                    $"Cannot set property '{propertyInfo.Name}' on type '{@object.GetType().Name}': " +
+                                    "property is read-only and the collection is null.");
+                            }
+
                             var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
                             var enumerableType = typeof(List<>);
                             var constructedEnumerableType = enumerableType.MakeGenericType(genericType);
@@ -100,6 +98,12 @@ namespace Tokens.Extensions
                             addMethod.Invoke(list, new[] { value });
                         }
 
+                    }
+                    else if (!propertyInfo.CanWrite || propertyInfo.GetSetMethod() == null)
+                    {
+                        throw new InvalidOperationException(
+                            $"Cannot set property '{propertyInfo.Name}' on type '{@object.GetType().Name}': " +
+                            "property is read-only. Anonymous types and read-only properties cannot be modified.");
                     }
                     else if (propertyInfo.PropertyType.IsGenericType &&
                              propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))

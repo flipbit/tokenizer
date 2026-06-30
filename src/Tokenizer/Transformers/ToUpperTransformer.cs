@@ -7,8 +7,7 @@
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
-            var valueString = value?.ToString();
-            if (string.IsNullOrEmpty(valueString))
+            if (value?.ToString() is not { Length: > 0 } valueString)
             {
                 transformed = string.Empty;
             }

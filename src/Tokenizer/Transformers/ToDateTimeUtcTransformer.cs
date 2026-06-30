@@ -11,9 +11,7 @@ namespace Tokens.Transformers
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
-            var valueString = value as string;
-
-            if (!string.IsNullOrWhiteSpace(valueString))
+            if (value is string valueString && !string.IsNullOrWhiteSpace(valueString))
             {
                 if (valueString.Contains("(UTC)"))
                 {

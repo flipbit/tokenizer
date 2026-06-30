@@ -16,40 +16,63 @@ public class SampleTests : TokenizerTestBase
         tokenizer = CreateTokenizer();
     }
 
-    [Fact(Skip = "Ignore until debug processing is finished")]
+    [Fact]
+    // Fails at template parsing stage: ParsingException "Unescaped '}' in text" at line 32.
+    // The whois.uk template has a syntax error, so diagnostics cannot be exercised here.
+    // Root cause is a template authoring issue, not a tokenization engine issue.
     public void TestWhoisUk()
     {
         var template = ReadTemplate("whois.uk");
         var input = ReadData("bbc.co.uk");
 
-        var result = tokenizer.Tokenize(template, input);
+        var diagTokenizer = CreateDiagnosticTokenizer();
+        var result = diagTokenizer.Tokenize(template, input);
 
-        Assert.NotNull(result);
+        try
+        {
+            Assert.NotNull(result);
 
-        Assert.Equal("bbc.co.uk", result.First("DomainName"));
-        Assert.Equal("British Broadcasting Corporation", result.First("Registrant.Name"));
+            Assert.Equal("bbc.co.uk", result.First("DomainName"));
+            Assert.Equal("British Broadcasting Corporation", result.First("Registrant.Name"));
 
-        Assert.Equal(6, result.All("Registrant.Address").Count);
-        Assert.Equal("British Broadcasting Corporation", result.All("Registrant.Address")[0]);
-        Assert.Equal("Broadcasting House", result.All("Registrant.Address")[1]);
-        Assert.Equal("Portland Place", result.All("Registrant.Address")[2]);
-        Assert.Equal("London", result.All("Registrant.Address")[3]);
-        Assert.Equal("W1A 1AA", result.All("Registrant.Address")[4]);
-        Assert.Equal("United Kingdom", result.All("Registrant.Address")[5]);
+            Assert.Equal(6, result.All("Registrant.Address").Count);
+            Assert.Equal("British Broadcasting Corporation", result.All("Registrant.Address")[0]);
+            Assert.Equal("Broadcasting House", result.All("Registrant.Address")[1]);
+            Assert.Equal("Portland Place", result.All("Registrant.Address")[2]);
+            Assert.Equal("London", result.All("Registrant.Address")[3]);
+            Assert.Equal("W1A 1AA", result.All("Registrant.Address")[4]);
+            Assert.Equal("United Kingdom", result.All("Registrant.Address")[5]);
 
-        Assert.Equal("British Broadcasting Corporation [Tag = BBC]", result.First("Registrar.Name"));
-        Assert.Equal("http://www.bbc.co.uk", result.First("Registrar.Url"));
-        Assert.Equal(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Registered"));
-        Assert.Equal(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
-        Assert.Equal(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Updated"));
-        Assert.Equal("Registered until expiry date.", result.First("DomainStatus"));
+            Assert.Equal("British Broadcasting Corporation [Tag = BBC]", result.First("Registrar.Name"));
+            Assert.Equal("http://www.bbc.co.uk", result.First("Registrar.Url"));
+            Assert.Equal(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Registered"));
+            Assert.Equal(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
+            Assert.Equal(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Updated"));
+            Assert.Equal("Registered until expiry date.", result.First("DomainStatus"));
 
-        Assert.Equal(3, result.All("NameServers").Count);
-        Assert.Equal("ns1.rbsov.bbc.co.uk", result.All("NameServers")[0]);
-        Assert.Equal("ns1.tcams.bbc.co.uk", result.All("NameServers")[1]);
-        Assert.Equal("ns1.thdow.bbc.co.uk", result.All("NameServers")[2]);
+            Assert.Equal(3, result.All("NameServers").Count);
+            Assert.Equal("ns1.rbsov.bbc.co.uk", result.All("NameServers")[0]);
+            Assert.Equal("ns1.tcams.bbc.co.uk", result.All("NameServers")[1]);
+            Assert.Equal("ns1.thdow.bbc.co.uk", result.All("NameServers")[2]);
 
-        Assert.Equal("Found", result.First("Status"));
+            Assert.Equal("Found", result.First("Status"));
+        }
+        catch
+        {
+            if (result.Diagnostics != null)
+            {
+                Output.WriteLine(result.Diagnostics.RenderAlignment());
+                Output.WriteLine("---");
+                Output.WriteLine(result.Diagnostics.Summary.Verdict);
+                foreach (var issue in result.Diagnostics.Summary.Issues)
+                {
+                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                    if (issue.Hint != null)
+                        Output.WriteLine($"    Hint: {issue.Hint}");
+                }
+            }
+            throw;
+        }
     }
 
     [Fact]
@@ -223,31 +246,53 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("NSD1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[2]);
     }
 
-    [Fact(Skip = "JPRS template matching under investigation")]
+    [Fact]
+    // Diagnostics: 0 of 8 tokens matched. All report "preamble never found" despite preambles
+    // being present in input. Root cause is likely the $/* shorthand syntax in the JPRS template
+    // producing different preamble text than expected during compilation.
     public void TestAmazonCoJp()
     {
         var template = ReadTemplate("whois.jprs.jp");
         var input = ReadData("amazon.co.jp");
 
-        var result = tokenizer.Tokenize(template, input);
+        var diagTokenizer = CreateDiagnosticTokenizer();
+        var result = diagTokenizer.Tokenize(template, input);
 
-        Assert.True(result.Success);
-        Assert.Equal(11, result.Matches.Count);
+        try
+        {
+            Assert.True(result.Success);
+            Assert.Equal(11, result.Matches.Count);
 
-        Assert.Equal("amazon.co.jp", result.First("DomainName"));
-        Assert.Equal("Amazon, Inc.", result.First("Registrar.Name"));
-        Assert.Equal("JC076JP", result.First("AdminContact.Name"));
-        Assert.Equal("IK4644JP", result.First("TechnicalContact.Name"));
-        Assert.Equal(new DateTime(2002, 11, 21), result.First("Registered"));
-        Assert.Equal(new DateTime(2018, 12, 1), result.First("Updated"));
+            Assert.Equal("amazon.co.jp", result.First("DomainName"));
+            Assert.Equal("Amazon, Inc.", result.First("Registrar.Name"));
+            Assert.Equal("JC076JP", result.First("AdminContact.Name"));
+            Assert.Equal("IK4644JP", result.First("TechnicalContact.Name"));
+            Assert.Equal(new DateTime(2002, 11, 21), result.First("Registered"));
+            Assert.Equal(new DateTime(2018, 12, 1), result.First("Updated"));
 
-        var nameServers = (List<object>) result.All("NameServers");
+            var nameServers = (List<object>) result.All("NameServers");
 
-        Assert.Equal("ns1.p31.dynect.net", nameServers[0]);
-        Assert.Equal("ns2.p31.dynect.net", nameServers[1]);
-        Assert.Equal("pdns1.ultradns.net", nameServers[2]);
-        Assert.Equal("pdns6.ultradns.co.uk", nameServers[3]);
-
+            Assert.Equal("ns1.p31.dynect.net", nameServers[0]);
+            Assert.Equal("ns2.p31.dynect.net", nameServers[1]);
+            Assert.Equal("pdns1.ultradns.net", nameServers[2]);
+            Assert.Equal("pdns6.ultradns.co.uk", nameServers[3]);
+        }
+        catch
+        {
+            if (result.Diagnostics != null)
+            {
+                Output.WriteLine(result.Diagnostics.RenderAlignment());
+                Output.WriteLine("---");
+                Output.WriteLine(result.Diagnostics.Summary.Verdict);
+                foreach (var issue in result.Diagnostics.Summary.Issues)
+                {
+                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                    if (issue.Hint != null)
+                        Output.WriteLine($"    Hint: {issue.Hint}");
+                }
+            }
+            throw;
+        }
     }
 
     [Fact]
@@ -386,67 +431,90 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal(new DateTime(2001, 08, 23), result.First("Registered"));
     }
 
-    [Fact(Skip = "whois.ve template matching under investigation")]
+    [Fact]
+    // Diagnostics: 33 of 40 matched. Missed: Registrant.TelephoneNumber, Registrant.FaxNumber,
+    // Expiration, Updated, Registered, DomainStatus (preamble never found), plus NameServers
+    // validator failures. The date/status tokens use Spanish-language preambles not in template.
     public void TestWhoisVe()
     {
         var template = ReadTemplate("whois.ve");
         var input = ReadData("aloespa.com.ve");
 
-        var result = tokenizer.Tokenize(template, input);
+        var diagTokenizer = CreateDiagnosticTokenizer();
+        var result = diagTokenizer.Tokenize(template, input);
 
-        Assert.Equal("Rafael Perez", result.First("Registrant.Name"));
-        Assert.Equal("aloespa.com.ve-dom", result.First("Registrant.RegistryId"));
-        Assert.Equal("registro@tepuynet.com", result.First("Registrant.Email"));
+        try
+        {
+            Assert.Equal("Rafael Perez", result.First("Registrant.Name"));
+            Assert.Equal("aloespa.com.ve-dom", result.First("Registrant.RegistryId"));
+            Assert.Equal("registro@tepuynet.com", result.First("Registrant.Email"));
 
-        Assert.Equal(3, result.All("Registrant.Address").Count);
-        Assert.Equal("Rafael Perez", result.All("Registrant.Address")[0]);
-        Assert.Equal("Caracas", result.All("Registrant.Address")[1]);
-        Assert.Equal("Caracas, D. Federal  VE", result.All("Registrant.Address")[2]);
+            Assert.Equal(3, result.All("Registrant.Address").Count);
+            Assert.Equal("Rafael Perez", result.All("Registrant.Address")[0]);
+            Assert.Equal("Caracas", result.All("Registrant.Address")[1]);
+            Assert.Equal("Caracas, D. Federal  VE", result.All("Registrant.Address")[2]);
 
-        Assert.Equal("aloespa.com.ve", result.First("DomainName"));
-        Assert.Equal("Tepuynet", result.First("AdminContact.Name"));
-        Assert.Equal("aloespa.com.ve-adm", result.First("AdminContact.RegistryId"));
-        Assert.Equal("registro@tepuynet.com", result.First("AdminContact.Email"));
+            Assert.Equal("aloespa.com.ve", result.First("DomainName"));
+            Assert.Equal("Tepuynet", result.First("AdminContact.Name"));
+            Assert.Equal("aloespa.com.ve-adm", result.First("AdminContact.RegistryId"));
+            Assert.Equal("registro@tepuynet.com", result.First("AdminContact.Email"));
 
-        Assert.Equal(3, result.All("AdminContact.Address").Count);
-        Assert.Equal("Tepuynet C.A.", result.All("AdminContact.Address")[0]);
-        Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("AdminContact.Address")[1]);
-        Assert.Equal("Valencia, Carabobo  VE", result.All("AdminContact.Address")[2]);
+            Assert.Equal(3, result.All("AdminContact.Address").Count);
+            Assert.Equal("Tepuynet C.A.", result.All("AdminContact.Address")[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("AdminContact.Address")[1]);
+            Assert.Equal("Valencia, Carabobo  VE", result.All("AdminContact.Address")[2]);
 
-        Assert.Equal("2418246437", result.First("AdminContact.TelephoneNumber"));
-        Assert.Equal("2418246437", result.First("AdminContact.FaxNumber"));
-        Assert.Equal("Tepuynet", result.First("TechnicalContact.Name"));
-        Assert.Equal("aloespa.com.ve-tec", result.First("TechnicalContact.RegistryId"));
-        Assert.Equal("registro@tepuynet.com", result.First("TechnicalContact.Email"));
+            Assert.Equal("2418246437", result.First("AdminContact.TelephoneNumber"));
+            Assert.Equal("2418246437", result.First("AdminContact.FaxNumber"));
+            Assert.Equal("Tepuynet", result.First("TechnicalContact.Name"));
+            Assert.Equal("aloespa.com.ve-tec", result.First("TechnicalContact.RegistryId"));
+            Assert.Equal("registro@tepuynet.com", result.First("TechnicalContact.Email"));
 
-        Assert.Equal(3, result.All("TechnicalContact.Address").Count);
-        Assert.Equal("Tepuynet C.A.", result.All("TechnicalContact.Address")[0]);
-        Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("TechnicalContact.Address")[1]);
-        Assert.Equal("Valencia, Carabobo  VE", result.All("TechnicalContact.Address")[2]);
+            Assert.Equal(3, result.All("TechnicalContact.Address").Count);
+            Assert.Equal("Tepuynet C.A.", result.All("TechnicalContact.Address")[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("TechnicalContact.Address")[1]);
+            Assert.Equal("Valencia, Carabobo  VE", result.All("TechnicalContact.Address")[2]);
 
-        Assert.Equal("2418246437", result.First("TechnicalContact.TelephoneNumber"));
-        Assert.Equal("2418246437", result.First("TechnicalContact.FaxNumber"));
-        Assert.Equal("Tepuynet", result.First("BillingContact.Name"));
-        Assert.Equal("aloespa.com.ve-bil", result.First("BillingContact.RegistryId"));
-        Assert.Equal("registro@tepuynet.com", result.First("BillingContact.Email"));
+            Assert.Equal("2418246437", result.First("TechnicalContact.TelephoneNumber"));
+            Assert.Equal("2418246437", result.First("TechnicalContact.FaxNumber"));
+            Assert.Equal("Tepuynet", result.First("BillingContact.Name"));
+            Assert.Equal("aloespa.com.ve-bil", result.First("BillingContact.RegistryId"));
+            Assert.Equal("registro@tepuynet.com", result.First("BillingContact.Email"));
 
-        Assert.Equal(3, result.All("BillingContact.Address").Count);
-        Assert.Equal("Tepuynet C.A.", result.All("BillingContact.Address")[0]);
-        Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("BillingContact.Address")[1]);
-        Assert.Equal("Valencia, Carabobo  VE", result.All("BillingContact.Address")[2]);
+            Assert.Equal(3, result.All("BillingContact.Address").Count);
+            Assert.Equal("Tepuynet C.A.", result.All("BillingContact.Address")[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("BillingContact.Address")[1]);
+            Assert.Equal("Valencia, Carabobo  VE", result.All("BillingContact.Address")[2]);
 
-        Assert.Equal("2418246437", result.First("BillingContact.TelephoneNumber"));
-        Assert.Equal("2418246437", result.First("BillingContact.FaxNumber"));
-        Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
-        Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
-        Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
-        Assert.Equal("SUSPENDIDO", result.First("DomainStatus"));
+            Assert.Equal("2418246437", result.First("BillingContact.TelephoneNumber"));
+            Assert.Equal("2418246437", result.First("BillingContact.FaxNumber"));
+            Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
+            Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
+            Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
+            Assert.Equal("SUSPENDIDO", result.First("DomainStatus"));
 
-        Assert.Equal(2, result.All("NameServers").Count);
-        Assert.Equal("ns10.tepuyserver.net", result.All("NameServers")[0]);
-        Assert.Equal("ns9.tepuyserver.net", result.All("NameServers")[1]);
+            Assert.Equal(2, result.All("NameServers").Count);
+            Assert.Equal("ns10.tepuyserver.net", result.All("NameServers")[0]);
+            Assert.Equal("ns9.tepuyserver.net", result.All("NameServers")[1]);
 
-        Assert.Equal("Found", result.First("Status"));
+            Assert.Equal("Found", result.First("Status"));
+        }
+        catch
+        {
+            if (result.Diagnostics != null)
+            {
+                Output.WriteLine(result.Diagnostics.RenderAlignment());
+                Output.WriteLine("---");
+                Output.WriteLine(result.Diagnostics.Summary.Verdict);
+                foreach (var issue in result.Diagnostics.Summary.Issues)
+                {
+                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                    if (issue.Hint != null)
+                        Output.WriteLine($"    Hint: {issue.Hint}");
+                }
+            }
+            throw;
+        }
     }
 
     [Fact()]

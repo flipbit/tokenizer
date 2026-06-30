@@ -344,7 +344,7 @@ namespace Tokens.Extensions
 
             var sb = new StringBuilder();
 
-            string str = value.ToString();
+            string str = value.ToString() ?? string.Empty;
 
             for (int i = 0; i < str.Length; i++)
             {

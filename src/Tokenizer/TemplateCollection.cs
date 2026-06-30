@@ -44,7 +44,7 @@ namespace Tokens
         /// will return true with the template set as <param>template</param>.
         /// If the template doesn't exist, will return false.
         /// </summary>
-        public bool TryGet(string name, out Template? template)
+        public bool TryGet(string name, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
         {
             return templates.TryGetValue(name, out template);
         }

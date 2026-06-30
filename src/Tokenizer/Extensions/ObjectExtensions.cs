@@ -125,12 +125,10 @@ namespace Tokens.Extensions
                         }
                         catch (FormatException e)
                         {
-                            var ex = new TypeConversionException($"Unable to convert '{value}' to type {genericType}", value, genericType, e);
-
-                            throw ex;
+                            throw new TypeConversionException($"Unable to convert '{value}' to type {genericType}", value ?? "null", genericType, e);
                         }
                     }
-                    else
+                    else if (value != null)
                     {
                         var convertedValue = ChangeType(value, propertyInfo.PropertyType);
 
@@ -161,7 +159,10 @@ namespace Tokens.Extensions
                     propertyInfo.SetValue(@object, currentValue, null);
                 }
 
-                SetInnerValue(currentValue, path.Skip(1).ToArray(), value, stringComparison);
+                if (value != null)
+                {
+                    SetInnerValue(currentValue, path.Skip(1).ToArray(), value, stringComparison);
+                }
 
                 break;
             }
@@ -197,17 +198,17 @@ namespace Tokens.Extensions
             return Enum.Parse(targetType, valueString, true);
         }
 
-        public static object GetValue(this object target, string propertyPath)
+        public static object? GetValue(this object target, string propertyPath)
         {
             return GetValue<object>(target, propertyPath, StringComparison.InvariantCulture);
         }
 
-        public static T GetValue<T>(this object target, string propertyPath)
+        public static T? GetValue<T>(this object target, string propertyPath)
         {
             return GetValue<T>(target, propertyPath, StringComparison.InvariantCulture);
         }
 
-        public static T GetValue<T>(this object target, string propertyPath, StringComparison stringComparison)
+        public static T? GetValue<T>(this object target, string propertyPath, StringComparison stringComparison)
         {
             if (string.IsNullOrEmpty(propertyPath))
             {
@@ -217,7 +218,7 @@ namespace Tokens.Extensions
             var segments = propertyPath.Split('.');
             var objectType = target.GetType().Name;
 
-            T value;
+            T? value;
 
             // Check object type
             if (string.Compare(objectType, segments[0], stringComparison) == 0)
@@ -229,8 +230,7 @@ namespace Tokens.Extensions
                 value = GetInnerValue<T>(target, segments.ToArray(), stringComparison);
             }
 
-
-            return @value;
+            return value;
 
         }
         

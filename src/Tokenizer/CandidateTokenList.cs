@@ -40,7 +40,7 @@ namespace Tokens
             tokens.Clear();
         }
 
-        public bool TryAssign(object target, StringBuilder value, TokenizerOptions options, FileLocation location, out Token? assigned, out object? assignedValue)
+        public bool TryAssign(object target, StringBuilder value, TokenizerOptions options, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue)
         {
             assigned = null;
             assignedValue = null;

@@ -336,7 +336,7 @@ namespace Tokens
             return false;
         }
 
-        internal object ConcatenateValues(object existingValue, object newValue, string concatenationString)
+        internal object ConcatenateValues(object existingValue, object newValue, string? concatenationString)
         {
             if (existingValue is string && newValue is string)
             {

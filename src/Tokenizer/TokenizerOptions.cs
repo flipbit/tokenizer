@@ -17,8 +17,6 @@ namespace Tokens
             TrimTrailingWhiteSpace = true;
             TokenStringComparison = StringComparison.InvariantCulture;
             OutOfOrderTokens = false;
-            EnableLogging = false;
-            EnableLineByLineLogging = true;
             TerminateOnNewline = false;
             IgnoreMissingProperties = false;
         }
@@ -37,13 +35,6 @@ namespace Tokens
         /// Determines the <see cref="StringComparison"/> type to use when matching Token names to object properties
         /// </summary>
         public StringComparison TokenStringComparison { get; set; }
-
-        public bool EnableLogging { get; set; }
-
-        /// <summary>
-        /// If set, enables line-by-line summary logging showing matched and remaining tokens per line.
-        /// </summary>
-        public bool EnableLineByLineLogging { get; set; }
 
         /// <summary>
         /// If set, token values will be extracted up till the first new line character.
@@ -83,8 +74,6 @@ namespace Tokens
                 TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
                 TokenStringComparison = TokenStringComparison,
                 OutOfOrderTokens = OutOfOrderTokens,
-                EnableLogging = EnableLogging,
-                EnableLineByLineLogging = EnableLineByLineLogging,
                 TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
                 TerminateOnNewline = TerminateOnNewline,
                 IgnoreMissingProperties = IgnoreMissingProperties,

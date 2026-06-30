@@ -90,11 +90,6 @@ namespace Tokens.Tokenization
 
             context.Initialize(input);
 
-            // Initialize line tracker if line-by-line logging is enabled
-            LineTracker? lineTracker = template.Options.EnableLineByLineLogging
-                ? new LineTracker(template, log)
-                : null;
-
             log.LogDebug("Phase: Initialization completed. Starting main tokenization loop with {TokenCount} tokens",
                 template.Tokens.Count);
 
@@ -165,7 +160,7 @@ namespace Tokens.Tokenization
                         // Only switch if we've accumulated a value — otherwise consume a character first
                         if (context.Replacement.Length > 0)
                         {
-                            HandleTokenSwitch(context, template, targetObject, result, matches, lineTracker);
+                            HandleTokenSwitch(context, template, targetObject, result, matches);
                         }
                         else
                         {
@@ -186,16 +181,8 @@ namespace Tokens.Tokenization
                     log.LogTrace("Processing {CandidateCount} remaining candidates with replacement value '{ReplacementValue}'",
                         context.Candidates.Tokens.Count, context.Replacement.ToString());
 
-                    var previousMatchCount = result.Tokens.Matches.Count;
                     TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
                         template.Options, context.ReplacementLocation, result, template, context.MatchIds);
-
-                    // Record match with line tracker if a new match was added
-                    if (lineTracker != null && result.Tokens.Matches.Count > previousMatchCount)
-                    {
-                        var match = result.Tokens.Matches.Last();
-                        lineTracker.RecordMatch(match.Token.Name, match.Location.Line, context.MatchIds);
-                    }
                 }
                 else if (context.Candidates.Any)
                 {
@@ -206,9 +193,6 @@ namespace Tokens.Tokenization
                 // Process front matter tokens
                 log.LogDebug("Phase: Processing front matter tokens");
                 ProcessFrontMatterTokens(template, targetObject, context.Enumerator.Location, result);
-
-                // Finalize line tracker
-                lineTracker?.Finalize(context.MatchIds);
 
                 log.LogTrace("Found {MatchCount} matches.", result.Tokens.Matches.Count);
                 log.LogTrace("{MissingCount} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
@@ -633,22 +617,13 @@ namespace Tokens.Tokenization
         /// <param name="targetObject">The object to populate with matched token values</param>
         /// <param name="result">The result object to populate with matches</param>
         /// <param name="matches">The newly matched tokens</param>
-        /// <param name="lineTracker">Optional line tracker for line-by-line logging</param>
-        private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches, LineTracker? lineTracker)
+        private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches)
         {
             log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
                 context.Replacement.ToString(), context.Candidates.Tokens.Count);
 
-            var previousMatchCount = result.Tokens.Matches.Count;
             TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
                 template.Options, context.ReplacementLocation, result, template, context.MatchIds);
-
-            // Record match with line tracker if a new match was added
-            if (lineTracker != null && result.Tokens.Matches.Count > previousMatchCount)
-            {
-                var match = result.Tokens.Matches.Last();
-                lineTracker.RecordMatch(match.Token.Name, match.Location.Line, context.MatchIds);
-            }
 
             context.ClearCandidates();
             context.Candidates.AddRange(matches);

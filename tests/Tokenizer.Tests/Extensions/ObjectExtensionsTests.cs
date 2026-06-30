@@ -7,9 +7,9 @@ public class ObjectExtensionsTests
 {
     private class Foo
     {
-        public Bar Bar { get; set; }
+        public Bar Bar { get; set; } = null!;
 
-        public string Baz { get; set; }
+        public string Baz { get; set; } = null!;
 
         public int? Boo { get; set; }
     }

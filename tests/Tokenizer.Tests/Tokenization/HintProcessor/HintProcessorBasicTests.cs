@@ -230,7 +230,7 @@ public class HintProcessorBasicTests
         return new TokenEnumerator(input);
     }
 
-    private TokenizeResult CreateResult(Template template = null)
+    private TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? new TemplateBuilder().Build())

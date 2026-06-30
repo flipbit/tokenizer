@@ -23,7 +23,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddTokenMatch(token, assignedValue, location, null));
+            _builder.AddTokenMatch(token, assignedValue, location, null!));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddTokenMiss(token, null));
+            _builder.AddTokenMiss(token, null!));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddException(exception, null));
+            _builder.AddException(exception, null!));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(template, null));
+            _builder.BuildUnmatchedTokens(template, null!));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(null, result));
+            _builder.BuildUnmatchedTokens(null!, result));
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddMatchedTokenIds(null, match, matchIds));
+            _builder.AddMatchedTokenIds(null!, match, matchIds));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddMatchedTokenIds(template, null, matchIds));
+            _builder.AddMatchedTokenIds(template, null!, matchIds));
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.AddMatchedTokenIds(template, match, null));
+            _builder.AddMatchedTokenIds(template, match, null!));
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.WasLastMatchedToken(null, token));
+            _builder.WasLastMatchedToken(null!, token));
     }
 
     [Fact]
@@ -125,6 +125,6 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.WasLastMatchedToken(result, null));
+            _builder.WasLastMatchedToken(result, null!));
     }
 }

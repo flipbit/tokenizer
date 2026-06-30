@@ -32,7 +32,7 @@ public class ContainsValidatorTest
     [Fact]
     public void TestValidateValueWhenNull()
     {
-        var result = validator.IsValid(null);
+        var result = validator.IsValid(null!);
 
         Assert.False(result);
     }

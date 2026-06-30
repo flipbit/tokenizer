@@ -204,7 +204,7 @@ public class TokenizationContextTests
         var context = new TokenizationContext();
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => context.Initialize(null));
+        Assert.Throws<ArgumentException>(() => context.Initialize(null!));
     }
 
     [Fact]

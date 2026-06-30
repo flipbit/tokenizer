@@ -10,11 +10,11 @@ public class MultilineTests : Tests.TokenizerTestBase
 
     private class Student
     {
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
-        public List<string> Classes { get; set; }
+        public List<string> Classes { get; set; } = null!;
     }
 
     public MultilineTests(ITestOutputHelper output) : base(output)

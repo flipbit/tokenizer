@@ -9,9 +9,9 @@ public class HintTests : Tests.TokenizerTestBase
 
     private class Student
     {
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
     }
 
     public HintTests(ITestOutputHelper output) : base(output)

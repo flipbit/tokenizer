@@ -280,7 +280,7 @@ public class TokenDefinitionTests
         var token = new TokenDefinition();
 
         // Act
-        token.AppendDecorators(null);
+        token.AppendDecorators(null!);
 
         // Assert
         Assert.Empty(token.Decorators);

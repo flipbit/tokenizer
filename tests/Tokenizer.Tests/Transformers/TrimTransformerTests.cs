@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace Tokens.Transformers;
 
@@ -13,7 +13,7 @@ public class TrimTransformerTests
         var input = "  TEST  ";
 
         // Act
-        transformer.CanTransform(input, null, out var t);
+        transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal("TEST", t);
@@ -26,7 +26,7 @@ public class TrimTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);
@@ -36,10 +36,10 @@ public class TrimTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);

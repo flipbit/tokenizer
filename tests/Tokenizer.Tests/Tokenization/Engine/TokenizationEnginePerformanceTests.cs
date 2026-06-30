@@ -226,7 +226,7 @@ public class TokenizationEnginePerformanceTests
 
         // Assert
         Assert.Single(result.Tokens.Matches);
-        Assert.Equal(50000, result.Tokens.Matches[0].Value.ToString().Length);
+        Assert.Equal(50000, result.Tokens.Matches[0].Value!.ToString()!.Length);
     }
 
     [Fact]

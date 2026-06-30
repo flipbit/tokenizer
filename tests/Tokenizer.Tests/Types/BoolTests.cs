@@ -9,7 +9,7 @@ public class BoolTests : Tests.TokenizerTestBase
 
     private class Student
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public bool Enrolled { get; set; }
     }

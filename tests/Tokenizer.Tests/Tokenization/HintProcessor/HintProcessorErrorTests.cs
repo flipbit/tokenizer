@@ -21,7 +21,7 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(null, enumerator, result));
+            _processor.FindAndValidateHints(null!, enumerator, result));
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(template, null, result));
+            _processor.FindAndValidateHints(template, null!, result));
     }
 
     [Fact]
@@ -47,6 +47,6 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(template, enumerator, null));
+            _processor.FindAndValidateHints(template, enumerator, null!));
     }
 }

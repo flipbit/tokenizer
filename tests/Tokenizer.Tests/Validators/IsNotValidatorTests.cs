@@ -43,7 +43,7 @@ public class IsNotValidatorTests : Tests.TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsTrue()
     {
         // Arrange
-        string input = null;
+        string input = null!;
         var excludedValue = "hello";
 
         // Act

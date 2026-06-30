@@ -122,12 +122,12 @@ namespace Tokens.Compilation.Parsing
 
             var doc1 = parser.Parse("{id=123}");
             var t1 = Assert.IsType<TokenNode>(doc1.Content[0]);
-            Assert.Equal("123", t1.Value.Text);
+            Assert.Equal("123", t1.Value!.Text);
             Assert.False(t1.Value.IsQuoted);
 
             var doc2 = parser.Parse("{user=\"Jane Doe\"}");
             var t2 = Assert.IsType<TokenNode>(doc2.Content[0]);
-            Assert.Equal("Jane Doe", t2.Value.Text);
+            Assert.Equal("Jane Doe", t2.Value!.Text);
             Assert.True(t2.Value.IsQuoted);
         }
 

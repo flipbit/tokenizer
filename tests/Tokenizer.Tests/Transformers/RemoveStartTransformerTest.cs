@@ -28,13 +28,13 @@ public class RemoveStartTransformerTest
     [Fact]
     public void TestSubstringAfterWhenMissingArgument()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null, out var t));
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null!, out var t));
     }
 
     [Fact]
     public void TestSubstringAfterWhenEmpty()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var transformed);
+        var result = transformer.CanTransform(string.Empty, null!, out var transformed);
 
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
@@ -43,7 +43,7 @@ public class RemoveStartTransformerTest
     [Fact]
     public void TestSubstringAfterWhenNull()
     {
-        var result = transformer.CanTransform(null, null, out var transformed);
+        var result = transformer.CanTransform(null!, null!, out var transformed);
 
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);

@@ -49,7 +49,7 @@ public class RemoveEndTransformerTests : Tests.TokenizerTestBase
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null, out var t));
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class RemoveEndTransformerTests : Tests.TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var transformed);
+        var result = transformer.CanTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -70,10 +70,10 @@ public class RemoveEndTransformerTests : Tests.TokenizerTestBase
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var transformed);
+        var result = transformer.CanTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

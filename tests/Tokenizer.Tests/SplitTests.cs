@@ -10,7 +10,7 @@ public class SplitTests : Tests.TokenizerTestBase
 
     private class Foo
     {
-        public List<string> Names { get; set; }
+        public List<string> Names { get; set; } = null!;
     }
 
     public SplitTests(ITestOutputHelper output) : base(output)

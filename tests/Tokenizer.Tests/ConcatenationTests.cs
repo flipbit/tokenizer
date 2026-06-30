@@ -11,7 +11,7 @@ public class ConcatenationTests : Tests.TokenizerTestBase
 
     private class Foo
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public ConcatenationTests(ITestOutputHelper output) : base(output)

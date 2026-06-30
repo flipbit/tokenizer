@@ -9,7 +9,7 @@ public class EnumTests : Tests.TokenizerTestBase
 
     private class Student
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public Grade Grade { get; set; }
     }

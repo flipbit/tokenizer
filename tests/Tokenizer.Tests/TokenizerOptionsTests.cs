@@ -30,7 +30,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
     private class Person
     {
         public int Age { get; set; }
-        public string Address { get; set; }
+        public string Address { get; set; } = null!;
     }
 
     [Fact]

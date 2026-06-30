@@ -43,7 +43,7 @@ namespace Tokens.Compilation.Parsing
 
             // Assert
             Assert.True(ok);
-            Assert.Equal(LexerTokenKind.Colon, t.Kind);
+            Assert.Equal(LexerTokenKind.Colon, t!.Kind);
         }
 
         [Fact]

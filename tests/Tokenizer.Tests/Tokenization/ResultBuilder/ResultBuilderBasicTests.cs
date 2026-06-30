@@ -159,7 +159,7 @@ public class ResultBuilderBasicTests
             .Build();
     }
 
-    private TokenizeResult CreateResult(Template template = null)
+    private TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())
@@ -168,6 +168,6 @@ public class ResultBuilderBasicTests
 
     private class TestClass
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 }

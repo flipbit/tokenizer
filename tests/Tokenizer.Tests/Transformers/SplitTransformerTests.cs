@@ -20,7 +20,8 @@ public class SplitTransformerTests
 
         // Assert
         Assert.True(result);
-        Assert.Equal(4, list.Length);
+        Assert.NotNull(list);
+        Assert.Equal(4, list!.Length);
         Assert.Equal("1", list[0]);
         Assert.Equal("2", list[1]);
         Assert.Equal("3", list[2]);
@@ -49,7 +50,7 @@ public class SplitTransformerTests
         var input = "1,2,3,4";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null, out var t));
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class SplitTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var transformed);
+        var result = transformer.CanTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -70,10 +71,10 @@ public class SplitTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var transformed);
+        var result = transformer.CanTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

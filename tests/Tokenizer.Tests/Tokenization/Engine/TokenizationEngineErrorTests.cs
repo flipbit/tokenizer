@@ -50,7 +50,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(null, "test", value, context, result));
+            _engine.ProcessTokenization(null!, "test", value, context, result));
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, null, result));
+            _engine.ProcessTokenization(template, "test", value, null!, result));
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, context, null));
+            _engine.ProcessTokenization(template, "test", value, context, null!));
     }
 
     [Fact]

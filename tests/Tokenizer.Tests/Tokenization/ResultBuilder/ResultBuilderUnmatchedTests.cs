@@ -66,7 +66,7 @@ public class ResultBuilderUnmatchedTests
             .Build();
     }
 
-    private TokenizeResult CreateResult(Template template = null)
+    private TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())

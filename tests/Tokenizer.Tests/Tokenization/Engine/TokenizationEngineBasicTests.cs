@@ -16,7 +16,7 @@ public class TokenizationEngineBasicTests
 
     private class Person
     {
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class TokenizationEngineBasicTests
         return context;
     }
 
-    private TokenizeResult CreateResult(Template template = null)
+    private TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())

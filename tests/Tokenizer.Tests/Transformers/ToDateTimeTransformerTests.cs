@@ -47,7 +47,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06";
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
         var dateTime = (DateTime) t;
 
         // Assert
@@ -93,7 +93,7 @@ public class ToDateTimeTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.False(result);
@@ -104,10 +104,10 @@ public class ToDateTimeTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsFalse()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.False(result);
@@ -121,7 +121,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06\nHello";
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
         var dateTime = (DateTime) t;
 
         // Assert
@@ -136,7 +136,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06\r\nHello";
 
         // Act
-        var result = transformer.CanTransform(input, null, out var t);
+        var result = transformer.CanTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);

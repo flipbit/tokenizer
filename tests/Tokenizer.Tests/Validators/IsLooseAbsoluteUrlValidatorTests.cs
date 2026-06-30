@@ -67,7 +67,7 @@ public class IsLooseAbsoluteUrlValidatorTests : Tests.TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Arrange
-        string input = null;
+        string input = null!;
 
         // Act
         var result = validator.IsValid(input);

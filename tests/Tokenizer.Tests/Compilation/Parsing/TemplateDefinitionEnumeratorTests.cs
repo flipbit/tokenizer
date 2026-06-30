@@ -18,7 +18,7 @@ public class TemplateDefinitionEnumeratorTests
     public void GivenNullString_WhenCreatingEnumerator_ThenIsEmptyIsTrue()
     {
         // Arrange & Act
-        var enumerator = new TemplateDefinitionEnumerator(null);
+        var enumerator = new TemplateDefinitionEnumerator(null!);
 
         // Assert
         Assert.True(enumerator.IsEmpty);

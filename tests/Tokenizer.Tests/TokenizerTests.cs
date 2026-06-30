@@ -16,24 +16,24 @@ public class TokenizerTests : TokenizerTestBase
 
     private class TestClass
     {
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int Counter { get; set; }
 
-        public IList<string> List { get; set; }
+        public IList<string> List { get; set; } = null!;
 
-        public TestClass Nested { get; set; }
+        public TestClass Nested { get; set; } = null!;
     }
 
     private class Student
     {
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
-        public string MiddleName { get; set; }
+        public string MiddleName { get; set; } = null!;
 
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
         public DateTime Enrolled { get; set; }
 
@@ -42,7 +42,7 @@ public class TokenizerTests : TokenizerTestBase
 
     private class Teacher : Student
     {
-        public List<string> Class { get; set; }
+        public List<string> Class { get; set; } = null!;
     }
 
     public TokenizerTests(ITestOutputHelper output) : base(output)

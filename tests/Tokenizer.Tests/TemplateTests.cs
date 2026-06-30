@@ -58,7 +58,7 @@ public class TemplateTests : Tests.TokenizerTestBase
         template.Tags.Add("Two");
         template.Tags.Add("Three");
 
-        Assert.False(template.HasTag(null));
+        Assert.False(template.HasTag(null!));
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class TemplateTests : Tests.TokenizerTestBase
         template.Tags.Add("Three");
 
         IList<string> missing;
-        var hasTags = template.HasTags(null, out missing);
+        var hasTags = template.HasTags(null!, out missing);
 
         Assert.False(hasTags);
 

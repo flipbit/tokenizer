@@ -360,7 +360,7 @@ public class SampleTests : TokenizerTestBase
 
         var match = matcher.Match(input);
 
-        Assert.Equal(match.BestMatch.First("DomainName"), "u34jedzcq.co.ca");
+        Assert.Equal(match.BestMatch!.First("DomainName"), "u34jedzcq.co.ca");
         Assert.Equal(match.BestMatch.First("Status"), "NotFound");
     }
   

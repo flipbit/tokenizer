@@ -14,7 +14,7 @@ public class SplitTransformerTest
 
         Assert.True(result);
 
-        var list = transformed as string[];
+        var list = (string[]) transformed!;
 
         Assert.Equal(4, list.Length);
         Assert.Equal("1", list[0]);
@@ -35,13 +35,13 @@ public class SplitTransformerTest
     [Fact]
     public void TestSplitWhenMissingArgument()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("1,2,3,4", null, out var t));
+        Assert.Throws<TokenizerException>(() => transformer.CanTransform("1,2,3,4", null!, out var t));
     }
 
     [Fact]
     public void TestSplitWhenEmptyInput()
     {
-        var result = transformer.CanTransform(string.Empty, null, out var transformed);
+        var result = transformer.CanTransform(string.Empty, null!, out var transformed);
 
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
@@ -50,7 +50,7 @@ public class SplitTransformerTest
     [Fact]
     public void TestSplitWhenNullInput()
     {
-        var result = transformer.CanTransform(null, null, out var transformed);
+        var result = transformer.CanTransform(null!, null!, out var transformed);
 
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);

@@ -19,7 +19,7 @@ namespace Tokens.Compilation.Nodes
         public IReadOnlyList<DecoratorNode> Decorators { get; }
     }
 
-    public sealed class TokenName
+    public sealed record TokenName
     {
         public TokenName(string text)
         {
@@ -28,22 +28,9 @@ namespace Tokens.Compilation.Nodes
         public string Text { get; }
     }
 
-    public sealed class ModifierSet
-    {
-        public ModifierSet(bool isOptional, bool isRepeating, bool isRequired, bool isTerminate)
-        {
-            IsOptional = isOptional;
-            IsRepeating = isRepeating;
-            IsRequired = isRequired;
-            IsTerminate = isTerminate;
-        }
-        public bool IsOptional { get; }
-        public bool IsRepeating { get; }
-        public bool IsRequired { get; }
-        public bool IsTerminate { get; }
-    }
+    public sealed record ModifierSet(bool IsOptional, bool IsRepeating, bool IsRequired, bool IsTerminate);
 
-    public sealed class ValueNode
+    public sealed record ValueNode
     {
         public ValueNode(string text, bool isQuoted)
         {
@@ -54,7 +41,7 @@ namespace Tokens.Compilation.Nodes
         public bool IsQuoted { get; }
     }
 
-    public sealed class DecoratorNode
+    public sealed record DecoratorNode
     {
         public DecoratorNode(TokenName name, IReadOnlyList<ArgumentNode> args, bool isNot = false)
         {
@@ -67,7 +54,7 @@ namespace Tokens.Compilation.Nodes
         public bool IsNot { get; }
     }
 
-    public sealed class ArgumentNode
+    public sealed record ArgumentNode
     {
         public ArgumentNode(string text, bool isQuoted)
         {

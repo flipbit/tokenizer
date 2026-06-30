@@ -11,10 +11,10 @@ namespace Tokens
             Location = location;
         }
 
-        public string Text { get; set; }
+        public string Text { get; init; }
 
-        public bool Optional { get; set; }
+        public bool Optional { get; init; }
 
-        public FileLocation Location { get; set; }
+        public FileLocation Location { get; init; }
     }
 }

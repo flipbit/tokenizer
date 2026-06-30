@@ -20,7 +20,7 @@ namespace Tokens.Compilation.Nodes
         public IReadOnlyList<SetDecorator> Decorators { get; }
     }
 
-    public sealed class SetDecorator
+    public sealed record SetDecorator
     {
         public SetDecorator(string name, IReadOnlyList<string>? args = null)
         {

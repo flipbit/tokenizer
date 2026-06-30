@@ -26,7 +26,7 @@ namespace Tokens
         /// The <see cref="Template"/> containing the mapping between tokens in the
         /// <see cref="Template"/> and properties on the object <see cref="T"/>.
         /// </summary>
-        public Template Template { get; set; }
+        public Template Template { get; init; }
 
         /// <summary>
         /// A list of any exceptions that occurred during the matching process
@@ -36,12 +36,12 @@ namespace Tokens
         /// <summary>
         /// The matches that where made during the tokenization process
         /// </summary>
-        public TokenResult Tokens { get; set; } 
+        public TokenResult Tokens { get; init; }
 
         /// <summary>
         /// Gets the hints found in the input
         /// </summary>
-        public HintResult Hints { get; set; }
+        public HintResult Hints { get; init; }
 
         /// <summary>
         /// Determines whether the matching process was successful

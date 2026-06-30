@@ -17,7 +17,7 @@ namespace Tokens
         /// <summary>
         /// Contains the result of processing each <see cref="Template"/> against the input text.
         /// </summary>
-        public IList<TokenizeResult> Results { get; private set; } 
+        public IList<TokenizeResult> Results { get; init; }
 
         /// <summary>
         /// Returns the best matching result
@@ -45,7 +45,7 @@ namespace Tokens
         /// <summary>
         /// Contains the result of processing each <see cref="Template"/> against the input text.
         /// </summary>
-        public IList<TokenizeResult<T>> Results { get; private set; }
+        public IList<TokenizeResult<T>> Results { get; init; }
 
         /// <summary>
         /// Returns the best matching result

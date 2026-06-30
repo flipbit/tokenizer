@@ -22,11 +22,11 @@ namespace Tokens.Exceptions
         /// <summary>
         /// The target type to be converted to
         /// </summary>
-        public Type TargetType { get; set; }
+        public Type TargetType { get; init; }
 
         /// <summary>
         /// The value being converted
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get; init; }
     }
 }

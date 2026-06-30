@@ -14,6 +14,6 @@ namespace Tokens.Exceptions
             Template = template;
         }
 
-        public Template Template { get; set; }
+        public Template Template { get; init; }
     }
 }

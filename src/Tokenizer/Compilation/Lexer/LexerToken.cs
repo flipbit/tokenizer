@@ -40,7 +40,7 @@ namespace Tokens.Compilation.Lexer
     /// Console.WriteLine(token.End);       // 23
     /// </code>
     /// </example>
-    public class LexerToken
+    public record LexerToken
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LexerToken"/> class.

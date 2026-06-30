@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokens
 {
@@ -52,8 +53,9 @@ namespace Tokens
         /// <summary>
         /// Determines whether the matching process was successful
         /// </summary>
-        public bool Success => Tokens.HasMatches && 
+        public bool Success => Tokens.HasMatches &&
                                Tokens.HasMissingRequiredTokens == false &&
-                               Hints.HasMissingRequiredHints == false;
+                               Hints.HasMissingRequiredHints == false &&
+                               (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
     }
 }

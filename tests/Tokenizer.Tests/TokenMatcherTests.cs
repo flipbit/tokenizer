@@ -259,4 +259,50 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         Assert.Equal("Alice", match.First("Name"));
         Assert.Equal("30", match.First("Age"));
     }
+
+    [Fact]
+    public void GivenTemplateWithFrontMatterSet_WhenInputMatchesNoTokens_ThenResultIsNotSuccessful()
+    {
+        // Arrange
+        var template = """
+                       ---
+                       name: found-template
+                       set: Status = Found
+                       ---
+                       Name: {Name}
+                       Age: {Age}
+                       """;
+
+        matcher.RegisterTemplate(template);
+
+        // Act
+        var result = matcher.Match("This input matches nothing in the template");
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Null(result.BestMatch);
+    }
+
+    [Fact]
+    public void GivenFrontMatterOnlyTemplate_WhenHintMatches_ThenResultIsSuccessful()
+    {
+        // Arrange - template with set: and hint but no extractable tokens
+        var template = """
+                       ---
+                       name: not-found-template
+                       set: Status = NotFound
+                       hint: not found
+                       ---
+                       not found
+                       """;
+
+        matcher.RegisterTemplate(template);
+
+        // Act
+        var result = matcher.Match("not found...");
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.NotNull(result.BestMatch);
+    }
 }

@@ -22,11 +22,11 @@ namespace Tokens
         /// <summary>
         /// Returns the best matching result
         /// </summary>
-        public TokenizeResult BestMatch { get; internal set; }
+        public TokenizeResult? BestMatch { get; internal set; }
 
         public bool Success => BestMatch != null;
 
-        internal TokenizeResult GetBestMatch() => Results
+        internal TokenizeResult? GetBestMatch() => Results
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)
@@ -50,11 +50,11 @@ namespace Tokens
         /// <summary>
         /// Returns the best matching result
         /// </summary>
-        public TokenizeResult<T> BestMatch { get; internal set; }
+        public TokenizeResult<T>? BestMatch { get; internal set; }
 
         public bool Success => BestMatch != null;
 
-        internal TokenizeResult<T> GetBestMatch() => Results
+        internal TokenizeResult<T>? GetBestMatch() => Results
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)

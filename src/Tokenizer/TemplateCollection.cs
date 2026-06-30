@@ -44,7 +44,7 @@ namespace Tokens
         /// will return true with the template set as <param>template</param>.
         /// If the template doesn't exist, will return false.
         /// </summary>
-        public bool TryGet(string name, out Template template)
+        public bool TryGet(string name, out Template? template)
         {
             return templates.TryGetValue(name, out template);
         }
@@ -53,7 +53,7 @@ namespace Tokens
         /// Gets the template with the given name.  If the template doesn't exist,
         /// will return null.
         /// </summary>
-        public Template Get(string name)
+        public Template? Get(string name)
         {
             return TryGet(name, out var template) ? template : null;
         }

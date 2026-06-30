@@ -7,12 +7,16 @@ namespace Tokens.Exceptions
     /// </summary>
     public class TypeConversionException : TokenizerException
     {
-        public TypeConversionException(string message) : base(message)
+        public TypeConversionException(string message, object value, Type targetType) : base(message)
         {
+            Value = value;
+            TargetType = targetType;
         }
 
-        public TypeConversionException(string message, Exception innerException) : base(message, innerException)
+        public TypeConversionException(string message, object value, Type targetType, Exception innerException) : base(message, innerException)
         {
+            Value = value;
+            TargetType = targetType;
         }
 
         /// <summary>

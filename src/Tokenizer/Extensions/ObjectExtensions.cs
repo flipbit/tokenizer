@@ -118,11 +118,7 @@ namespace Tokens.Extensions
                         }
                         catch (FormatException e)
                         {
-                            var ex = new TypeConversionException($"Unable to convert '{value}' to type {genericType}", e)
-                            {
-                                Value = value, 
-                                TargetType = genericType
-                            };
+                            var ex = new TypeConversionException($"Unable to convert '{value}' to type {genericType}", value, genericType, e);
 
                             throw ex;
                         }

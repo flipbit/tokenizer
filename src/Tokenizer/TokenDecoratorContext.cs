@@ -29,7 +29,7 @@ namespace Tokens
         /// <returns></returns>
         public ITokenDecorator CreateDecorator()
         {
-            return (ITokenDecorator) Activator.CreateInstance(DecoratorType);
+            return (ITokenDecorator) Activator.CreateInstance(DecoratorType)!;
         }
 
         /// <summary>

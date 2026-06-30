@@ -75,10 +75,7 @@ namespace Tokens
                 }
                 catch (Exception e)
                 {
-                    var exception = new TokenMatcherException(e.Message, e)
-                    {
-                        Template = template
-                    };
+                    var exception = new TokenMatcherException(e.Message, template, e);
 
                     log.LogError(e, "Error processing template: {TemplateName}", template.Name);
 
@@ -131,10 +128,7 @@ namespace Tokens
                 }
                 catch (Exception e)
                 {
-                    var exception = new TokenMatcherException(e.Message, e)
-                    {
-                        Template = template
-                    };
+                    var exception = new TokenMatcherException(e.Message, template, e);
 
                     log.LogError(e, "Error processing template: {TemplateName}", template.Name);
 

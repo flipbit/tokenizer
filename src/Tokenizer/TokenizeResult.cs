@@ -42,7 +42,7 @@ namespace Tokens
             return (T) Matches.First(m => m.Token.Name == key).Value;
         }
 
-        public object FirstOrDefault(string key)
+        public object? FirstOrDefault(string key)
         {
             if (Matches.Any(m => m.Token?.Name == key))
             {
@@ -52,14 +52,14 @@ namespace Tokens
             return null;
         }
 
-        public T FirstOrDefault<T>(string key)
+        public T? FirstOrDefault<T>(string key)
         {
             if (Matches.Any(m => m.Token?.Name == key))
             {
                 return (T) Matches.First(m => m.Token.Name == key).Value;
             }
 
-            return default(T);
+            return default;
         }
 
         public IList<object> All(string key)

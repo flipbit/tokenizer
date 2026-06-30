@@ -13,7 +13,7 @@ public class CandidateTokenListTests : Tests.TokenizerTestBase
     public void GivenTokenWithPreamble_WhenAddingToList_ThenListContainsTokenAndSetsPreamble()
     {
         // Arrange
-        var token = new Token("foo") { Preamble = "bar" };
+        var token = new Token("foo", string.Empty, "bar", new Tokens.Enumerators.FileLocation());
         var list = new CandidateTokenList();
 
         // Act

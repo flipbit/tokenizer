@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Tokens.Enumerators;
 using Tokens.Transformers;
 using Tokens.Validators;
@@ -9,79 +11,85 @@ namespace Tokens.Builders;
 /// </summary>
 public class TokenBuilder
 {
-    private Token _token = new("default");
+    private string _content = "default";
+    private string _name = string.Empty;
+    private string _preamble = string.Empty;
+    private FileLocation _location = new();
+    private readonly List<Action<Token>> _configurations = new();
 
     public TokenBuilder WithContent(string content)
     {
-        _token = new Token(content);
+        _content = content;
         return this;
     }
 
     public TokenBuilder WithName(string name)
     {
-        _token.Name = name;
+        _name = name;
         return this;
     }
 
     public TokenBuilder WithPreamble(string preamble)
     {
-        _token.Preamble = preamble;
+        _preamble = preamble;
         return this;
     }
 
     public TokenBuilder WithLocation(FileLocation location)
     {
-        _token.Location = location;
+        _location = location;
         return this;
     }
 
     public TokenBuilder WithLocation(int line, int column)
     {
-        _token.Location = new FileLocation().Clone();
-        // Note: FileLocation properties are read-only, so we can't set them directly
-        // This is a limitation of the current API design
+        _location = new FileLocation().Clone();
         return this;
     }
 
     public TokenBuilder WithRequired(bool required = true)
     {
-        _token.Required = required;
+        _configurations.Add(t => t.Required = required);
         return this;
     }
 
     public TokenBuilder WithOptional(bool optional = true)
     {
-        _token.Required = !optional;
+        _configurations.Add(t =>
+        {
+            t.Optional = optional;
+            t.Required = !optional;
+        });
         return this;
     }
 
     public TokenBuilder WithRepeating(bool repeating = true)
     {
-        _token.Repeating = repeating;
+        _configurations.Add(t => t.Repeating = repeating);
         return this;
     }
 
     public TokenBuilder WithConsiderOnce(bool considerOnce = true)
     {
-        _token.ConsiderOnce = considerOnce;
+        _configurations.Add(t => t.ConsiderOnce = considerOnce);
         return this;
     }
 
     public TokenBuilder WithTerminateOnNewLine(bool terminateOnNewLine = true)
     {
-        _token.TerminateOnNewLine = terminateOnNewLine;
+        _configurations.Add(t => t.TerminateOnNewLine = terminateOnNewLine);
         return this;
     }
 
     public TokenBuilder WithIsFrontMatterToken(bool isFrontMatterToken = true)
     {
-        _token.IsFrontMatterToken = isFrontMatterToken;
+        _configurations.Add(t => t.IsFrontMatterToken = isFrontMatterToken);
         return this;
     }
 
     public TokenBuilder WithConcatenationString(string concatenationString)
     {
-        _token.ConcatenationString = concatenationString;
+        _configurations.Add(t => t.ConcatenationString = concatenationString);
         return this;
     }
 
@@ -99,14 +107,10 @@ public class TokenBuilder
         return this;
     }
 
-    public TokenBuilder WithId(int id)
-    {
-        _token.Id = id;
-        return this;
-    }
-
     public Token Build()
     {
-        return _token;
+        var token = new Token(_content, _name, _preamble, _location);
+        foreach (var config in _configurations) config(token);
+        return token;
     }
 }

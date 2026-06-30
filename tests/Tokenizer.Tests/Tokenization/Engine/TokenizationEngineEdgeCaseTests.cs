@@ -1,5 +1,6 @@
 using System.Linq;
 using Tokens.Builders;
+using Tokens.Compilation;
 using Tokens.Tokenization;
 using Xunit;
 
@@ -16,89 +17,65 @@ public class TokenizationEngineEdgeCaseTests
     public void GivenVeryLongInput_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var longInput = new string('a', 10000) + " {Name} " + new string('b', 10000);
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
-            .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
-                .WithName("Name")
-                .WithRequired()
-                .Build())
-            .WithDefaultOptions()
-            .Build();
+        var parser = new TokenParser();
+        var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();
-        context.Initialize(longInput);
-
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
+        var longInput = new string('a', 10000) + "Hello World" + new string('b', 10000);
+
         // Act
-        _engine.ProcessTokenization(template, "Hello World", null, context, result);
+        _engine.ProcessTokenization(template, longInput, null, context, result);
 
         // Assert
         Assert.NotNull(result);
+        Assert.Single(result.Tokens.Matches);
     }
 
     [Fact]
     public void GivenSpecialCharacters_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var specialInput = "Hello {Name} with special chars: @#$%^&*()_+-=[]{}|;':\",./<>?";
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
-            .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
-                .WithName("Name")
-                .WithRequired()
-                .Build())
-            .WithDefaultOptions()
-            .Build();
+        var parser = new TokenParser();
+        var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();
-        context.Initialize(specialInput);
-
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
+        var input = "Hello @#$%^&*()_+-=";
+
         // Act
-        _engine.ProcessTokenization(template, "Hello World", null, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.NotNull(result);
+        Assert.Single(result.Tokens.Matches);
     }
 
     [Fact]
     public void GivenUnicodeInput_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var unicodeInput = "Hello {Name} with unicode: 你好世界 🌍";
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
-            .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
-                .WithName("Name")
-                .WithRequired()
-                .Build())
-            .WithDefaultOptions()
-            .Build();
+        var parser = new TokenParser();
+        var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();
-        context.Initialize(unicodeInput);
-
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
+        var input = "Hello 你好世界 🌍";
+
         // Act
-        _engine.ProcessTokenization(template, "Hello World", null, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result);
 
         // Assert
         Assert.NotNull(result);
+        Assert.Single(result.Tokens.Matches);
     }
 }

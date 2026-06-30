@@ -174,6 +174,7 @@ namespace Tokens.Compilation.Parsing
                 if (k == LexerTokenKind.Asterisk) { reader.Consume(); rep = true; continue; }
                 if (k == LexerTokenKind.Exclamation) { reader.Consume(); req = true; continue; }
                 if (k == LexerTokenKind.Dollar) { reader.Consume(); term = true; continue; }
+                if (k == LexerTokenKind.Hash) { reader.Consume(); term = true; continue; }
                 break;
             }
             return new ModifierSet(opt, rep, req, term);

@@ -78,7 +78,6 @@ public class TokenizationEngineInternalTests
     public void GivenFrontMatterTokens_WhenProcessingFrontMatterTokens_ThenProcessesCorrectly()
     {
         // Arrange
-        var value = new { Name = "" };
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
             .WithTokens(new TokenBuilder()
@@ -90,10 +89,9 @@ public class TokenizationEngineInternalTests
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
-        var enumerator = new TokenEnumerator("test");
 
         // Act
-        _engine.ProcessFrontMatterTokens(template, value, new FileLocation(), result);
+        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result);
 
         // Assert
         Assert.NotNull(result);
@@ -145,7 +143,7 @@ public class TokenizationEngineInternalTests
         var enumerator = new TokenEnumerator("test");
 
         // Act
-        _engine.ProcessFrontMatterTokens(template, new { Name = "" }, new FileLocation(), result);
+        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result);
 
         // Assert
         Assert.NotNull(result);

@@ -162,58 +162,17 @@ namespace Tokens.Compilation
                 log.LogTrace("Parsing token {TokenId}: Name={TokenName}, Content={TokenContent}, Optional={Optional}, Repeating={Repeating}",
                     preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.Optional, preToken.Repeating);
 
-                var token = new Token(preToken.Content);
+                var preamble = ComputePreamble(preToken, template.Options, log);
+                var location = preToken.Location ?? new Enumerators.FileLocation();
+                var token = new Token(preToken.Content, preToken.Name, preamble, location);
 
-                if (Options.TrimLeadingWhitespaceInTokenPreamble)
-                {
-                    if (preToken.Preamble.IsOnlySpaces())
-                    {
-                        token.Preamble = preToken.Preamble;
-                    }
-                    else if (string.IsNullOrWhiteSpace(preToken.Preamble))
-                    {
-                        token.Preamble = preToken.Preamble.TrimLeadingSpaces();
-                    }
-                    else
-                    {
-                        token.Preamble = preToken.Preamble.TrimStart();
-                    }
-
-                    log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
-                        preToken.Id, preToken.Preamble.Length, token.Preamble.Length);
-                }
-                else
-                {
-                    token.Preamble = preToken.Preamble;
-                }
-
-                // New behavior: if TrimPreambleBeforeNewLine is enabled (from options or front matter),
-                // then trim any content before the last newline in the preamble. This aligns AST pipeline
-                // with legacy TemplateDefinitionParser behavior.
-                if (template.Options.TrimPreambleBeforeNewLine)
-                {
-                    var pre = token.Preamble;
-                    if (string.IsNullOrEmpty(pre) == false && pre.IndexOf('\n') > -1)
-                    {
-                        var idx = pre.LastIndexOf('\n');
-                        var tail = pre.Substring(idx + 1);
-                        token.Preamble = tail;
-
-                        log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
-                            preToken.Id, pre.Length, tail.Length);
-                    }
-                }
-
-                token.Name = preToken.Name;
                 token.Optional = preToken.Optional;
                 token.Repeating = preToken.Repeating;
                 token.TerminateOnNewLine = preToken.TerminateOnNewline;
                 token.Required = preToken.Required;
-                token.Id = preToken.Id;
                 token.DependsOnId = preToken.DependsOnId;
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
                 token.IsNull = preToken.IsNull;
-                token.Location = preToken.Location;
                 token.ConsiderOnce = preToken.ConsiderOnce;
 
                 // All tokens optional if out-of-order enabled
@@ -406,6 +365,50 @@ namespace Tokens.Compilation
 
             return true;
 
+        }
+
+        private string ComputePreamble(Definitions.TokenDefinition preToken, TokenizerOptions options, ILogger log)
+        {
+            string preamble;
+
+            if (Options.TrimLeadingWhitespaceInTokenPreamble)
+            {
+                if (preToken.Preamble.IsOnlySpaces())
+                {
+                    preamble = preToken.Preamble;
+                }
+                else if (string.IsNullOrWhiteSpace(preToken.Preamble))
+                {
+                    preamble = preToken.Preamble.TrimLeadingSpaces();
+                }
+                else
+                {
+                    preamble = preToken.Preamble.TrimStart();
+                }
+
+                log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
+                    preToken.Id, preToken.Preamble.Length, preamble.Length);
+            }
+            else
+            {
+                preamble = preToken.Preamble;
+            }
+
+            if (options.TrimPreambleBeforeNewLine)
+            {
+                if (string.IsNullOrEmpty(preamble) == false && preamble.IndexOf('\n') > -1)
+                {
+                    var idx = preamble.LastIndexOf('\n');
+                    var tail = preamble.Substring(idx + 1);
+
+                    log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
+                        preToken.Id, preamble.Length, tail.Length);
+
+                    preamble = tail;
+                }
+            }
+
+            return preamble;
         }
 
         private string GenerateTemplateName(string content)

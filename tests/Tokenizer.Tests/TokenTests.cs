@@ -12,7 +12,7 @@ public class TokenTests : Tests.TokenizerTestBase
     {
     }
 
-    private readonly Token token = new("Test");
+    private readonly Token token = new("Test", string.Empty, string.Empty, new FileLocation());
 
     public class Person
     {

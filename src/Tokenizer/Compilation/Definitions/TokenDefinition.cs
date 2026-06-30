@@ -24,7 +24,7 @@ namespace Tokens.Compilation.Definitions
 
         public int Id { get; set; }
 
-        public int DependsOnId { get; set; }
+        public int DependsOnId { get; set; } = -1;
 
         public string Preamble => preamble.ToString();
 

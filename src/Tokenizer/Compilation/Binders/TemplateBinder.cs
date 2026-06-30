@@ -179,11 +179,6 @@ namespace Tokens.Compilation.Binders
             {
                 result.Tokens.Add(t);
             }
-            // Assign sequential, 1-based Ids to all tokens to preserve stable ordering semantics
-            for (int i = 0; i < result.Tokens.Count; i++)
-            {
-                result.Tokens[i].Id = i + 1;
-            }
             return result;
         }
 

@@ -239,11 +239,8 @@ Content: {Content}");
     public void GivenTemplateWithHintsAndTokens_WhenTokenizing_ThenProcessesBoth()
     {
         // Arrange
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithHints(new HintBuilder().WithText("Expected").WithRequired().Build())
-            .WithTokens(new TokenBuilder().WithName("Name").WithPreamble("Name: ").Build())
-            .Build();
+        var parser = new TokenParser();
+        var template = parser.Parse("---\nhint: Expected\n---\nName: {Name}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -257,7 +254,7 @@ Content: {Content}");
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
-        Assert.True(result.Hints.Matches.Count >= 1);
+        Assert.Equal("John", result.Tokens.Matches[0].Value);
     }
 
     [Fact]

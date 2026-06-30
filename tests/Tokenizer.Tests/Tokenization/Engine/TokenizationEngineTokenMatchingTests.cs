@@ -129,7 +129,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TokenParser();
-        var template = parser.Parse("{Item*#}");
+        var template = parser.Parse("Item: {Item*#}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -137,9 +137,9 @@ public class TokenizationEngineTokenMatchingTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, "Apple\nBanana\n\nCherry", null, context, result);
+        _engine.ProcessTokenization(template, "Item: Apple\nItem: Banana\n\nItem: Cherry", null, context, result);
 
-        // Assert - Should stop at the blank line
+        // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
     }
 

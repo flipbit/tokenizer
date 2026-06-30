@@ -20,9 +20,12 @@ namespace Tokens
         /// <summary>
         /// Creates a new instance of the <see cref="Token"/> class.
         /// </summary>
-        public Token(string content)
+        public Token(string content, string name, string preamble, FileLocation location)
         {
             this.content = content;
+            Name = name;
+            Preamble = preamble;
+            Location = location;
             Decorators = new List<TokenDecoratorContext>();
         }
 
@@ -68,14 +71,14 @@ namespace Tokens
         /// <summary>
         /// The unique id of this token in the <see cref="Template"/>.
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; internal set; }
 
         /// <summary>
         /// Defines a token that must have been matched in the input before this token
         /// can be considered.  Used with repeating tokens that would otherwise be
         /// to aggressive in their matching.
         /// </summary>
-        public int DependsOnId { get; set; }
+        public int DependsOnId { get; internal set; } = -1;
 
         /// <summary>
         /// Determines if this <see cref="Token"/> was defined in the template front matter section.
@@ -101,7 +104,7 @@ namespace Tokens
         /// <summary>
         /// Defines a joining string to use when concatenating two token values.
         /// </summary>
-        public string ConcatenationString { get; set; }
+        public string? ConcatenationString { get; set; }
 
         /// <summary>
 
@@ -117,7 +120,7 @@ namespace Tokens
             return content;
         }
 
-        internal bool Assign(object target, string value, TokenizerOptions options, FileLocation location, out object assignedValue)
+        internal bool Assign(object target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue)
         {
             assignedValue = null;
 
@@ -258,7 +261,7 @@ namespace Tokens
                 List<object> list;
                 if (dictionary.ContainsKey(Name))
                 {
-                    list = dictionary[Name] as List<object>;
+                    list = dictionary[Name] as List<object> ?? new List<object>();
                 }
                 else
                 {

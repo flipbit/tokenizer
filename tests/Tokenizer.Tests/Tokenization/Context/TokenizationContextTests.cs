@@ -71,7 +71,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        var token = new Token("test");
+        var token = new Token("test", string.Empty, string.Empty, new Tokens.Enumerators.FileLocation());
 
         // Act
         context.Candidates.Add(token);
@@ -128,7 +128,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Candidates.Add(new Token("test"));
+        context.Candidates.Add(new Token("test", string.Empty, string.Empty, new Tokens.Enumerators.FileLocation()));
 
         // Act
         context.ClearCandidates();
@@ -157,7 +157,7 @@ public class TokenizationContextTests
         // Arrange
         var context = new TokenizationContext();
         context.Initialize("test");
-        context.Candidates.Add(new Token("test"));
+        context.Candidates.Add(new Token("test", string.Empty, string.Empty, new Tokens.Enumerators.FileLocation()));
         context.Replacement.Append("test");
         context.MatchIds.Add(1);
         context.DisabledRepeatingTokens.Add(2);

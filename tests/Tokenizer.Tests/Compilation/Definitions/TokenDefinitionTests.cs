@@ -14,7 +14,7 @@ public class TokenDefinitionTests
 
         // Assert
         Assert.Equal(0, token.Id);
-        Assert.Equal(0, token.DependsOnId);
+        Assert.Equal(-1, token.DependsOnId);
         Assert.Equal(string.Empty, token.Preamble);
         Assert.Equal(string.Empty, token.Name);
         Assert.Equal(string.Empty, token.Value);

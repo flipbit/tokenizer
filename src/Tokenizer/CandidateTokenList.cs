@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens
@@ -40,7 +41,7 @@ namespace Tokens
             tokens.Clear();
         }
 
-        public bool TryAssign(object? target, StringBuilder value, TokenizerOptions options, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue)
+        public bool TryAssign(object? target, StringBuilder value, TokenizerOptions options, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue, IDiagnosticCollector collector)
         {
             assigned = null;
             assignedValue = null;
@@ -49,7 +50,7 @@ namespace Tokens
 
             foreach (var token in tokens)
             {
-                if (token.Assign(target, valueString, options, location, out assignedValue))
+                if (token.Assign(target, valueString, options, location, out assignedValue, collector))
                 {
                     assigned = token;
 

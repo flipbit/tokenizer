@@ -4,6 +4,7 @@ using Tokens.Builders;
 using Tokens.Compilation;
 using Tokens.Tokenization;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.Engine;
 
@@ -37,7 +38,7 @@ public class TokenizationEngineBasicTests
 
         // Act - Follow the same pattern as the original Tokenizer
         // Initialize context for hint processing
-        _engine.ProcessTokenization(template, "First Name: Alice", value, context, result);
+        _engine.ProcessTokenization(template, "First Name: Alice", value, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0);
@@ -58,7 +59,7 @@ public class TokenizationEngineBasicTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, "Hello World", null, context, result);
+        _engine.ProcessTokenization(template, "Hello World", null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

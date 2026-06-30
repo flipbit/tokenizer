@@ -3,6 +3,7 @@ using Tokens.Builders;
 using Tokens.Compilation;
 using Tokens.Tokenization;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.Engine;
 
@@ -28,7 +29,7 @@ public class TokenizationEngineEdgeCaseTests
         var longInput = new string('a', 10000) + "Hello World" + new string('b', 10000);
 
         // Act
-        _engine.ProcessTokenization(template, longInput, null, context, result);
+        _engine.ProcessTokenization(template, longInput, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -50,7 +51,7 @@ public class TokenizationEngineEdgeCaseTests
         var input = "Hello @#$%^&*()_+-=";
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -72,7 +73,7 @@ public class TokenizationEngineEdgeCaseTests
         var input = "Hello 你好世界 🌍";
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result);
+        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

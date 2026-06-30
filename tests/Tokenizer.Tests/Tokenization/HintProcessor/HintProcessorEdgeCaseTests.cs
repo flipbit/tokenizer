@@ -1,6 +1,7 @@
 using Tokens.Builders;
 using Tokens.Enumerators;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.HintProcessorTests;
 
@@ -47,7 +48,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(hintsMissing);
@@ -73,7 +74,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(hintsMissing);
@@ -99,7 +100,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(hintsMissing);
@@ -130,7 +131,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -155,7 +156,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -180,7 +181,7 @@ public class HintProcessorEdgeCaseTests
             .Build();
 
         // Act
-        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result);
+        var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(hintsMissing);

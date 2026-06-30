@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Tokens.Builders;
 using Tokens.Enumerators;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.ResultBuilderTests;
 
@@ -56,7 +57,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(template, null!));
+            _builder.BuildUnmatchedTokens(template, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -67,7 +68,7 @@ public class ResultBuilderErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(null!, result));
+            _builder.BuildUnmatchedTokens(null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]

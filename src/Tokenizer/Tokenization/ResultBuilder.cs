@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens.Tokenization
@@ -125,7 +126,8 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to populate with unmatched tokens</param>
         public void BuildUnmatchedTokens(
             Template template,
-            TokenizeResultBase result)
+            TokenizeResultBase result,
+            IDiagnosticCollector collector)
         {
             ArgumentValidation.ThrowIfNull(template, nameof(template));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
@@ -142,6 +144,9 @@ namespace Tokens.Tokenization
                         token.Id,
                         token.Name,
                         token.Required);
+
+                    collector.Record(DiagnosticEventType.TokenMissed,
+                        tokenName: token.Name, tokenId: token.Id);
 
                     result.Tokens.Misses.Add(token);
                     unmatchedCount++;

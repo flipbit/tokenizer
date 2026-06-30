@@ -2,6 +2,7 @@ using System;
 using Tokens.Builders;
 using Tokens.Tokenization;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.Engine;
 
@@ -50,7 +51,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(null!, "test", value, context, result));
+            _engine.ProcessTokenization(null!, "test", value, context, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -68,7 +69,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, null!, result));
+            _engine.ProcessTokenization(template, "test", value, null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -85,7 +86,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, context, null!));
+            _engine.ProcessTokenization(template, "test", value, context, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -108,7 +109,7 @@ public class TokenizationEngineErrorTests
         var matchIds = new System.Collections.Generic.HashSet<int>();
 
         // Act
-        var assigned = _engine.TryAssignCandidateTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds);
+        var assigned = _engine.TryAssignCandidateTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(assigned);

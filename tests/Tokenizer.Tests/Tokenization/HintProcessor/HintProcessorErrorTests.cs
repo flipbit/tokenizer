@@ -2,6 +2,7 @@ using System;
 using Tokens.Builders;
 using Tokens.Enumerators;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.HintProcessorTests;
 
@@ -21,7 +22,7 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(null!, enumerator, result));
+            _processor.FindAndValidateHints(null!, enumerator, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -35,7 +36,7 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(template, null!, result));
+            _processor.FindAndValidateHints(template, null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -47,6 +48,6 @@ public class HintProcessorErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _processor.FindAndValidateHints(template, enumerator, null!));
+            _processor.FindAndValidateHints(template, enumerator, null!, NullDiagnosticCollector.Instance));
     }
 }

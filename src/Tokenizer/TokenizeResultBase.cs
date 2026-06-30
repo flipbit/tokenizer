@@ -44,6 +44,12 @@ namespace Tokens
         public HintResult Hints { get; init; }
 
         /// <summary>
+        /// Structured diagnostic output from the tokenization process.
+        /// Null when <see cref="TokenizerOptions.EnableDiagnostics"/> is false.
+        /// </summary>
+        public Diagnostics.TokenizationDiagnostics? Diagnostics { get; internal set; }
+
+        /// <summary>
         /// Determines whether the matching process was successful
         /// </summary>
         public bool Success => Tokens.HasMatches && 

@@ -6,6 +6,7 @@ using Tokens.Compilation;
 using Tokens.Enumerators;
 using Tokens.Tokenization;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.Engine;
 
@@ -37,7 +38,7 @@ public class TokenizationEngineInternalTests
         var disabledRepeatingTokens = new HashSet<int>();
 
         // Act
-        var processed = _engine.ProcessRepeatedTokens(candidates, enumerator, replacement, result, disabledRepeatingTokens, matchIds, template);
+        var processed = _engine.ProcessRepeatedTokens(candidates, enumerator, replacement, result, disabledRepeatingTokens, matchIds, template, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(processed); // Should return false when no candidates match
@@ -67,7 +68,7 @@ public class TokenizationEngineInternalTests
         var disabledRepeatingTokens = new HashSet<int>();
 
         // Act
-        _engine.ProcessNewlineTerminatedTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, enumerator, disabledRepeatingTokens);
+        _engine.ProcessNewlineTerminatedTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, enumerator, disabledRepeatingTokens, NullDiagnosticCollector.Instance);
 
         // Assert
         // Method is void, so we just verify it doesn't throw
@@ -91,7 +92,7 @@ public class TokenizationEngineInternalTests
             .Build();
 
         // Act
-        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result);
+        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -117,7 +118,7 @@ public class TokenizationEngineInternalTests
         var matchIds = new HashSet<int>();
 
         // Act
-        var assigned = _engine.TryAssignCandidateTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds);
+        var assigned = _engine.TryAssignCandidateTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(assigned); // Should return false when no candidates
@@ -143,7 +144,7 @@ public class TokenizationEngineInternalTests
         var enumerator = new TokenEnumerator("test");
 
         // Act
-        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result);
+        _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

@@ -8,7 +8,7 @@ namespace Tokens.Diagnostics
     /// Created per-tokenization-call in Tokenizer.Tokenize(), passed to the engine
     /// and down into Token.Assign() as a method parameter.
     /// </summary>
-    internal interface IDiagnosticCollector
+    public interface IDiagnosticCollector
     {
         /// <summary>
         /// Records a diagnostic event. Implementations may discard the event

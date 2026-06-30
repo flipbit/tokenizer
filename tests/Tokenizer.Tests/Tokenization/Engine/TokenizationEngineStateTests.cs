@@ -6,6 +6,7 @@ using Tokens.Compilation;
 using Tokens.Enumerators;
 using Tokens.Tokenization;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.Engine;
 
@@ -142,7 +143,7 @@ public class TokenizationEngineStateTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, "First: ValueASecond: ValueB", null, context, result);
+        _engine.ProcessTokenization(template, "First: ValueASecond: ValueB", null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert - Both tokens should be processed
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -187,7 +188,7 @@ public class TokenizationEngineStateTests
 
         // Act - Force backtracking scenario
         var processed = _engine.ProcessRepeatedTokens(candidates, enumerator, replacement,
-            result, disabledRepeatingTokens, matchIds, template);
+            result, disabledRepeatingTokens, matchIds, template, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

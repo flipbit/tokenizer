@@ -1,6 +1,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens.Tokenization
@@ -35,7 +36,8 @@ namespace Tokens.Tokenization
         public bool FindAndValidateHints(
             Template template,
             TokenEnumerator enumerator,
-            TokenizeResultBase result)
+            TokenizeResultBase result,
+            IDiagnosticCollector collector)
         {
             ArgumentValidation.ThrowIfNull(template, nameof(template));
             ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
@@ -61,6 +63,10 @@ namespace Tokens.Tokenization
                     {
                         log.LogTrace("Hint matched and added: '{HintText}' at Line:{Line} Col:{Column}, Optional:{Optional}",
                             hint.Text, enumerator.Location.Line, enumerator.Location.Column, hint.Optional);
+
+                        collector.Record(DiagnosticEventType.HintMatched,
+                            value: hint.Text,
+                            location: enumerator.Location);
                     }
                 }
 
@@ -89,6 +95,9 @@ namespace Tokens.Tokenization
                     else
                     {
                         log.LogError("Required hint missing: '{HintText}'", hint.Text);
+
+                        collector.Record(DiagnosticEventType.HintMissing,
+                            value: hint.Text);
                     }
                 }
             }

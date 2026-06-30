@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Extensions;
@@ -120,7 +122,7 @@ namespace Tokens
             return content;
         }
 
-        internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue)
+        internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue, IDiagnosticCollector collector)
         {
             assignedValue = null;
 
@@ -152,11 +154,18 @@ namespace Tokens
             {
                 if (decorator.IsTransformer)
                 {
-                    var transformed = decorator.CanTransform(assignedValue, out var output);
+                    var transformed = decorator.CanTransform(assignedValue!, out var output);
 
                     if (transformed == false)
                     {
                         Log.LogTrace("{DecoratorName}: Unable to transform value '{AssignedValue}'!", decorator.DecoratorType.Name, assignedValue);
+
+                        collector.Record(DiagnosticEventType.TransformerFailed,
+                            tokenName: Name, tokenId: Id,
+                            location: location,
+                            value: assignedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name,
+                            decoratorArgs: decorator.Parameters.ToArray());
 
                         return false;
                     }
@@ -178,18 +187,36 @@ namespace Tokens
                         Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to '{Output}' ({TypeName})", decorator.DecoratorType.Name, assignedValue, output, output.GetType().Name);
                     }
 
+                    collector.Record(DiagnosticEventType.TransformerSucceeded,
+                        tokenName: Name, tokenId: Id,
+                        location: location,
+                        value: assignedValue?.ToString(),
+                        detail: output?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name,
+                        decoratorArgs: decorator.Parameters.ToArray());
+
                     assignedValue = output;
                 }
 
                 if (decorator.IsValidator)
                 {
-                    if (decorator.Validate(assignedValue))
+                    if (decorator.Validate(assignedValue!))
                     {
                         Log.LogTrace("{DecoratorName} OK!", decorator.DecoratorType.Name);
+
+                        collector.Record(DiagnosticEventType.ValidatorPassed,
+                            tokenName: Name, tokenId: Id,
+                            value: assignedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name);
                     }
                     else
                     {
                         Log.LogTrace("{DecoratorName} Validation Failure: {Value}", decorator.DecoratorType.Name, value);
+
+                        collector.Record(DiagnosticEventType.ValidatorFailed,
+                            tokenName: Name, tokenId: Id,
+                            value: value,
+                            decoratorName: decorator.DecoratorType.Name);
 
                         return false;
                     }
@@ -198,7 +225,7 @@ namespace Tokens
 
             if (target is IDictionary<string, object> dictionary)
             {
-                return SetDictionaryValue(dictionary, assignedValue);
+                return SetDictionaryValue(dictionary, assignedValue!);
             }
 
             // Target can be null if not reflecting onto an object
@@ -227,7 +254,7 @@ namespace Tokens
                 }
                 else
                 {
-                    target.SetValue(Name, assignedValue);
+                    target.SetValue(Name, assignedValue!);
                 }
             }
             catch (MissingMemberException)

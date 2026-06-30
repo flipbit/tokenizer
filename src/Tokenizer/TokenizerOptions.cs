@@ -19,9 +19,18 @@ namespace Tokens
             OutOfOrderTokens = false;
             TerminateOnNewline = false;
             IgnoreMissingProperties = false;
+            EnableDiagnostics = false;
         }
 
         public bool IgnoreMissingProperties { get; set; }
+
+        /// <summary>
+        /// When true, tokenization results include a <see cref="Diagnostics.TokenizationDiagnostics"/>
+        /// property with a structured trace of every matching decision, a mismatch summary
+        /// with adaptive hints, and a visual alignment diff.
+        /// Default: false. Has no performance impact when disabled.
+        /// </summary>
+        public bool EnableDiagnostics { get; set; }
 
         public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
 
@@ -80,7 +89,8 @@ namespace Tokens
                 MaxInputLength = MaxInputLength,
                 MaxTemplateLength = MaxTemplateLength,
                 MaxTokenCount = MaxTokenCount,
-                MaxIterations = MaxIterations
+                MaxIterations = MaxIterations,
+                EnableDiagnostics = EnableDiagnostics
             };
         }
     }

@@ -1,3 +1,4 @@
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens.Tokenization
@@ -15,7 +16,7 @@ namespace Tokens.Tokenization
         /// <param name="enumerator">The token enumerator positioned at the start of input</param>
         /// <param name="result">The result object to populate with hint matches and misses</param>
         /// <returns>True if any required hints are missing, false if all required hints are found</returns>
-        bool FindAndValidateHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result);
+        bool FindAndValidateHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result, IDiagnosticCollector collector);
 
         /// <summary>
         /// Checks if a specific hint text matches at the current enumerator position.

@@ -3,6 +3,7 @@ using Tokens.Builders;
 using Tokens.Compilation;
 using Tokens.Enumerators;
 using Xunit;
+using Tokens.Diagnostics;
 
 namespace Tokens.Tests.Tokenization.ResultBuilderTests;
 
@@ -25,7 +26,7 @@ public class ResultBuilderUnmatchedTests
             .Build();
 
         // Act
-        _builder.BuildUnmatchedTokens(template, result);
+        _builder.BuildUnmatchedTokens(template, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Misses.Count > 0);
@@ -47,7 +48,7 @@ public class ResultBuilderUnmatchedTests
         result.Tokens.AddMatch(nameToken, "TestName", new FileLocation());
 
         // Act
-        _builder.BuildUnmatchedTokens(template, result);
+        _builder.BuildUnmatchedTokens(template, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Misses);

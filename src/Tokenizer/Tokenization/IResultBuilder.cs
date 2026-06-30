@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens.Tokenization
@@ -54,7 +55,7 @@ namespace Tokens.Tokenization
         /// </summary>
         /// <param name="template">The template containing all token definitions</param>
         /// <param name="result">The result object to populate with unmatched tokens</param>
-        void BuildUnmatchedTokens(Template template, TokenizeResultBase result);
+        void BuildUnmatchedTokens(Template template, TokenizeResultBase result, IDiagnosticCollector collector);
 
         /// <summary>
         /// Adds matched token IDs to the tracking set for template ordering logic.

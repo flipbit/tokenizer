@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
 using Tokens.Tokenization;
@@ -141,9 +142,13 @@ namespace Tokens
                     context.Initialize(input);
                     log.LogTrace("Tokenization context initialized");
 
+                    IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                        ? new DiagnosticCollector(template.Content, input)
+                        : NullDiagnosticCollector.Instance;
+
                     // Process hints first
                     log.LogTrace("Processing hints");
-                    var hintsMissing = hintProcessor.FindAndValidateHints(template, context.Enumerator, result);
+                    var hintsMissing = hintProcessor.FindAndValidateHints(template, context.Enumerator, result, collector);
 
                     if (hintsMissing)
                     {
@@ -153,12 +158,12 @@ namespace Tokens
                     {
                         log.LogTrace("Hints validated successfully, proceeding with tokenization");
                         // Process the main tokenization using the engine
-                        tokenizationEngine.ProcessTokenization(template, input, value, context, result);
+                        tokenizationEngine.ProcessTokenization(template, input, value, context, result, collector);
                     }
 
                     // Build unmatched tokens collection
                     log.LogTrace("Building unmatched tokens collection");
-                    resultBuilder.BuildUnmatchedTokens(template, result);
+                    resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
                     var requiredMissingCount = result.Tokens.Misses.Count(t => t.Required);
                     log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
@@ -168,6 +173,8 @@ namespace Tokens
                     {
                         log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
                     }
+
+                    result.Diagnostics = collector.GetResult();
                 }
 
                 log.LogInformation("Tokenization {Result} for template {TemplateName}",

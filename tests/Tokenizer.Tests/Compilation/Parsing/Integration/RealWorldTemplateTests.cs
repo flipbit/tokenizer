@@ -176,8 +176,14 @@ namespace Tokens.Tests.Compilation.Parsing.Integration
             // Act
             var definition = _parser.Parse(template);
 
-            // Assert
-            Assert.Equal(3, definition.Tokens.Count);
+            // Assert — 3 named tokens (id, name, active) + 1 trailing token for the closing }}
+            // Note: quotes in preamble text are literal (not string delimiters), so "{name}"
+            // correctly creates a token for 'name' with the surrounding quotes in the preamble
+            var namedTokens = definition.Tokens.Where(t => !string.IsNullOrEmpty(t.Name)).ToList();
+            Assert.Equal(3, namedTokens.Count);
+            Assert.Equal("id", namedTokens[0].Name);
+            Assert.Equal("name", namedTokens[1].Name);
+            Assert.Equal("active", namedTokens[2].Name);
             Assert.Contains("{", definition.Tokens[0].Preamble);
         }
     }

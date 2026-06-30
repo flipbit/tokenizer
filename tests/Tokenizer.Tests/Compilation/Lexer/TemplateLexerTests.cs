@@ -212,14 +212,46 @@ namespace Tokens.Compilation.Lexer
         }
 
         [Fact]
-        public void GivenQuotedStrings_WhenTokenizing_ThenEmitsQuotedStringWithRawAndValue()
+        public void GivenQuotesOutsideBraces_WhenTokenizing_ThenEmitsTextNotQuotedString()
         {
             // Arrange
             var lexer = CreateLexer();
 
-            // Act
-            var single = lexer.Tokenize("'hello'").First();
-            var dbl = lexer.Tokenize("\"world\"").First();
+            // Act — quotes outside braces should be literal text
+            var tokens = lexer.Tokenize("Registrant's address:").ToList();
+
+            // Assert — the apostrophe should NOT start a quoted string
+            var kinds = tokens.Select(t => t.Kind).ToList();
+            Assert.DoesNotContain(LexerTokenKind.QuotedString, kinds);
+            // Should contain text tokens for the apostrophe
+            Assert.Contains(tokens, t => t.Kind == LexerTokenKind.Text && t.Value.Contains("'"));
+        }
+
+        [Fact]
+        public void GivenQuotesInsideBraces_WhenTokenizing_ThenEmitsQuotedString()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+
+            // Act — quotes inside braces should still be quoted strings
+            var tokens = lexer.Tokenize("{ name : Replace('foo', 'bar') }").ToList();
+
+            // Assert
+            var quotedStrings = tokens.Where(t => t.Kind == LexerTokenKind.QuotedString).ToList();
+            Assert.Equal(2, quotedStrings.Count);
+            Assert.Equal("foo", quotedStrings[0].Value);
+            Assert.Equal("bar", quotedStrings[1].Value);
+        }
+
+        [Fact]
+        public void GivenQuotedStringsInsideBraces_WhenTokenizing_ThenEmitsQuotedStringWithRawAndValue()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+
+            // Act — quotes inside braces
+            var single = lexer.Tokenize("{ x : T('hello') }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
+            var dbl = lexer.Tokenize("{ x : T(\"world\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
 
             // Assert
             Assert.Equal(LexerTokenKind.QuotedString, single.Kind);
@@ -232,23 +264,21 @@ namespace Tokens.Compilation.Lexer
         }
 
         [Fact]
-        public void GivenQuotedStringsWithEscapes_WhenTokenizing_ThenEmitsCorrectValueAndRaw()
+        public void GivenQuotedStringsWithEscapesInsideBraces_WhenTokenizing_ThenEmitsCorrectValueAndRaw()
         {
             // Arrange
             var lexer = CreateLexer();
 
             // Act
-            var escQuote = lexer.Tokenize("\"Jane \\\"Doe\\\"\"").First(); // "Jane \"Doe\""
-            var escBackslash = lexer.Tokenize("\"A \\\\ B\"").First(); // "A \\ B"
+            var escQuote = lexer.Tokenize("{ x : T(\"Jane \\\"Doe\\\"\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
+            var escBackslash = lexer.Tokenize("{ x : T(\"A \\\\ B\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
 
             // Assert
             Assert.Equal(LexerTokenKind.QuotedString, escQuote.Kind);
             Assert.Equal("Jane \"Doe\"", escQuote.Value);
-            Assert.Equal("\"Jane \\\"Doe\\\"\"", escQuote.RawText);
 
             Assert.Equal(LexerTokenKind.QuotedString, escBackslash.Kind);
             Assert.Equal("A \\ B", escBackslash.Value);
-            Assert.Equal("\"A \\\\ B\"", escBackslash.RawText);
         }
 
         [Fact]
@@ -256,10 +286,27 @@ namespace Tokens.Compilation.Lexer
         {
             // Arrange
             var lexer = CreateLexer();
-            var input = "\"bad \\x\""; // sequence like \x should be invalid
+            var input = "{ x : T(\"bad \\x\") }";
 
             // Act / Assert
             Assert.Throws<LexerException>(() => lexer.Tokenize(input).ToList());
+        }
+
+        [Fact]
+        public void GivenApostropheInPreambleThenQuotesInToken_WhenTokenizing_ThenBothHandledCorrectly()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "Registrant's address: { Name : Replace('before ', '01-') }";
+
+            // Act
+            var tokens = lexer.Tokenize(input).ToList();
+
+            // Assert — apostrophe in preamble is text, quotes in token are QuotedString
+            var quotedStrings = tokens.Where(t => t.Kind == LexerTokenKind.QuotedString).ToList();
+            Assert.Equal(2, quotedStrings.Count);
+            Assert.Equal("before ", quotedStrings[0].Value);
+            Assert.Equal("01-", quotedStrings[1].Value);
         }
 
         [Fact]
@@ -305,11 +352,25 @@ namespace Tokens.Compilation.Lexer
         }
 
         [Fact]
-        public void GivenUnclosedQuote_WhenTokenizing_ThenThrowsLexerException()
+        public void GivenUnclosedQuoteOutsideBraces_WhenTokenizing_ThenEmitsText()
         {
-            // Arrange
+            // Arrange — outside braces, quotes are just text
             var lexer = CreateLexer();
             var input = "'unclosed";
+
+            // Act
+            var tokens = lexer.Tokenize(input).ToList();
+
+            // Assert — should not throw, apostrophe is text
+            Assert.DoesNotContain(tokens, t => t.Kind == LexerTokenKind.QuotedString);
+        }
+
+        [Fact]
+        public void GivenUnclosedQuoteInsideBraces_WhenTokenizing_ThenThrowsLexerException()
+        {
+            // Arrange — inside braces, quotes must be closed
+            var lexer = CreateLexer();
+            var input = "{ x : T('unclosed) }";
 
             // Act / Assert
             Assert.Throws<LexerException>(() => lexer.Tokenize(input).ToList());

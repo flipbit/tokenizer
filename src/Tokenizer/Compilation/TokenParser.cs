@@ -193,6 +193,22 @@ namespace Tokens.Compilation
 
                 template.AddToken(token);
 
+                // Link repeating split tokens to their non-repeating counterpart:
+                // when the binder splits a Repeating token with a multiline preamble,
+                // it produces a non-repeating token followed by a repeating one with
+                // the same name. The repeating token should not match until the
+                // non-repeating one has been consumed.
+                if (token.Repeating && token.DependsOnId == -1 && template.Tokens.Count >= 2)
+                {
+                    var previous = template.Tokens.Last(t => t.Id != token.Id);
+                    if (previous.Name == token.Name && previous.Repeating == false)
+                    {
+                        token.DependsOnId = previous.Id;
+                        log.LogTrace("Token {TokenId} ({TokenName}) linked as dependent of token {ParentId}",
+                            token.Id, token.Name, previous.Id);
+                    }
+                }
+
                 if (string.IsNullOrEmpty(token.Name) == false)
                 {
                     log.LogTrace("Token[{TokenId:000}]: {Token}", token.Id, token);

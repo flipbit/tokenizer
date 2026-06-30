@@ -41,7 +41,9 @@ namespace Tokens.Compilation.Parsing
             Assert.Equal(1, tokens[0].Id);
             Assert.Equal(2, tokens[1].Id);
             Assert.NotEqual(tokens[0].Id, tokens[1].Id);
-            Assert.All(tokens, t => Assert.Equal(-1, t.DependsOnId));
+            // Non-repeating token has no dependency; repeating split depends on its non-repeating counterpart
+            Assert.Equal(-1, tokens[0].DependsOnId);
+            Assert.Equal(tokens[0].Id, tokens[1].DependsOnId);
         }
     }
 }

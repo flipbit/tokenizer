@@ -235,6 +235,8 @@ namespace Tokens.Compilation.Lexer
             var reader = new LookaheadReader(input);
             var location = new FileLocation();
             var absolutePosition = 0;
+            var braceDepth = 0;
+            var inFrontMatter = false;
 
             log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
                 absolutePosition, location.Line, location.Column);
@@ -260,7 +262,9 @@ namespace Tokens.Compilation.Lexer
                     continue;
                 }
 
-                if (TryReadQuotedString(reader, location, ref absolutePosition, out var qs))
+                // Quoted strings are recognized inside token braces and front matter,
+                // but NOT in preamble text between tokens.
+                if ((braceDepth > 0 || inFrontMatter) && TryReadQuotedString(reader, location, ref absolutePosition, out var qs))
                 {
                     log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
                         qs.Kind, qs.Value, qs.RawText, qs.Start, qs.Length);
@@ -282,6 +286,7 @@ namespace Tokens.Compilation.Lexer
 
                 if (TryReadFrontMatter(reader, location, ref absolutePosition, out var fm))
                 {
+                    inFrontMatter = !inFrontMatter;
                     log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
                         fm.Kind, fm.Value, fm.RawText, fm.Start, fm.Length);
                     log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
@@ -302,6 +307,8 @@ namespace Tokens.Compilation.Lexer
 
                 if (TryReadStructural(reader, location, ref absolutePosition, out var st))
                 {
+                    if (st.Kind == LexerTokenKind.OpenBrace) braceDepth++;
+                    else if (st.Kind == LexerTokenKind.CloseBrace && braceDepth > 0) braceDepth--;
                     log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
                         st.Kind, st.Value, st.RawText, st.Start, st.Length);
                     log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",

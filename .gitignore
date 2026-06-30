@@ -35,6 +35,6 @@ packages
 .vs/*
 .idea
 .cursor
-specs
+
 .DS_Store
 .claude

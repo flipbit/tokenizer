@@ -282,14 +282,31 @@ namespace Tokens.Compilation.Lexer
         }
 
         [Fact]
-        public void GivenInvalidEscapeInQuotedString_WhenTokenizing_ThenThrowsLexerException()
+        public void GivenUnknownEscapeInQuotedString_WhenTokenizing_ThenTreatsAsLiteral()
         {
             // Arrange
             var lexer = CreateLexer();
             var input = "{ x : T(\"bad \\x\") }";
 
-            // Act / Assert
-            Assert.Throws<LexerException>(() => lexer.Tokenize(input).ToList());
+            // Act
+            var token = lexer.Tokenize(input).First(t => t.Kind == LexerTokenKind.QuotedString);
+
+            // Assert
+            Assert.Equal("bad x", token.Value);
+        }
+
+        [Fact]
+        public void GivenBackslashEscapedGMT_WhenTokenizing_ThenTreatsAsLiteralGMT()
+        {
+            // Arrange
+            var lexer = CreateLexer();
+            var input = "{ x : ToDateTimeUtc(\"ddd MMM d HH:mm:ss \\G\\M\\T yyyy\") }";
+
+            // Act
+            var token = lexer.Tokenize(input).First(t => t.Kind == LexerTokenKind.QuotedString);
+
+            // Assert
+            Assert.Equal("ddd MMM d HH:mm:ss GMT yyyy", token.Value);
         }
 
         [Fact]

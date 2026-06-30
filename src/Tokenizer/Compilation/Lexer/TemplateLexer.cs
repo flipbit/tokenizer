@@ -723,10 +723,15 @@ namespace Tokens.Compilation.Lexer
                         continue;
                     }
 
-                    // Invalid escape sequence
-                    log.LogError("Lexing failure: Invalid escape sequence at Position={Position}, Line={Line}, Column={Column}, EscapeSequence={EscapeSequence}",
-                        absolutePosition, location.Line, location.Column, $"\\{nextChar}");
-                    throw new LexerException($"Invalid escape sequence '\\{nextChar}' in quoted string.", location.Clone());
+                    // Unknown escape sequence — treat as literal character
+                    log.LogWarning("Unknown escape sequence '\\{EscapeChar}' at Position={Position}, Line={Line}, Column={Column} — treating as literal '{LiteralChar}'",
+                        nextChar, absolutePosition, location.Line, location.Column, nextChar);
+                    reader.ReadChar();
+                    raw.Append(nextChar);
+                    inner.Append(nextChar);
+                    location.Increment(nextChar.ToString());
+                    absolutePosition++;
+                    continue;
                 }
 
                 var ch = (char)reader.ReadChar();

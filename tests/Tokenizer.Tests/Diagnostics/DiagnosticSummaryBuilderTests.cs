@@ -142,6 +142,28 @@ public class DiagnosticSummaryBuilderTests
     }
 
     [Fact]
+    public void GivenTransformerFailure_WhenBuildingSummary_ThenHintIsPopulated()
+    {
+        // Arrange
+        var collector = new DiagnosticCollector("template", "input");
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.TransformerFailed,
+            tokenName: "Registered", decoratorName: "ToDateTimeUtcTransformer",
+            decoratorArgs: new[] { "yyyy-MM-dd" }, value: "21/11/2005");
+        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Registered");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+
+        // Act
+        var diagnostics = collector.GetResult()!;
+        var summary = diagnostics.Summary;
+
+        // Assert
+        var issue = summary.Issues.First(i => i.Type == DiagnosticIssueType.TransformerFailure);
+        Assert.NotNull(issue.Hint);
+        Assert.Contains("dd/MM/yyyy", issue.Hint);
+    }
+
+    [Fact]
     public void GivenVerdict_WhenTokensMissed_ThenVerdictShowsMatchAndMissCount()
     {
         // Arrange

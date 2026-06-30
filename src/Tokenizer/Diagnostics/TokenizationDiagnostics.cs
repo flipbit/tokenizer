@@ -34,6 +34,11 @@ namespace Tokens.Diagnostics
         }
 
         /// <summary>
+        /// The input text that was tokenized. Used by hint generators for near-miss analysis.
+        /// </summary>
+        internal string InputContent => inputContent;
+
+        /// <summary>
         /// All events recorded during this tokenization call, in the order they occurred.
         /// </summary>
         public List<DiagnosticEvent> Events { get; }

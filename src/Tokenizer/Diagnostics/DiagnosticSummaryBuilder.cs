@@ -1,11 +1,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tokens.Diagnostics.Hints;
 
 namespace Tokens.Diagnostics
 {
     internal static class DiagnosticSummaryBuilder
     {
+        private static readonly IHintGenerator[] HintGenerators =
+        {
+            new DateFormatHintGenerator(),
+            new PreambleNearMissHintGenerator(),
+            new ValidatorValueHintGenerator(),
+            new UnmatchedInputHintGenerator(),
+            new RepeatingTokenHintGenerator(),
+        };
+
+        private static string? GenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
+                                            TokenizationDiagnostics diagnostics)
+        {
+            foreach (var generator in HintGenerators)
+            {
+                var hint = generator.TryGenerateHint(issue, sourceEvent, diagnostics);
+                if (hint != null)
+                    return hint;
+            }
+            return null;
+        }
+
         public static DiagnosticSummary Build(TokenizationDiagnostics diagnostics)
         {
             var events = diagnostics.Events;
@@ -15,7 +37,7 @@ namespace Tokens.Diagnostics
             var totalCount = matchedCount + missedCount;
 
             var verdict = BuildVerdict(matchedCount, totalCount, missedCount);
-            var issues = BuildIssues(events);
+            var issues = BuildIssues(events, diagnostics);
 
             return new DiagnosticSummary
             {
@@ -32,7 +54,8 @@ namespace Tokens.Diagnostics
             return $"Matched {matched} of {total} tokens ({missed} missed).";
         }
 
-        private static IReadOnlyList<DiagnosticIssue> BuildIssues(List<DiagnosticEvent> events)
+        private static IReadOnlyList<DiagnosticIssue> BuildIssues(List<DiagnosticEvent> events,
+                                                                   TokenizationDiagnostics diagnostics)
         {
             var issues = new List<DiagnosticIssue>();
 
@@ -48,12 +71,20 @@ namespace Tokens.Diagnostics
             foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.TransformerFailed))
             {
                 var description = BuildTransformerDescription(evt);
-                issues.Add(new DiagnosticIssue
+                var partialIssue = new DiagnosticIssue
                 {
                     Type = DiagnosticIssueType.TransformerFailure,
                     TokenName = evt.TokenName,
                     Description = description,
                     Location = evt.Location,
+                };
+                issues.Add(new DiagnosticIssue
+                {
+                    Type = partialIssue.Type,
+                    TokenName = partialIssue.TokenName,
+                    Description = partialIssue.Description,
+                    Location = partialIssue.Location,
+                    Hint = GenerateHint(partialIssue, evt, diagnostics),
                 });
             }
 
@@ -61,12 +92,20 @@ namespace Tokens.Diagnostics
             foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.ValidatorFailed))
             {
                 var description = BuildValidatorDescription(evt);
-                issues.Add(new DiagnosticIssue
+                var partialIssue = new DiagnosticIssue
                 {
                     Type = DiagnosticIssueType.ValidatorRejection,
                     TokenName = evt.TokenName,
                     Description = description,
                     Location = evt.Location,
+                };
+                issues.Add(new DiagnosticIssue
+                {
+                    Type = partialIssue.Type,
+                    TokenName = partialIssue.TokenName,
+                    Description = partialIssue.Description,
+                    Location = partialIssue.Location,
+                    Hint = GenerateHint(partialIssue, evt, diagnostics),
                 });
             }
 
@@ -76,12 +115,20 @@ namespace Tokens.Diagnostics
                 if (evt.TokenName == null || tokensWithFailures.Contains(evt.TokenName))
                     continue;
 
-                issues.Add(new DiagnosticIssue
+                var partialIssue = new DiagnosticIssue
                 {
                     Type = DiagnosticIssueType.PreambleNeverFound,
                     TokenName = evt.TokenName,
                     Description = $"Token '{evt.TokenName}' was never matched in the input.",
                     Location = evt.Location,
+                };
+                issues.Add(new DiagnosticIssue
+                {
+                    Type = partialIssue.Type,
+                    TokenName = partialIssue.TokenName,
+                    Description = partialIssue.Description,
+                    Location = partialIssue.Location,
+                    Hint = GenerateHint(partialIssue, evt, diagnostics),
                 });
             }
 
@@ -89,12 +136,20 @@ namespace Tokens.Diagnostics
             foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.RepeatingTokenDisabled))
             {
                 var description = BuildRepeatingTokenDescription(evt);
-                issues.Add(new DiagnosticIssue
+                var partialIssue = new DiagnosticIssue
                 {
                     Type = DiagnosticIssueType.RepeatingTokenCutShort,
                     TokenName = evt.TokenName,
                     Description = description,
                     Location = evt.Location,
+                };
+                issues.Add(new DiagnosticIssue
+                {
+                    Type = partialIssue.Type,
+                    TokenName = partialIssue.TokenName,
+                    Description = partialIssue.Description,
+                    Location = partialIssue.Location,
+                    Hint = GenerateHint(partialIssue, evt, diagnostics),
                 });
             }
 
@@ -105,12 +160,20 @@ namespace Tokens.Diagnostics
                     ? "A required hint was not found in the input."
                     : $"Required hint not found in input: '{evt.Value}'.";
 
-                issues.Add(new DiagnosticIssue
+                var partialIssue = new DiagnosticIssue
                 {
                     Type = DiagnosticIssueType.HintMissing,
                     TokenName = evt.TokenName,
                     Description = description,
                     Location = evt.Location,
+                };
+                issues.Add(new DiagnosticIssue
+                {
+                    Type = partialIssue.Type,
+                    TokenName = partialIssue.TokenName,
+                    Description = partialIssue.Description,
+                    Location = partialIssue.Location,
+                    Hint = GenerateHint(partialIssue, evt, diagnostics),
                 });
             }
 

@@ -475,7 +475,7 @@ namespace Tokens.Compilation.Lexer
             return char.IsLetterOrDigit(c) || c == '_' || c == '.';
         }
 
-        private static bool TryReadNewline(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadNewline(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar();
@@ -493,7 +493,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private bool TryReadQuotedString(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private bool TryReadQuotedString(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar();
@@ -502,7 +502,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadWhitespace(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadWhitespace(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar();
@@ -520,7 +520,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadFrontMatter(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadFrontMatter(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var next3 = reader.PeekString(3); if (next3 != "---") return false;
@@ -532,7 +532,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadEscapedBraces(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadEscapedBraces(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var next2 = reader.PeekString(2);
@@ -555,7 +555,7 @@ namespace Tokens.Compilation.Lexer
             return false;
         }
 
-        private static bool TryReadStructural(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadStructural(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar();
@@ -573,7 +573,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadModifier(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadModifier(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar();
@@ -589,7 +589,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadIdentifier(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadIdentifier(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var peek = reader.PeekChar(); if (peek == -1 || IsIdentifierChar((char)peek) == false) return false;
@@ -605,7 +605,7 @@ namespace Tokens.Compilation.Lexer
             return true;
         }
 
-        private static bool TryReadText(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken token)
+        private static bool TryReadText(LookaheadReader reader, FileLocation location, ref int absolutePosition, out LexerToken? token)
         {
             token = null;
             var tokenLocation = location.Clone(); var start = absolutePosition;

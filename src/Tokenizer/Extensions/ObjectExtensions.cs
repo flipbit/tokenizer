@@ -29,13 +29,12 @@ namespace Tokens.Extensions
             // Check object type
             if (string.Compare(objectType, segments[0], stringComparison) == 0)
             {
-                @object = SetInnerValue(@object, segments.Skip(1).ToArray(), value, stringComparison) as T;
+                @object = (T) SetInnerValue(@object, segments.Skip(1).ToArray(), value, stringComparison);
             }
             else
             {
-                @object = SetInnerValue(@object, segments.ToArray(), value, stringComparison) as T;
+                @object = (T) SetInnerValue(@object, segments.ToArray(), value, stringComparison);
             }
-
 
             return @object;
         }
@@ -80,21 +79,25 @@ namespace Tokens.Extensions
                             var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
                             var enumerableType = typeof(List<>);
                             var constructedEnumerableType = enumerableType.MakeGenericType(genericType);
-                            list = Activator.CreateInstance(constructedEnumerableType);
+                            list = Activator.CreateInstance(constructedEnumerableType)
+                                ?? throw new InvalidOperationException($"Failed to create instance of {constructedEnumerableType.Name}");
 
                             propertyInfo.SetValue(@object, list, null);
                         }
+
+                        var addMethod = list.GetType().GetMethod("Add")
+                            ?? throw new InvalidOperationException($"Type {list.GetType().Name} does not have an Add method");
 
                         if (value is IEnumerable<string> valueList)
                         {
                             foreach (var valueItem in valueList)
                             {
-                                list.GetType().GetMethod("Add").Invoke(list, new[] {valueItem});
+                                addMethod.Invoke(list, new[] {valueItem});
                             }
                         }
                         else
                         {
-                            list.GetType().GetMethod("Add").Invoke(list, new[] { value });
+                            addMethod.Invoke(list, new[] { value });
                         }
 
                     }
@@ -105,7 +108,11 @@ namespace Tokens.Extensions
 
                         try
                         {
-                            if (value.GetType() == genericType)
+                            if (value == null)
+                            {
+                                propertyInfo.SetValue(@object, null, null);
+                            }
+                            else if (value.GetType() == genericType)
                             {
                                 propertyInfo.SetValue(@object, value, null);
                             }
@@ -139,7 +146,12 @@ namespace Tokens.Extensions
                 {
                     try
                     {
-                        currentValue = Activator.CreateInstance(propertyInfo.PropertyType);
+                        currentValue = Activator.CreateInstance(propertyInfo.PropertyType)
+                            ?? throw new InvalidOperationException($"Failed to create instance of {propertyInfo.PropertyType.Name}");
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw;
                     }
                     catch (Exception ex)
                     {
@@ -179,7 +191,8 @@ namespace Tokens.Extensions
                 return value;
             }
 
-            var valueString = value.ToString();
+            var valueString = value.ToString()
+                ?? throw new InvalidOperationException($"Cannot convert null string to enum type {targetType.Name}");
 
             return Enum.Parse(targetType, valueString, true);
         }
@@ -221,7 +234,7 @@ namespace Tokens.Extensions
 
         }
         
-        private static T GetInnerValue<T>(object @object, IReadOnlyList<string> path, StringComparison stringComparison)
+        private static T? GetInnerValue<T>(object @object, IReadOnlyList<string> path, StringComparison stringComparison)
         {
             var propertyInfos = @object.GetType().GetProperties();
 
@@ -230,10 +243,10 @@ namespace Tokens.Extensions
                 if (string.Compare(propertyInfo.Name, path[0], stringComparison) != 0) continue;
 
                 if (path.Count == 1)
-                { 
+                {
                     var value = propertyInfo.GetValue(@object);
 
-                    return (T) value;
+                    return value == null ? default : (T) value;
                 }
 
                 var currentValue = propertyInfo.GetValue(@object);
@@ -245,7 +258,7 @@ namespace Tokens.Extensions
 
                 return GetInnerValue<T>(currentValue, path.Skip(1).ToArray(), stringComparison);
             }
-            
+
             throw new MissingMemberException($@"Could find property '{path[0]}' on {@object.GetType().Name}");
         }
     }

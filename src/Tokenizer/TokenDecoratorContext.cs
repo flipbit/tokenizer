@@ -29,7 +29,9 @@ namespace Tokens
         /// <returns></returns>
         public ITokenDecorator CreateDecorator()
         {
-            return (ITokenDecorator) Activator.CreateInstance(DecoratorType)!;
+            var instance = Activator.CreateInstance(DecoratorType)
+                ?? throw new InvalidOperationException($"Failed to create instance of {DecoratorType.Name}");
+            return (ITokenDecorator) instance;
         }
 
         /// <summary>

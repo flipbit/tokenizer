@@ -36,11 +36,11 @@ namespace Tokens
 
         public void Clear()
         {
-            Preamble = null;
+            Preamble = string.Empty;
             tokens.Clear();
         }
 
-        public bool TryAssign(object target, StringBuilder value, TokenizerOptions options, FileLocation location, out Token assigned, out object assignedValue)
+        public bool TryAssign(object target, StringBuilder value, TokenizerOptions options, FileLocation location, out Token? assigned, out object? assignedValue)
         {
             assigned = null;
             assignedValue = null;
@@ -77,7 +77,7 @@ namespace Tokens
 
         public int Count => tokens.Count;
 
-        public string Preamble { get; private set; }
+        public string Preamble { get; private set; } = string.Empty;
 
         public bool TerminateOnNewLine { get; private set; }
 

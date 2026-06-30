@@ -118,4 +118,20 @@ public class HintTests : Tests.TokenizerTestBase
         Assert.Equal("Middle Name", result.Hints.Misses[0].Text);
         Assert.True(result.Hints.Misses[0].Optional);
     }
+
+    [Fact]
+    public void GivenHintWithMultipleSpaces_WhenInputHasSameWhitespace_ThenHintMatches()
+    {
+        // Arrange
+        const string pattern = "---\nhint: Domain status:         available\n---\nDomain name: {FirstName}\n";
+        const string input = "Domain name: example.com\nDomain status:         available\n";
+
+        // Act
+        var result = tokenizer.Tokenize<Student>(pattern, input);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Single(result.Hints.Matches);
+        Assert.Equal("Domain status:         available", result.Hints.Matches[0].Text);
+    }
 }

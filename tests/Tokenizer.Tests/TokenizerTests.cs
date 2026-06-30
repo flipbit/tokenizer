@@ -367,7 +367,7 @@ public class TokenizerTests : TokenizerTestBase
         var result = tokenizer.Tokenize<Student>(pattern, input).Value;
 
         // Assert
-        Assert.Equal(result.FirstName, null);
+        Assert.Null(result.FirstName);
     }
 
     [Fact]
@@ -576,7 +576,7 @@ public class TokenizerTests : TokenizerTestBase
         var person = Tokenizer.Create().Tokenize<TokenTests.Person>(pattern, input).Value;
 
         // Assert
-        Assert.Equal(person.Age, 11);
+        Assert.Equal(11, person.Age);
     }
 
     [Fact]

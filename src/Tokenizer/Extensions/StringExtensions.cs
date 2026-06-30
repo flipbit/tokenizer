@@ -387,7 +387,11 @@ namespace Tokens.Extensions
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
 
+#if NETSTANDARD2_0
             var md5 = new MD5CryptoServiceProvider();
+#else
+            var md5 = System.Security.Cryptography.MD5.Create();
+#endif
             var originalBytes = Encoding.Default.GetBytes(value);
             var encodedBytes = md5.ComputeHash(originalBytes);
 

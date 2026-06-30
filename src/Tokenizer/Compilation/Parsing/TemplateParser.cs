@@ -34,7 +34,7 @@ namespace Tokens.Compilation.Parsing
             var docStartLoc = first.Location.Clone();
             var docStart = first.Start;
 
-            FrontMatterBlock frontMatter = null;
+            FrontMatterBlock? frontMatter = null;
             if (first.Kind == LexerTokenKind.FrontMatterDelimiter)
             {
                 var fmParser = new FrontMatterParser();
@@ -103,7 +103,7 @@ namespace Tokens.Compilation.Parsing
             // Allow whitespace before inline modifier symbols
             reader.SkipWhitespace();
             var modifiers = ParseModifiers(reader);
-            ValueNode value = null;
+            ValueNode? value = null;
             reader.SkipWhitespace();
             if (reader.TryConsume(LexerTokenKind.Equals, out _))
             {

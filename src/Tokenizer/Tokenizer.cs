@@ -113,7 +113,7 @@ namespace Tokens
             return result;
         }
 
-        private void Tokenize(TokenizeResultBase result, object value, Template template, string input)
+        private void Tokenize(TokenizeResultBase result, object? value, Template template, string input)
         {
             // Safety limit: maximum input length
             if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)

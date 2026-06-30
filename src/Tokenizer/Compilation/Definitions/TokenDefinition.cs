@@ -44,9 +44,9 @@ namespace Tokens.Compilation.Definitions
 
         public bool ConsiderOnce { get; set; }
 
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
-        public FileLocation Location { get; set; }
+        public FileLocation Location { get; set; } = new FileLocation();
 
         public IList<DecoratorDefinition> Decorators { get; }
 

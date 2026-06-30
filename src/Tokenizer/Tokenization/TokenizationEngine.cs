@@ -232,7 +232,7 @@ namespace Tokens.Tokenization
         /// <returns>True if any tokens were successfully assigned</returns>
         public bool TryAssignCandidateTokens(
             CandidateTokenList candidates, 
-            object targetObject, 
+            object? targetObject, 
             StringBuilder replacement, 
             TokenizerOptions options, 
             FileLocation location, 
@@ -259,8 +259,11 @@ namespace Tokens.Tokenization
                     log.LogTrace("Token assignment succeeded: Token '{TokenName}' ({TokenId}) = '{AssignedValue}' at Line {Line}, Column {Column}",
                         assigned.Name, assigned.Id, assignedValue, location.Line, location.Column);
 
-                    result.Tokens.AddMatch(assigned, assignedValue, location);
-                    AddMatchedTokenIds(template, assigned, matchIds);
+                    if (assignedValue != null)
+                    {
+                        result.Tokens.AddMatch(assigned, assignedValue, location);
+                        AddMatchedTokenIds(template, assigned, matchIds);
+                    }
 
                     log.LogDebug("Token matched: '{TokenName}' = '{AssignedValue}' at Line {Line}, Column {Column}",
                         assigned.Name, assignedValue, location.Line, location.Column);
@@ -296,7 +299,7 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to populate with matches</param>
         public void ProcessFrontMatterTokens(
             Template template, 
-            object targetObject, 
+            object? targetObject, 
             FileLocation location, 
             TokenizeResultBase result)
         {
@@ -315,7 +318,10 @@ namespace Tokens.Tokenization
                 if (token.Assign(targetObject, string.Empty, template.Options, location, out var assignedValue))
                 {
                     log.LogTrace("Front matter token assigned: '{TokenName}' = '{AssignedValue}'", token.Name, assignedValue);
-                    result.Tokens.AddMatch(token, assignedValue, token.Location);
+                    if (assignedValue != null)
+                    {
+                        result.Tokens.AddMatch(token, assignedValue, token.Location);
+                    }
                 }
                 else
                 {
@@ -440,7 +446,7 @@ namespace Tokens.Tokenization
         /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
         public void ProcessNewlineTerminatedTokens(
             CandidateTokenList candidates, 
-            object targetObject, 
+            object? targetObject, 
             StringBuilder replacement, 
             TokenizerOptions options, 
             FileLocation location, 
@@ -553,7 +559,7 @@ namespace Tokens.Tokenization
         /// <summary>
         /// Handles matching of repeated tokens.
         /// </summary>
-        private bool HandleRepeatedTokenMatching(ITokenizationContext context, Template template, TokenizeResultBase result, object targetObject)
+        private bool HandleRepeatedTokenMatching(ITokenizationContext context, Template template, TokenizeResultBase result, object? targetObject)
         {
             log.LogTrace("Attempting to match repeated token with preamble '{Preamble}' at Line {Line}, Column {Column}",
                 context.Candidates.Preamble, context.Enumerator.Location.Line, context.Enumerator.Location.Column);
@@ -586,7 +592,7 @@ namespace Tokens.Tokenization
         /// <summary>
         /// Handles processing of newline-terminated tokens.
         /// </summary>
-        private void HandleNewlineTerminatedToken(ITokenizationContext context, Template template, object targetObject, TokenizeResultBase result)
+        private void HandleNewlineTerminatedToken(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result)
         {
             log.LogTrace("Newline detected at Line {Line}, Column {Column}. Processing newline-terminated token with {CandidateCount} candidates",
                 context.Enumerator.Location.Line, context.Enumerator.Location.Column, context.Candidates.Tokens.Count);
@@ -628,7 +634,7 @@ namespace Tokens.Tokenization
         /// <param name="result">The result object to populate with matches</param>
         /// <param name="matches">The newly matched tokens</param>
         /// <param name="lineTracker">Optional line tracker for line-by-line logging</param>
-        private void HandleTokenSwitch(ITokenizationContext context, Template template, object targetObject, TokenizeResultBase result, IList<Token> matches, LineTracker? lineTracker)
+        private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches, LineTracker? lineTracker)
         {
             log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
                 context.Replacement.ToString(), context.Candidates.Tokens.Count);

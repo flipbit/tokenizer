@@ -21,7 +21,7 @@ namespace Tokens.Compilation.Definitions
         /// <summary>
         /// Holds the <see cref="TokenizerOptions"/> that this instance was created with.
         /// </summary>
-        public TokenizerOptions Options { get; set; }
+        public TokenizerOptions Options { get; set; } = new TokenizerOptions();
 
         /// <summary>
         /// Contains a list of <see cref="TokenDefinition"/> objects that were found in the input string
@@ -41,6 +41,6 @@ namespace Tokens.Compilation.Definitions
         /// <summary>
         /// Specifies the name of the template.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

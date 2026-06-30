@@ -53,7 +53,7 @@ namespace Tokens.Compilation.Parsing
             return false;
         }
 
-        public LexerToken Expect(LexerTokenKind kind, string messageWhenMissing = null)
+        public LexerToken Expect(LexerTokenKind kind, string? messageWhenMissing = null)
         {
             var next = Peek(0);
             if (next.Kind != kind)

@@ -7,7 +7,7 @@ namespace Tokens.Compilation.Nodes
     /// </summary>
     public sealed class TemplateDocument : SyntaxNode
     {
-        public TemplateDocument(FileLocation location, int start, int length, FrontMatterBlock frontMatter, IReadOnlyList<ContentNode> content)
+        public TemplateDocument(FileLocation location, int start, int length, FrontMatterBlock? frontMatter, IReadOnlyList<ContentNode> content)
             : base(location, start, length)
         {
             FrontMatter = frontMatter;
@@ -17,7 +17,7 @@ namespace Tokens.Compilation.Nodes
         /// <summary>
         /// Gets the optional front matter block if present.
         /// </summary>
-        public FrontMatterBlock FrontMatter { get; }
+        public FrontMatterBlock? FrontMatter { get; }
 
         /// <summary>
         /// Gets the sequence of content nodes (Phase 1: stub only).

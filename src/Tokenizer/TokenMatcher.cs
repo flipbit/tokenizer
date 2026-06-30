@@ -44,7 +44,7 @@ namespace Tokens
             return Match(input, null);
         }
 
-        public TokenMatcherResult Match(string input, string[] tags)
+        public TokenMatcherResult Match(string input, string[]? tags)
         {
             if (tags == null) tags = new string[0];
 
@@ -97,7 +97,7 @@ namespace Tokens
             return Match<T>(input, null);
         }
 
-        public TokenMatcherResult<T> Match<T>(string input, string[] tags) where T : class, new()
+        public TokenMatcherResult<T> Match<T>(string input, string[]? tags) where T : class, new()
         {
             if (tags == null) tags = new string[0];
 

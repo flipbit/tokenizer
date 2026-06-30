@@ -120,7 +120,7 @@ namespace Tokens
             return content;
         }
 
-        internal bool Assign(object target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue)
+        internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue)
         {
             assignedValue = null;
 
@@ -217,7 +217,8 @@ namespace Tokens
 
                     if (CanConcatenate(current, assignedValue))
                     {
-                        target.SetValue(Name, ConcatenateValues(current, assignedValue, ConcatenationString));
+                        var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
+                        if (concatenated != null) target.SetValue(Name, concatenated);
                     }
                     else
                     {
@@ -326,7 +327,7 @@ namespace Tokens
             return true;
         }
 
-        internal bool CanConcatenate(object existingValue, object newValue)
+        internal bool CanConcatenate(object? existingValue, object newValue)
         {
             if (existingValue is string && newValue is string)
             {
@@ -336,7 +337,7 @@ namespace Tokens
             return false;
         }
 
-        internal object ConcatenateValues(object existingValue, object newValue, string? concatenationString)
+        internal object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
         {
             if (existingValue is string && newValue is string)
             {

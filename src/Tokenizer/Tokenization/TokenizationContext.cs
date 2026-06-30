@@ -22,7 +22,7 @@ namespace Tokens.Tokenization
         /// <summary>
         /// Gets the token enumerator that provides access to the input text being processed.
         /// </summary>
-        public TokenEnumerator Enumerator { get; private set; }
+        public TokenEnumerator Enumerator { get; private set; } = new TokenEnumerator(string.Empty);
 
         /// <summary>
         /// Gets the StringBuilder used for building replacement values during tokenization.

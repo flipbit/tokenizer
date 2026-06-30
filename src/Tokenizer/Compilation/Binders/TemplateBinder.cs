@@ -66,7 +66,7 @@ namespace Tokens.Compilation.Binders
                     var decorators = new List<DecoratorDefinition>();
                     foreach (var dec in tokenNode.Decorators)
                     {
-                        var decoratorName = (dec.Name?.Text ?? string.Empty).Trim();
+                        var decoratorName = (dec.Name.Text ?? string.Empty).Trim();
                         var lower = decoratorName.ToLowerInvariant();
                         var hasArgs = dec.Args != null && dec.Args.Count > 0;
 
@@ -106,7 +106,7 @@ namespace Tokens.Compilation.Binders
                         var d = new DecoratorDefinition();
                         d.AppendName(decoratorName);
                         d.IsNotDecorator = dec.IsNot;
-                        foreach (var arg in dec.Args)
+                        foreach (var arg in dec?.Args ?? System.Array.Empty<Nodes.ArgumentNode>())
                         {
                             d.Args.Add(arg.Text);
                         }
@@ -128,7 +128,7 @@ namespace Tokens.Compilation.Binders
 
                     // Legacy behavior: expand repeating token with multiline preamble tail
                     var repeatingTail = GetRepeatingMultilinePreamble(def);
-                    if (def.Repeating && string.IsNullOrEmpty(repeatingTail) == false)
+                    if (def.Repeating && repeatingTail is { Length: > 0 })
                     {
                         // First token becomes non-repeating, keeps original preamble
                         def.Repeating = false;
@@ -230,7 +230,7 @@ namespace Tokens.Compilation.Binders
             return sb.ToString();
         }
 
-        private static string GetRepeatingMultilinePreamble(TokenDefinition token)
+        private static string? GetRepeatingMultilinePreamble(TokenDefinition token)
         {
             if (token.Repeating == false) return null;
             if (string.IsNullOrEmpty(token.Preamble)) return null;

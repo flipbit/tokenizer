@@ -10,7 +10,7 @@ namespace Tokens.Compilation.Binders
     /// </summary>
     internal sealed class FrontMatterBinder
     {
-        public void Bind(TemplateDefinition template, FrontMatterBlock frontMatter)
+        public void Bind(TemplateDefinition template, FrontMatterBlock? frontMatter)
         {
             if (template == null) throw new ArgumentNullException(nameof(template));
             if (frontMatter == null) return;
@@ -45,9 +45,9 @@ namespace Tokens.Compilation.Binders
                 Location = dir.Location.Clone()
             };
             token.AppendName(dir.TokenName);
-            if (string.IsNullOrEmpty(dir.Value) == false)
+            if (dir.Value is { Length: > 0 } dirValue)
             {
-                token.AppendValue(dir.Value);
+                token.AppendValue(dirValue);
             }
             if (dir.Decorators.Count > 0)
             {

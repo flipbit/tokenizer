@@ -11,11 +11,11 @@ public class TemplateDefinitionTests
         var template = new TemplateDefinition();
 
         // Assert
-        Assert.Null(template.Options);
+        Assert.NotNull(template.Options);
         Assert.Empty(template.Tokens);
         Assert.Empty(template.Hints);
         Assert.Empty(template.Tags);
-        Assert.Null(template.Name);
+        Assert.Equal(string.Empty, template.Name);
     }
 
     [Fact]

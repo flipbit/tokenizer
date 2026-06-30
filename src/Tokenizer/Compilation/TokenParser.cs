@@ -164,7 +164,7 @@ namespace Tokens.Compilation
 
                 var preamble = ComputePreamble(preToken, template.Options, log);
                 var location = preToken.Location ?? new Enumerators.FileLocation();
-                var token = new Token(preToken.Content, preToken.Name, preamble, location);
+                var token = new Token(preToken.Content, preToken.Name ?? string.Empty, preamble, location);
 
                 token.Optional = preToken.Optional;
                 token.Repeating = preToken.Repeating;
@@ -246,7 +246,7 @@ namespace Tokens.Compilation
 
             foreach (var decorator in preToken.Decorators)
             {
-                if (IsConcatenationDecorator(preToken.Name, decorator, out var joiningString))
+                if (IsConcatenationDecorator(preToken.Name ?? string.Empty, decorator, out var joiningString))
                 {
                     token.Concatenate = true;
                     token.ConcatenationString = joiningString;
@@ -257,7 +257,7 @@ namespace Tokens.Compilation
                     continue;
                 }
 
-                TokenDecoratorContext context = null;
+                TokenDecoratorContext? context = null;
 
                 foreach (var operatorType in transformers)
                 {
@@ -338,7 +338,7 @@ namespace Tokens.Compilation
             }
         }
 
-        private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string joiningString)
+        private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string? joiningString)
         {
             joiningString = null;
 

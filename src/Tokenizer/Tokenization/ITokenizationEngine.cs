@@ -20,7 +20,7 @@ namespace Tokens.Tokenization
         /// <param name="targetObject">The object to populate with matched token values</param>
         /// <param name="context">The tokenization context containing shared state</param>
         /// <param name="result">The result object to populate with matches and misses</param>
-        void ProcessTokenization(Template template, string input, object targetObject, ITokenizationContext context, TokenizeResultBase result);
+        void ProcessTokenization(Template template, string input, object? targetObject, ITokenizationContext context, TokenizeResultBase result);
 
         /// <summary>
         /// Processes candidate tokens and attempts to assign values to the target object.
@@ -34,7 +34,7 @@ namespace Tokens.Tokenization
         /// <param name="template">The template containing token definitions</param>
         /// <param name="matchIds">The set of matched token IDs</param>
         /// <returns>True if any tokens were successfully assigned</returns>
-        bool TryAssignCandidateTokens(CandidateTokenList candidates, object targetObject, StringBuilder replacement, 
+        bool TryAssignCandidateTokens(CandidateTokenList candidates, object? targetObject, StringBuilder replacement, 
             TokenizerOptions options, FileLocation location, TokenizeResultBase result, Template template, HashSet<int> matchIds);
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Tokens.Tokenization
         /// <param name="targetObject">The object to populate with front matter token values</param>
         /// <param name="location">The current file location</param>
         /// <param name="result">The result object to populate with matches</param>
-        void ProcessFrontMatterTokens(Template template, object targetObject, FileLocation location, TokenizeResultBase result);
+        void ProcessFrontMatterTokens(Template template, object? targetObject, FileLocation location, TokenizeResultBase result);
 
         /// <summary>
         /// Handles the processing of repeated tokens and manages disabled repeating tokens.
@@ -73,7 +73,7 @@ namespace Tokens.Tokenization
         /// <param name="matchIds">The set of matched token IDs</param>
         /// <param name="enumerator">The token enumerator</param>
         /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
-        void ProcessNewlineTerminatedTokens(CandidateTokenList candidates, object targetObject, StringBuilder replacement, 
+        void ProcessNewlineTerminatedTokens(CandidateTokenList candidates, object? targetObject, StringBuilder replacement, 
             TokenizerOptions options, FileLocation location, TokenizeResultBase result, Template template, 
             HashSet<int> matchIds, TokenEnumerator enumerator, HashSet<int> disabledRepeatingTokens);
     }

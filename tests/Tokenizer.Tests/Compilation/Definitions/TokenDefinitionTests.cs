@@ -24,8 +24,8 @@ public class TokenDefinitionTests
         Assert.False(token.Required);
         Assert.False(token.IsNull);
         Assert.False(token.ConsiderOnce);
-        Assert.Null(token.Content);
-        Assert.Null(token.Location);
+        Assert.Equal(string.Empty, token.Content);
+        Assert.NotNull(token.Location);
         Assert.Empty(token.Decorators);
         Assert.False(token.HasValue);
         Assert.False(token.IsFrontMatterToken);
@@ -301,7 +301,7 @@ public class TokenDefinitionTests
     }
 
     [Fact]
-    public void GivenTokenDefinitionWithNullContent_WhenCallingToString_ThenReturnsNull()
+    public void GivenTokenDefinitionWithEmptyContent_WhenCallingToString_ThenReturnsEmpty()
     {
         // Arrange
         var token = new TokenDefinition();
@@ -310,7 +310,7 @@ public class TokenDefinitionTests
         var result = token.ToString();
 
         // Assert
-        Assert.Null(result);
+        Assert.Equal(string.Empty, result);
     }
 
     [Fact]

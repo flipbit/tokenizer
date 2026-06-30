@@ -34,7 +34,8 @@ namespace Tokens
 
             if (token.CanConcatenate(match.Value, value) == false) return false;
 
-            match.Value = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
+            var concatenated = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
+            if (concatenated != null) match.Value = concatenated;
 
             return true;
         }

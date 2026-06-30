@@ -78,7 +78,7 @@ namespace Tokens.Compilation.Parsing
             }
         }
 
-        private SyntaxNode ParseLine(TokenReader reader)
+        private SyntaxNode? ParseLine(TokenReader reader)
         {
             // Capture start
             var first = reader.Peek(0);
@@ -186,7 +186,7 @@ namespace Tokens.Compilation.Parsing
             }
 
             // Optional value
-            string value = null;
+            string? value = null;
             while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
             if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Equals)
             {

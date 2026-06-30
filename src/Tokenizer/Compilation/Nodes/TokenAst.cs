@@ -4,7 +4,7 @@ namespace Tokens.Compilation.Nodes
 {
     public sealed class TokenNode : ContentNode
     {
-        public TokenNode(FileLocation location, int start, int length, TokenName name, ModifierSet modifiers, ValueNode value, IReadOnlyList<DecoratorNode> decorators)
+        public TokenNode(FileLocation location, int start, int length, TokenName name, ModifierSet modifiers, ValueNode? value, IReadOnlyList<DecoratorNode> decorators)
             : base(location, start, length)
         {
             Name = name;
@@ -15,7 +15,7 @@ namespace Tokens.Compilation.Nodes
 
         public TokenName Name { get; }
         public ModifierSet Modifiers { get; }
-        public ValueNode Value { get; }
+        public ValueNode? Value { get; }
         public IReadOnlyList<DecoratorNode> Decorators { get; }
     }
 

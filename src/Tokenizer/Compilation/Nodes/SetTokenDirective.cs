@@ -7,7 +7,7 @@ namespace Tokens.Compilation.Nodes
     /// </summary>
     public sealed class SetTokenDirective : SyntaxNode
     {
-        public SetTokenDirective(FileLocation location, int start, int length, string tokenName, string value = null, IReadOnlyList<SetDecorator> decorators = null)
+        public SetTokenDirective(FileLocation location, int start, int length, string tokenName, string? value = null, IReadOnlyList<SetDecorator>? decorators = null)
             : base(location, start, length)
         {
             TokenName = tokenName ?? string.Empty;
@@ -16,13 +16,13 @@ namespace Tokens.Compilation.Nodes
         }
 
         public string TokenName { get; }
-        public string Value { get; }
+        public string? Value { get; }
         public IReadOnlyList<SetDecorator> Decorators { get; }
     }
 
     public sealed class SetDecorator
     {
-        public SetDecorator(string name, IReadOnlyList<string> args = null)
+        public SetDecorator(string name, IReadOnlyList<string>? args = null)
         {
             Name = name ?? string.Empty;
             Args = args ?? System.Array.Empty<string>();

@@ -30,12 +30,7 @@ namespace Tokens
         {
             if (Matches.Any(m => m.Text == hint.Text)) return false;
 
-            Matches.Add(new HintMatch
-            {
-                Text = hint.Text,
-                Optional = hint.Optional,
-                Location = enumerator.Location.Clone()
-            });
+            Matches.Add(new HintMatch(hint.Text, hint.Optional, enumerator.Location.Clone()));
 
             return true;
         }

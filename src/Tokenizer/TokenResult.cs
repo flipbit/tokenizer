@@ -21,12 +21,7 @@ namespace Tokens
         {
             if (TryConcatMatch(token, value, location)) return;
 
-            Matches.Add(new Match
-            {
-                Token = token,
-                Value = value,
-                Location = location.Clone()
-            });
+            Matches.Add(new Match(token, value, location.Clone()));
         }
 
         private bool TryConcatMatch(Token token, object value, FileLocation location)

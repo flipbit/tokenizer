@@ -11,7 +11,7 @@
         /// <summary>
         /// The text to appear in the input
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// If <c>true</c> then this hint must appear in the input in order for the

@@ -8,7 +8,7 @@ namespace Tokens.Builders;
 /// </summary>
 public class TokenizeResultBuilder
 {
-    private TokenizeResult _result = new(new Template());
+    private TokenizeResult _result = new(new Template(string.Empty));
 
     public TokenizeResultBuilder WithTemplate(Template template)
     {
@@ -72,7 +72,7 @@ public class TokenizeResultBuilder
 /// </summary>
 public class TokenizeResultBuilder<T> where T : class, new()
 {
-    private TokenizeResult<T> _result = new(new Template());
+    private TokenizeResult<T> _result = new(new Template(string.Empty));
 
     public TokenizeResultBuilder<T> WithTemplate(Template template)
     {

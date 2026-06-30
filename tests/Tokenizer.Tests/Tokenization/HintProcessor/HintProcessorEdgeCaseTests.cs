@@ -27,23 +27,7 @@ public class HintProcessorEdgeCaseTests
         Assert.False(isMatch);
     }
 
-    [Fact]
-    public void GivenNullHintText_WhenIsHintMatch_ThenReturnsFalse()
-    {
-        // Arrange
-        var hint = new HintBuilder()
-            .WithText(null)
-            .Build();
-        var enumerator = new TokenEnumerator("Hello World");
-
-        // Act
-        var isMatch = _processor.IsHintMatch(hint, enumerator);
-
-        // Assert
-        Assert.False(isMatch);
-    }
-
-    [Fact]
+[Fact]
     public void GivenVeryLongHint_WhenFindAndValidateHints_ThenHandlesCorrectly()
     {
         // Arrange

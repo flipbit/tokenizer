@@ -14,17 +14,17 @@ namespace Tokens
         private readonly List<Token> tokens;
         private string name;
 
-        public Template()
+        public Template(string content) : this(string.Empty, content)
+        {
+        }
+
+        public Template(string name, string content)
         {
             tokens = new List<Token>();
             Hints = new List<Hint>();
             Tags = new List<string>();
             Options = new TokenizerOptions();
-        }
-
-        public Template(string name, string content) : this()
-        {
-            Name = name;
+            this.name = name;
             Content = content;
         }
 
@@ -156,6 +156,7 @@ namespace Tokens
 
         internal void AddToken(Token token)
         {
+            token.Id = tokens.Count + 1;
             tokens.Add(token);
         }
 

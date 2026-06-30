@@ -13,7 +13,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrue()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
 
         Assert.True(template.HasTag("One"));
@@ -22,7 +22,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrueWhenDifferentCase()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
 
         Assert.True(template.HasTag("one"));
@@ -31,7 +31,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrueWhenMultipleTags()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -42,7 +42,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagWhenMissing()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -53,7 +53,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagWhenNullInput()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -64,7 +64,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenTrue()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -75,7 +75,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenTrueAndDifferentCase()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -86,7 +86,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasMissingSomeTags()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -104,7 +104,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasNoTags()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
 
         IList<string> missing;
         var hasTags = template.HasTags(["One", "three"], out missing);
@@ -119,7 +119,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasNullInput()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");
@@ -135,7 +135,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasEmptyInput()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
         template.Tags.Add("Three");

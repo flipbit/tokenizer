@@ -14,7 +14,7 @@ public class TemplateCollectionTests : Tests.TokenizerTestBase
     [Fact]
     public void TestCollectionContainsTagWhenTrue()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
 
         collection.Add(template);
@@ -25,7 +25,7 @@ public class TemplateCollectionTests : Tests.TokenizerTestBase
     [Fact]
     public void TestCollectionContainsTagWhenTrueAndDifferentCase()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
 
         collection.Add(template);
@@ -36,7 +36,7 @@ public class TemplateCollectionTests : Tests.TokenizerTestBase
     [Fact]
     public void TestCollectionContainsTagWhenFalse()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
 
         collection.Add(template);
@@ -47,7 +47,7 @@ public class TemplateCollectionTests : Tests.TokenizerTestBase
     [Fact]
     public void TestCollectionContainsAllTagsWhenTrue()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
 
@@ -59,7 +59,7 @@ public class TemplateCollectionTests : Tests.TokenizerTestBase
     [Fact]
     public void TestCollectionContainsAllTagsWhenFalse()
     {
-        var template = new Template();
+        var template = new Template(string.Empty);
         template.Tags.Add("One");
         template.Tags.Add("Two");
 

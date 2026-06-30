@@ -123,12 +123,7 @@ public class ResultBuilderBasicTests
         // Arrange
         var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
         var result = new TokenizeResultBuilder()
-            .WithMatches(new Match
-            {
-                Token = token,
-                Value = "TestName",
-                Location = new FileLocation()
-            })
+            .WithMatches(new Match(token, "TestName", new FileLocation()))
             .Build();
 
         // Act

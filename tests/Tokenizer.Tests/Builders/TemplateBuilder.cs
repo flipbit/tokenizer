@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -8,54 +9,52 @@ namespace Tokens.Builders;
 /// </summary>
 public class TemplateBuilder
 {
-    private Template _template = new();
+    private readonly List<Token> _tokens = new();
+    private readonly List<Hint> _hints = new();
+    private readonly List<string> _tags = new();
+    private string _name = string.Empty;
+    private string _content = string.Empty;
+    private TokenizerOptions? _options;
 
     public TemplateBuilder WithName(string name)
     {
-        _template.Name = name;
+        _name = name;
         return this;
     }
 
     public TemplateBuilder WithContent(string content)
     {
-        _template.Content = content;
+        _content = content;
         return this;
     }
 
     public TemplateBuilder WithTokens(params Token[] tokens)
     {
-        // Note: Tokens are read-only in Template, they are added through parsing
-        // This method is kept for API compatibility but doesn't actually add tokens
+        _tokens.AddRange(tokens);
         return this;
     }
 
     public TemplateBuilder WithHints(params Hint[] hints)
     {
-        foreach (var hint in hints)
-        {
-            _template.Hints.Add(hint);
-        }
+        _hints.AddRange(hints);
         return this;
     }
 
     public TemplateBuilder WithTags(params string[] tags)
     {
-        foreach (var tag in tags)
-        {
-            _template.Tags.Add(tag);
-        }
+        _tags.AddRange(tags);
         return this;
     }
 
     public TemplateBuilder WithOptions(TokenizerOptions options)
     {
-        _template.Options = options;
+        _options = options;
         return this;
     }
 
     public TemplateBuilder WithDefaultOptions()
     {
-        _template.Options = TokenizerOptions.Defaults;
+        _options = TokenizerOptions.Defaults;
         return this;
     }
 
@@ -75,6 +74,11 @@ public class TemplateBuilder
 
     public Template Build()
     {
-        return _template;
+        var template = new Template(_name, _content);
+        foreach (var token in _tokens) template.AddToken(token);
+        foreach (var hint in _hints) template.Hints.Add(hint);
+        foreach (var tag in _tags) template.Tags.Add(tag);
+        if (_options != null) template.Options = _options;
+        return template;
     }
 }

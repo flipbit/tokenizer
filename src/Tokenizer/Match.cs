@@ -7,6 +7,13 @@ namespace Tokens
     /// </summary>
     public class Match
     {
+        public Match(Token token, object value, FileLocation location)
+        {
+            Token = token;
+            Value = value;
+            Location = location;
+        }
+
         /// <summary>
         /// Gets or sets the <see cref="Token"/> matched
         /// </summary>

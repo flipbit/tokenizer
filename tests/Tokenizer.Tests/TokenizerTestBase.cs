@@ -33,5 +33,13 @@ namespace Tokens.Tests
         {
             return Tokenizer.Create(options, LoggerFactory);
         }
+
+        /// <summary>
+        /// Creates a Tokenizer with diagnostics enabled and logging.
+        /// </summary>
+        protected Tokenizer CreateDiagnosticTokenizer()
+        {
+            return CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        }
     }
 }

@@ -175,6 +175,20 @@ namespace Tokens
                     }
 
                     result.Diagnostics = collector.GetResult();
+
+                    if (result.Diagnostics != null)
+                    {
+                        log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                        foreach (var issue in result.Diagnostics.Summary.Issues)
+                        {
+                            log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                            if (issue.Hint != null)
+                            {
+                                log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                            }
+                        }
+                        log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                    }
                 }
 
                 log.LogInformation("Tokenization {Result} for template {TemplateName}",

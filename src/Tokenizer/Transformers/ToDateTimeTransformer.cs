@@ -41,15 +41,14 @@ namespace Tokens.Transformers
 
         public static bool TryParseDateTime(object value, string[] formats, DateTimeStyles dateTimeStyles, out DateTime result)
         {
-            if (value == null)
+            var rawString = value?.ToString();
+            if (string.IsNullOrEmpty(rawString))
             {
                 result = default;
                 return false;
             }
 
-            var valueString = value
-                .ToString()
-                .SubstringBeforeNewLine();
+            var valueString = rawString.SubstringBeforeNewLine();
             
             if (string.IsNullOrWhiteSpace(valueString))
             {

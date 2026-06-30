@@ -22,7 +22,7 @@ namespace Tokens.Validators
             {
                 var minLength = Convert.ToInt32(args[0]);
 
-                return value.ToString().Length >= minLength;
+                return (value?.ToString() ?? string.Empty).Length >= minLength;
             }
             catch (FormatException ex)
             {                

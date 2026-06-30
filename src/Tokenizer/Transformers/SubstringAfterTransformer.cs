@@ -10,7 +10,8 @@ namespace Tokens.Transformers
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null || string.IsNullOrEmpty(value.ToString())) 
+            var valueString = value?.ToString();
+            if (string.IsNullOrEmpty(valueString))
             {
                 transformed = string.Empty;
                 return true;
@@ -18,7 +19,7 @@ namespace Tokens.Transformers
 
             if (args == null || args.Length == 0) throw new TokenizerException($"SubstringAfter(): missing argument processing: {value}");
 
-            transformed = value.ToString().SubstringAfterString(args[0]);
+            transformed = valueString.SubstringAfterString(args[0]);
 
             return true;
         }

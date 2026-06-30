@@ -13,7 +13,7 @@ namespace Tokens.Transformers
         {
             var valueString = value as string;
 
-            if (string.IsNullOrWhiteSpace(valueString) == false)
+            if (!string.IsNullOrWhiteSpace(valueString))
             {
                 if (valueString.Contains("(UTC)"))
                 {

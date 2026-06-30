@@ -11,15 +11,15 @@ namespace Tokens.Transformers
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null || string.IsNullOrEmpty(value.ToString())) 
-            { 
+            var valueString = value?.ToString();
+            if (string.IsNullOrEmpty(valueString))
+            {
                 transformed = string.Empty;
                 return true;
             }
 
             if (args == null || args.Length != 1) throw new TokenizerException($"RemoveStart(value): missing arguments processing: {value}");
 
-            var valueString = value.ToString();
             if (valueString.StartsWith(args[0]))
             {
                 transformed = valueString.SubstringAfterString(args[0]);

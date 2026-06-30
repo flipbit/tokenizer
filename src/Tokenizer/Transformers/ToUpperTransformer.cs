@@ -7,13 +7,14 @@
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {
-            if (value == null) 
+            var valueString = value?.ToString();
+            if (string.IsNullOrEmpty(valueString))
             {
                 transformed = string.Empty;
             }
             else
             {
-                transformed = value.ToString().ToUpper();
+                transformed = valueString.ToUpper();
             }
 
             return true;

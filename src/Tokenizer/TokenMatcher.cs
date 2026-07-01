@@ -46,7 +46,7 @@ namespace Tokens
 
         public TokenMatcherResult Match(string input, string[]? tags)
         {
-            if (tags == null) tags = new string[0];
+            if (tags == null) tags = Array.Empty<string>();
 
             var results = new TokenMatcherResult();
 
@@ -99,7 +99,7 @@ namespace Tokens
 
         public TokenMatcherResult<T> Match<T>(string input, string[]? tags) where T : class, new()
         {
-            if (tags == null) tags = new string[0];
+            if (tags == null) tags = Array.Empty<string>();
 
             var results = new TokenMatcherResult<T>();
 

@@ -184,7 +184,7 @@ namespace Tokens.Extensions
         {
             if (string.IsNullOrEmpty(value))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Regex.Split(value, "\r\n|\r|\n");

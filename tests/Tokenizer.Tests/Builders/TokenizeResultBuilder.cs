@@ -16,7 +16,7 @@ public class TokenizeResultBuilder
         return this;
     }
 
-    public TokenizeResultBuilder WithMatches(params Match[] matches)
+    public TokenizeResultBuilder WithMatches(params TokenMatch[] matches)
     {
         foreach (var match in matches)
         {
@@ -86,7 +86,7 @@ public class TokenizeResultBuilder<T> where T : class, new()
         return this;
     }
 
-    public TokenizeResultBuilder<T> WithMatches(params Match[] matches)
+    public TokenizeResultBuilder<T> WithMatches(params TokenMatch[] matches)
     {
         foreach (var match in matches)
         {

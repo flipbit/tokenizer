@@ -20,7 +20,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <summary>
     /// A dictionary of values extracted from the input string. 
     /// </summary>
-    public IReadOnlyList<Match> Matches => Tokens.Matches;
+    public IReadOnlyList<TokenMatch> Matches => Tokens.Matches;
 
     public object First(string key)
     {

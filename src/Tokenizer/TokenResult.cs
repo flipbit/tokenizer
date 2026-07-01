@@ -10,16 +10,16 @@ namespace Tokens;
 /// </summary>
 public sealed class TokenResult
 {
-    private readonly List<Match> _matches;
+    private readonly List<TokenMatch> _matches;
     private readonly List<Token> _misses;
 
     public TokenResult()
     {
-        _matches = new List<Match>();
+        _matches = new List<TokenMatch>();
         _misses = new List<Token>();
     }
 
-    public IReadOnlyList<Match> Matches => _matches;
+    public IReadOnlyList<TokenMatch> Matches => _matches;
 
     public IReadOnlyList<Token> Misses => _misses;
 
@@ -27,21 +27,22 @@ public sealed class TokenResult
     {
         if (TryConcatMatch(token, value, location)) return;
 
-        _matches.Add(new Match(token, value, location.Clone()));
+        _matches.Add(new TokenMatch(token, value, location.Clone()));
     }
 
     private bool TryConcatMatch(Token token, object value, FileLocation location)
     {
         if (token.CanConcatenate == false) return false;
 
-        if (_matches.Any(m => m.Token.Name == token.Name) == false) return false;
+        var index = _matches.FindIndex(m => m.Token.Name == token.Name);
+        if (index < 0) return false;
 
-        var match = _matches.First(m => m.Token.Name == token.Name);
+        var match = _matches[index];
 
         if (token.CanConcatenateValues(match.Value, value) == false) return false;
 
         var concatenated = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
-        if (concatenated != null) match.Value = concatenated;
+        if (concatenated != null) _matches[index] = match with { Value = concatenated };
 
         return true;
     }

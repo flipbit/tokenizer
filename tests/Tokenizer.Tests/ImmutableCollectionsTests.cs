@@ -16,7 +16,7 @@ public class ImmutableCollectionsTests
         var propertyType = typeof(TokenResult).GetProperty("Matches")!.PropertyType;
 
         // Assert
-        Assert.Equal(typeof(IReadOnlyList<Match>), propertyType);
+        Assert.Equal(typeof(IReadOnlyList<TokenMatch>), propertyType);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class ImmutableCollectionsTests
         var propertyType = typeof(TokenizeResult).GetProperty("Matches")!.PropertyType;
 
         // Assert
-        Assert.Equal(typeof(IReadOnlyList<Match>), propertyType);
+        Assert.Equal(typeof(IReadOnlyList<TokenMatch>), propertyType);
     }
 
     [Fact]

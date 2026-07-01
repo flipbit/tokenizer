@@ -10,7 +10,7 @@ public class SealedClassTests
     [InlineData(typeof(Token))]
     [InlineData(typeof(Template))]
     [InlineData(typeof(Hint))]
-    [InlineData(typeof(Match))]
+    [InlineData(typeof(TokenMatch))]
     [InlineData(typeof(HintMatch))]
     [InlineData(typeof(TokenizeResult))]
     [InlineData(typeof(TokenizerOptions))]

@@ -4,7 +4,7 @@ using Tokens.Exceptions;
 namespace Tokens.Transformers;
 
 /// <summary>
-/// Removes occurrences of a string from then end of a token value
+/// Splits a token value on a specified delimiter
 /// </summary>
 public sealed class SplitTransformer : ITokenTransformer
 {

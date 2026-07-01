@@ -4,7 +4,7 @@ using Tokens.Extensions;
 namespace Tokens.Transformers;
 
 /// <summary>
-/// Trims the token value after the first occurence of the given string 
+/// Trims the token value before the last occurrence of the given string
 /// </summary>
 public sealed class SubstringBeforeLastTransformer : ITokenTransformer
 {

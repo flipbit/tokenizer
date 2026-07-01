@@ -4,7 +4,7 @@ using Tokens.Exceptions;
 namespace Tokens.Validators;
 
 /// <summary>
-/// Validator to determine if a token value meets a maximum length requirement
+/// Validator to determine if a token value meets a minimum length requirement
 /// </summary>
 public sealed class MinLengthValidator : ITokenValidator
 {
@@ -15,7 +15,7 @@ public sealed class MinLengthValidator : ITokenValidator
     {
         if (args.Length == 0)
         {
-            throw new ValidationException("You must specified a MinLength value, e.g. 'MinLength(50)'");
+            throw new ValidationException("You must specify a MinLength value, e.g. 'MinLength(50)'");
         }
 
         try

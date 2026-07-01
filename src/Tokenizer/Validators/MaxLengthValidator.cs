@@ -15,7 +15,7 @@ public sealed class MaxLengthValidator : ITokenValidator
     {
         if (args.Length == 0)
         {
-            throw new ValidationException("You must specified a MaxLength value, e.g. 'MaxLength(255)'");
+            throw new ValidationException("You must specify a MaxLength value, e.g. 'MaxLength(255)'");
         }
 
         try

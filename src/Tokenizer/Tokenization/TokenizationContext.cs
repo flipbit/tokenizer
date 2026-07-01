@@ -107,34 +107,14 @@ namespace Tokens.Tokenization
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            if (_disposed) return;
 
-        /// <summary>
-        /// Disposes of the context and any resources it holds.
-        /// </summary>
-        /// <param name="disposing">True if called from Dispose(), false if called from finalizer</param>
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed && disposing)
+            if (Enumerator is IDisposable disposableEnumerator)
             {
-                // Dispose of the enumerator if it implements IDisposable
-                if (Enumerator is IDisposable disposableEnumerator)
-                {
-                    disposableEnumerator.Dispose();
-                }
-
-                _disposed = true;
+                disposableEnumerator.Dispose();
             }
-        }
 
-        /// <summary>
-        /// Finalizer to ensure resources are cleaned up if Dispose() is not called.
-        /// </summary>
-        ~TokenizationContext()
-        {
-            Dispose(false);
+            _disposed = true;
         }
     }
 }

@@ -146,14 +146,15 @@ public class TokenizationEngine : ITokenizationEngine
             // Check for next token
             if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens), template.Options.OutOfOrderTokens, out var matches))
             {
-                log.LogTrace
-                (
-                    "Token match found at Line {Line}, Column {Column}. Matched {MatchCount} token(s): {TokenNames}",
-                    context.Enumerator.Location.Line,
-                    context.Enumerator.Location.Column,
-                    matches.Count,
-                    string.Join(", ", matches.Select(m => m.Name))
-                );
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace(
+                        "Token match found at Line {Line}, Column {Column}. Matched {MatchCount} token(s): {TokenNames}",
+                        context.Enumerator.Location.Line,
+                        context.Enumerator.Location.Column,
+                        matches.Count,
+                        string.Join(", ", matches.Select(m => m.Name)));
+                }
 
                 collector.Record(DiagnosticEventType.PreambleMatched,
                     tokenName: string.Join(", ", matches.Select(m => m.Name)),
@@ -194,8 +195,11 @@ public class TokenizationEngine : ITokenizationEngine
         // Handle remaining candidates
         if (ShouldProcessRemainingCandidates(context))
         {
-            log.LogTrace("Processing {CandidateCount} remaining candidates with replacement value '{ReplacementValue}'",
-                context.Candidates.Tokens.Count, context.Replacement.ToString());
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Processing {CandidateCount} remaining candidates with replacement value '{ReplacementValue}'",
+                    context.Candidates.Tokens.Count, context.Replacement.ToString());
+            }
 
             TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
                 template.Options, context.ReplacementLocation, result, template, context.MatchIds, collector);
@@ -253,8 +257,11 @@ public class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
 
-        log.LogTrace("Attempting to assign {CandidateCount} candidate token(s) with value '{ReplacementValue}' at Line {Line}, Column {Column}",
-            candidates.Tokens.Count, replacement.ToString(), location.Line, location.Column);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Attempting to assign {CandidateCount} candidate token(s) with value '{ReplacementValue}' at Line {Line}, Column {Column}",
+                candidates.Tokens.Count, replacement.ToString(), location.Line, location.Column);
+        }
 
         collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
             tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
@@ -293,10 +300,13 @@ public class TokenizationEngine : ITokenizationEngine
                     location: location,
                     value: replacement.ToString());
 
-                foreach (var token in candidates.Tokens)
+                if (log.IsEnabled(LogLevel.Trace))
                 {
-                    log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                        location.Line, location.Column, token.Name, token.Id, replacement.ToString());
+                    foreach (var token in candidates.Tokens)
+                    {
+                        log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
+                            location.Line, location.Column, token.Name, token.Id, replacement.ToString());
+                    }
                 }
                 return false;
             }
@@ -328,8 +338,12 @@ public class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(location, nameof(location));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        var frontMatterTokens = template.Tokens.Where(t => t.IsFrontMatterToken).ToList();
-        log.LogTrace("Processing {FrontMatterCount} front matter tokens", frontMatterTokens.Count);
+        var frontMatterTokens = template.Tokens.Where(t => t.IsFrontMatterToken);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Processing {FrontMatterCount} front matter tokens",
+                template.Tokens.Count(t => t.IsFrontMatterToken));
+        }
 
         foreach (var token in frontMatterTokens)
         {
@@ -384,8 +398,11 @@ public class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
         ArgumentValidation.ThrowIfNull(template, nameof(template));
 
-        log.LogTrace("Checking if any of {CandidateCount} candidate(s) can assign replacement value '{ReplacementValue}'",
-            candidates.Tokens.Count, replacement.ToString());
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Checking if any of {CandidateCount} candidate(s) can assign replacement value '{ReplacementValue}'",
+                candidates.Tokens.Count, replacement.ToString());
+        }
 
         // Can't assign, so clear current context and move to next match
         if (candidates.CanAnyAssign(replacement.ToString()) == false)
@@ -423,8 +440,11 @@ public class TokenizationEngine : ITokenizationEngine
                 var token = candidates.Tokens[i];
                 if (WasLastMatchedToken(result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacement.ToString()))
                 {
-                    log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                        enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    }
                     log.LogTrace("Backtracking: Disabling repeating token '{TokenName}' ({TokenId}) - was last matched and failed to repeat",
                         token.Name, token.Id);
                     collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
@@ -436,8 +456,11 @@ public class TokenizationEngine : ITokenizationEngine
                 }
                 else if (token.ConsiderOnce)
                 {
-                    log.LogTrace("Ln: {Line} Col: {Column} : Skipping & removing {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                        enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Ln: {Line} Col: {Column} : Skipping & removing {TokenName} ({TokenId}), '{Replacement}' is not a match.",
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    }
                     log.LogTrace("Backtracking: Removing ConsiderOnce token '{TokenName}' ({TokenId}) and marking as miss",
                         token.Name, token.Id);
 
@@ -450,8 +473,11 @@ public class TokenizationEngine : ITokenizationEngine
                 }
                 else
                 {
-                    log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                        enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                    }
                 }
             }
 
@@ -505,8 +531,11 @@ public class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
         ArgumentValidation.ThrowIfNull(disabledRepeatingTokens, nameof(disabledRepeatingTokens));
 
-        log.LogTrace("Processing newline-terminated token with {CandidateCount} candidates, replacement '{ReplacementValue}'",
-            candidates.Tokens.Count, replacement.ToString());
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Processing newline-terminated token with {CandidateCount} candidates, replacement '{ReplacementValue}'",
+                candidates.Tokens.Count, replacement.ToString());
+        }
 
         collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
             tokenName: candidates.Tokens.First().Name,
@@ -679,8 +708,11 @@ public class TokenizationEngine : ITokenizationEngine
     /// <param name="matches">The newly matched tokens</param>
     private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches, IDiagnosticCollector collector)
     {
-        log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
-            context.Replacement.ToString(), context.Candidates.Tokens.Count);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Processing previous token value '{ReplacementValue}' with {CandidateCount} candidates",
+                context.Replacement.ToString(), context.Candidates.Tokens.Count);
+        }
 
         TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
             template.Options, context.ReplacementLocation, result, template, context.MatchIds, collector);

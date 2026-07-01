@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Tokens.Enumerators;
@@ -105,9 +104,9 @@ public class TokenEnumerator
         }
     }
 
-    public bool Match(IEnumerable<Token> tokens, bool outOfOrderTokens, out IList<Token> matches)
+    public bool Match(IEnumerable<Token> tokens, bool outOfOrderTokens, IList<Token> matches)
     {
-        matches = new List<Token>();
+        matches.Clear();
 
         foreach (var token in tokens)
         {
@@ -126,7 +125,7 @@ public class TokenEnumerator
             if (token.Optional == false) break;
         }
 
-        return matches.Any();
+        return matches.Count > 0;
     }
 
     public void Reset()

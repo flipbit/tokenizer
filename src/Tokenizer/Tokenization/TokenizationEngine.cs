@@ -105,6 +105,7 @@ public class TokenizationEngine : ITokenizationEngine
         log.LogDebug("Phase: Initialization completed. Starting main tokenization loop with {TokenCount} tokens",
             template.Tokens.Count);
 
+        var matchBuffer = new List<Token>();
         var iterationCount = 0;
         var maxIterations = template.Options.MaxIterations > 0
             ? template.Options.MaxIterations
@@ -144,7 +145,7 @@ public class TokenizationEngine : ITokenizationEngine
             }
 
             // Check for next token
-            if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens), template.Options.OutOfOrderTokens, out var matches))
+            if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens), template.Options.OutOfOrderTokens, matchBuffer))
             {
                 if (log.IsEnabled(LogLevel.Trace))
                 {
@@ -152,18 +153,18 @@ public class TokenizationEngine : ITokenizationEngine
                         "Token match found at Line {Line}, Column {Column}. Matched {MatchCount} token(s): {TokenNames}",
                         context.Enumerator.Location.Line,
                         context.Enumerator.Location.Column,
-                        matches.Count,
-                        string.Join(", ", matches.Select(m => m.Name)));
+                        matchBuffer.Count,
+                        string.Join(", ", matchBuffer.Select(m => m.Name)));
                 }
 
                 collector.Record(DiagnosticEventType.PreambleMatched,
-                    tokenName: string.Join(", ", matches.Select(m => m.Name)),
+                    tokenName: string.Join(", ", matchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
 
                 // Special case: first token found, just prepare to read token value
                 if (context.Candidates.Any == false)
                 {
-                    HandleFirstTokenMatch(context, matches);
+                    HandleFirstTokenMatch(context, matchBuffer);
                     continue;
                 }
 
@@ -177,7 +178,7 @@ public class TokenizationEngine : ITokenizationEngine
                 // Only switch if we've accumulated a value — otherwise consume a character first
                 if (context.Replacement.Length > 0)
                 {
-                    HandleTokenSwitch(context, template, targetObject, result, matches, collector);
+                    HandleTokenSwitch(context, template, targetObject, result, matchBuffer, collector);
                 }
                 else
                 {

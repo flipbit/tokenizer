@@ -12,8 +12,8 @@ namespace Tokens
     public class Template
     {
         private readonly List<Token> tokens;
-        private readonly List<Hint> _hints;
-        private readonly List<string> _tags;
+        private readonly List<Hint> hints;
+        private readonly List<string> tags;
         private string name;
 
         public Template(string content) : this(string.Empty, content)
@@ -23,8 +23,8 @@ namespace Tokens
         public Template(string name, string content)
         {
             tokens = new List<Token>();
-            _hints = new List<Hint>();
-            _tags = new List<string>();
+            hints = new List<Hint>();
+            tags = new List<string>();
             Options = new TokenizerOptions();
             this.name = name;
             Content = content;
@@ -58,14 +58,14 @@ namespace Tokens
         /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
         /// on text found within the input string.
         /// </summary>
-        public IReadOnlyList<Hint> Hints => _hints;
+        public IReadOnlyList<Hint> Hints => hints;
 
         /// <summary>
         /// Contains the tags associated with this <see cref="Template"/>.
         /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
         /// in with the input string.
         /// </summary>
-        public IReadOnlyList<string> Tags => _tags;
+        public IReadOnlyList<string> Tags => tags;
 
         /// <summary>
         /// The tokens contained within the template
@@ -79,12 +79,12 @@ namespace Tokens
 
         internal void AddHint(Hint hint)
         {
-            _hints.Add(hint);
+            hints.Add(hint);
         }
 
         internal void AddTag(string tag)
         {
-            _tags.Add(tag);
+            tags.Add(tag);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Tokens
         {
             if (string.IsNullOrEmpty(tag)) return false;
 
-            foreach (var candidate in _tags)
+            foreach (var candidate in tags)
             {
                 if (string.Compare(candidate, tag, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {

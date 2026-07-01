@@ -31,9 +31,9 @@ namespace Tokens
         {
             if (token.Concatenate == false) return false;
 
-            if (Matches.Any(m => m.Token.Name == token.Name) == false) return false;
+            if (_matches.Any(m => m.Token.Name == token.Name) == false) return false;
 
-            var match = Matches.First(m => m.Token.Name == token.Name);
+            var match = _matches.First(m => m.Token.Name == token.Name);
 
             if (token.CanConcatenate(match.Value, value) == false) return false;
 

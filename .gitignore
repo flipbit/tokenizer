@@ -38,3 +38,4 @@ packages
 
 .DS_Store
 .claude
+BenchmarkDotNet.Artifacts/

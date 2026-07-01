@@ -36,7 +36,7 @@ namespace Tokens.Extensions
             var objectType = @object.GetType().Name;
 
             // Check object type
-            if (string.Compare(objectType, segments[0], stringComparison) == 0)
+            if (string.Equals(objectType, segments[0], stringComparison))
             {
                 @object = (T) SetInnerValue(@object, segments.Skip(1).ToArray(), value, stringComparison);
             }
@@ -55,7 +55,7 @@ namespace Tokens.Extensions
 
             foreach (var propertyInfo in propertyInfos)
             {
-                if (string.Compare(propertyInfo.Name, path[0], stringComparison) != 0) continue;
+                if (!string.Equals(propertyInfo.Name, path[0], stringComparison)) continue;
 
                 set = true;
 
@@ -234,7 +234,7 @@ namespace Tokens.Extensions
             T? value;
 
             // Check object type
-            if (string.Compare(objectType, segments[0], stringComparison) == 0)
+            if (string.Equals(objectType, segments[0], stringComparison))
             {
                 value = GetInnerValue<T>(target, segments.Skip(1).ToArray(), stringComparison);
             }
@@ -253,7 +253,7 @@ namespace Tokens.Extensions
 
             foreach (var propertyInfo in propertyInfos)
             {
-                if (string.Compare(propertyInfo.Name, path[0], stringComparison) != 0) continue;
+                if (!string.Equals(propertyInfo.Name, path[0], stringComparison)) continue;
 
                 if (path.Count == 1)
                 {

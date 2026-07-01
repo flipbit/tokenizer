@@ -96,7 +96,7 @@ namespace Tokens
 
             foreach (var candidate in tags)
             {
-                if (string.Compare(candidate, tag, StringComparison.InvariantCultureIgnoreCase) == 0)
+                if (string.Equals(candidate, tag, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
                 }

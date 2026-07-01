@@ -277,8 +277,8 @@ namespace Tokens.Compilation
 
                 foreach (var operatorType in transformers)
                 {
-                    if (string.Compare(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                        string.Compare($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    if (string.Equals(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                        string.Equals($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (decorator.IsNotDecorator)
                         {
@@ -307,8 +307,8 @@ namespace Tokens.Compilation
 
                 foreach (var validatorType in validators)
                 {
-                    if (string.Compare(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                        string.Compare($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                        string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         context = new TokenDecoratorContext(validatorType);
 
@@ -358,7 +358,7 @@ namespace Tokens.Compilation
         {
             joiningString = null;
 
-            if (string.Compare("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase) != 0) return false;
+            if (!string.Equals("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase)) return false;
 
             if (decorator.Args.Count == 1)
             {

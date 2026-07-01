@@ -68,12 +68,12 @@ namespace Tokens.Exceptions
         /// <summary>
         /// Gets or sets the line where the error occurred.
         /// </summary>
-        public int Line { get; set; }
+        public int Line { get; internal set; }
 
         /// <summary>
         /// Gets or sets the column where the error occurred.
         /// </summary>
-        public int Column { get; set; }
+        public int Column { get; internal set; }
 
         /// <summary>
         /// Gets the full exception message including line and column information when available.

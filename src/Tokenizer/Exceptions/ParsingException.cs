@@ -16,9 +16,9 @@ namespace Tokens.Exceptions
             Line = location.Line;
         }
 
-        public int Line { get; set; }
+        public int Line { get; internal set; }
 
-        public int Column { get; set; }
+        public int Column { get; internal set; }
 
         public override string Message
         {

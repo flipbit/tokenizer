@@ -13,7 +13,7 @@
             }
             else
             {
-                transformed = valueString.ToUpper();
+                transformed = valueString.ToUpperInvariant();
             }
 
             return true;

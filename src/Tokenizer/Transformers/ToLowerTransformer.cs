@@ -13,7 +13,7 @@
                 return true;
             }
 
-            transformed = valueString.ToLower();
+            transformed = valueString.ToLowerInvariant();
 
             return true;
         }

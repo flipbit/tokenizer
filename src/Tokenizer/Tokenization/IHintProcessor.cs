@@ -7,7 +7,7 @@ namespace Tokens.Tokenization;
 /// Defines the hint processor that finds and validates hints in input text
 /// according to template hint definitions.
 /// </summary>
-public interface IHintProcessor
+internal interface IHintProcessor
 {
     /// <summary>
     /// Finds all hints defined in the template within the input text and validates them.

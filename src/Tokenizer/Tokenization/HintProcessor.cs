@@ -10,7 +10,7 @@ namespace Tokens.Tokenization;
 /// Hint processor that finds and validates hints in input text according to template hint definitions.
 /// This service encapsulates hint finding logic, hint matching, and missing hint detection.
 /// </summary>
-public class HintProcessor : IHintProcessor
+internal class HintProcessor : IHintProcessor
 {
     private readonly ILogger<HintProcessor> log;
 

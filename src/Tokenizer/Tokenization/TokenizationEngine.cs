@@ -30,7 +30,7 @@ internal static class ArgumentValidation
 /// This service encapsulates the main tokenization algorithm and handles candidate token processing,
 /// input enumeration, and token matching logic.
 /// </summary>
-public class TokenizationEngine : ITokenizationEngine
+internal class TokenizationEngine : ITokenizationEngine
 {
     private readonly ILogger<TokenizationEngine> log;
 

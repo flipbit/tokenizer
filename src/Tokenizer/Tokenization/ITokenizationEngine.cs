@@ -10,7 +10,7 @@ namespace Tokens.Tokenization;
 /// Defines the core tokenization engine that processes input text and matches tokens
 /// according to template patterns.
 /// </summary>
-public interface ITokenizationEngine
+internal interface ITokenizationEngine
 {
     /// <summary>
     /// Processes the main tokenization algorithm, matching tokens from input text

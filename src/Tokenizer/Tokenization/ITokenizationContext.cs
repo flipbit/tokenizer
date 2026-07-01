@@ -8,7 +8,7 @@ namespace Tokens.Tokenization;
 /// Defines the tokenization context that encapsulates shared state during tokenization operations.
 /// This context manages the state that needs to be shared between different tokenization services.
 /// </summary>
-public interface ITokenizationContext
+internal interface ITokenizationContext
 {
     /// <summary>
     /// Gets the candidate token list containing tokens that are currently being considered for matching.

@@ -10,7 +10,7 @@ namespace Tokens.Tokenization;
 /// This context manages the state that needs to be shared between different tokenization services,
 /// including candidate tokens, enumerator, replacement state, and tracking collections.
 /// </summary>
-public sealed class TokenizationContext : ITokenizationContext, IDisposable
+internal sealed class TokenizationContext : ITokenizationContext, IDisposable
 {
     private bool _disposed = false;
 

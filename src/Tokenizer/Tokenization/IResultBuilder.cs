@@ -9,7 +9,7 @@ namespace Tokens.Tokenization;
 /// Defines the result builder that creates and populates tokenization result objects
 /// with matches, misses, and exception information.
 /// </summary>
-public interface IResultBuilder
+internal interface IResultBuilder
 {
     /// <summary>
     /// Creates a new TokenizeResult instance for the given template.

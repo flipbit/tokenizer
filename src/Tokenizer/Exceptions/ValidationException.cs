@@ -5,7 +5,7 @@ namespace Tokens.Exceptions
     /// <summary>
     /// Thrown when an validation can't be mapped from a pattern
     /// </summary>
-    public class ValidationException : Exception
+    public class ValidationException : TokenizerException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.

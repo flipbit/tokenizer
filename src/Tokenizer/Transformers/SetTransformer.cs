@@ -7,7 +7,7 @@ namespace Tokens.Transformers;
 /// </summary>
 public sealed class SetTransformer : ITokenTransformer
 {
-    public bool CanTransform(object value, string[] args, out object transformed)
+    public bool TryTransform(object value, string[] args, out object transformed)
     {
         if (args == null || args.Length != 1)
         {

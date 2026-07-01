@@ -13,7 +13,7 @@ public class ToUpperTransformerTests
         var input = "test";
 
         // Act
-        transformer.CanTransform(input, null!, out var t);
+        transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal("TEST", t);
@@ -26,7 +26,7 @@ public class ToUpperTransformerTests
         var input = string.Empty;
 
         // Act
-        transformer.CanTransform(input, null!, out var t);
+        transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);
@@ -39,7 +39,7 @@ public class ToUpperTransformerTests
         string input = null!;
 
         // Act
-        transformer.CanTransform(input, null!, out var t);
+        transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);

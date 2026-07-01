@@ -20,7 +20,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
         var format = "yyyy-MM-dd";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -37,7 +37,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
         var format = "yyyy-MM-dd hh:mm:ss";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -54,7 +54,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
         var format = "yyyy-MM-ddThh:mm:ssZ";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert

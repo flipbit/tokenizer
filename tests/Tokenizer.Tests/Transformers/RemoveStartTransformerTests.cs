@@ -20,7 +20,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         var prefixToRemove = "one";
 
         // Act
-        var result = transformer.CanTransform(input, [prefixToRemove], out var transformed);
+        var result = transformer.TryTransform(input, [prefixToRemove], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -35,7 +35,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         var prefixToRemove = "two";
 
         // Act
-        var result = transformer.CanTransform(input, [prefixToRemove], out var transformed);
+        var result = transformer.TryTransform(input, [prefixToRemove], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -49,7 +49,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var transformed);
+        var result = transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -73,7 +73,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var transformed);
+        var result = transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

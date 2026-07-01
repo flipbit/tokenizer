@@ -15,7 +15,7 @@ public class SubstringAfterLastTransformerTests
         var substring = "two";
 
         // Act
-        var result = transformer.CanTransform(input, [substring], out var transformed);
+        var result = transformer.TryTransform(input, [substring], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -29,7 +29,7 @@ public class SubstringAfterLastTransformerTests
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class SubstringAfterLastTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var transformed);
+        var result = transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -53,7 +53,7 @@ public class SubstringAfterLastTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var transformed);
+        var result = transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

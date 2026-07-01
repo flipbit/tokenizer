@@ -72,11 +72,11 @@ public sealed class TokenDecoratorContext
     /// <summary>
     /// Transforms the token value.
     /// </summary>
-    public bool CanTransform(object value, out object transformed)
+    public bool TryTransform(object value, out object transformed)
     {
         var instance = (ITokenTransformer)CreateDecorator();
 
-        return instance.CanTransform(value, _parameters.ToArray(), out transformed);
+        return instance.TryTransform(value, _parameters.ToArray(), out transformed);
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ public class ToLowerTransformerTests
         var input = "TEST";
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);
@@ -27,7 +27,7 @@ public class ToLowerTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);
@@ -41,7 +41,7 @@ public class ToLowerTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);

@@ -13,7 +13,7 @@ public class CultureInvariantTransformerTests
         var transformer = new ToLowerTransformer();
 
         // Act
-        transformer.CanTransform("TITLE", Array.Empty<string>(), out var result);
+        transformer.TryTransform("TITLE", Array.Empty<string>(), out var result);
 
         // Assert
         Assert.Equal("title", result);
@@ -26,7 +26,7 @@ public class CultureInvariantTransformerTests
         var transformer = new ToUpperTransformer();
 
         // Act
-        transformer.CanTransform("title", Array.Empty<string>(), out var result);
+        transformer.TryTransform("title", Array.Empty<string>(), out var result);
 
         // Assert
         Assert.Equal("TITLE", result);

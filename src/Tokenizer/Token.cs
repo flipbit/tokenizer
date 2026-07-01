@@ -160,7 +160,7 @@ public sealed class Token
         {
             if (decorator.IsTransformer)
             {
-                var transformed = decorator.CanTransform(assignedValue!, out var output);
+                var transformed = decorator.TryTransform(assignedValue!, out var output);
 
                 if (transformed == false)
                 {
@@ -340,7 +340,7 @@ public sealed class Token
         {
             if (decorator.IsTransformer)
             {
-                if (decorator.CanTransform(input, out var output) == false)
+                if (decorator.TryTransform(input, out var output) == false)
                 {
                     return false;
                 }

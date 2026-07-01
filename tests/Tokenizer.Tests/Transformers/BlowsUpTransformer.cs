@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class BlowsUpTransformer : ITokenTransformer
 {
-    public bool CanTransform(object value, string[] args, out object transformed)
+    public bool TryTransform(object value, string[] args, out object transformed)
     {
         throw new NotImplementedException();
     }

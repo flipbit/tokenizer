@@ -9,7 +9,7 @@ namespace Tokens.Transformers;
 /// </summary>
 public sealed class ToDateTimeUtcTransformer : ITokenTransformer
 {
-    public bool CanTransform(object value, string[] args, out object transformed)
+    public bool TryTransform(object value, string[] args, out object transformed)
     {
         if (value is string valueString && !string.IsNullOrWhiteSpace(valueString))
         {

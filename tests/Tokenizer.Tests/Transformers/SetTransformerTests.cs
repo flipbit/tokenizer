@@ -20,7 +20,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         var setValue = "output";
 
         // Act
-        var result = transformer.CanTransform(input, [setValue], out var transformed);
+        var result = transformer.TryTransform(input, [setValue], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -34,7 +34,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         var input = string.Empty;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t)); ;
+        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t)); ;
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         string[] tooManyArgs = ["1", "2"];
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, tooManyArgs, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, tooManyArgs, out var t));
     }
 
     [Fact]

@@ -21,7 +21,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
         LockHandle = new object();
     }
 
-    public bool CanTransform(object value, string[] args, out object transformed)
+    public bool TryTransform(object value, string[] args, out object transformed)
     {
         if (TryParseDateTime(value, args, out var result))
         {

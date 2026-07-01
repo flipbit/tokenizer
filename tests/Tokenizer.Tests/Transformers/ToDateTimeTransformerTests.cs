@@ -15,7 +15,7 @@ public class ToDateTimeTransformerTests
         var format = "yyyy-MM-dd";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -32,7 +32,7 @@ public class ToDateTimeTransformerTests
         var format = "d MMM yyyy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -47,7 +47,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06";
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -63,7 +63,7 @@ public class ToDateTimeTransformerTests
         var format = "dd MMM yy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
 
         // Assert
         Assert.False(result);
@@ -78,7 +78,7 @@ public class ToDateTimeTransformerTests
         string[] formats = ["dd MMM yy", "yyyy-MM-dd"];
 
         // Act
-        var result = transformer.CanTransform(input, formats, out var t);
+        var result = transformer.TryTransform(input, formats, out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -93,7 +93,7 @@ public class ToDateTimeTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.False(result);
@@ -107,7 +107,7 @@ public class ToDateTimeTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.False(result);
@@ -121,7 +121,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06\nHello";
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -136,7 +136,7 @@ public class ToDateTimeTransformerTests
         var input = "2012-05-06\r\nHello";
 
         // Act
-        var result = transformer.CanTransform(input, null!, out var t);
+        var result = transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);
@@ -151,7 +151,7 @@ public class ToDateTimeTransformerTests
         var format = "dd MMMM yyyy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -167,7 +167,7 @@ public class ToDateTimeTransformerTests
         var format = "MMMM d yyyy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -183,7 +183,7 @@ public class ToDateTimeTransformerTests
         var format = "MMMM d yyyy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -199,7 +199,7 @@ public class ToDateTimeTransformerTests
         var format = "dd-MMM-yyyy";
 
         // Act
-        var result = transformer.CanTransform(input, [format], out var t);
+        var result = transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert

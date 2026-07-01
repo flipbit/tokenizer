@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,7 @@ internal class AssertWriter
     {
         sb.Clear();
 
-        var listNames = new List<string>(); 
+        var listNames = new List<string>();
 
         foreach (var match in result.Matches)
         {
@@ -67,7 +67,7 @@ internal class AssertWriter
         if (value is DateTime dateTime)
         {
             sb.AppendLine($@"            Assert.Equal(new DateTime({dateTime.Year}, {dateTime.Month:00}, {dateTime.Day:00}, {dateTime.Hour:00}, {dateTime.Minute:00}, {dateTime.Second:00}, {dateTime.Millisecond:000}, DateTimeKind.Utc), {name});");
-                    
+
         }
     }
 }

@@ -254,7 +254,7 @@ public class TemplateDefinitionEnumeratorTests
         enumerator.Next(); // This should trigger the line increment
         Assert.Equal(2, enumerator.Location.Line);
         Assert.Equal(1, enumerator.Location.Column);
-        
+
         for (int i = 0; i < 4; i++)
         {
             enumerator.Next();
@@ -267,7 +267,7 @@ public class TemplateDefinitionEnumeratorTests
         enumerator.Next(); // \n
         Assert.Equal(2, enumerator.Location.Line);
         Assert.Equal(5, enumerator.Location.Column);
-        
+
         // Read first character of Line3 to trigger line increment
         enumerator.Next();
         Assert.Equal(3, enumerator.Location.Line);

@@ -1,194 +1,193 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tokens.Extensions;
 
-namespace Tokens
+namespace Tokens;
+
+/// <summary>
+/// Represents a template to use to extract data from
+/// free text.
+/// </summary>
+public sealed class Template
 {
-    /// <summary>
-    /// Represents a template to use to extract data from
-    /// free text.
-    /// </summary>
-    public sealed class Template
+    private readonly List<Token> tokens;
+    private readonly List<Hint> hints;
+    private readonly List<string> tags;
+    private string name;
+
+    public Template(string content) : this(string.Empty, content)
     {
-        private readonly List<Token> tokens;
-        private readonly List<Hint> hints;
-        private readonly List<string> tags;
-        private string name;
+    }
 
-        public Template(string content) : this(string.Empty, content)
+    public Template(string name, string content)
+    {
+        tokens = new List<Token>();
+        hints = new List<Hint>();
+        tags = new List<string>();
+        Options = new TokenizerOptions();
+        this.name = name;
+        Content = content;
+    }
+
+    /// <summary>
+    /// The template content
+    /// </summary>
+    public string Content { get; set; }
+
+    /// <summary>
+    /// The name of the template.  If no name is specified, the name will be assigned
+    /// a hash of the template content.
+    /// </summary>
+    public string Name
+    {
+        get
         {
-        }
-
-        public Template(string name, string content)
-        {
-            tokens = new List<Token>();
-            hints = new List<Hint>();
-            tags = new List<string>();
-            Options = new TokenizerOptions();
-            this.name = name;
-            Content = content;
-        }
-
-        /// <summary>
-        /// The template content
-        /// </summary>
-        public string Content { get; set; }
-
-        /// <summary>
-        /// The name of the template.  If no name is specified, the name will be assigned
-        /// a hash of the template content.
-        /// </summary>
-        public string Name
-        {
-            get
+            if (string.IsNullOrEmpty(name))
             {
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = Content.ToMd5();
-                }
-
-                return name;
-            }
-            set => name = value;
-        }
-
-        /// <summary>
-        /// Contains the hints associated with this <see cref="Template"/>.
-        /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
-        /// on text found within the input string.
-        /// </summary>
-        public IReadOnlyList<Hint> Hints => hints;
-
-        /// <summary>
-        /// Contains the tags associated with this <see cref="Template"/>.
-        /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
-        /// in with the input string.
-        /// </summary>
-        public IReadOnlyList<string> Tags => tags;
-
-        /// <summary>
-        /// The tokens contained within the template
-        /// </summary>
-        public IReadOnlyCollection<Token> Tokens => tokens.AsReadOnly();
-
-        /// <summary>
-        /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
-        /// </summary>
-        public TokenizerOptions Options { get; set; }
-
-        internal void AddHint(Hint hint)
-        {
-            hints.Add(hint);
-        }
-
-        internal void AddTag(string tag)
-        {
-            tags.Add(tag);
-        }
-
-        /// <summary>
-        /// Determines if this instance contains the given tag.
-        /// </summary>
-        public bool HasTag(string tag)
-        {
-            if (string.IsNullOrEmpty(tag)) return false;
-
-            foreach (var candidate in tags)
-            {
-                if (string.Equals(candidate, tag, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return true;
-                }
+                name = Content.ToMd5();
             }
 
+            return name;
+        }
+        set => name = value;
+    }
+
+    /// <summary>
+    /// Contains the hints associated with this <see cref="Template"/>.
+    /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
+    /// on text found within the input string.
+    /// </summary>
+    public IReadOnlyList<Hint> Hints => hints;
+
+    /// <summary>
+    /// Contains the tags associated with this <see cref="Template"/>.
+    /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
+    /// in with the input string.
+    /// </summary>
+    public IReadOnlyList<string> Tags => tags;
+
+    /// <summary>
+    /// The tokens contained within the template
+    /// </summary>
+    public IReadOnlyCollection<Token> Tokens => tokens.AsReadOnly();
+
+    /// <summary>
+    /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
+    /// </summary>
+    public TokenizerOptions Options { get; set; }
+
+    internal void AddHint(Hint hint)
+    {
+        hints.Add(hint);
+    }
+
+    internal void AddTag(string tag)
+    {
+        tags.Add(tag);
+    }
+
+    /// <summary>
+    /// Determines if this instance contains the given tag.
+    /// </summary>
+    public bool HasTag(string tag)
+    {
+        if (string.IsNullOrEmpty(tag)) return false;
+
+        foreach (var candidate in tags)
+        {
+            if (string.Equals(candidate, tag, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Determines if this instance contains all of the given tags.
+    /// </summary>
+    public bool HasTags(IList<string> tags)
+    {
+        return HasTags(tags, out _);
+    }
+
+    /// <summary>
+    /// Determines if this instance contains all of the given tags.
+    /// </summary>
+    public bool HasTags(IList<string> tags, out IList<string> missing)
+    {
+        missing = new List<string>();
+
+        if (tags == null)
+        {
             return false;
         }
 
-        /// <summary>
-        /// Determines if this instance contains all of the given tags.
-        /// </summary>
-        public bool HasTags(IList<string> tags)
+        foreach (var tag in tags)
         {
-            return HasTags(tags, out _);
+            if (HasTag(tag) == false)
+            {
+                missing.Add(tag);
+            }
         }
 
-        /// <summary>
-        /// Determines if this instance contains all of the given tags.
-        /// </summary>
-        public bool HasTags(IList<string> tags, out IList<string> missing)
+        return missing.Count == 0;
+    }
+
+    internal bool HasOnlyFrontMatterTokens => tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
+
+    internal IEnumerable<int> GetTokenIdsUpTo(Token token)
+    {
+        var matchIds = new List<int>();
+
+        // Only remove match if out-of-order token
+        if (Options.OutOfOrderTokens)
         {
-            missing = new List<string>();
-
-            if (tags == null)
-            {
-                return false;
-            }
-
-            foreach (var tag in tags)
-            {
-                if (HasTag(tag) == false)
-                {
-                    missing.Add(tag);
-                }
-            }
-
-            return missing.Count == 0;
-        }
-
-        internal bool HasOnlyFrontMatterTokens => tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
-
-        internal IEnumerable<int> GetTokenIdsUpTo(Token token)
-        {
-            var matchIds = new List<int>();
-
-            // Only remove match if out-of-order token
-            if (Options.OutOfOrderTokens)
-            {
-                if (token.Repeating == false) matchIds.Add(token.Id);
-                return matchIds;
-            }
-
-            foreach (var candidate in tokens)
-            {
-                if (candidate == token)
-                {
-                    if (candidate.Repeating == false)
-                    {
-                        matchIds.Add(candidate.Id);
-                    }
-                    break;
-                }
-
-                matchIds.Add(candidate.Id);
-            }
-
+            if (token.Repeating == false) matchIds.Add(token.Id);
             return matchIds;
         }
 
-        internal void AddToken(Token token)
+        foreach (var candidate in tokens)
         {
-            token.Id = tokens.Count + 1;
-            tokens.Add(token);
+            if (candidate == token)
+            {
+                if (candidate.Repeating == false)
+                {
+                    matchIds.Add(candidate.Id);
+                }
+                break;
+            }
+
+            matchIds.Add(candidate.Id);
         }
 
-        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds)
-        {
-            var includedTokens = tokens
-                .Where(t => t.IsFrontMatterToken == false)
-                .Where(t => tokenIds.Contains(t.Id) == false)
-                .ToArray();
+        return matchIds;
+    }
 
-            var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();
+    internal void AddToken(Token token)
+    {
+        token.Id = tokens.Count + 1;
+        tokens.Add(token);
+    }
 
-            return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);
-        }
+    internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds)
+    {
+        var includedTokens = tokens
+            .Where(t => t.IsFrontMatterToken == false)
+            .Where(t => tokenIds.Contains(t.Id) == false)
+            .ToArray();
 
-        internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds, CandidateTokenList candidates, IEnumerable<int> excludedRepeatingTokens)
-        {
-            var candidateIds = candidates.Tokens.Where(t => t.Repeating == false).Select(t => t.Id);
+        var includedTokenIds = includedTokens.Select(t => t.Id).ToArray();
 
-            return TokensExcluding(tokenIds.Concat(candidateIds).Concat(excludedRepeatingTokens));
-        }
+        return includedTokens.Where(t => includedTokenIds.Contains(t.DependsOnId) == false);
+    }
+
+    internal IEnumerable<Token> TokensExcluding(IEnumerable<int> tokenIds, CandidateTokenList candidates, IEnumerable<int> excludedRepeatingTokens)
+    {
+        var candidateIds = candidates.Tokens.Where(t => t.Repeating == false).Select(t => t.Id);
+
+        return TokensExcluding(tokenIds.Concat(candidateIds).Concat(excludedRepeatingTokens));
     }
 }

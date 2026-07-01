@@ -1,34 +1,33 @@
-﻿using System;
+using System;
 using Tokens.Exceptions;
 
-namespace Tokens.Transformers
+namespace Tokens.Transformers;
+
+/// <summary>
+/// Removes occurrences of a string from then end of a token value
+/// </summary>
+public sealed class SplitTransformer : ITokenTransformer
 {
-    /// <summary>
-    /// Removes occurrences of a string from then end of a token value
-    /// </summary>
-    public sealed class SplitTransformer : ITokenTransformer
+    public bool CanTransform(object value, string[] args, out object transformed)
     {
-        public bool CanTransform(object value, string[] args, out object transformed)
+        if (value?.ToString() is not { Length: > 0 } valueString)
         {
-            if (value?.ToString() is not { Length: > 0 } valueString)
-            {
-                transformed = string.Empty;
-                return true;
-            }
-
-            if (args == null || args.Length != 1) throw new TokenizerException($"Split(value): missing arguments processing: {value}");
-
-            var valueArray = valueString.Split(new[] { args[0] }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueArray.Length > 1)
-            {
-                transformed = valueArray;
-            }
-            else
-            {
-                transformed = value;
-            }
-
+            transformed = string.Empty;
             return true;
         }
+
+        if (args == null || args.Length != 1) throw new TokenizerException($"Split(value): missing arguments processing: {value}");
+
+        var valueArray = valueString.Split(new[] { args[0] }, StringSplitOptions.RemoveEmptyEntries);
+        if (valueArray.Length > 1)
+        {
+            transformed = valueArray;
+        }
+        else
+        {
+            transformed = value;
+        }
+
+        return true;
     }
 }

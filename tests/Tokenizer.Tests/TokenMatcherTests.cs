@@ -1,4 +1,4 @@
-﻿using Tokens.Compilation;
+using Tokens.Compilation;
 using Tokens.Transformers;
 using Xunit;
 using Xunit.Abstractions;
@@ -67,7 +67,7 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         Assert.Equal(0, match.Value.Age);
         Assert.Equal("no-age", match.Template.Name);
     }
- 
+
     [Fact]
     public void TestMatchWithMultipleHints()
     {

@@ -1,94 +1,93 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
-namespace Tokens
+namespace Tokens;
+
+/// <summary>
+/// Holds a list of candidate tokens to match during a Tokenize operation.
+/// </summary>
+public class CandidateTokenList
 {
-    /// <summary>
-    /// Holds a list of candidate tokens to match during a Tokenize operation.
-    /// </summary>
-    public class CandidateTokenList 
+    private readonly List<Token> tokens = new List<Token>();
+
+    public void Add(Token token)
     {
-        private readonly List<Token> tokens = new List<Token>();
-
-        public void Add(Token token)
+        if (tokens.Count == 0)
         {
-            if (tokens.Count == 0)
+            Preamble = token.Preamble;
+            TerminateOnNewLine = token.TerminateOnNewLine;
+            IsNullToken = string.IsNullOrWhiteSpace(token.Name);
+            tokens.Add(token);
+        }
+        else
+        {
+            tokens.Add(token);
+        }
+    }
+
+    public void AddRange(IEnumerable<Token> tokens)
+    {
+        foreach (var token in tokens)
+        {
+            Add(token);
+        }
+    }
+
+    public void Clear()
+    {
+        Preamble = string.Empty;
+        tokens.Clear();
+    }
+
+    public bool TryAssign(object? target, StringBuilder value, TokenizerOptions options, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue, IDiagnosticCollector collector)
+    {
+        assigned = null;
+        assignedValue = null;
+
+        var valueString = value.ToString();
+
+        foreach (var token in tokens)
+        {
+            if (token.Assign(target, valueString, options, location, out assignedValue, collector))
             {
-                Preamble = token.Preamble;
-                TerminateOnNewLine = token.TerminateOnNewLine;
-                IsNullToken = string.IsNullOrWhiteSpace(token.Name);
-                tokens.Add(token);
+                assigned = token;
+
+                return true;
             }
-            else
+        }
+
+        return false;
+    }
+
+    public bool CanAnyAssign(string value)
+    {
+        foreach (var token in tokens)
+        {
+            if (token.CanAssign(value))
             {
-                tokens.Add(token);
+                return true;
             }
         }
 
-        public void AddRange(IEnumerable<Token> tokens)
-        {
-            foreach (var token in tokens)
-            {
-                Add(token);
-            }
-        }
+        return false;
+    }
 
-        public void Clear()
-        {
-            Preamble = string.Empty;
-            tokens.Clear();
-        }
+    public bool Any => Count > 0;
 
-        public bool TryAssign(object? target, StringBuilder value, TokenizerOptions options, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue, IDiagnosticCollector collector)
-        {
-            assigned = null;
-            assignedValue = null;
+    public int Count => tokens.Count;
 
-            var valueString = value.ToString();
+    public string Preamble { get; private set; } = string.Empty;
 
-            foreach (var token in tokens)
-            {
-                if (token.Assign(target, valueString, options, location, out assignedValue, collector))
-                {
-                    assigned = token;
+    public bool TerminateOnNewLine { get; private set; }
 
-                    return true;
-                }
-            }
+    public bool IsNullToken { get; private set; }
 
-            return false;
-        }
+    public IList<Token> Tokens => tokens;
 
-        public bool CanAnyAssign(string value)
-        {
-            foreach (var token in tokens)
-            {
-                if (token.CanAssign(value))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public bool Any => Count > 0;
-
-        public int Count => tokens.Count;
-
-        public string Preamble { get; private set; } = string.Empty;
-
-        public bool TerminateOnNewLine { get; private set; }
-
-        public bool IsNullToken { get; private set; }
-
-        public IList<Token> Tokens => tokens;
-
-        public void Remove(Token token)
-        {
-            tokens.Remove(token);
-        }
+    public void Remove(Token token)
+    {
+        tokens.Remove(token);
     }
 }

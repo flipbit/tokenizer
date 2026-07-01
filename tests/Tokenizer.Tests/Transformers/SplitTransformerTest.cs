@@ -1,4 +1,4 @@
-﻿using Tokens.Exceptions;
+using Tokens.Exceptions;
 using Xunit;
 
 namespace Tokens.Transformers;
@@ -14,7 +14,7 @@ public class SplitTransformerTest
 
         Assert.True(result);
 
-        var list = (string[]) transformed!;
+        var list = (string[])transformed!;
 
         Assert.Equal(4, list.Length);
         Assert.Equal("1", list[0]);

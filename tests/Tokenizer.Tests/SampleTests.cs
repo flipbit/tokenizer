@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Tokens.Tests;
@@ -270,7 +270,7 @@ public class SampleTests : TokenizerTestBase
             Assert.Equal(new DateTime(2002, 11, 21), result.First("Registered"));
             Assert.Equal(new DateTime(2018, 12, 1), result.First("Updated"));
 
-            var nameServers = (List<object>) result.All("NameServers");
+            var nameServers = (List<object>)result.All("NameServers");
 
             Assert.Equal("ns1.p31.dynect.net", nameServers[0]);
             Assert.Equal("ns2.p31.dynect.net", nameServers[1]);
@@ -392,7 +392,7 @@ public class SampleTests : TokenizerTestBase
 
         Assert.Equal(39, result.Matches.Count);
     }
-  
+
     [Fact]
     public void TestTokenMatcherCoCa()
     {
@@ -408,7 +408,7 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal(match.BestMatch!.First("DomainName"), "u34jedzcq.co.ca");
         Assert.Equal(match.BestMatch.First("Status"), "NotFound");
     }
-  
+
     [Fact]
     public void TestWhoisEuOrg()
     {
@@ -419,7 +419,7 @@ public class SampleTests : TokenizerTestBase
 
         Assert.Equal(result.First("DomainName"), "google.eu.org");
     }
-  
+
     [Fact]
     public void TestWhoisGoogleTr()
     {
@@ -531,8 +531,8 @@ public class SampleTests : TokenizerTestBase
                        Ultima Actualizacion: 2006-06-08 21:54:41
                        Fecha de Creacion: 2005-11-21 15:21:32
                     """;
-            
-            ReadData("aloespa.com.ve");
+
+        ReadData("aloespa.com.ve");
 
         var result = tokenizer.Tokenize(template, input);
 
@@ -540,7 +540,7 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
         Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
     }
-    
+
     [Fact]
     public void TestWhoisCoop()
     {

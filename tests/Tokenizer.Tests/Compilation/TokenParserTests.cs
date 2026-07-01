@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Tokens.Exceptions;
 using Tokens.Transformers;
 using Xunit;
@@ -67,7 +67,7 @@ public class TokenParserTests
 
         Assert.Equal("Preamble", template.Name);
     }
- 
+
     [Fact]
     public void TestParseSetNameLimitToThreeWords()
     {

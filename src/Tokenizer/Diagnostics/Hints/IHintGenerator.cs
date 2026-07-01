@@ -1,21 +1,20 @@
-namespace Tokens.Diagnostics.Hints
+namespace Tokens.Diagnostics.Hints;
+
+/// <summary>
+/// Generates an adaptive hint for a diagnostic issue by analyzing the
+/// event context. Returns null if no actionable hint can be produced.
+/// Implementations should prefer returning null over returning a
+/// low-confidence or misleading hint.
+/// </summary>
+internal interface IHintGenerator
 {
     /// <summary>
-    /// Generates an adaptive hint for a diagnostic issue by analyzing the
-    /// event context. Returns null if no actionable hint can be produced.
-    /// Implementations should prefer returning null over returning a
-    /// low-confidence or misleading hint.
+    /// Attempts to generate a hint for the given issue.
     /// </summary>
-    internal interface IHintGenerator
-    {
-        /// <summary>
-        /// Attempts to generate a hint for the given issue.
-        /// </summary>
-        /// <param name="issue">The diagnostic issue to generate a hint for</param>
-        /// <param name="sourceEvent">The diagnostic event that caused the issue</param>
-        /// <param name="trace">The full diagnostic trace for cross-referencing</param>
-        /// <returns>A human-readable hint string, or null if no hint applies</returns>
-        string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                TokenizationDiagnostics trace);
-    }
+    /// <param name="issue">The diagnostic issue to generate a hint for</param>
+    /// <param name="sourceEvent">The diagnostic event that caused the issue</param>
+    /// <param name="trace">The full diagnostic trace for cross-referencing</param>
+    /// <returns>A human-readable hint string, or null if no hint applies</returns>
+    string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
+                            TokenizationDiagnostics trace);
 }

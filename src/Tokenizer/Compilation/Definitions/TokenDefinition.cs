@@ -2,101 +2,100 @@ using System.Collections.Generic;
 using System.Text;
 using Tokens.Enumerators;
 
-namespace Tokens.Compilation.Definitions
+namespace Tokens.Compilation.Definitions;
+
+/// <summary>
+/// Intermediate data structure that holds the syntactically verified
+/// template token data.
+/// </summary>
+public class TokenDefinition
 {
-    /// <summary>
-    /// Intermediate data structure that holds the syntactically verified
-    /// template token data.
-    /// </summary>
-    public class TokenDefinition
+    private readonly StringBuilder preamble;
+    private readonly StringBuilder name;
+    private readonly StringBuilder value;
+
+    public TokenDefinition()
     {
-        private readonly StringBuilder preamble;
-        private readonly StringBuilder name;
-        private readonly StringBuilder value;
+        Decorators = new List<DecoratorDefinition>();
+        preamble = new StringBuilder();
+        name = new StringBuilder();
+        value = new StringBuilder();
+    }
 
-        public TokenDefinition()
+    public int Id { get; set; }
+
+    public int DependsOnId { get; set; } = -1;
+
+    public string Preamble => preamble.ToString();
+
+    public string Name => name.ToString();
+
+    public string Value => value.ToString();
+
+    public bool Optional { get; set; }
+
+    public bool TerminateOnNewline { get; set; }
+
+    public bool Repeating { get; set; }
+
+    public bool Required { get; set; }
+
+    public bool IsNull { get; set; }
+
+    public bool ConsiderOnce { get; set; }
+
+    public string Content { get; set; } = string.Empty;
+
+    public FileLocation Location { get; set; } = new FileLocation();
+
+    public IList<DecoratorDefinition> Decorators { get; }
+
+    public void AppendPreamble(string value)
+    {
+        if (value == "\r") return;
+
+        preamble.Append(value);
+    }
+
+    public void AppendName(string value)
+    {
+        name.Append(value);
+    }
+
+    public void AppendValue(string value)
+    {
+        this.value.Append(value);
+    }
+
+    public void AppendDecorators(IEnumerable<DecoratorDefinition> decorators)
+    {
+        if (decorators == null) return;
+
+        foreach (var decorator in decorators)
         {
-            Decorators = new List<DecoratorDefinition>();
-            preamble = new StringBuilder();
-            name = new StringBuilder();
-            value = new StringBuilder();
+            Decorators.Add(decorator);
         }
+    }
 
-        public int Id { get; set; }
+    public bool HasValue => value.Length > 0;
 
-        public int DependsOnId { get; set; } = -1;
+    public bool IsFrontMatterToken { get; set; }
 
-        public string Preamble => preamble.ToString();
+    public override string ToString()
+    {
+        return Content;
+    }
 
-        public string Name => name.ToString();
+    internal void TrimPreambleBeforeNewLine()
+    {
+        var preambleContent = preamble.ToString();
 
-        public string Value => value.ToString();
-
-        public bool Optional { get; set; }
-
-        public bool TerminateOnNewline { get; set; }
-
-        public bool Repeating { get; set; }
-
-        public bool Required { get; set; }
-
-        public bool IsNull { get; set; }
-
-        public bool ConsiderOnce { get; set; }
-
-        public string Content { get; set; } = string.Empty;
-
-        public FileLocation Location { get; set; } = new FileLocation();
-
-        public IList<DecoratorDefinition> Decorators { get; }
-
-        public void AppendPreamble(string value)
+        if (preambleContent.Contains("\n"))
         {
-            if (value == "\r") return;
+            var trimmed = preambleContent.Substring(preambleContent.LastIndexOf("\n") + 1);
 
-            preamble.Append(value);
-        }
-
-        public void AppendName(string value)
-        {
-            name.Append(value);
-        }
-
-        public void AppendValue(string value)
-        {
-            this.value.Append(value);
-        }
-
-        public void AppendDecorators(IEnumerable<DecoratorDefinition> decorators)
-        {
-            if (decorators == null) return;
-
-            foreach (var decorator in decorators)
-            {
-                Decorators.Add(decorator);
-            }
-        }
-
-        public bool HasValue => value.Length > 0;
-
-        public bool IsFrontMatterToken { get; set; }
-
-        public override string ToString()
-        {
-            return Content;
-        }
-
-        internal void TrimPreambleBeforeNewLine()
-        {
-            var preambleContent = preamble.ToString();
-
-            if (preambleContent.Contains("\n"))
-            {
-                var trimmed = preambleContent.Substring(preambleContent.LastIndexOf("\n") + 1);
-
-                preamble.Clear();
-                preamble.Append(trimmed);
-            }
+            preamble.Clear();
+            preamble.Append(trimmed);
         }
     }
 }

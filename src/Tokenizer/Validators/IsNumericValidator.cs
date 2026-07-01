@@ -1,22 +1,21 @@
-﻿namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value is numeric
+/// </summary>
+public sealed class IsNumericValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value is numeric
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class IsNumericValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
-        {
-            if (value == null) return false;
+        if (value == null) return false;
 
-            var valueString = value.ToString();
+        var valueString = value.ToString();
 
-            if (string.IsNullOrEmpty(valueString)) return false;
+        if (string.IsNullOrEmpty(valueString)) return false;
 
-            return float.TryParse(valueString, out var test);
-        }
+        return float.TryParse(valueString, out var test);
     }
 }

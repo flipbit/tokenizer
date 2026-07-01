@@ -1,102 +1,101 @@
-﻿namespace Tokens.Enumerators
+namespace Tokens.Enumerators;
+
+/// <summary>
+/// Represents a location in a text file
+/// </summary>
+public class FileLocation
 {
+    private int newLineCounter = 0;
+
     /// <summary>
-    /// Represents a location in a text file
+    /// The column number
     /// </summary>
-    public class FileLocation
+    public int Column { get; private set; }
+
+    /// <summary>
+    /// The line number
+    /// </summary>
+    public int Line { get; private set; }
+
+    /// <summary>
+    /// The paragraph number
+    /// </summary>
+    public int Paragraph { get; private set; }
+
+    /// <summary>
+    /// Creates a new instance of this class
+    /// </summary>
+    public FileLocation()
     {
-        private int newLineCounter = 0;
+        Column = 1;
+        Line = 1;
+        Paragraph = 1;
+    }
 
-        /// <summary>
-        /// The column number
-        /// </summary>
-        public int Column { get; private set; }
+    /// <summary>
+    /// Increments the column count
+    /// </summary>
+    internal void Increment(string value)
+    {
+        if (value == "\r") return;
+        if (value == "\n") return;
 
-        /// <summary>
-        /// The line number
-        /// </summary>
-        public int Line { get; private set;  }
-
-        /// <summary>
-        /// The paragraph number
-        /// </summary>
-        public int Paragraph { get; private set; }
-
-        /// <summary>
-        /// Creates a new instance of this class
-        /// </summary>
-        public FileLocation()
+        if (string.IsNullOrWhiteSpace(value) == false)
         {
-            Column = 1;
-            Line = 1;
-            Paragraph = 1;
+            newLineCounter = 0;
         }
 
-        /// <summary>
-        /// Increments the column count
-        /// </summary>
-        internal void Increment(string value)
-        {
-            if (value == "\r") return;
-            if (value == "\n") return;
+        Column++;
+    }
 
-            if (string.IsNullOrWhiteSpace(value) == false)
+    /// <summary>
+    /// Increments the line and resets the column counts
+    /// </summary>
+    internal void NewLine()
+    {
+        if (Column == 1)
+        {
+            if (newLineCounter == 1)
             {
-                newLineCounter = 0;
+                Paragraph++;
             }
-
-            Column++;
         }
 
-        /// <summary>
-        /// Increments the line and resets the column counts
-        /// </summary>
-        internal void NewLine()
+        Column = 1;
+        Line++;
+        newLineCounter++;
+    }
+
+    /// <summary>
+    /// Resets the counts
+    /// </summary>
+    internal void Reset()
+    {
+        Column = 1;
+        Line = 1;
+        Paragraph = 1;
+    }
+
+    /// <summary>
+    /// Clones this instance
+    /// </summary>
+    /// <returns></returns>
+    public FileLocation Clone()
+    {
+        return new FileLocation
         {
-            if (Column == 1)
-            {
-                if (newLineCounter == 1)
-                {
-                    Paragraph++;
-                }
-            }
+            Column = Column,
+            Line = Line,
+            Paragraph = Paragraph
+        };
+    }
 
-            Column = 1;
-            Line++;
-            newLineCounter++;
-        }
-
-        /// <summary>
-        /// Resets the counts
-        /// </summary>
-        internal void Reset()
-        {
-            Column = 1;
-            Line = 1;
-            Paragraph = 1;
-        }
-
-        /// <summary>
-        /// Clones this instance
-        /// </summary>
-        /// <returns></returns>
-        public FileLocation Clone()
-        {
-            return new FileLocation
-            {
-                Column = Column, 
-                Line = Line,
-                Paragraph = Paragraph
-            };
-        }
-
-        /// <summary>
-        /// Returns a string representation of this instance
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return $"Ln: {Line} Col: {Column} Para: {Paragraph}";
-        }
+    /// <summary>
+    /// Returns a string representation of this instance
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return $"Ln: {Line} Col: {Column} Para: {Paragraph}";
     }
 }

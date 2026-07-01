@@ -9,378 +9,377 @@ using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Transformers;
 
-namespace Tokens
+namespace Tokens;
+
+/// <summary>
+/// Represents a single token in a string
+/// </summary>
+public sealed class Token
 {
+    private static readonly ILogger<Token> Log = NullLogger<Token>.Instance;
+    private string content;
+
     /// <summary>
-    /// Represents a single token in a string
+    /// Creates a new instance of the <see cref="Token"/> class.
     /// </summary>
-    public sealed class Token
+    private readonly List<TokenDecoratorContext> _decorators;
+
+    public Token(string content, string name, string preamble, FileLocation location)
     {
-        private static readonly ILogger<Token> Log = NullLogger<Token>.Instance;
-        private string content;
+        this.content = content;
+        Name = name;
+        Preamble = preamble;
+        Location = location;
+        _decorators = new List<TokenDecoratorContext>();
+    }
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="Token"/> class.
-        /// </summary>
-        private readonly List<TokenDecoratorContext> _decorators;
+    /// <summary>
+    /// Gets or sets the preamble string that must appear before the token.
+    /// </summary>
+    public string Preamble { get; internal set; }
 
-        public Token(string content, string name, string preamble, FileLocation location)
+    /// <summary>
+    /// Gets or sets the value of the token.
+    /// </summary>
+    public string Name { get; internal set; }
+
+    /// <summary>
+    /// Gets the decorators on this Token
+    /// </summary>
+    public IReadOnlyList<TokenDecoratorContext> Decorators => _decorators;
+
+    internal void AddDecorator(TokenDecoratorContext decorator)
+    {
+        _decorators.Add(decorator);
+    }
+
+    /// <summary>
+    /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
+    /// during processing.
+    /// </summary>
+    public bool Optional { get; internal set; }
+
+    /// <summary>
+    /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
+    /// an <see cref="IList{T}"/>.
+    /// </summary>
+    public bool Repeating { get; internal set; }
+
+    /// <summary>
+    /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
+    /// newline.
+    /// </summary>
+    public bool TerminateOnNewLine { get; internal set; }
+
+    /// <summary>
+    /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
+    /// the processing to be successful.
+    /// </summary>
+    public bool Required { get; internal set; }
+
+    /// <summary>
+    /// The unique id of this token in the <see cref="Template"/>.
+    /// </summary>
+    public int Id { get; internal set; }
+
+    /// <summary>
+    /// Defines a token that must have been matched in the input before this token
+    /// can be considered.  Used with repeating tokens that would otherwise be
+    /// to aggressive in their matching.
+    /// </summary>
+    public int DependsOnId { get; internal set; } = -1;
+
+    /// <summary>
+    /// Determines if this <see cref="Token"/> was defined in the template front matter section.
+    /// </summary>
+    public bool IsFrontMatterToken { get; internal set; }
+
+    /// <summary>
+    /// Determines if this token is a null placeholder
+    /// </summary>
+    public bool IsNull { get; internal set; }
+
+    /// <summary>
+    /// The location of this token in the template.
+    /// </summary>
+    public FileLocation Location { get; internal set; }
+
+    /// <summary>
+    /// If true, multiple instances of this token will be concatenated together
+    /// on the target.
+    /// </summary>
+    public bool Concatenate { get; internal set; }
+
+    /// <summary>
+    /// Defines a joining string to use when concatenating two token values.
+    /// </summary>
+    public string? ConcatenationString { get; internal set; }
+
+    /// <summary>
+
+    /// If true, this token will only be attempted to be matched once. 
+    /// </summary>
+    public bool ConsiderOnce { get; internal set; }
+
+    /// <summary>
+    /// Returns the string from which this token was created.
+    /// </summary>
+    public override string ToString()
+    {
+        return content;
+    }
+
+    internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue, IDiagnosticCollector collector)
+    {
+        assignedValue = null;
+
+        if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
+        if (IsNull) return false;
+        if (string.IsNullOrWhiteSpace(Name)) return false;
+
+        value = value.TrimTrailingNewLine();
+
+        if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
         {
-            this.content = content;
-            Name = name;
-            Preamble = preamble;
-            Location = location;
-            _decorators = new List<TokenDecoratorContext>();
-        }
-
-        /// <summary>
-        /// Gets or sets the preamble string that must appear before the token.
-        /// </summary>
-        public string Preamble { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the value of the token.
-        /// </summary>
-        public string Name { get; internal set; }
-
-        /// <summary>
-        /// Gets the decorators on this Token
-        /// </summary>
-        public IReadOnlyList<TokenDecoratorContext> Decorators => _decorators;
-
-        internal void AddDecorator(TokenDecoratorContext decorator)
-        {
-            _decorators.Add(decorator);
-        }
-
-        /// <summary>
-        /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
-        /// during processing.
-        /// </summary>
-        public bool Optional { get; internal set; }
-
-        /// <summary>
-        /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
-        /// an <see cref="IList{T}"/>.
-        /// </summary>
-        public bool Repeating { get; internal set; }
-
-        /// <summary>
-        /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
-        /// newline.
-        /// </summary>
-        public bool TerminateOnNewLine { get; internal set; }
-
-        /// <summary>
-        /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
-        /// the processing to be successful.
-        /// </summary>
-        public bool Required { get; internal set; }
-
-        /// <summary>
-        /// The unique id of this token in the <see cref="Template"/>.
-        /// </summary>
-        public int Id { get; internal set; }
-
-        /// <summary>
-        /// Defines a token that must have been matched in the input before this token
-        /// can be considered.  Used with repeating tokens that would otherwise be
-        /// to aggressive in their matching.
-        /// </summary>
-        public int DependsOnId { get; internal set; } = -1;
-
-        /// <summary>
-        /// Determines if this <see cref="Token"/> was defined in the template front matter section.
-        /// </summary>
-        public bool IsFrontMatterToken { get; internal set; }
-
-        /// <summary>
-        /// Determines if this token is a null placeholder
-        /// </summary>
-        public bool IsNull { get; internal set; }
-
-        /// <summary>
-        /// The location of this token in the template.
-        /// </summary>
-        public FileLocation Location { get; internal set; }
-
-        /// <summary>
-        /// If true, multiple instances of this token will be concatenated together
-        /// on the target.
-        /// </summary>
-        public bool Concatenate { get; internal set; }
-
-        /// <summary>
-        /// Defines a joining string to use when concatenating two token values.
-        /// </summary>
-        public string? ConcatenationString { get; internal set; }
-
-        /// <summary>
-
-        /// If true, this token will only be attempted to be matched once. 
-        /// </summary>
-        public bool ConsiderOnce { get; internal set; }
-
-        /// <summary>
-        /// Returns the string from which this token was created.
-        /// </summary>
-        public override string ToString()
-        {
-            return content;
-        }
-
-        internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue, IDiagnosticCollector collector)
-        {
-            assignedValue = null;
-
-            if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
-            if (IsNull) return false;
-            if (string.IsNullOrWhiteSpace(Name)) return false;
-
-            value = value.TrimTrailingNewLine();
-            
-            if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
+            var index = value.IndexOf("\n");
+            if (index > 0)
             {
-                var index = value.IndexOf("\n");
-                if (index > 0)
-                {
-                    value = value.Substring(0, index);
-                }
+                value = value.Substring(0, index);
             }
+        }
 
-            Log.LogTrace("Ln: {Line} Col: {Column} : Assigning {TokenName}[{TokenId}] as {Value}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
+        Log.LogTrace("Ln: {Line} Col: {Column} : Assigning {TokenName}[{TokenId}] as {Value}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
 
-            if (options.TrimTrailingWhiteSpace)
+        if (options.TrimTrailingWhiteSpace)
+        {
+            value = value.TrimEnd();
+        }
+
+        assignedValue = value;
+
+        foreach (var decorator in Decorators)
+        {
+            if (decorator.IsTransformer)
             {
-                value = value.TrimEnd();
-            }
+                var transformed = decorator.CanTransform(assignedValue!, out var output);
 
-            assignedValue = value;
-
-            foreach (var decorator in Decorators)
-            {
-                if (decorator.IsTransformer)
+                if (transformed == false)
                 {
-                    var transformed = decorator.CanTransform(assignedValue!, out var output);
+                    Log.LogTrace("{DecoratorName}: Unable to transform value '{AssignedValue}'!", decorator.DecoratorType.Name, assignedValue);
 
-                    if (transformed == false)
-                    {
-                        Log.LogTrace("{DecoratorName}: Unable to transform value '{AssignedValue}'!", decorator.DecoratorType.Name, assignedValue);
-
-                        collector.Record(DiagnosticEventType.TransformerFailed,
-                            tokenName: Name, tokenId: Id,
-                            location: location,
-                            value: assignedValue?.ToString(),
-                            decoratorName: decorator.DecoratorType.Name,
-                            decoratorArgs: decorator.Parameters.ToArray());
-
-                        return false;
-                    }
-
-                    if (decorator.DecoratorType == typeof(SetTransformer))
-                    {
-                        Log.LogTrace("{DecoratorName}: Set value to '{Output}'", decorator.DecoratorType.Name, output);
-                    }
-                    else if (output is DateTime time)
-                    {
-                        Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to {Time:yyyy-MM-dd HH:mm:ss} ({Kind})", decorator.DecoratorType.Name, assignedValue, time, time.Kind);
-                    }
-                    else if (output is IEnumerable<string> list)
-                    {
-                        Log.LogTrace("{DecoratorName}: Split '{AssignedValue}' into [] {{ {List} }}", decorator.DecoratorType.Name, assignedValue, string.Join(", ", list));
-                    }
-                    else
-                    {
-                        Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to '{Output}' ({TypeName})", decorator.DecoratorType.Name, assignedValue, output, output.GetType().Name);
-                    }
-
-                    collector.Record(DiagnosticEventType.TransformerSucceeded,
+                    collector.Record(DiagnosticEventType.TransformerFailed,
                         tokenName: Name, tokenId: Id,
                         location: location,
                         value: assignedValue?.ToString(),
-                        detail: output?.ToString(),
                         decoratorName: decorator.DecoratorType.Name,
                         decoratorArgs: decorator.Parameters.ToArray());
 
-                    assignedValue = output;
+                    return false;
                 }
 
-                if (decorator.IsValidator)
+                if (decorator.DecoratorType == typeof(SetTransformer))
                 {
-                    if (decorator.Validate(assignedValue!))
-                    {
-                        Log.LogTrace("{DecoratorName} OK!", decorator.DecoratorType.Name);
-
-                        collector.Record(DiagnosticEventType.ValidatorPassed,
-                            tokenName: Name, tokenId: Id,
-                            value: assignedValue?.ToString(),
-                            decoratorName: decorator.DecoratorType.Name);
-                    }
-                    else
-                    {
-                        Log.LogTrace("{DecoratorName} Validation Failure: {Value}", decorator.DecoratorType.Name, value);
-
-                        collector.Record(DiagnosticEventType.ValidatorFailed,
-                            tokenName: Name, tokenId: Id,
-                            value: value,
-                            decoratorName: decorator.DecoratorType.Name);
-
-                        return false;
-                    }
+                    Log.LogTrace("{DecoratorName}: Set value to '{Output}'", decorator.DecoratorType.Name, output);
                 }
-            }
-
-            if (target is IDictionary<string, object> dictionary)
-            {
-                return SetDictionaryValue(dictionary, assignedValue!);
-            }
-
-            // Target can be null if not reflecting onto an object
-            if (target is null)
-            {
-                return true;
-            }
-
-            try
-            {
-                if (Concatenate)
+                else if (output is DateTime time)
                 {
-                    if (assignedValue == null) return true;
-
-                    var current = target.GetValue(Name);
-
-                    if (CanConcatenate(current, assignedValue))
-                    {
-                        var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
-                        if (concatenated != null) target.SetValue(Name, concatenated);
-                    }
-                    else
-                    {
-                        throw new TokenAssignmentException(this, $"Unable to concatenate type {assignedValue.GetType().Name} to {Name}");
-                    }
+                    Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to {Time:yyyy-MM-dd HH:mm:ss} ({Kind})", decorator.DecoratorType.Name, assignedValue, time, time.Kind);
+                }
+                else if (output is IEnumerable<string> list)
+                {
+                    Log.LogTrace("{DecoratorName}: Split '{AssignedValue}' into [] {{ {List} }}", decorator.DecoratorType.Name, assignedValue, string.Join(", ", list));
                 }
                 else
                 {
-                    target.SetValue(Name, assignedValue!);
+                    Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to '{Output}' ({TypeName})", decorator.DecoratorType.Name, assignedValue, output, output.GetType().Name);
                 }
-            }
-            catch (MissingMemberException)
-            {
-                Log.LogTrace("Missing property on target: {PropertyName}", Name);
 
-                if (options.IgnoreMissingProperties == false)
+                collector.Record(DiagnosticEventType.TransformerSucceeded,
+                    tokenName: Name, tokenId: Id,
+                    location: location,
+                    value: assignedValue?.ToString(),
+                    detail: output?.ToString(),
+                    decoratorName: decorator.DecoratorType.Name,
+                    decoratorArgs: decorator.Parameters.ToArray());
+
+                assignedValue = output;
+            }
+
+            if (decorator.IsValidator)
+            {
+                if (decorator.Validate(assignedValue!))
                 {
-                    throw;
+                    Log.LogTrace("{DecoratorName} OK!", decorator.DecoratorType.Name);
+
+                    collector.Record(DiagnosticEventType.ValidatorPassed,
+                        tokenName: Name, tokenId: Id,
+                        value: assignedValue?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name);
+                }
+                else
+                {
+                    Log.LogTrace("{DecoratorName} Validation Failure: {Value}", decorator.DecoratorType.Name, value);
+
+                    collector.Record(DiagnosticEventType.ValidatorFailed,
+                        tokenName: Name, tokenId: Id,
+                        value: value,
+                        decoratorName: decorator.DecoratorType.Name);
+
+                    return false;
                 }
             }
-            catch (TypeConversionException ex)
-            {
-                Log.LogTrace("{Message}", ex.Message);
+        }
 
-                return false;
-            }
-            catch (Exception e)
-            {
-                var ex = new TokenAssignmentException(this, e);
+        if (target is IDictionary<string, object> dictionary)
+        {
+            return SetDictionaryValue(dictionary, assignedValue!);
+        }
 
-                throw ex;
-            }
-
+        // Target can be null if not reflecting onto an object
+        if (target is null)
+        {
             return true;
         }
 
-        private bool SetDictionaryValue(IDictionary<string, object> dictionary, object input)
+        try
         {
-            if (Repeating)
+            if (Concatenate)
             {
-                List<object> list;
-                if (dictionary.ContainsKey(Name))
+                if (assignedValue == null) return true;
+
+                var current = target.GetValue(Name);
+
+                if (CanConcatenate(current, assignedValue))
                 {
-                    list = dictionary[Name] as List<object> ?? new List<object>();
+                    var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
+                    if (concatenated != null) target.SetValue(Name, concatenated);
                 }
                 else
                 {
-                    list = new List<object>();
+                    throw new TokenAssignmentException(this, $"Unable to concatenate type {assignedValue.GetType().Name} to {Name}");
                 }
-                list.Add(input);
-                input = list;
-            }
-
-            if (dictionary.ContainsKey(Name))
-            {
-                dictionary[Name] = input;
             }
             else
             {
-                dictionary.Add(Name, input);
+                target.SetValue(Name, assignedValue!);
             }
-
-            return true;
         }
-
-        internal bool CanAssign(string value)
+        catch (MissingMemberException)
         {
-            if (string.IsNullOrEmpty(value)) return false;
+            Log.LogTrace("Missing property on target: {PropertyName}", Name);
 
-            // Trim trailing new line
-            value = value.TrimTrailingNewLine();
-
-            // Only check up to new line if set
-            if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
+            if (options.IgnoreMissingProperties == false)
             {
-                var index = value.IndexOf("\n");
-                if (index > 0)
-                {
-                    value = value.Substring(0, index);
-                }
+                throw;
             }
-
-            object input = value;
-
-            foreach (var decorator in Decorators)
-            {
-                if (decorator.IsTransformer)
-                {
-                    if (decorator.CanTransform(input, out var output) == false)
-                    {
-                        return false;
-                    }
-            
-                    input = output;
-                }
-
-                if (decorator.IsValidator)
-                {
-                    if (decorator.Validate(input) == false)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
-
-        internal bool CanConcatenate(object? existingValue, object newValue)
+        catch (TypeConversionException ex)
         {
-            if (existingValue is string && newValue is string)
-            {
-                return true;
-            }
+            Log.LogTrace("{Message}", ex.Message);
 
             return false;
         }
-
-        internal object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
+        catch (Exception e)
         {
-            if (existingValue is string && newValue is string)
-            {
-                var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine);
+            var ex = new TokenAssignmentException(this, e);
 
-                return $"{existingValue}{concatStringValue}{newValue}";
+            throw ex;
+        }
+
+        return true;
+    }
+
+    private bool SetDictionaryValue(IDictionary<string, object> dictionary, object input)
+    {
+        if (Repeating)
+        {
+            List<object> list;
+            if (dictionary.ContainsKey(Name))
+            {
+                list = dictionary[Name] as List<object> ?? new List<object>();
+            }
+            else
+            {
+                list = new List<object>();
+            }
+            list.Add(input);
+            input = list;
+        }
+
+        if (dictionary.ContainsKey(Name))
+        {
+            dictionary[Name] = input;
+        }
+        else
+        {
+            dictionary.Add(Name, input);
+        }
+
+        return true;
+    }
+
+    internal bool CanAssign(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+
+        // Trim trailing new line
+        value = value.TrimTrailingNewLine();
+
+        // Only check up to new line if set
+        if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
+        {
+            var index = value.IndexOf("\n");
+            if (index > 0)
+            {
+                value = value.Substring(0, index);
+            }
+        }
+
+        object input = value;
+
+        foreach (var decorator in Decorators)
+        {
+            if (decorator.IsTransformer)
+            {
+                if (decorator.CanTransform(input, out var output) == false)
+                {
+                    return false;
+                }
+
+                input = output;
             }
 
-            return existingValue;
+            if (decorator.IsValidator)
+            {
+                if (decorator.Validate(input) == false)
+                {
+                    return false;
+                }
+            }
         }
+
+        return true;
+    }
+
+    internal bool CanConcatenate(object? existingValue, object newValue)
+    {
+        if (existingValue is string && newValue is string)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
+    {
+        if (existingValue is string && newValue is string)
+        {
+            var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine);
+
+            return $"{existingValue}{concatStringValue}{newValue}";
+        }
+
+        return existingValue;
     }
 }

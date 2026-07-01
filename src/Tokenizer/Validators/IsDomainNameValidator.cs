@@ -1,24 +1,23 @@
-﻿using System;
+using System;
 
-namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value is a domain name 
+/// </summary>
+public sealed class IsDomainNameValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value is a domain name 
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class IsDomainNameValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
-        {
-            if (value == null) return false;
+        if (value == null) return false;
 
-            var valueString = value.ToString();
+        var valueString = value.ToString();
 
-            if (string.IsNullOrEmpty(valueString)) return false;
+        if (string.IsNullOrEmpty(valueString)) return false;
 
-            return Uri.CheckHostName(valueString) == UriHostNameType.Dns;
-        }
+        return Uri.CheckHostName(valueString) == UriHostNameType.Dns;
     }
 }

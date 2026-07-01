@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Xunit;
 
 namespace Tokens.Extensions;
@@ -98,7 +98,7 @@ public class StringExtensionsTest
     [Fact]
     public void TestSplitWithNullValues()
     {
-        var result = ((string) null!).ToLines().ToList();
+        var result = ((string)null!).ToLines().ToList();
 
         Assert.Empty(result);
     }
@@ -130,7 +130,7 @@ public class StringExtensionsTest
     [Fact]
     public void TestKeepCharactersWhenInputNull()
     {
-        var result = ((string) null!).Keep("789");
+        var result = ((string)null!).Keep("789");
 
         Assert.Equal("", result);
     }
@@ -178,7 +178,7 @@ public class StringExtensionsTest
     [Fact]
     public void TestSubstringBeforeNewLineWhenNull()
     {
-        var result = ((string) null!).SubstringBeforeNewLine();
+        var result = ((string)null!).SubstringBeforeNewLine();
 
         Assert.Null(result);
     }
@@ -210,7 +210,7 @@ public class StringExtensionsTest
     [Fact]
     public void TestEndsWithNewLineWhenNull()
     {
-        Assert.False(((string) null!).EndsWithNewLine());
+        Assert.False(((string)null!).EndsWithNewLine());
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public class StringExtensionsTest
     [Fact]
     public void TestTrimTrailingNewLineWhenNull()
     {
-        Assert.Null(((string) null!).TrimTrailingNewLine());
+        Assert.Null(((string)null!).TrimTrailingNewLine());
     }
 
     [Fact]

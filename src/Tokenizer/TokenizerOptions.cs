@@ -1,109 +1,108 @@
-﻿using System;
+using System;
 
-namespace Tokens
+namespace Tokens;
+
+/// <summary>
+/// Options for the <see cref="Tokenizer"/>.
+/// </summary>
+public sealed class TokenizerOptions
 {
-    /// <summary>
-    /// Options for the <see cref="Tokenizer"/>.
-    /// </summary>
-    public sealed class TokenizerOptions
+    public static TokenizerOptions Defaults => new TokenizerOptions();
+
+    public TokenizerOptions()
     {
-        public static TokenizerOptions Defaults => new TokenizerOptions();
+        // Set defaults
+        TrimLeadingWhitespaceInTokenPreamble = true;
+        TrimPreambleBeforeNewLine = false;
+        TrimTrailingWhiteSpace = true;
+        TokenStringComparison = StringComparison.InvariantCulture;
+        OutOfOrderTokens = false;
+        TerminateOnNewline = false;
+        IgnoreMissingProperties = false;
+        EnableDiagnostics = false;
+    }
 
-        public TokenizerOptions()
+    /// <summary>
+    /// When true, tokens that do not map to a property on the target object are silently ignored.
+    /// </summary>
+    public bool IgnoreMissingProperties { get; set; }
+
+    /// <summary>
+    /// When true, tokenization results include a <see cref="Diagnostics.TokenizationDiagnostics"/>
+    /// property with a structured trace of every matching decision, a mismatch summary
+    /// with adaptive hints, and a visual alignment diff.
+    /// Default: false. Has no performance impact when disabled.
+    /// </summary>
+    public bool EnableDiagnostics { get; set; }
+
+    /// <summary>
+    /// When true, leading whitespace in the static text preceding a token is trimmed before matching.
+    /// </summary>
+    public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
+
+    /// <summary>
+    /// When true, any portion of a token preamble that appears before a newline is discarded.
+    /// </summary>
+    public bool TrimPreambleBeforeNewLine { get; set; }
+
+    public bool TrimTrailingWhiteSpace { get; set; }
+
+    /// <summary>
+    /// When true, tokens may be matched in any order rather than strictly left-to-right.
+    /// </summary>
+    public bool OutOfOrderTokens { get; set; }
+
+    /// <summary>
+    /// Determines the <see cref="StringComparison"/> type to use when matching Token names to object properties
+    /// </summary>
+    public StringComparison TokenStringComparison { get; set; }
+
+    /// <summary>
+    /// If set, token values will be extracted up till the first new line character.
+    /// </summary>
+    public bool TerminateOnNewline { get; set; }
+
+    /// <summary>
+    /// Maximum allowed length for input text. Default: 1,048,576 (1MB).
+    /// Set to 0 to disable.
+    /// </summary>
+    public int MaxInputLength { get; set; } = 1_048_576;
+
+    /// <summary>
+    /// Maximum allowed length for template pattern text. Default: 65,536 (64KB).
+    /// Set to 0 to disable.
+    /// </summary>
+    public int MaxTemplateLength { get; set; } = 65_536;
+
+    /// <summary>
+    /// Maximum number of tokens allowed in a template. Default: 500.
+    /// Set to 0 to disable.
+    /// </summary>
+    public int MaxTokenCount { get; set; } = 500;
+
+    /// <summary>
+    /// Maximum number of iterations in the tokenization loop.
+    /// Default: 0 (auto-calculated as input.Length * 2).
+    /// Set to a positive value to override.
+    /// </summary>
+    public int MaxIterations { get; set; } = 0;
+
+    public TokenizerOptions Clone()
+    {
+        return new TokenizerOptions
         {
-            // Set defaults
-            TrimLeadingWhitespaceInTokenPreamble = true;
-            TrimPreambleBeforeNewLine = false;
-            TrimTrailingWhiteSpace = true;
-            TokenStringComparison = StringComparison.InvariantCulture;
-            OutOfOrderTokens = false;
-            TerminateOnNewline = false;
-            IgnoreMissingProperties = false;
-            EnableDiagnostics = false;
-        }
-
-        /// <summary>
-        /// When true, tokens that do not map to a property on the target object are silently ignored.
-        /// </summary>
-        public bool IgnoreMissingProperties { get; set; }
-
-        /// <summary>
-        /// When true, tokenization results include a <see cref="Diagnostics.TokenizationDiagnostics"/>
-        /// property with a structured trace of every matching decision, a mismatch summary
-        /// with adaptive hints, and a visual alignment diff.
-        /// Default: false. Has no performance impact when disabled.
-        /// </summary>
-        public bool EnableDiagnostics { get; set; }
-
-        /// <summary>
-        /// When true, leading whitespace in the static text preceding a token is trimmed before matching.
-        /// </summary>
-        public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
-
-        /// <summary>
-        /// When true, any portion of a token preamble that appears before a newline is discarded.
-        /// </summary>
-        public bool TrimPreambleBeforeNewLine { get; set; }
-
-        public bool TrimTrailingWhiteSpace { get; set; }
-
-        /// <summary>
-        /// When true, tokens may be matched in any order rather than strictly left-to-right.
-        /// </summary>
-        public bool OutOfOrderTokens { get; set; }
-
-        /// <summary>
-        /// Determines the <see cref="StringComparison"/> type to use when matching Token names to object properties
-        /// </summary>
-        public StringComparison TokenStringComparison { get; set; }
-
-        /// <summary>
-        /// If set, token values will be extracted up till the first new line character.
-        /// </summary>
-        public bool TerminateOnNewline { get; set; }
-
-        /// <summary>
-        /// Maximum allowed length for input text. Default: 1,048,576 (1MB).
-        /// Set to 0 to disable.
-        /// </summary>
-        public int MaxInputLength { get; set; } = 1_048_576;
-
-        /// <summary>
-        /// Maximum allowed length for template pattern text. Default: 65,536 (64KB).
-        /// Set to 0 to disable.
-        /// </summary>
-        public int MaxTemplateLength { get; set; } = 65_536;
-
-        /// <summary>
-        /// Maximum number of tokens allowed in a template. Default: 500.
-        /// Set to 0 to disable.
-        /// </summary>
-        public int MaxTokenCount { get; set; } = 500;
-
-        /// <summary>
-        /// Maximum number of iterations in the tokenization loop.
-        /// Default: 0 (auto-calculated as input.Length * 2).
-        /// Set to a positive value to override.
-        /// </summary>
-        public int MaxIterations { get; set; } = 0;
-
-        public TokenizerOptions Clone()
-        {
-            return new TokenizerOptions
-            {
-                TrimTrailingWhiteSpace = TrimTrailingWhiteSpace,
-                TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
-                TokenStringComparison = TokenStringComparison,
-                OutOfOrderTokens = OutOfOrderTokens,
-                TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
-                TerminateOnNewline = TerminateOnNewline,
-                IgnoreMissingProperties = IgnoreMissingProperties,
-                MaxInputLength = MaxInputLength,
-                MaxTemplateLength = MaxTemplateLength,
-                MaxTokenCount = MaxTokenCount,
-                MaxIterations = MaxIterations,
-                EnableDiagnostics = EnableDiagnostics
-            };
-        }
+            TrimTrailingWhiteSpace = TrimTrailingWhiteSpace,
+            TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
+            TokenStringComparison = TokenStringComparison,
+            OutOfOrderTokens = OutOfOrderTokens,
+            TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
+            TerminateOnNewline = TerminateOnNewline,
+            IgnoreMissingProperties = IgnoreMissingProperties,
+            MaxInputLength = MaxInputLength,
+            MaxTemplateLength = MaxTemplateLength,
+            MaxTokenCount = MaxTokenCount,
+            MaxIterations = MaxIterations,
+            EnableDiagnostics = EnableDiagnostics
+        };
     }
 }

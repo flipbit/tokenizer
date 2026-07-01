@@ -1,25 +1,24 @@
-﻿using Tokens.Exceptions;
+using Tokens.Exceptions;
 
-namespace Tokens.Transformers
+namespace Tokens.Transformers;
+
+/// <summary>
+/// Replaces occurrences of a string with another
+/// </summary>
+public sealed class ReplaceTransformer : ITokenTransformer
 {
-    /// <summary>
-    /// Replaces occurrences of a string with another
-    /// </summary>
-    public sealed class ReplaceTransformer : ITokenTransformer
+    public bool CanTransform(object value, string[] args, out object transformed)
     {
-        public bool CanTransform(object value, string[] args, out object transformed)
+        if (value?.ToString() is not { Length: > 0 } valueString)
         {
-            if (value?.ToString() is not { Length: > 0 } valueString)
-            {
-                transformed = string.Empty;
-                return true;
-            }
-
-            if (args == null || args.Length != 2) throw new TokenizerException($"Replace(from, to): missing arguments processing: {value}");
-
-            transformed = valueString.Replace(args[0], args[1]);
-
+            transformed = string.Empty;
             return true;
         }
+
+        if (args == null || args.Length != 2) throw new TokenizerException($"Replace(from, to): missing arguments processing: {value}");
+
+        transformed = valueString.Replace(args[0], args[1]);
+
+        return true;
     }
 }

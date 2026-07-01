@@ -1,26 +1,25 @@
-﻿using Tokens.Exceptions;
+using Tokens.Exceptions;
 using Tokens.Extensions;
 
-namespace Tokens.Transformers
+namespace Tokens.Transformers;
+
+/// <summary>
+/// Trims the token value after the first occurence of the given string 
+/// </summary>
+public sealed class SubstringBeforeLastTransformer : ITokenTransformer
 {
-    /// <summary>
-    /// Trims the token value after the first occurence of the given string 
-    /// </summary>
-    public sealed class SubstringBeforeLastTransformer : ITokenTransformer
+    public bool CanTransform(object value, string[] args, out object transformed)
     {
-        public bool CanTransform(object value, string[] args, out object transformed)
+        if (value?.ToString() is not { Length: > 0 } valueString)
         {
-            if (value?.ToString() is not { Length: > 0 } valueString)
-            {
-                transformed = string.Empty;
-                return true;
-            }
-
-            if (args == null || args.Length == 0) throw new TokenizerException($"SubstringBeforeLast(): missing argument processing: {value}");
-
-            transformed = valueString.SubstringBeforeLastString(args[0]);
-
+            transformed = string.Empty;
             return true;
         }
+
+        if (args == null || args.Length == 0) throw new TokenizerException($"SubstringBeforeLast(): missing argument processing: {value}");
+
+        transformed = valueString.SubstringBeforeLastString(args[0]);
+
+        return true;
     }
 }

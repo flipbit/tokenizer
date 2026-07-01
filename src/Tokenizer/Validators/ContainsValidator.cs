@@ -1,26 +1,25 @@
-﻿using Tokens.Exceptions;
+using Tokens.Exceptions;
 
-namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value ends with a given string
+/// </summary>
+public sealed class ContainsValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value ends with a given string
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class ContainsValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
-        {
-            if (value == null) return false;
+        if (value == null) return false;
 
-            var valueString = value.ToString();
+        var valueString = value.ToString();
 
-            if (string.IsNullOrEmpty(valueString)) return false;
+        if (string.IsNullOrEmpty(valueString)) return false;
 
-            if (args == null || args.Length == 0) throw new TokenizerException($"Contains(): missing argument processing: {value}");
-            
-            return valueString.Contains(args[0]);
-        }
+        if (args == null || args.Length == 0) throw new TokenizerException($"Contains(): missing argument processing: {value}");
+
+        return valueString.Contains(args[0]);
     }
 }

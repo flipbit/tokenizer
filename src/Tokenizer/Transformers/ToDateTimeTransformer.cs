@@ -1,158 +1,158 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Tokens.Extensions;
 
-namespace Tokens.Transformers
+namespace Tokens.Transformers;
+
+/// <summary>
+/// Converts the token value to a <see cref="DateTime"/>
+/// </summary>
+public sealed class ToDateTimeTransformer : ITokenTransformer
 {
-    /// <summary>
-    /// Converts the token value to a <see cref="DateTime"/>
-    /// </summary>
-    public sealed class ToDateTimeTransformer : ITokenTransformer
+    private static readonly Dictionary<string, string[]> MonthAbbreviations;
+    private static readonly object LockHandle;
+
+    static ToDateTimeTransformer()
     {
-        private static readonly Dictionary<string, string[]> MonthAbbreviations;
-        private static readonly object LockHandle;
+        MonthAbbreviations = new Dictionary<string, string[]>();
+        LockHandle = new object();
+    }
 
-        static ToDateTimeTransformer()
+    public bool CanTransform(object value, string[] args, out object transformed)
+    {
+        if (TryParseDateTime(value, args, out var result))
         {
-            MonthAbbreviations = new Dictionary<string, string[]>();
-            LockHandle = new object();
+            transformed = result;
+            return true;
         }
+        ;
 
-        public bool CanTransform(object value, string[] args, out object transformed)
+        transformed = value;
+
+        return false;
+    }
+
+    public static bool TryParseDateTime(object value, string[] formats, out DateTime result)
+    {
+        return TryParseDateTime(value, formats, DateTimeStyles.None, out result);
+    }
+
+    public static bool TryParseDateTime(object value, string[] formats, DateTimeStyles dateTimeStyles, out DateTime result)
+    {
+        if (value?.ToString() is not { Length: > 0 } rawString)
         {
-            if (TryParseDateTime(value, args, out var result))
-            {
-                transformed = result;
-                return true;
-            };
-
-            transformed = value;
-
+            result = default;
             return false;
         }
 
-        public static bool TryParseDateTime(object value, string[] formats, out DateTime result)
+        var valueString = rawString.SubstringBeforeNewLine();
+
+        if (string.IsNullOrWhiteSpace(valueString))
         {
-            return TryParseDateTime(value, formats, DateTimeStyles.None, out result);
+            result = default;
+            return false;
         }
 
-        public static bool TryParseDateTime(object value, string[] formats, DateTimeStyles dateTimeStyles, out DateTime result)
+        var cultures = GetCultures(valueString, formats);
+
+        foreach (var culture in cultures)
         {
-            if (value?.ToString() is not { Length: > 0 } rawString)
+            if (formats == null || formats.Length == 0 || string.IsNullOrEmpty(formats[0]))
             {
-                result = default;
-                return false;
-            }
-
-            var valueString = rawString.SubstringBeforeNewLine();
-            
-            if (string.IsNullOrWhiteSpace(valueString))
-            {
-                result = default;
-                return false;
-            }
-
-            var cultures = GetCultures(valueString, formats);
-
-            foreach (var culture in cultures)
-            {
-                if (formats == null || formats.Length == 0 || string.IsNullOrEmpty(formats[0]))
+                if (DateTime.TryParse(valueString, culture, dateTimeStyles, out result))
                 {
-                    if (DateTime.TryParse(valueString, culture, dateTimeStyles, out result))
+                    return true;
+                }
+            }
+            else
+            {
+                foreach (var format in formats)
+                {
+                    if (string.IsNullOrWhiteSpace(format)) continue;
+
+                    var valueToFormat = valueString;
+
+                    // Remove day ordinals
+                    if (format.Contains(" d ") ||
+                        format.Contains(" dd ") ||
+                        format.StartsWith("d ") ||
+                        format.StartsWith("dd "))
+                    {
+                        valueToFormat = Regex.Replace(valueToFormat, @"\b(\d+)(?:st|nd|rd|th)\b", "$1");
+                    }
+
+                    if (DateTime.TryParseExact(valueToFormat, format, culture, dateTimeStyles, out result))
                     {
                         return true;
                     }
                 }
-                else
-                {
-                    foreach (var format in formats)
-                    {
-                        if (string.IsNullOrWhiteSpace(format)) continue;
-
-                        var valueToFormat = valueString;
-
-                        // Remove day ordinals
-                        if (format.Contains(" d ") || 
-                            format.Contains(" dd ") || 
-                            format.StartsWith("d ") ||
-                            format.StartsWith("dd "))
-                        {
-                            valueToFormat = Regex.Replace(valueToFormat, @"\b(\d+)(?:st|nd|rd|th)\b", "$1"); 
-                        }
-
-                        if (DateTime.TryParseExact(valueToFormat, format, culture, dateTimeStyles, out result))
-                        {
-                            return true;
-                        }
-                    }
-                }
-                
             }
 
-            result = default;
-
-            return false;
         }
 
-        private static IEnumerable<CultureInfo> GetCultures(string value, IReadOnlyCollection<string> formats)
-        { 
-            var cultures = new List<CultureInfo> { CultureInfo.InvariantCulture };
+        result = default;
 
-            if (value == null) return cultures;
-            if (formats == null) return cultures;
-            if (formats.Count < 1) return cultures;
+        return false;
+    }
 
-            InitializeCulture("es-US");
-            InitializeCulture("es-ES");
+    private static IEnumerable<CultureInfo> GetCultures(string value, IReadOnlyCollection<string> formats)
+    {
+        var cultures = new List<CultureInfo> { CultureInfo.InvariantCulture };
 
-            foreach (var format in formats)
+        if (value == null) return cultures;
+        if (formats == null) return cultures;
+        if (formats.Count < 1) return cultures;
+
+        InitializeCulture("es-US");
+        InitializeCulture("es-ES");
+
+        foreach (var format in formats)
+        {
+            if (string.IsNullOrWhiteSpace(format)) continue;
+
+            if (!format.Contains("MMM")) continue;
+
+            foreach (var key in MonthAbbreviations.Keys)
             {
-               if (string.IsNullOrWhiteSpace(format)) continue;
+                foreach (var abbreviation in MonthAbbreviations[key])
+                {
+                    if (value.IndexOf(abbreviation, StringComparison.InvariantCultureIgnoreCase) <= -1) continue;
 
-               if (!format.Contains("MMM")) continue;
+                    cultures.Add(CultureInfo.GetCultureInfo(key));
 
-               foreach (var key in MonthAbbreviations.Keys)
-               {
-                   foreach (var abbreviation in MonthAbbreviations[key])
-                   {
-                       if (value.IndexOf(abbreviation, StringComparison.InvariantCultureIgnoreCase) <= -1) continue;
-
-                       cultures.Add(CultureInfo.GetCultureInfo(key));
-
-                       break;
-                   }
-               }
+                    break;
+                }
             }
-
-            return cultures;
         }
 
-        private static void InitializeCulture(string code)
+        return cultures;
+    }
+
+    private static void InitializeCulture(string code)
+    {
+        if (MonthAbbreviations.ContainsKey(code)) return;
+
+        lock (LockHandle)
         {
             if (MonthAbbreviations.ContainsKey(code)) return;
 
-            lock (LockHandle)
+            try
             {
-                if (MonthAbbreviations.ContainsKey(code)) return;
+                var culture = CultureInfo.GetCultureInfo(code);
 
-                try
-                {
-                    var culture = CultureInfo.GetCultureInfo(code);
+                var list = culture
+                    .DateTimeFormat
+                    .AbbreviatedMonthNames
+                    .Where(m => string.IsNullOrEmpty(m) == false)
+                    .ToArray();
 
-                    var list = culture
-                        .DateTimeFormat
-                        .AbbreviatedMonthNames
-                        .Where(m => string.IsNullOrEmpty(m) == false)
-                        .ToArray();
-
-                    MonthAbbreviations.Add(code, list);
-                }
-                catch (CultureNotFoundException)
-                {
-                }
+                MonthAbbreviations.Add(code, list);
+            }
+            catch (CultureNotFoundException)
+            {
             }
         }
     }

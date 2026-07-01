@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -9,129 +9,129 @@ using Tokens.Extensions;
 using Tokens.Transformers;
 using Tokens.Validators;
 
-namespace Tokens.Compilation
+namespace Tokens.Compilation;
+
+/// <summary>
+/// Parser that converts a string into a <see cref="Template"/> that can be
+/// used to extract objects from input strings.
+/// </summary>
+internal class TokenParser
 {
-    /// <summary>
-    /// Parser that converts a string into a <see cref="Template"/> that can be
-    /// used to extract objects from input strings.
-    /// </summary>
-    internal class TokenParser
+    private readonly List<Type> transformers;
+    private readonly List<Type> validators;
+
+    private readonly ILogger<TokenParser> log;
+
+    public TokenizerOptions Options { get; set; }
+
+    public TokenParser() : this(TokenizerOptions.Defaults)
     {
-        private readonly List<Type> transformers;
-        private readonly List<Type> validators;
+    }
 
-        private readonly ILogger<TokenParser> log;
+    public TokenParser(TokenizerOptions options) : this(options, null)
+    {
+    }
 
-        public TokenizerOptions Options { get; set; }
+    public TokenParser(TokenizerOptions options, ILogger<TokenParser>? logger)
+    {
+        log = logger ?? NullLogger<TokenParser>.Instance;
 
-        public TokenParser() : this(TokenizerOptions.Defaults)
+        Options = options;
+
+        transformers = new List<Type>();
+        validators = new List<Type>();
+
+        // Add default transformers/validators
+        RegisterTransformer<ToDateTimeTransformer>();
+        RegisterTransformer<ToDateTimeUtcTransformer>();
+        RegisterTransformer<ToLowerTransformer>();
+        RegisterTransformer<ToUpperTransformer>();
+        RegisterTransformer<TrimTransformer>();
+        RegisterTransformer<SubstringAfterTransformer>();
+        RegisterTransformer<SubstringBeforeTransformer>();
+        RegisterTransformer<SetTransformer>();
+        RegisterTransformer<ReplaceTransformer>();
+        RegisterTransformer<RemoveTransformer>();
+        RegisterTransformer<SubstringAfterLastTransformer>();
+        RegisterTransformer<SubstringBeforeLastTransformer>();
+        RegisterTransformer<RemoveEndTransformer>();
+        RegisterTransformer<RemoveStartTransformer>();
+        RegisterTransformer<SplitTransformer>();
+
+        RegisterValidator<IsNumericValidator>();
+        RegisterValidator<MaxLengthValidator>();
+        RegisterValidator<MinLengthValidator>();
+        RegisterValidator<IsDomainNameValidator>();
+        RegisterValidator<IsPhoneNumberValidator>();
+        RegisterValidator<IsEmailValidator>();
+        RegisterValidator<IsUrlValidator>();
+        RegisterValidator<IsLooseUrlValidator>();
+        RegisterValidator<IsLooseAbsoluteUrlValidator>();
+        RegisterValidator<IsDateTimeValidator>();
+        RegisterValidator<IsNotEmptyValidator>();
+        RegisterValidator<IsNotValidator>();
+        RegisterValidator<StartsWithValidator>();
+        RegisterValidator<EndsWithValidator>();
+        RegisterValidator<ContainsValidator>();
+    }
+
+    public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
+    {
+        transformers.Add(typeof(T));
+
+        log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
+
+        return this;
+    }
+
+    public TokenParser RegisterValidator<T>() where T : ITokenValidator
+    {
+        validators.Add(typeof(T));
+
+        log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
+
+        return this;
+    }
+
+    public Template Parse(string content)
+    {
+        var name = GenerateTemplateName(content);
+
+        return Parse(content, name);
+    }
+
+    public Template Parse(string content, string name)
+    {
+        Stopwatch? stopwatch = null;
+
+        if (log.IsEnabled(LogLevel.Trace))
         {
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
         }
 
-        public TokenParser(TokenizerOptions options) : this(options, null)
+        log.LogInformation("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
+
+        if (Options.MaxTemplateLength > 0 && content.Length > Options.MaxTemplateLength)
         {
+            throw new ParsingException(
+                $"Template length {content.Length:N0} exceeds maximum allowed length of {Options.MaxTemplateLength:N0}. " +
+                "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.",
+                new Tokens.Enumerators.FileLocation());
         }
 
-        public TokenParser(TokenizerOptions options, ILogger<TokenParser>? logger)
+        var template = new Template(name, content);
+
+        log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
+
+        try
         {
-            log = logger ?? NullLogger<TokenParser>.Instance;
+            var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
 
-            Options = options;
+            template.Options = preTemplate.Options;
 
-            transformers = new List<Type>();
-            validators = new List<Type>();
-
-            // Add default transformers/validators
-            RegisterTransformer<ToDateTimeTransformer>();
-            RegisterTransformer<ToDateTimeUtcTransformer>();
-            RegisterTransformer<ToLowerTransformer>();
-            RegisterTransformer<ToUpperTransformer>();
-            RegisterTransformer<TrimTransformer>();
-            RegisterTransformer<SubstringAfterTransformer>();
-            RegisterTransformer<SubstringBeforeTransformer>();
-            RegisterTransformer<SetTransformer>();
-            RegisterTransformer<ReplaceTransformer>();
-            RegisterTransformer<RemoveTransformer>();
-            RegisterTransformer<SubstringAfterLastTransformer>();
-            RegisterTransformer<SubstringBeforeLastTransformer>();
-            RegisterTransformer<RemoveEndTransformer>();
-            RegisterTransformer<RemoveStartTransformer>();
-            RegisterTransformer<SplitTransformer>();
-
-            RegisterValidator<IsNumericValidator>();
-            RegisterValidator<MaxLengthValidator>();
-            RegisterValidator<MinLengthValidator>();
-            RegisterValidator<IsDomainNameValidator>();
-            RegisterValidator<IsPhoneNumberValidator>();
-            RegisterValidator<IsEmailValidator>();
-            RegisterValidator<IsUrlValidator>();
-            RegisterValidator<IsLooseUrlValidator>();
-            RegisterValidator<IsLooseAbsoluteUrlValidator>();
-            RegisterValidator<IsDateTimeValidator>();
-            RegisterValidator<IsNotEmptyValidator>();
-            RegisterValidator<IsNotValidator>();
-            RegisterValidator<StartsWithValidator>();
-            RegisterValidator<EndsWithValidator>();
-            RegisterValidator<ContainsValidator>();
-        }
-
-        public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
-        {
-            transformers.Add(typeof(T));
-
-            log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
-
-            return this;
-        }
-
-        public TokenParser RegisterValidator<T>() where T : ITokenValidator
-        {
-            validators.Add(typeof(T));
-
-            log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
-
-            return this;
-        }
-
-        public Template Parse(string content)
-        {
-            var name = GenerateTemplateName(content);
-
-            return Parse(content, name);
-        }
-
-        public Template Parse(string content, string name)
-        {
-            Stopwatch? stopwatch = null;
-
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                stopwatch = new Stopwatch();
-                stopwatch.Start();
-            }
-
-            log.LogInformation("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
-
-            if (Options.MaxTemplateLength > 0 && content.Length > Options.MaxTemplateLength)
-            {
-                throw new ParsingException(
-                    $"Template length {content.Length:N0} exceeds maximum allowed length of {Options.MaxTemplateLength:N0}. " +
-                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.",
-                    new Tokens.Enumerators.FileLocation());
-            }
-
-            var template = new Template(name, content);
-
-            log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
-
-            try
-            {
-                var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
-
-                template.Options = preTemplate.Options;
-
-                log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
-                    preTemplate.Tokens.Count, template.Name);
+            log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
+                preTemplate.Tokens.Count, template.Name);
 
             if (string.IsNullOrWhiteSpace(preTemplate.Name) == false)
             {
@@ -229,252 +229,251 @@ namespace Tokens.Compilation
                 template.Name, template.Tokens.Count, stopwatch?.Elapsed.TotalMilliseconds ?? 0);
 
             return template;
-            }
-            catch (TokenizerException ex)
-            {
-                log.LogError(ex, "Template parsing failed for {TemplateName}: {ErrorMessage}, Pattern: {Pattern}",
-                    name, ex.Message, content);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                log.LogError(ex, "Unexpected error during template parsing: {TemplateName}, Pattern: {Pattern}",
-                    name, content);
-                throw;
-            }
+        }
+        catch (TokenizerException ex)
+        {
+            log.LogError(ex, "Template parsing failed for {TemplateName}: {ErrorMessage}, Pattern: {Pattern}",
+                name, ex.Message, content);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            log.LogError(ex, "Unexpected error during template parsing: {TemplateName}, Pattern: {Pattern}",
+                name, content);
+            throw;
+        }
+    }
+
+    private void ParseTokenDecorators(TokenDefinition preToken, Token token)
+    {
+        log.LogTrace("Parsing decorators for token {TokenId} ({TokenName}): {DecoratorCount} decorator(s) found",
+            preToken.Id, preToken.Name ?? "(unnamed)", preToken.Decorators.Count);
+
+        // If pre-token has value set, add transformer to set it when parsing
+        if (string.IsNullOrEmpty(preToken.Value) == false)
+        {
+            var setContext = new TokenDecoratorContext(typeof(SetTransformer));
+            setContext.AddParameter(preToken.Value);
+            token.AddDecorator(setContext);
+
+            log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
+                preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
         }
 
-        private void ParseTokenDecorators(TokenDefinition preToken, Token token)
+        foreach (var decorator in preToken.Decorators)
         {
-            log.LogTrace("Parsing decorators for token {TokenId} ({TokenName}): {DecoratorCount} decorator(s) found",
-                preToken.Id, preToken.Name ?? "(unnamed)", preToken.Decorators.Count);
-
-            // If pre-token has value set, add transformer to set it when parsing
-            if (string.IsNullOrEmpty(preToken.Value) == false)
+            if (IsConcatenationDecorator(preToken.Name ?? string.Empty, decorator, out var joiningString))
             {
-                var setContext = new TokenDecoratorContext(typeof(SetTransformer));
-                setContext.AddParameter(preToken.Value);
-                token.AddDecorator(setContext);
+                token.Concatenate = true;
+                token.ConcatenationString = joiningString;
 
-                log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
-                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
+                log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",
+                    preToken.Id, preToken.Name ?? "(unnamed)", joiningString ?? "(empty)");
+
+                continue;
             }
 
-            foreach (var decorator in preToken.Decorators)
+            TokenDecoratorContext? context = null;
+
+            foreach (var operatorType in transformers)
             {
-                if (IsConcatenationDecorator(preToken.Name ?? string.Empty, decorator, out var joiningString))
+                if (string.Equals(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                    string.Equals($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    token.Concatenate = true;
-                    token.ConcatenationString = joiningString;
-
-                    log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",
-                        preToken.Id, preToken.Name ?? "(unnamed)", joiningString ?? "(empty)");
-
-                    continue;
-                }
-
-                TokenDecoratorContext? context = null;
-
-                foreach (var operatorType in transformers)
-                {
-                    if (string.Equals(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
-                        string.Equals($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase))
+                    if (decorator.IsNotDecorator)
                     {
-                        if (decorator.IsNotDecorator)
-                        {
-                            log.LogError("Token {TokenId} ({TokenName}): Transformer {TransformerName} cannot be prefixed with '!' character",
-                                preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
-                            throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
-                        }
-
-                        context = new TokenDecoratorContext(operatorType);
-
-                        foreach (var arg in decorator.Args)
-                        {
-                            context.AddParameter(arg);
-                        }
-
-                        token.AddDecorator(context);
-
-                        log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
-                            preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
-
-                        break;
+                        log.LogError("Token {TokenId} ({TokenName}): Transformer {TransformerName} cannot be prefixed with '!' character",
+                            preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
+                        throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
                     }
-                }
 
-                if (context != null) continue;
+                    context = new TokenDecoratorContext(operatorType);
 
-                foreach (var validatorType in validators)
-                {
-                    if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
-                        string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))
+                    foreach (var arg in decorator.Args)
                     {
-                        context = new TokenDecoratorContext(validatorType);
-
-                        foreach (var arg in decorator.Args)
-                        {
-                            context.AddParameter(arg);
-                        }
-
-                        context.IsNotValidator = decorator.IsNotDecorator;
-
-                        token.AddDecorator(context);
-
-                        log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
-                            preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);
-
-                        break;
+                        context.AddParameter(arg);
                     }
-                }
 
-                if (context == null)
-                {
-                    log.LogError("Token {TokenId} ({TokenName}): Unknown decorator/operation: {DecoratorName}",
-                        preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
-                    throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
+                    token.AddDecorator(context);
+
+                    log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
+                        preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
+
+                    break;
                 }
             }
 
-            if (preToken.IsFrontMatterToken)
-            {
-                var hasSetTransformer = token.Decorators.Any(d => d.DecoratorType == typeof(SetTransformer));
+            if (context != null) continue;
 
-                if (hasSetTransformer == false)
+            foreach (var validatorType in validators)
+            {
+                if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                    string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    log.LogError("Token {TokenId} ({TokenName}): Front matter token missing required assignment operation",
-                        preToken.Id, preToken.Name ?? "(unnamed)");
-                    throw new TokenizerException($"Front Matter Token '{preToken.Name}' must have an assignment operation.");
+                    context = new TokenDecoratorContext(validatorType);
+
+                    foreach (var arg in decorator.Args)
+                    {
+                        context.AddParameter(arg);
+                    }
+
+                    context.IsNotValidator = decorator.IsNotDecorator;
+
+                    token.AddDecorator(context);
+
+                    log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
+                        preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);
+
+                    break;
                 }
-                else
-                {
-                    log.LogTrace("Token {TokenId} ({TokenName}): Front matter token validation passed",
-                        preToken.Id, preToken.Name ?? "(unnamed)");
-                }
+            }
+
+            if (context == null)
+            {
+                log.LogError("Token {TokenId} ({TokenName}): Unknown decorator/operation: {DecoratorName}",
+                    preToken.Id, preToken.Name ?? "(unnamed)", decorator.Name);
+                throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
             }
         }
 
-        private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string? joiningString)
+        if (preToken.IsFrontMatterToken)
         {
-            joiningString = null;
+            var hasSetTransformer = token.Decorators.Any(d => d.DecoratorType == typeof(SetTransformer));
 
-            if (!string.Equals("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase)) return false;
-
-            if (decorator.Args.Count == 1)
+            if (hasSetTransformer == false)
             {
-                joiningString = decorator.Args[0];
-                log.LogTrace("Concat decorator detected for token {TokenName} with joining string: {JoiningString}",
-                    name ?? "(unnamed)", joiningString);
-            }
-            else if (decorator.Args.Count == 0)
-            {
-                log.LogTrace("Concat decorator detected for token {TokenName} with no joining string (will use empty string)",
-                    name ?? "(unnamed)");
-            }
-
-            if (decorator.Args.Count > 1)
-            {
-                log.LogError("Token {TokenName}: Concat() decorator has {ArgCount} arguments, expected 0 or 1",
-                    name ?? "(unnamed)", decorator.Args.Count);
-                throw new TokenizerException($"Token '{name}' Concat() must have a single argument.");
-            }
-
-            return true;
-
-        }
-
-        private string ComputePreamble(Definitions.TokenDefinition preToken, TokenizerOptions options, ILogger log)
-        {
-            string preamble;
-
-            if (Options.TrimLeadingWhitespaceInTokenPreamble)
-            {
-                if (preToken.Preamble.IsOnlySpaces())
-                {
-                    preamble = preToken.Preamble;
-                }
-                else if (string.IsNullOrWhiteSpace(preToken.Preamble))
-                {
-                    preamble = preToken.Preamble.TrimLeadingSpaces();
-                }
-                else
-                {
-                    preamble = preToken.Preamble.TrimStart();
-                }
-
-                log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
-                    preToken.Id, preToken.Preamble.Length, preamble.Length);
+                log.LogError("Token {TokenId} ({TokenName}): Front matter token missing required assignment operation",
+                    preToken.Id, preToken.Name ?? "(unnamed)");
+                throw new TokenizerException($"Front Matter Token '{preToken.Name}' must have an assignment operation.");
             }
             else
             {
+                log.LogTrace("Token {TokenId} ({TokenName}): Front matter token validation passed",
+                    preToken.Id, preToken.Name ?? "(unnamed)");
+            }
+        }
+    }
+
+    private bool IsConcatenationDecorator(string name, DecoratorDefinition decorator, out string? joiningString)
+    {
+        joiningString = null;
+
+        if (!string.Equals("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase)) return false;
+
+        if (decorator.Args.Count == 1)
+        {
+            joiningString = decorator.Args[0];
+            log.LogTrace("Concat decorator detected for token {TokenName} with joining string: {JoiningString}",
+                name ?? "(unnamed)", joiningString);
+        }
+        else if (decorator.Args.Count == 0)
+        {
+            log.LogTrace("Concat decorator detected for token {TokenName} with no joining string (will use empty string)",
+                name ?? "(unnamed)");
+        }
+
+        if (decorator.Args.Count > 1)
+        {
+            log.LogError("Token {TokenName}: Concat() decorator has {ArgCount} arguments, expected 0 or 1",
+                name ?? "(unnamed)", decorator.Args.Count);
+            throw new TokenizerException($"Token '{name}' Concat() must have a single argument.");
+        }
+
+        return true;
+
+    }
+
+    private string ComputePreamble(Definitions.TokenDefinition preToken, TokenizerOptions options, ILogger log)
+    {
+        string preamble;
+
+        if (Options.TrimLeadingWhitespaceInTokenPreamble)
+        {
+            if (preToken.Preamble.IsOnlySpaces())
+            {
                 preamble = preToken.Preamble;
             }
-
-            if (options.TrimPreambleBeforeNewLine)
+            else if (string.IsNullOrWhiteSpace(preToken.Preamble))
             {
-                if (string.IsNullOrEmpty(preamble) == false && preamble.IndexOf('\n') > -1)
-                {
-                    var idx = preamble.LastIndexOf('\n');
-                    var tail = preamble.Substring(idx + 1);
-
-                    log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
-                        preToken.Id, preamble.Length, tail.Length);
-
-                    preamble = tail;
-                }
+                preamble = preToken.Preamble.TrimLeadingSpaces();
+            }
+            else
+            {
+                preamble = preToken.Preamble.TrimStart();
             }
 
-            return preamble;
+            log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
+                preToken.Id, preToken.Preamble.Length, preamble.Length);
         }
-
-        private string GenerateTemplateName(string content)
+        else
         {
-            if (string.IsNullOrWhiteSpace(content)) return "(empty)";
+            preamble = preToken.Preamble;
+        }
 
-            var name = new StringBuilder();
-
-            var words = 0;
-            var lastCharWasANewLine = false;
-
-            var startIndex = 0;
-            var hasFrontmatter = content.StartsWith("---\n") || content.StartsWith("---\r\n");
-
-            if (hasFrontmatter)
+        if (options.TrimPreambleBeforeNewLine)
+        {
+            if (string.IsNullOrEmpty(preamble) == false && preamble.IndexOf('\n') > -1)
             {
-                var frontmatterEndIndex = content.IndexOf("\n---", 5);
+                var idx = preamble.LastIndexOf('\n');
+                var tail = preamble.Substring(idx + 1);
 
-                if (frontmatterEndIndex > -1) startIndex = frontmatterEndIndex + 4;
+                log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
+                    preToken.Id, preamble.Length, tail.Length);
+
+                preamble = tail;
             }
+        }
 
-            for (var i = startIndex; i < content.Length; i++)
+        return preamble;
+    }
+
+    private string GenerateTemplateName(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return "(empty)";
+
+        var name = new StringBuilder();
+
+        var words = 0;
+        var lastCharWasANewLine = false;
+
+        var startIndex = 0;
+        var hasFrontmatter = content.StartsWith("---\n") || content.StartsWith("---\r\n");
+
+        if (hasFrontmatter)
+        {
+            var frontmatterEndIndex = content.IndexOf("\n---", 5);
+
+            if (frontmatterEndIndex > -1) startIndex = frontmatterEndIndex + 4;
+        }
+
+        for (var i = startIndex; i < content.Length; i++)
+        {
+            var c = content[i];
+
+
+
+            if (char.IsWhiteSpace(c))
             {
-                var c = content[i];
-                
+                if (lastCharWasANewLine) continue;
+                if (name.Length == 0) continue;
 
+                lastCharWasANewLine = true;
 
-                if (char.IsWhiteSpace(c))
+                words++;
+                if (words <= 2)
                 {
-                    if (lastCharWasANewLine) continue;
-                    if (name.Length == 0) continue;
-
-                    lastCharWasANewLine = true;
-
-                    words++;
-                    if (words <= 2)
-                    {
-                        name.Append(' ');
-                        continue;
-                    }
-
-                    name.Append("...");
-                    break;
+                    name.Append(' ');
+                    continue;
                 }
 
-                name.Append(c);
-                lastCharWasANewLine = false;
+                name.Append("...");
+                break;
             }
 
-            return name.ToString();
+            name.Append(c);
+            lastCharWasANewLine = false;
         }
+
+        return name.ToString();
     }
 }

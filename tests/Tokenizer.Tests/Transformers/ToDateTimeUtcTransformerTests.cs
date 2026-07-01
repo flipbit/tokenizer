@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,7 +21,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -38,7 +38,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -55,7 +55,7 @@ public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);

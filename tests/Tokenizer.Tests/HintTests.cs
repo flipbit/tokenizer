@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Tokens;
@@ -91,7 +91,7 @@ public class HintTests : Tests.TokenizerTestBase
         Assert.True(result.Hints.Matches[1].Optional);
         Assert.Empty(result.Hints.Misses);
     }
-        
+
     [Fact]
     public void GivenPatternWithTwoHints_WhenOnlyOneHintFoundInInput_ThenRecordsOneMatchAndOneMiss()
     {

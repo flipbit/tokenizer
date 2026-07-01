@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 
 namespace Tokens.Transformers;
@@ -16,7 +16,7 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -48,7 +48,7 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, null!, out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -64,7 +64,7 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-            
+
         // Assert
         Assert.False(result);
         Assert.Equal("2012-05-06", t);
@@ -79,11 +79,11 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, formats, out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2012, 5 ,6), dateTime);
+        Assert.Equal(new DateTime(2012, 5, 6), dateTime);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, null!, out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
@@ -152,11 +152,11 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2001, 8 , 1), dateTime);
+        Assert.Equal(new DateTime(2001, 8, 1), dateTime);
     }
 
     [Fact]
@@ -168,11 +168,11 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2001, 8 , 2), dateTime);
+        Assert.Equal(new DateTime(2001, 8, 2), dateTime);
     }
 
     [Fact]
@@ -184,11 +184,11 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2001, 8 , 2), dateTime);
+        Assert.Equal(new DateTime(2001, 8, 2), dateTime);
     }
 
     [Fact]
@@ -200,10 +200,10 @@ public class ToDateTimeTransformerTests
 
         // Act
         var result = transformer.CanTransform(input, [format], out var t);
-        var dateTime = (DateTime) t;
+        var dateTime = (DateTime)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(1997, 4 , 16), dateTime);
+        Assert.Equal(new DateTime(1997, 4, 16), dateTime);
     }
 }

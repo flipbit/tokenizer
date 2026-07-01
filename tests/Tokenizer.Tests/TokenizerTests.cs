@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tokens.Compilation;
@@ -99,7 +99,7 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithLineBreaksAndOrderedTokens_WhenTokenizingMultilineInput_ThenExtractsAllValues()
     {
         // Arrange
-        const string pattern = 
+        const string pattern =
             """
             ---
             # Tokens must appear in defined order
@@ -109,7 +109,7 @@ public class TokenizerTests : TokenizerTestBase
             Middle Name: {MiddleName}
             Last Name: {LastName}
             """;
-        const string input = 
+        const string input =
             """
             First Name: Alice
             Middle Name: Roberta
@@ -129,7 +129,7 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithMultilineTokens_WhenTokenizingInputWithLineBreaks_ThenPreservesLineBreaksInValues()
     {
         // Arrange
-        const string pattern = 
+        const string pattern =
             """
             Comments:
             {FirstName}
@@ -137,7 +137,7 @@ public class TokenizerTests : TokenizerTestBase
             Name:
             {LastName}
             """;
-        const string input = 
+        const string input =
             """
             Comments:
             Everything went well,
@@ -353,7 +353,7 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Hello ... World";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => tokenizer.Tokenize<Student>(pattern, input));            
+        Assert.Throws<TokenizerException>(() => tokenizer.Tokenize<Student>(pattern, input));
     }
 
     [Fact]
@@ -383,20 +383,20 @@ public class TokenizerTests : TokenizerTestBase
         // Assert
         Assert.Equal(2, result.Class.Count);
         Assert.Equal("Alice", result.Class[0]);
-        Assert.Equal("Bob", result.Class[1]);            
+        Assert.Equal("Bob", result.Class[1]);
     }
 
     [Fact]
     public void GivenPatternWithListTokenOnNewLines_WhenTokenizingMultilineInput_ThenExtractsAllValuesCorrectly()
     {
         // Arrange
-        var pattern = 
+        var pattern =
             """
             Name: {FirstName}
                         Student: {Class*}
                         Number: {Number}
             """;
-        var input = 
+        var input =
             """
             Name: Sue
                         Student: Alice
@@ -412,7 +412,7 @@ public class TokenizerTests : TokenizerTestBase
         Assert.Equal("Sue", result.FirstName);
         Assert.Equal(3, result.Class.Count);
         Assert.Equal("Alice", result.Class[0]);
-        Assert.Equal("Bob", result.Class[1]);            
+        Assert.Equal("Bob", result.Class[1]);
         Assert.Equal("Charles", result.Class[2]);
         Assert.Equal(1234, result.Number);
     }
@@ -431,7 +431,7 @@ public class TokenizerTests : TokenizerTestBase
         Assert.Equal("Alice", result.FirstName);
         Assert.Equal(2, result.Class.Count);
         Assert.Equal("Bob", result.Class[0]);
-        Assert.Equal("Sue", result.Class[1]);            
+        Assert.Equal("Sue", result.Class[1]);
         Assert.Equal(1234, result.Number);
     }
 

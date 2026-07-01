@@ -1,34 +1,33 @@
-﻿using System;
+using System;
 using Tokens.Exceptions;
 
-namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value meets a maximum length requirement
+/// </summary>
+public sealed class MaxLengthValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value meets a maximum length requirement
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class MaxLengthValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
+        if (args.Length == 0)
         {
-            if (args.Length == 0)
-            {
-                throw new ValidationException("You must specified a MaxLength value, e.g. 'MaxLength(255)'");
-            }
-
-            try
-            {
-                var maxLength = Convert.ToInt32(args[0]);
-
-                return (value?.ToString() ?? string.Empty).Length <= maxLength;
-            }
-            catch (FormatException ex)
-            {                
-                throw new ValidationException("MaxLength parameter must be an integer", ex);
-            }
-
+            throw new ValidationException("You must specified a MaxLength value, e.g. 'MaxLength(255)'");
         }
+
+        try
+        {
+            var maxLength = Convert.ToInt32(args[0]);
+
+            return (value?.ToString() ?? string.Empty).Length <= maxLength;
+        }
+        catch (FormatException ex)
+        {
+            throw new ValidationException("MaxLength parameter must be an integer", ex);
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Tokens.Enumerators;
 using Tokens.Validators;
 using Xunit;

@@ -501,7 +501,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
             Assert.Equal(10, e.Column);
         }
     }
-        
+
     [Fact]
     public void GivenTokenWithWhitespace_WhenParsing_ThenAllowsWhitespace()
     {
@@ -561,7 +561,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.Equal("TokenName", token1.Name);
         Assert.True(token1.Repeating);
     }
-        
+
     [Fact]
     public void GivenTokenWithRequiredLonghand_WhenParsing_ThenSetsRequired()
     {
@@ -578,7 +578,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.True(token.Required);
         Assert.Empty(token.Decorators);
     }
-        
+
     [Fact]
     public void GivenTokenWithOptionalLonghand_WhenParsing_ThenSetsOptional()
     {
@@ -966,7 +966,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Arrange, Act & Assert
         Assert.Throws<ParsingException>(() => Parser.Parse("{ MyToken : Invalid!MyDecorator }"));
     }
-        
+
     [Fact]
     public void GivenTemplateWithMultipleTokens_WhenParsing_ThenSetsCorrectLocations()
     {

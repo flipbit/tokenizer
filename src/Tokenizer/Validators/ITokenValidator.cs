@@ -1,13 +1,12 @@
-﻿namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Interface to define the validation of tokens discovered in input text
+/// </summary>
+public interface ITokenValidator : ITokenDecorator
 {
     /// <summary>
-    /// Interface to define the validation of tokens discovered in input text
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public interface ITokenValidator : ITokenDecorator
-    {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        bool IsValid(object value, params string[] args);
-    }
+    bool IsValid(object value, params string[] args);
 }

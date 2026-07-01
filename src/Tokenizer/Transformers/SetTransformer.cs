@@ -1,22 +1,21 @@
-﻿using System;
+using System;
 
-namespace Tokens.Transformers
+namespace Tokens.Transformers;
+
+/// <summary>
+/// Sets the token value 
+/// </summary>
+public sealed class SetTransformer : ITokenTransformer
 {
-    /// <summary>
-    /// Sets the token value 
-    /// </summary>
-    public sealed class SetTransformer : ITokenTransformer
+    public bool CanTransform(object value, string[] args, out object transformed)
     {
-        public bool CanTransform(object value, string[] args, out object transformed)
+        if (args == null || args.Length != 1)
         {
-            if (args == null || args.Length != 1)
-            {
-                throw new ArgumentException("Set() must specified one argument to set - Set( value)");
-            }
-
-            transformed = args[0].Trim();
-
-            return true;
+            throw new ArgumentException("Set() must specified one argument to set - Set( value)");
         }
+
+        transformed = args[0].Trim();
+
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,7 +34,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         var input = string.Empty;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));;
+        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t)); ;
     }
 
     [Fact]

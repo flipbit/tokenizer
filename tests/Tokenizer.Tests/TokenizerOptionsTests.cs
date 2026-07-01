@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Tokens.Compilation;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +25,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.Equal("Second: ", template.Tokens.ElementAt(1).Preamble);
-    } 
+    }
 
     private class Person
     {
@@ -62,7 +62,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Should not be trimmed\nPreamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.Equal("Second: ", template.Tokens.ElementAt(1).Preamble);
-    } 
+    }
 
     [Fact]
     public void TestTrimBeforePreambleWhenSetFromFrontMatter()
@@ -79,7 +79,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.Equal("Second: ", template.Tokens.ElementAt(1).Preamble);
         Assert.True(template.Options.TrimPreambleBeforeNewLine);
-    } 
+    }
 
     [Fact]
     public void TestTerminateOnNewLineWhenSetFromFrontMatter()
@@ -95,7 +95,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.True(template.Options.TerminateOnNewline);
-    } 
+    }
 
     [Fact]
     public void TestTerminateOnNewLineWhenNotSetFromFrontMatter()
@@ -111,5 +111,5 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.False(template.Options.TerminateOnNewline);
-    } 
+    }
 }

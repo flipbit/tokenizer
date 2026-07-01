@@ -1,32 +1,31 @@
-﻿using Tokens.Extensions;
+using Tokens.Extensions;
 
-namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value is a phone number
+/// </summary>
+public sealed class IsPhoneNumberValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value is a phone number
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class IsPhoneNumberValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
-        {
-            if (value == null) return false;
+        if (value == null) return false;
 
-            var valueString = value.ToString();
+        var valueString = value.ToString();
 
-            if (string.IsNullOrEmpty(valueString)) return false;
+        if (string.IsNullOrEmpty(valueString)) return false;
 
-            var trimmed = valueString.Keep(" ()+.-0123456789");
+        var trimmed = valueString.Keep(" ()+.-0123456789");
 
-            if (trimmed != valueString) return false;
+        if (trimmed != valueString) return false;
 
-            if (string.IsNullOrWhiteSpace(trimmed)) return false;
+        if (string.IsNullOrWhiteSpace(trimmed)) return false;
 
-            var numbers = trimmed.Keep("0123456789");
+        var numbers = trimmed.Keep("0123456789");
 
-            return numbers.Length >= 6;
-        }
+        return numbers.Length >= 6;
     }
 }

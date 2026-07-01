@@ -1,20 +1,19 @@
-﻿namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value is not empty 
+/// </summary>
+public sealed class IsNotEmptyValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value is not empty 
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class IsNotEmptyValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
-        {
-            if (value == null) return false;
+        if (value == null) return false;
 
-            var valueString = value.ToString();
+        var valueString = value.ToString();
 
-            return !string.IsNullOrEmpty(valueString);
-        }
+        return !string.IsNullOrEmpty(valueString);
     }
 }

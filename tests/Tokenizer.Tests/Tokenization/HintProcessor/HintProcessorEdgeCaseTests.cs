@@ -28,7 +28,7 @@ public class HintProcessorEdgeCaseTests
         Assert.False(isMatch);
     }
 
-[Fact]
+    [Fact]
     public void GivenVeryLongHint_WhenFindAndValidateHints_ThenHandlesCorrectly()
     {
         // Arrange

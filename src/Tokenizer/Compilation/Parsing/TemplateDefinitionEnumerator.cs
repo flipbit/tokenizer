@@ -1,91 +1,90 @@
 using System.Text;
 using Tokens.Enumerators;
 
-namespace Tokens.Compilation.Parsing
+namespace Tokens.Compilation.Parsing;
+
+internal class TemplateDefinitionEnumerator
 {
-    internal class TemplateDefinitionEnumerator
+    private readonly string pattern;
+    private readonly int patternLength;
+
+    private int currentLocation;
+    private bool resetNextLine;
+
+    public TemplateDefinitionEnumerator(string pattern)
     {
-        private readonly string pattern;
-        private readonly int patternLength;
+        this.pattern = pattern;
 
-        private int currentLocation;
-        private bool resetNextLine;
-
-        public TemplateDefinitionEnumerator(string pattern)
+        if (string.IsNullOrEmpty(pattern))
         {
-            this.pattern = pattern;
-
-            if (string.IsNullOrEmpty(pattern))
-            {
-                patternLength = 0;
-            }
-            else
-            {
-                patternLength = pattern.Length;
-            }
-
-            currentLocation = 0;
-            Location = new FileLocation();
+            patternLength = 0;
+        }
+        else
+        {
+            patternLength = pattern.Length;
         }
 
-        public bool IsEmpty => currentLocation >= patternLength;
+        currentLocation = 0;
+        Location = new FileLocation();
+    }
 
-        public FileLocation Location { get; }
+    public bool IsEmpty => currentLocation >= patternLength;
 
-        public string Next()
+    public FileLocation Location { get; }
+
+    public string Next()
+    {
+        if (IsEmpty) return string.Empty;
+
+        var next = pattern.Substring(currentLocation, 1);
+        currentLocation++;
+
+        if (resetNextLine)
         {
-            if (IsEmpty) return string.Empty;
-
-            var next = pattern.Substring(currentLocation, 1);
-            currentLocation++;
-
-            if (resetNextLine)
-            {
-                Location.NewLine();
-                resetNextLine = false;
-            }
-            else
-            {
-                Location.Increment(next);
-            }
-
-            if (next == "\n")
-            {
-                resetNextLine = true;
-            }
-
-            return next;
+            Location.NewLine();
+            resetNextLine = false;
+        }
+        else
+        {
+            Location.Increment(next);
         }
 
-        public string Next(int length)
+        if (next == "\n")
         {
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < length; i++)
-            {
-                sb.Append(Next());
-            }
-
-            return sb.ToString();
+            resetNextLine = true;
         }
 
-        public string Peek()
-        {
-            if (IsEmpty) return string.Empty;
+        return next;
+    }
 
-            return pattern.Substring(currentLocation, 1);
+    public string Next(int length)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < length; i++)
+        {
+            sb.Append(Next());
         }
 
-        public string Peek(int length)
-        {
-            if (IsEmpty) return string.Empty;
+        return sb.ToString();
+    }
 
-            var different = (currentLocation + length) - patternLength;
-            if (different > 0) length -= different;
+    public string Peek()
+    {
+        if (IsEmpty) return string.Empty;
 
-            if (length < 1) return string.Empty;
+        return pattern.Substring(currentLocation, 1);
+    }
 
-            return pattern.Substring(currentLocation, length);
-        }
+    public string Peek(int length)
+    {
+        if (IsEmpty) return string.Empty;
+
+        var different = (currentLocation + length) - patternLength;
+        if (different > 0) length -= different;
+
+        if (length < 1) return string.Empty;
+
+        return pattern.Substring(currentLocation, length);
     }
 }

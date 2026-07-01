@@ -1,31 +1,30 @@
-﻿using System;
+using System;
 
-namespace Tokens.Validators
+namespace Tokens.Validators;
+
+/// <summary>
+/// Validator to determine if a token value is a URL
+/// </summary>
+public sealed class IsLooseUrlValidator : ITokenValidator
 {
     /// <summary>
-    /// Validator to determine if a token value is a URL
+    /// Determines whether the specified token is valid.
     /// </summary>
-    public sealed class IsLooseUrlValidator : ITokenValidator
+    public bool IsValid(object value, params string[] args)
     {
-        /// <summary>
-        /// Determines whether the specified token is valid.
-        /// </summary>
-        public bool IsValid(object value, params string[] args)
+        if (value == null) return false;
+
+        var valueString = value.ToString();
+
+        if (string.IsNullOrEmpty(valueString)) return false;
+
+        var result = Uri.IsWellFormedUriString(valueString, UriKind.RelativeOrAbsolute);
+
+        if (!result)
         {
-            if (value == null) return false;
-
-            var valueString = value.ToString();
-
-            if (string.IsNullOrEmpty(valueString)) return false;
-
-            var result = Uri.IsWellFormedUriString(valueString, UriKind.RelativeOrAbsolute);
-
-            if (!result)
-			{
-                result = Uri.IsWellFormedUriString($"http://{valueString}", UriKind.Absolute);
-			}
-
-            return result;
+            result = Uri.IsWellFormedUriString($"http://{valueString}", UriKind.Absolute);
         }
+
+        return result;
     }
 }

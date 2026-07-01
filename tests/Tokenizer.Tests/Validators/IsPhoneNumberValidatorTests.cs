@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Tokens.Validators;
@@ -49,7 +49,7 @@ public class IsPhoneNumberValidatorTests : Tests.TokenizerTestBase
         // Assert
         Assert.True(result);
     }
-            
+
     [Fact]
     public void GivenValidPhoneNumberWithDashes_WhenValidating_ThenReturnsTrue()
     {

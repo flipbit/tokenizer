@@ -4,119 +4,118 @@ using Tokens.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests.Diagnostics
+namespace Tokens.Tests.Diagnostics;
+
+public class DiagnosticIntegrationTests : TokenizerTestBase
 {
-    public class DiagnosticIntegrationTests : TokenizerTestBase
+    public DiagnosticIntegrationTests(ITestOutputHelper output) : base(output)
     {
-        public DiagnosticIntegrationTests(ITestOutputHelper output) : base(output)
-        {
-        }
+    }
 
-        [Fact]
-        public void GivenDiagnosticsEnabled_WhenTokenizingSimpleMatch_ThenDiagnosticsArePopulated()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-            var template = "Name: { Name }";
-            var input = "Name: John";
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenizingSimpleMatch_ThenDiagnosticsArePopulated()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }";
+        var input = "Name: John";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.NotNull(result.Diagnostics);
-            Assert.True(result.Diagnostics!.Events.Count > 0);
-            Assert.Contains(result.Diagnostics.Events,
-                e => e.Type == DiagnosticEventType.TokenizationStarted);
-            Assert.Contains(result.Diagnostics.Events,
-                e => e.Type == DiagnosticEventType.TokenizationCompleted);
-            Assert.Contains(result.Diagnostics.Events,
-                e => e.Type == DiagnosticEventType.TokenAssigned && e.TokenName == "Name");
-        }
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.True(result.Diagnostics!.Events.Count > 0);
+        Assert.Contains(result.Diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenizationStarted);
+        Assert.Contains(result.Diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenizationCompleted);
+        Assert.Contains(result.Diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned && e.TokenName == "Name");
+    }
 
-        [Fact]
-        public void GivenDiagnosticsDisabled_WhenTokenizing_ThenDiagnosticsAreNull()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer();
-            var template = "Name: { Name }";
-            var input = "Name: John";
+    [Fact]
+    public void GivenDiagnosticsDisabled_WhenTokenizing_ThenDiagnosticsAreNull()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var template = "Name: { Name }";
+        var input = "Name: John";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.Null(result.Diagnostics);
-        }
+        // Assert
+        Assert.Null(result.Diagnostics);
+    }
 
-        [Fact]
-        public void GivenDiagnosticsEnabled_WhenValidatorFails_ThenValidatorFailedEventRecorded()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-            var template = "Email: { Email : IsEmail }";
-            var input = "Email: notanemail";
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenValidatorFails_ThenValidatorFailedEventRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Email: { Email : IsEmail }";
+        var input = "Email: notanemail";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.NotNull(result.Diagnostics);
-            Assert.Contains(result.Diagnostics!.Events,
-                e => e.Type == DiagnosticEventType.ValidatorFailed
-                  && e.DecoratorName == "IsEmailValidator");
-        }
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.Contains(result.Diagnostics!.Events,
+            e => e.Type == DiagnosticEventType.ValidatorFailed
+              && e.DecoratorName == "IsEmailValidator");
+    }
 
-        [Fact]
-        public void GivenDiagnosticsEnabled_WhenTransformerSucceeds_ThenTransformerEventRecorded()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-            var template = "Name: { Name : ToUpper }";
-            var input = "Name: john";
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTransformerSucceeds_ThenTransformerEventRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name : ToUpper }";
+        var input = "Name: john";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.NotNull(result.Diagnostics);
-            Assert.Contains(result.Diagnostics!.Events,
-                e => e.Type == DiagnosticEventType.TransformerSucceeded
-                  && e.DecoratorName == "ToUpperTransformer");
-        }
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.Contains(result.Diagnostics!.Events,
+            e => e.Type == DiagnosticEventType.TransformerSucceeded
+              && e.DecoratorName == "ToUpperTransformer");
+    }
 
-        [Fact]
-        public void GivenDiagnosticsEnabled_WhenTokenMissed_ThenTokenMissedEventRecorded()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-            var template = "Name: { Name }\nAge: { Age }";
-            var input = "Name: John";
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenMissed_ThenTokenMissedEventRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }\nAge: { Age }";
+        var input = "Name: John";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.NotNull(result.Diagnostics);
-            Assert.Contains(result.Diagnostics!.Events,
-                e => e.Type == DiagnosticEventType.TokenMissed && e.TokenName == "Age");
-        }
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.Contains(result.Diagnostics!.Events,
+            e => e.Type == DiagnosticEventType.TokenMissed && e.TokenName == "Age");
+    }
 
-        [Fact]
-        public void GivenDiagnosticsEnabled_WhenPreambleMatches_ThenPreambleMatchedEventRecorded()
-        {
-            // Arrange
-            var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-            var template = "Name: { Name }";
-            var input = "Name: John";
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenPreambleMatches_ThenPreambleMatchedEventRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }";
+        var input = "Name: John";
 
-            // Act
-            var result = tokenizer.Tokenize(template, input);
+        // Act
+        var result = tokenizer.Tokenize(template, input);
 
-            // Assert
-            Assert.NotNull(result.Diagnostics);
-            Assert.Contains(result.Diagnostics!.Events,
-                e => e.Type == DiagnosticEventType.PreambleMatched);
-        }
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.Contains(result.Diagnostics!.Events,
+            e => e.Type == DiagnosticEventType.PreambleMatched);
     }
 }

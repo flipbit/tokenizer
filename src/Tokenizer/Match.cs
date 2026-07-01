@@ -1,32 +1,31 @@
-﻿using Tokens.Enumerators;
+using Tokens.Enumerators;
 
-namespace Tokens
+namespace Tokens;
+
+/// <summary>
+/// Represent a <see cref="Token"/> match in a <see cref="Template"/>
+/// </summary>
+public sealed class Match
 {
-    /// <summary>
-    /// Represent a <see cref="Token"/> match in a <see cref="Template"/>
-    /// </summary>
-    public sealed class Match
+    public Match(Token token, object value, FileLocation location)
     {
-        public Match(Token token, object value, FileLocation location)
-        {
-            Token = token;
-            Value = value;
-            Location = location;
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="Token"/> matched
-        /// </summary>
-        public Token Token { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value of the match
-        /// </summary>
-        public object Value { get; set; }
-
-        /// <summary>
-        /// Gets the location in the file where this match was made
-        /// </summary>
-        public FileLocation Location { get; set; }
+        Token = token;
+        Value = value;
+        Location = location;
     }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Token"/> matched
+    /// </summary>
+    public Token Token { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the match
+    /// </summary>
+    public object Value { get; set; }
+
+    /// <summary>
+    /// Gets the location in the file where this match was made
+    /// </summary>
+    public FileLocation Location { get; set; }
 }

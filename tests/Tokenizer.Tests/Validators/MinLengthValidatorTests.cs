@@ -1,4 +1,4 @@
-﻿using Tokens.Exceptions;
+using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 

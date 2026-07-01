@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -79,7 +79,7 @@ public class ObjectExtensionsTests
     [Fact]
     public void TestGetPropertyWithClassName()
     {
-        var foo = new Foo {Baz = "Value"};
+        var foo = new Foo { Baz = "Value" };
 
         var result = foo.GetValue<string>("Foo.Baz");
 
@@ -89,7 +89,7 @@ public class ObjectExtensionsTests
     [Fact]
     public void TestGetPropertyWithoutClassName()
     {
-        var foo = new Foo {Baz = "Value"};
+        var foo = new Foo { Baz = "Value" };
 
         var result = foo.GetValue<string>("Baz");
 
@@ -99,7 +99,7 @@ public class ObjectExtensionsTests
     [Fact]
     public void TestGetPropertyFromChildObject()
     {
-        var foo = new Foo { Bar = new Bar{ Age = 10 }};
+        var foo = new Foo { Bar = new Bar { Age = 10 } };
 
         var result = foo.GetValue<int>("Bar.Age");
 
@@ -109,7 +109,7 @@ public class ObjectExtensionsTests
     [Fact]
     public void TestGetPropertyFromChildObjectIgnoresCase()
     {
-        var foo = new Foo { Bar = new Bar{ Age = 10 }};
+        var foo = new Foo { Bar = new Bar { Age = 10 } };
 
         var result = foo.GetValue<int>("bar.age", StringComparison.InvariantCultureIgnoreCase);
 

@@ -57,7 +57,7 @@ public class TokenParserTests
 
         var token = template.Tokens.First();
 
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
     }
 
     [Fact]

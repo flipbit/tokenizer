@@ -18,7 +18,7 @@ public class TokenizationDiagnostics
         DiagnosticEventType.HintMissing,
         DiagnosticEventType.BacktrackStarted,
         DiagnosticEventType.RepeatingTokenDisabled,
-        DiagnosticEventType.ConsiderOnceTokenRemoved,
+        DiagnosticEventType.SingleUseTokenRemoved,
     };
 
     private readonly string templateContent;

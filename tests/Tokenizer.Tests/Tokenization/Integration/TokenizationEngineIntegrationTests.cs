@@ -82,7 +82,7 @@ Notes: Test notes
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.All(result.Tokens.Matches, m => Assert.True(m.Token.Required));
+        Assert.All(result.Tokens.Matches, m => Assert.True(m.Token.IsRequired));
     }
 
     [Fact]

@@ -27,16 +27,16 @@ internal static class TemplateBinder
                 var def = new TokenDefinition
                 {
                     Location = tokenNode.Location.Clone(),
-                    Optional = tokenNode.Modifiers.IsOptional,
-                    Repeating = tokenNode.Modifiers.IsRepeating,
-                    Required = tokenNode.Modifiers.IsRequired,
+                    IsOptional = tokenNode.Modifiers.IsOptional,
+                    IsRepeating = tokenNode.Modifiers.IsRepeating,
+                    IsRequired = tokenNode.Modifiers.IsRequired,
                     TerminateOnNewLine = tokenNode.Modifiers.IsTerminate
                 };
 
                 // Derived semantics: repeating tokens are optional (can match 0 times)
-                if (def.Repeating)
+                if (def.IsRepeating)
                 {
-                    def.Optional = true;
+                    def.IsOptional = true;
                 }
                 var optionalExplicit = tokenNode.Modifiers.IsOptional;
 
@@ -80,25 +80,25 @@ internal static class TemplateBinder
                         }
                         if (lower == "optional" || lower == "?")
                         {
-                            def.Optional = true;
+                            def.IsOptional = true;
                             optionalExplicit = true;
                             continue;
                         }
                         if (lower == "repeating" || lower == "*")
                         {
-                            def.Repeating = true;
-                            def.Optional = true; // repeating implies optional, but not explicit
+                            def.IsRepeating = true;
+                            def.IsOptional = true; // repeating implies optional, but not explicit
                             continue;
                         }
                         if (lower == "required" || lower == "!")
                         {
-                            def.Required = true;
+                            def.IsRequired = true;
                             continue;
                         }
-                        // Longhand modifier: Once => ConsiderOnce semantics
+                        // Longhand modifier: Once => IsSingleUse semantics
                         if (lower == "once")
                         {
-                            def.ConsiderOnce = true;
+                            def.IsSingleUse = true;
                             continue;
                         }
                     }
@@ -115,7 +115,7 @@ internal static class TemplateBinder
                 def.AppendDecorators(decorators);
 
                 // Validate incompatible modifiers: only when optional is explicit (not via repeating)
-                if (def.Required && optionalExplicit)
+                if (def.IsRequired && optionalExplicit)
                 {
                     throw new ParsingException($"Optional token {def.Name} can't be Required", def.Location);
                 }
@@ -128,18 +128,18 @@ internal static class TemplateBinder
 
                 // Legacy behavior: expand repeating token with multiline preamble tail
                 var repeatingTail = GetRepeatingMultilinePreamble(def);
-                if (def.Repeating && repeatingTail is { Length: > 0 })
+                if (def.IsRepeating && repeatingTail is { Length: > 0 })
                 {
                     // First token becomes non-repeating, keeps original preamble
-                    def.Repeating = false;
+                    def.IsRepeating = false;
                     tokens.Add(def);
 
                     // Second token repeats with preamble set to the tail ("\n" + whitespace)
                     var repeat = new TokenDefinition
                     {
                         Location = def.Location.Clone(),
-                        Optional = true,
-                        Repeating = true,
+                        IsOptional = true,
+                        IsRepeating = true,
                         TerminateOnNewLine = def.TerminateOnNewLine,
                         Content = def.Content
                     };
@@ -232,7 +232,7 @@ internal static class TemplateBinder
 
     private static string? GetRepeatingMultilinePreamble(TokenDefinition token)
     {
-        if (token.Repeating == false) return null;
+        if (token.IsRepeating == false) return null;
         if (string.IsNullOrEmpty(token.Preamble)) return null;
         if (token.Preamble.IndexOf('\n') == -1) return null;
 

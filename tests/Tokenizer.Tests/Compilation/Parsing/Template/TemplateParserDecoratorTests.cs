@@ -25,9 +25,9 @@ public class TemplateParserDecoratorTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
         Assert.Single(token.Decorators);
 
         var decorator = token.Decorators.First();
@@ -48,9 +48,9 @@ public class TemplateParserDecoratorTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
         Assert.Equal(2, token.Decorators.Count);
 
         var decorator1 = token.Decorators.First();

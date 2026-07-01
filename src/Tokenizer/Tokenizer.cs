@@ -165,7 +165,7 @@ public sealed class Tokenizer
                 log.LogTrace("Building unmatched tokens collection");
                 resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
-                var requiredMissingCount = result.Tokens.Misses.Count(t => t.Required);
+                var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
                 log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
                     result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
 

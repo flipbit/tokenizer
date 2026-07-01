@@ -132,11 +132,11 @@ public enum DiagnosticEventType
     RepeatingTokenDisabled,
 
     /// <summary>
-    /// A ConsiderOnce token failed to match and has been permanently
+    /// A single-use token failed to match and has been permanently
     /// removed from the candidate list and recorded as a miss.
     /// TokenName identifies the removed token.
     /// </summary>
-    ConsiderOnceTokenRemoved,
+    SingleUseTokenRemoved,
 
     /// <summary>
     /// A front matter token was successfully assigned its value.

@@ -32,17 +32,17 @@ public class TokenDefinition
 
     public string Value => value.ToString();
 
-    public bool Optional { get; set; }
+    public bool IsOptional { get; set; }
 
     public bool TerminateOnNewLine { get; set; }
 
-    public bool Repeating { get; set; }
+    public bool IsRepeating { get; set; }
 
-    public bool Required { get; set; }
+    public bool IsRequired { get; set; }
 
     public bool IsNull { get; set; }
 
-    public bool ConsiderOnce { get; set; }
+    public bool IsSingleUse { get; set; }
 
     public string Content { get; set; } = string.Empty;
 

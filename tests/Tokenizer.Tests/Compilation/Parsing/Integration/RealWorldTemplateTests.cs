@@ -49,7 +49,7 @@ public class RealWorldTemplateTests
         // Assert
         Assert.Equal(4, definition.Tokens.Count);
         Assert.Equal("remote_user", definition.Tokens[1].Name);
-        Assert.True(definition.Tokens[1].Optional);
+        Assert.True(definition.Tokens[1].IsOptional);
         Assert.Equal("-", definition.Tokens[1].Value);
     }
 
@@ -66,9 +66,9 @@ public class RealWorldTemplateTests
         Assert.Equal(3, definition.Tokens.Count);
         Assert.Equal("domain", definition.Tokens[0].Name);
         Assert.Equal("path", definition.Tokens[1].Name);
-        Assert.True(definition.Tokens[1].Repeating);
+        Assert.True(definition.Tokens[1].IsRepeating);
         Assert.Equal("file", definition.Tokens[2].Name);
-        Assert.True(definition.Tokens[2].Optional);
+        Assert.True(definition.Tokens[2].IsOptional);
     }
 
     [Fact]
@@ -132,13 +132,13 @@ public class RealWorldTemplateTests
         Assert.True(definition.Tokens[0].IsFrontMatterToken);
 
         Assert.Equal("field1", definition.Tokens[1].Name);
-        Assert.True(definition.Tokens[1].Required);
+        Assert.True(definition.Tokens[1].IsRequired);
 
         Assert.Equal("field2", definition.Tokens[2].Name);
-        Assert.True(definition.Tokens[2].Optional);
+        Assert.True(definition.Tokens[2].IsOptional);
 
         Assert.Equal("field3", definition.Tokens[3].Name);
-        Assert.True(definition.Tokens[3].Repeating);
+        Assert.True(definition.Tokens[3].IsRepeating);
 
         Assert.Equal("nested_field", definition.Tokens[4].Name);
         Assert.True(definition.Tokens[4].TerminateOnNewLine);

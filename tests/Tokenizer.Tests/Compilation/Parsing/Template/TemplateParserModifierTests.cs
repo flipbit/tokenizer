@@ -33,9 +33,9 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -58,10 +58,10 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
-        Assert.False(token.Required);
+        Assert.False(token.IsRepeating);
+        Assert.False(token.IsRequired);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
     }
 
     [Fact]
@@ -133,9 +133,9 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -154,13 +154,13 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Repeating Token:\n    ", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
-        Assert.False(token1.Repeating);
+        Assert.False(token1.IsRepeating);
 
         var token2 = template.Tokens[1];
 
         Assert.Equal("\n    ", token2.Preamble);
         Assert.Equal("TokenName", token2.Name);
-        Assert.True(token2.Repeating);
+        Assert.True(token2.IsRepeating);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("Repeating Token:    ", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
-        Assert.True(token1.Repeating);
+        Assert.True(token1.IsRepeating);
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
         Assert.Empty(token.Decorators);
     }
 
@@ -209,7 +209,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.Empty(token.Decorators);
     }
 
@@ -226,7 +226,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Repeating);
+        Assert.True(token.IsRepeating);
         Assert.Empty(token.Decorators);
     }
 

@@ -145,7 +145,7 @@ public sealed class Template
         // Only remove match if out-of-order token
         if (Options.OutOfOrderTokens)
         {
-            if (token.Repeating == false) matchIds.Add(token.Id);
+            if (token.IsRepeating == false) matchIds.Add(token.Id);
             return matchIds;
         }
 
@@ -153,7 +153,7 @@ public sealed class Template
         {
             if (candidate == token)
             {
-                if (candidate.Repeating == false)
+                if (candidate.IsRepeating == false)
                 {
                     matchIds.Add(candidate.Id);
                 }
@@ -196,7 +196,7 @@ public sealed class Template
         foreach (var id in matchIds) exclusionBuffer.Add(id);
         foreach (var token in candidates.Tokens)
         {
-            if (!token.Repeating) exclusionBuffer.Add(token.Id);
+            if (!token.IsRepeating) exclusionBuffer.Add(token.Id);
         }
         foreach (var id in excludedRepeatingTokens) exclusionBuffer.Add(id);
 

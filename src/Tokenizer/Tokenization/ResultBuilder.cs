@@ -98,7 +98,7 @@ public class ResultBuilder : IResultBuilder
             "Adding token miss: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
             token.Id,
             token.Name,
-            token.Required);
+            token.IsRequired);
 
         result.Tokens.AddMiss(token);
     }
@@ -143,7 +143,7 @@ public class ResultBuilder : IResultBuilder
                     "Token not matched: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
                     token.Id,
                     token.Name,
-                    token.Required);
+                    token.IsRequired);
 
                 collector.Record(DiagnosticEventType.TokenMissed,
                     tokenName: token.Name, tokenId: token.Id);
@@ -154,7 +154,7 @@ public class ResultBuilder : IResultBuilder
         }
 
         var matchCount = result.Tokens.Matches.Count;
-        var requiredMissCount = result.Tokens.Misses.Count(t => t.Required);
+        var requiredMissCount = result.Tokens.Misses.Count(t => t.IsRequired);
 
         log.LogDebug(
             "Tokenization results summary: TotalMatches={TotalMatches}, TotalMisses={TotalMisses}, RequiredMisses={RequiredMisses}, Success={Success}",

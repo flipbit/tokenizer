@@ -122,7 +122,7 @@ public class TokenEnumerator
                 matches.Add(token);
             }
 
-            if (token.Optional == false) break;
+            if (token.IsOptional == false) break;
         }
 
         return matches.Count > 0;

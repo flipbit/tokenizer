@@ -34,8 +34,8 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Optional);
-        Assert.False(token.Required);
+        Assert.True(token.IsOptional);
+        Assert.False(token.IsRequired);
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Required);
-        Assert.False(token.Optional);
+        Assert.True(token.IsRequired);
+        Assert.False(token.IsOptional);
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Repeating);
-        Assert.True(token.Optional);
+        Assert.True(token.IsRepeating);
+        Assert.True(token.IsOptional);
     }
 
     [Fact]
@@ -81,8 +81,8 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Optional);
-        Assert.True(token.Repeating);
+        Assert.True(token.IsOptional);
+        Assert.True(token.IsRepeating);
         Assert.True(token.TerminateOnNewLine);
     }
 
@@ -94,9 +94,9 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.False(token.Optional);
-        Assert.False(token.Required);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsOptional);
+        Assert.False(token.IsRequired);
+        Assert.False(token.IsRepeating);
         Assert.False(token.TerminateOnNewLine);
     }
 
@@ -108,7 +108,7 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
     }
 
@@ -120,8 +120,8 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Repeating);
-        Assert.True(token.Optional);
+        Assert.True(token.IsRepeating);
+        Assert.True(token.IsOptional);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class TemplateBinderModifierTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.ConsiderOnce);
+        Assert.True(token.IsSingleUse);
         Assert.Empty(token.Decorators);
     }
 }

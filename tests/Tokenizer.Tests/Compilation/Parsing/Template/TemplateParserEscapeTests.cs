@@ -25,9 +25,9 @@ public class TemplateParserEscapeTests
 
         Assert.Equal("This {is} the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]

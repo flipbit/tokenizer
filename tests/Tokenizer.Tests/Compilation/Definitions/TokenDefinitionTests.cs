@@ -18,12 +18,12 @@ public class TokenDefinitionTests
         Assert.Equal(string.Empty, token.Preamble);
         Assert.Equal(string.Empty, token.Name);
         Assert.Equal(string.Empty, token.Value);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
-        Assert.False(token.Required);
+        Assert.False(token.IsRepeating);
+        Assert.False(token.IsRequired);
         Assert.False(token.IsNull);
-        Assert.False(token.ConsiderOnce);
+        Assert.False(token.IsSingleUse);
         Assert.Equal(string.Empty, token.Content);
         Assert.NotNull(token.Location);
         Assert.Empty(token.Decorators);
@@ -121,10 +121,10 @@ public class TokenDefinitionTests
         var token = new TokenDefinition();
 
         // Act
-        token.Optional = true;
+        token.IsOptional = true;
 
         // Assert
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
     }
 
     [Fact]
@@ -147,10 +147,10 @@ public class TokenDefinitionTests
         var token = new TokenDefinition();
 
         // Act
-        token.Repeating = true;
+        token.IsRepeating = true;
 
         // Assert
-        Assert.True(token.Repeating);
+        Assert.True(token.IsRepeating);
     }
 
     [Fact]
@@ -160,10 +160,10 @@ public class TokenDefinitionTests
         var token = new TokenDefinition();
 
         // Act
-        token.Required = true;
+        token.IsRequired = true;
 
         // Assert
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
     }
 
     [Fact]
@@ -186,10 +186,10 @@ public class TokenDefinitionTests
         var token = new TokenDefinition();
 
         // Act
-        token.ConsiderOnce = true;
+        token.IsSingleUse = true;
 
         // Assert
-        Assert.True(token.ConsiderOnce);
+        Assert.True(token.IsSingleUse);
     }
 
     [Fact]

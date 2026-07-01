@@ -21,7 +21,7 @@ public class TemplateBinderTests
         // Assert
         var tok = Assert.Single(def.Tokens);
         Assert.Equal("name", tok.Name);
-        Assert.True(tok.Optional);
+        Assert.True(tok.IsOptional);
         Assert.Equal("x", tok.Value);
     }
 
@@ -118,7 +118,7 @@ public class TemplateBinderTests
         Assert.Equal("name", def.Tokens[0].Name);
         Assert.Single(def.Tokens[0].Decorators);
         Assert.Equal("id", def.Tokens[1].Name);
-        Assert.True(def.Tokens[1].Optional);
+        Assert.True(def.Tokens[1].IsOptional);
         Assert.Equal("123", def.Tokens[1].Value);
     }
 

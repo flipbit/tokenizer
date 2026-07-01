@@ -29,7 +29,7 @@ public class TokenPropertyImmutabilityTests
 
         // Assert
         var nameToken = Assert.Single(result.Tokens.Matches, m => m.Token.Name == "Name");
-        Assert.True(nameToken.Token.Optional);
+        Assert.True(nameToken.Token.IsOptional);
     }
 
     public class TestClass

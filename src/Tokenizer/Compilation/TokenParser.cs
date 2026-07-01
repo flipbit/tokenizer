@@ -160,25 +160,25 @@ internal class TokenParser
             foreach (var preToken in preTemplate.Tokens)
             {
                 log.LogTrace("Parsing token {TokenId}: Name={TokenName}, Content={TokenContent}, Optional={Optional}, Repeating={Repeating}",
-                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.Optional, preToken.Repeating);
+                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.IsOptional, preToken.IsRepeating);
 
                 var preamble = ComputePreamble(preToken, template.Options, log);
                 var location = preToken.Location ?? new Enumerators.FileLocation();
                 var token = new Token(preToken.Content, preToken.Name ?? string.Empty, preamble, location);
 
-                token.Optional = preToken.Optional;
-                token.Repeating = preToken.Repeating;
+                token.IsOptional = preToken.IsOptional;
+                token.IsRepeating = preToken.IsRepeating;
                 token.TerminateOnNewLine = preToken.TerminateOnNewLine;
-                token.Required = preToken.Required;
+                token.IsRequired = preToken.IsRequired;
                 token.DependsOnId = preToken.DependsOnId;
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
                 token.IsNull = preToken.IsNull;
-                token.ConsiderOnce = preToken.ConsiderOnce;
+                token.IsSingleUse = preToken.IsSingleUse;
 
                 // All tokens optional if out-of-order enabled
                 if (template.Options.OutOfOrderTokens)
                 {
-                    token.Optional = true;
+                    token.IsOptional = true;
                     log.LogTrace("Token {TokenId} marked as optional due to OutOfOrderTokens option", token.Id);
                 }
 
@@ -198,10 +198,10 @@ internal class TokenParser
                 // it produces a non-repeating token followed by a repeating one with
                 // the same name. The repeating token should not match until the
                 // non-repeating one has been consumed.
-                if (token.Repeating && token.DependsOnId == -1 && template.Tokens.Count >= 2)
+                if (token.IsRepeating && token.DependsOnId == -1 && template.Tokens.Count >= 2)
                 {
                     var previous = template.Tokens.Last(t => t.Id != token.Id);
-                    if (previous.Name == token.Name && previous.Repeating == false)
+                    if (previous.Name == token.Name && previous.IsRepeating == false)
                     {
                         token.DependsOnId = previous.Id;
                         log.LogTrace("Token {TokenId} ({TokenName}) linked as dependent of token {ParentId}",
@@ -264,7 +264,7 @@ internal class TokenParser
         {
             if (IsConcatenationDecorator(preToken.Name ?? string.Empty, decorator, out var joiningString))
             {
-                token.Concatenate = true;
+                token.CanConcatenate = true;
                 token.ConcatenationString = joiningString;
 
                 log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",

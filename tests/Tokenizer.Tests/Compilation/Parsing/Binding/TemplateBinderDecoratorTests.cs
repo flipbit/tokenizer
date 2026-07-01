@@ -19,7 +19,7 @@ public class TemplateBinderDecoratorTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.Empty(token.Decorators);
     }
 
@@ -31,7 +31,7 @@ public class TemplateBinderDecoratorTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
         Assert.Empty(token.Decorators);
     }
 
@@ -43,7 +43,7 @@ public class TemplateBinderDecoratorTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Repeating);
+        Assert.True(token.IsRepeating);
         Assert.Empty(token.Decorators);
     }
 
@@ -133,7 +133,7 @@ public class TemplateBinderDecoratorTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.Single(token.Decorators);
         Assert.Equal("Trim", token.Decorators[0].Name);
     }

@@ -216,7 +216,7 @@ public class TokenizationEngine : ITokenizationEngine
         ProcessFrontMatterTokens(template, targetObject, context.Enumerator.Location, result, collector);
 
         log.LogTrace("Found {MatchCount} matches.", result.Tokens.Matches.Count);
-        log.LogTrace("{MissingCount} required tokens were missing.", result.Tokens.Misses.Count(t => t.Required));
+        log.LogTrace("{MissingCount} required tokens were missing.", result.Tokens.Misses.Count(t => t.IsRequired));
         log.LogDebug("Phase: Tokenization summary - Matches: {MatchCount}, Misses: {MissCount}, Exceptions: {ExceptionCount}",
             result.Tokens.Matches.Count, result.Tokens.Misses.Count, result.Exceptions.Count);
 
@@ -455,17 +455,17 @@ public class TokenizationEngine : ITokenizationEngine
                     candidates.Remove(token);
                     i--;
                 }
-                else if (token.ConsiderOnce)
+                else if (token.IsSingleUse)
                 {
                     if (log.IsEnabled(LogLevel.Trace))
                     {
                         log.LogTrace("Ln: {Line} Col: {Column} : Skipping & removing {TokenName} ({TokenId}), '{Replacement}' is not a match.",
                             enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
                     }
-                    log.LogTrace("Backtracking: Removing ConsiderOnce token '{TokenName}' ({TokenId}) and marking as miss",
+                    log.LogTrace("Backtracking: Removing single-use token '{TokenName}' ({TokenId}) and marking as miss",
                         token.Name, token.Id);
 
-                    collector.Record(DiagnosticEventType.ConsiderOnceTokenRemoved,
+                    collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
                         tokenName: token.Name, tokenId: token.Id,
                         location: enumerator.Location);
                     candidates.Remove(token);
@@ -544,7 +544,7 @@ public class TokenizationEngine : ITokenizationEngine
             value: replacement.ToString(),
             location: location);
 
-        if (candidates.Tokens.First().Repeating &&
+        if (candidates.Tokens.First().IsRepeating &&
             string.IsNullOrWhiteSpace(candidates.Preamble) &&
             result.Tokens.HasMatches)
         {

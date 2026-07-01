@@ -61,7 +61,7 @@ public class EndToEndParsingTests
 
         var idToken = definition.Tokens[1];
         Assert.Equal("id", idToken.Name);
-        Assert.True(idToken.Required);
+        Assert.True(idToken.IsRequired);
         Assert.Equal(2, idToken.Decorators.Count);
     }
 

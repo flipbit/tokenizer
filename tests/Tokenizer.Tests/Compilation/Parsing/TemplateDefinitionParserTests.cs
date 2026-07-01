@@ -52,9 +52,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -77,17 +77,17 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
-        Assert.False(token1.Optional);
+        Assert.False(token1.IsOptional);
         Assert.False(token1.TerminateOnNewLine);
-        Assert.False(token1.Repeating);
+        Assert.False(token1.IsRepeating);
 
         var token2 = template.Tokens.ElementAt(1);
 
         Assert.Equal("Preamble 2 ", token2.Preamble);
         Assert.Equal("TokenName2", token2.Name);
-        Assert.False(token2.Optional);
+        Assert.False(token2.IsOptional);
         Assert.False(token2.TerminateOnNewLine);
-        Assert.False(token2.Repeating);
+        Assert.False(token2.IsRepeating);
     }
 
     [Fact]
@@ -103,9 +103,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -128,10 +128,10 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
-        Assert.False(token.Required);
+        Assert.False(token.IsRepeating);
+        Assert.False(token.IsRequired);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
     }
 
     [Fact]
@@ -203,9 +203,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -221,9 +221,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
         Assert.Single(token.Decorators);
 
         var decorator = token.Decorators.First();
@@ -244,9 +244,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
         Assert.Equal(2, token.Decorators.Count);
 
         var decorator1 = token.Decorators.First();
@@ -480,9 +480,9 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This {is} the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.False(token.Optional);
+        Assert.False(token.IsOptional);
         Assert.False(token.TerminateOnNewLine);
-        Assert.False(token.Repeating);
+        Assert.False(token.IsRepeating);
     }
 
     [Fact]
@@ -515,10 +515,10 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.True(token.TerminateOnNewLine);
-        Assert.True(token.Repeating);
-        Assert.True(token.Required);
+        Assert.True(token.IsRepeating);
+        Assert.True(token.IsRequired);
     }
 
     [Fact]
@@ -537,13 +537,13 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Repeating Token:\n    ", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
-        Assert.False(token1.Repeating);
+        Assert.False(token1.IsRepeating);
 
         var token2 = template.Tokens[1];
 
         Assert.Equal("\n    ", token2.Preamble);
         Assert.Equal("TokenName", token2.Name);
-        Assert.True(token2.Repeating);
+        Assert.True(token2.IsRepeating);
     }
 
     [Fact]
@@ -559,7 +559,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("Repeating Token:    ", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
-        Assert.True(token1.Repeating);
+        Assert.True(token1.IsRepeating);
     }
 
     [Fact]
@@ -575,7 +575,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Required);
+        Assert.True(token.IsRequired);
         Assert.Empty(token.Decorators);
     }
 
@@ -592,7 +592,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Optional);
+        Assert.True(token.IsOptional);
         Assert.Empty(token.Decorators);
     }
 
@@ -609,7 +609,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.Repeating);
+        Assert.True(token.IsRepeating);
         Assert.Empty(token.Decorators);
     }
 

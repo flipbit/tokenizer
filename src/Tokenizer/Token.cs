@@ -57,13 +57,13 @@ public sealed class Token
     /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
     /// during processing.
     /// </summary>
-    public bool Optional { get; internal set; }
+    public bool IsOptional { get; internal set; }
 
     /// <summary>
     /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
     /// an <see cref="IList{T}"/>.
     /// </summary>
-    public bool Repeating { get; internal set; }
+    public bool IsRepeating { get; internal set; }
 
     /// <summary>
     /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
@@ -75,7 +75,7 @@ public sealed class Token
     /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
     /// the processing to be successful.
     /// </summary>
-    public bool Required { get; internal set; }
+    public bool IsRequired { get; internal set; }
 
     /// <summary>
     /// The unique id of this token in the <see cref="Template"/>.
@@ -108,7 +108,7 @@ public sealed class Token
     /// If true, multiple instances of this token will be concatenated together
     /// on the target.
     /// </summary>
-    public bool Concatenate { get; internal set; }
+    public bool CanConcatenate { get; internal set; }
 
     /// <summary>
     /// Defines a joining string to use when concatenating two token values.
@@ -116,10 +116,9 @@ public sealed class Token
     public string? ConcatenationString { get; internal set; }
 
     /// <summary>
-
-    /// If true, this token will only be attempted to be matched once. 
+    /// If true, this token will only be attempted to be matched once.
     /// </summary>
-    public bool ConsiderOnce { get; internal set; }
+    public bool IsSingleUse { get; internal set; }
 
     /// <summary>
     /// Returns the string from which this token was created.
@@ -243,13 +242,13 @@ public sealed class Token
 
         try
         {
-            if (Concatenate)
+            if (CanConcatenate)
             {
                 if (assignedValue == null) return true;
 
                 var current = target.GetValue(Name);
 
-                if (CanConcatenate(current, assignedValue))
+                if (CanConcatenateValues(current, assignedValue))
                 {
                     var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
                     if (concatenated != null) target.SetValue(Name, concatenated);
@@ -291,7 +290,7 @@ public sealed class Token
 
     private bool SetDictionaryValue(IDictionary<string, object> dictionary, object input)
     {
-        if (Repeating)
+        if (IsRepeating)
         {
             List<object> list;
             if (dictionary.ContainsKey(Name))
@@ -361,7 +360,7 @@ public sealed class Token
         return true;
     }
 
-    internal bool CanConcatenate(object? existingValue, object newValue)
+    internal bool CanConcatenateValues(object? existingValue, object newValue)
     {
         if (existingValue is string && newValue is string)
         {

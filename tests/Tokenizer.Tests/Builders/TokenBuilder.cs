@@ -49,7 +49,7 @@ public class TokenBuilder
 
     public TokenBuilder WithRequired(bool required = true)
     {
-        _configurations.Add(t => t.Required = required);
+        _configurations.Add(t => t.IsRequired = required);
         return this;
     }
 
@@ -57,21 +57,21 @@ public class TokenBuilder
     {
         _configurations.Add(t =>
         {
-            t.Optional = optional;
-            t.Required = !optional;
+            t.IsOptional = optional;
+            t.IsRequired = !optional;
         });
         return this;
     }
 
     public TokenBuilder WithRepeating(bool repeating = true)
     {
-        _configurations.Add(t => t.Repeating = repeating);
+        _configurations.Add(t => t.IsRepeating = repeating);
         return this;
     }
 
     public TokenBuilder WithConsiderOnce(bool considerOnce = true)
     {
-        _configurations.Add(t => t.ConsiderOnce = considerOnce);
+        _configurations.Add(t => t.IsSingleUse = considerOnce);
         return this;
     }
 

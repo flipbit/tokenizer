@@ -32,13 +32,13 @@ public sealed class TokenResult
 
     private bool TryConcatMatch(Token token, object value, FileLocation location)
     {
-        if (token.Concatenate == false) return false;
+        if (token.CanConcatenate == false) return false;
 
         if (_matches.Any(m => m.Token.Name == token.Name) == false) return false;
 
         var match = _matches.First(m => m.Token.Name == token.Name);
 
-        if (token.CanConcatenate(match.Value, value) == false) return false;
+        if (token.CanConcatenateValues(match.Value, value) == false) return false;
 
         var concatenated = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
         if (concatenated != null) match.Value = concatenated;
@@ -51,7 +51,7 @@ public sealed class TokenResult
         _misses.Add(token);
     }
 
-    public bool HasMissingRequiredTokens => Misses.Any(m => m.Required);
+    public bool HasMissingRequiredTokens => Misses.Any(m => m.IsRequired);
 
     public bool HasMatches => Matches.Any();
 }

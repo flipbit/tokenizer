@@ -36,6 +36,21 @@ public interface ITokenizationContext
     HashSet<int> DisabledRepeatingTokens { get; }
 
     /// <summary>
+    /// Gets a reusable buffer for filtering tokens in <see cref="Template.TokensExcluding"/>.
+    /// </summary>
+    List<Token> TokenFilterBuffer { get; }
+
+    /// <summary>
+    /// Gets a reusable set for tracking included token IDs during token filtering.
+    /// </summary>
+    HashSet<int> TokenFilterIds { get; }
+
+    /// <summary>
+    /// Gets a reusable set for building exclusion sets during token filtering.
+    /// </summary>
+    HashSet<int> ExclusionBuffer { get; }
+
+    /// <summary>
     /// Gets the current replacement location in the input text.
     /// </summary>
     FileLocation ReplacementLocation { get; set; }

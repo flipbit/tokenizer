@@ -145,7 +145,7 @@ public class TokenizationEngine : ITokenizationEngine
             }
 
             // Check for next token
-            if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens), template.Options.OutOfOrderTokens, matchBuffer))
+            if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, matchBuffer))
             {
                 if (log.IsEnabled(LogLevel.Trace))
                 {

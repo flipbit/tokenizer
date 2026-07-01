@@ -172,38 +172,34 @@ public sealed class Template
         tokens.Add(token);
     }
 
-    internal IEnumerable<Token> TokensExcluding(HashSet<int> excludedIds)
+    internal IEnumerable<Token> TokensExcluding(HashSet<int> excludedIds, List<Token> buffer, HashSet<int> idBuffer)
     {
-        var included = new List<Token>();
-        var includedIds = new HashSet<int>();
+        buffer.Clear();
+        idBuffer.Clear();
 
         foreach (var token in tokens)
         {
             if (token.IsFrontMatterToken) continue;
             if (excludedIds.Contains(token.Id)) continue;
-            included.Add(token);
-            includedIds.Add(token.Id);
+            buffer.Add(token);
+            idBuffer.Add(token.Id);
         }
 
-        included.RemoveAll(t => includedIds.Contains(t.DependsOnId));
+        buffer.RemoveAll(t => idBuffer.Contains(t.DependsOnId));
 
-        return included;
+        return buffer;
     }
 
-    internal IEnumerable<Token> TokensExcluding(HashSet<int> matchIds, CandidateTokenList candidates, HashSet<int> excludedRepeatingTokens)
+    internal IEnumerable<Token> TokensExcluding(HashSet<int> matchIds, CandidateTokenList candidates, HashSet<int> excludedRepeatingTokens, HashSet<int> exclusionBuffer, List<Token> tokenBuffer, HashSet<int> idBuffer)
     {
-        var excluded = new HashSet<int>(matchIds);
-
+        exclusionBuffer.Clear();
+        foreach (var id in matchIds) exclusionBuffer.Add(id);
         foreach (var token in candidates.Tokens)
         {
-            if (!token.Repeating) excluded.Add(token.Id);
+            if (!token.Repeating) exclusionBuffer.Add(token.Id);
         }
+        foreach (var id in excludedRepeatingTokens) exclusionBuffer.Add(id);
 
-        foreach (var id in excludedRepeatingTokens)
-        {
-            excluded.Add(id);
-        }
-
-        return TokensExcluding(excluded);
+        return TokensExcluding(exclusionBuffer, tokenBuffer, idBuffer);
     }
 }

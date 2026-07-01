@@ -40,6 +40,21 @@ public sealed class TokenizationContext : ITokenizationContext, IDisposable
     public HashSet<int> DisabledRepeatingTokens { get; private set; }
 
     /// <summary>
+    /// Gets a reusable buffer for filtering tokens in <see cref="Template.TokensExcluding"/>.
+    /// </summary>
+    public List<Token> TokenFilterBuffer { get; } = new();
+
+    /// <summary>
+    /// Gets a reusable set for tracking included token IDs during token filtering.
+    /// </summary>
+    public HashSet<int> TokenFilterIds { get; } = new();
+
+    /// <summary>
+    /// Gets a reusable set for building exclusion sets during token filtering.
+    /// </summary>
+    public HashSet<int> ExclusionBuffer { get; } = new();
+
+    /// <summary>
     /// Gets or sets the current replacement location in the input text.
     /// </summary>
     public FileLocation ReplacementLocation { get; set; }
@@ -94,6 +109,9 @@ public sealed class TokenizationContext : ITokenizationContext, IDisposable
         ClearReplacement();
         MatchIds.Clear();
         DisabledRepeatingTokens.Clear();
+        TokenFilterBuffer.Clear();
+        TokenFilterIds.Clear();
+        ExclusionBuffer.Clear();
         ReplacementLocation = new FileLocation();
 
         if (Enumerator != null)

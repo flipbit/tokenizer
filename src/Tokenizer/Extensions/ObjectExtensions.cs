@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Tokens.Exceptions;
 
 namespace Tokens.Extensions
 {
     public static class ObjectExtensions
     {
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
+
+        private static PropertyInfo[] GetCachedProperties(Type type)
+        {
+            return PropertyCache.GetOrAdd(type, t => t.GetProperties());
+        }
+
         /// <summary>
         /// Sets the given value on the given property with the given path.
         /// </summary>
@@ -42,7 +51,7 @@ namespace Tokens.Extensions
         private static object SetInnerValue(object @object, IReadOnlyList<string> path, object value, StringComparison stringComparison)
         {
             var set = false;
-            var propertyInfos = @object.GetType().GetProperties();
+            var propertyInfos = GetCachedProperties(@object.GetType());
 
             foreach (var propertyInfo in propertyInfos)
             {
@@ -240,7 +249,7 @@ namespace Tokens.Extensions
         
         private static T? GetInnerValue<T>(object @object, IReadOnlyList<string> path, StringComparison stringComparison)
         {
-            var propertyInfos = @object.GetType().GetProperties();
+            var propertyInfos = GetCachedProperties(@object.GetType());
 
             foreach (var propertyInfo in propertyInfos)
             {

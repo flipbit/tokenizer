@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Tokens.Exceptions;
 
@@ -34,28 +33,20 @@ public static class ObjectExtensions
 
         var segments = propertyPath.Split('.');
         var objectType = @object.GetType().Name;
-
-        // Check object type
-        if (string.Equals(objectType, segments[0], stringComparison))
-        {
-            @object = (T)SetInnerValue(@object, segments.Skip(1).ToArray(), value, stringComparison);
-        }
-        else
-        {
-            @object = (T)SetInnerValue(@object, segments.ToArray(), value, stringComparison);
-        }
+        var depth = string.Equals(objectType, segments[0], stringComparison) ? 1 : 0;
+        @object = (T)SetInnerValue(@object, segments, depth, value, stringComparison);
 
         return @object;
     }
 
-    private static object SetInnerValue(object @object, IReadOnlyList<string> path, object value, StringComparison stringComparison)
+    private static object SetInnerValue(object @object, string[] segments, int depth, object value, StringComparison stringComparison)
     {
         var set = false;
         var propertyInfos = GetCachedProperties(@object.GetType());
 
         foreach (var propertyInfo in propertyInfos)
         {
-            if (!string.Equals(propertyInfo.Name, path[0], stringComparison)) continue;
+            if (!string.Equals(propertyInfo.Name, segments[depth], stringComparison)) continue;
 
             set = true;
 
@@ -66,7 +57,7 @@ public static class ObjectExtensions
                 $"CanWrite: {propertyInfo.CanWrite}, HasSetter: {propertyInfo.GetSetMethod() != null}, " +
                 $"PropertyType: {propertyInfo.PropertyType.Name}, ValueType: {value?.GetType().Name ?? "null"}");
 
-            if (path.Count == 1)
+            if (depth == segments.Length - 1)
             {
                 if (propertyInfo.PropertyType.IsGenericType &&
                    (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>) ||
@@ -174,7 +165,7 @@ public static class ObjectExtensions
 
             if (value != null)
             {
-                SetInnerValue(currentValue, path.Skip(1).ToArray(), value, stringComparison);
+                SetInnerValue(currentValue, segments, depth + 1, value, stringComparison);
             }
 
             break;
@@ -182,7 +173,7 @@ public static class ObjectExtensions
 
         if (!set)
         {
-            throw new MissingMemberException($@"Could find property '{path[0]}' on {@object.GetType().Name}");
+            throw new MissingMemberException($@"Could find property '{segments[depth]}' on {@object.GetType().Name}");
         }
 
         return @object;
@@ -230,32 +221,21 @@ public static class ObjectExtensions
 
         var segments = propertyPath.Split('.');
         var objectType = target.GetType().Name;
+        var depth = string.Equals(objectType, segments[0], stringComparison) ? 1 : 0;
 
-        T? value;
-
-        // Check object type
-        if (string.Equals(objectType, segments[0], stringComparison))
-        {
-            value = GetInnerValue<T>(target, segments.Skip(1).ToArray(), stringComparison);
-        }
-        else
-        {
-            value = GetInnerValue<T>(target, segments.ToArray(), stringComparison);
-        }
-
-        return value;
+        return GetInnerValue<T>(target, segments, depth, stringComparison);
 
     }
 
-    private static T? GetInnerValue<T>(object @object, IReadOnlyList<string> path, StringComparison stringComparison)
+    private static T? GetInnerValue<T>(object @object, string[] segments, int depth, StringComparison stringComparison)
     {
         var propertyInfos = GetCachedProperties(@object.GetType());
 
         foreach (var propertyInfo in propertyInfos)
         {
-            if (!string.Equals(propertyInfo.Name, path[0], stringComparison)) continue;
+            if (!string.Equals(propertyInfo.Name, segments[depth], stringComparison)) continue;
 
-            if (path.Count == 1)
+            if (depth == segments.Length - 1)
             {
                 var value = propertyInfo.GetValue(@object);
 
@@ -269,9 +249,9 @@ public static class ObjectExtensions
                 return default;
             }
 
-            return GetInnerValue<T>(currentValue, path.Skip(1).ToArray(), stringComparison);
+            return GetInnerValue<T>(currentValue, segments, depth + 1, stringComparison);
         }
 
-        throw new MissingMemberException($@"Could find property '{path[0]}' on {@object.GetType().Name}");
+        throw new MissingMemberException($@"Could find property '{segments[depth]}' on {@object.GetType().Name}");
     }
 }

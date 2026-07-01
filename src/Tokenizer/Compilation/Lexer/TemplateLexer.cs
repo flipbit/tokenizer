@@ -56,7 +56,7 @@ public class TemplateLexer
     private sealed class LookaheadReader
     {
         private readonly TextReader inner;
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         private char[] buffer;
         private int startIndex;
         private int length;
@@ -67,7 +67,7 @@ public class TemplateLexer
         public LookaheadReader(TextReader inner)
         {
             this.inner = inner;
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             buffer = new char[1024];
             startIndex = 0;
             length = 0;
@@ -78,7 +78,7 @@ public class TemplateLexer
         {
             get
             {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
                 if (length > 0) return false;
                 return inner.Peek() == -1;
 #else
@@ -89,7 +89,7 @@ public class TemplateLexer
 
         public int PeekChar()
         {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             EnsureBuffered(1);
             return length > 0 ? buffer[startIndex] : -1;
 #else
@@ -101,7 +101,7 @@ public class TemplateLexer
         public string PeekString(int count)
         {
             if (count <= 0) return string.Empty;
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             EnsureBuffered(count);
             if (length == 0) return string.Empty;
             var len = System.Math.Min(count, length);
@@ -117,7 +117,7 @@ public class TemplateLexer
 
         public int ReadChar()
         {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             EnsureBuffered(1);
             if (length == 0) return -1;
             var c = buffer[startIndex];
@@ -133,7 +133,7 @@ public class TemplateLexer
 #endif
         }
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         private void EnsureBuffered(int count)
         {
             if (count <= 0) return;
@@ -375,7 +375,7 @@ public class TemplateLexer
         yield return endToken;
     }
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
     /// <summary>
     /// Asynchronously tokenizes the specified template definition string.
     /// </summary>

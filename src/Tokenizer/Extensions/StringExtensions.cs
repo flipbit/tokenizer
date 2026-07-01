@@ -234,18 +234,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool IsNullOrWhiteSpace(this string value)
     {
-#if DOTNET35
-        var result = string.IsNullOrEmpty(value);
-
-        if (!result)
-        {
-            result = value.Trim() == string.Empty;
-        }
-
-        return result;
-#else
         return string.IsNullOrWhiteSpace(value);
-#endif
     }
 
     /// <summary>

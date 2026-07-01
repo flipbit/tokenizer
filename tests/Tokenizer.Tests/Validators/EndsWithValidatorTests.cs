@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,7 +47,7 @@ public class EndsWithValidatorTests : Tests.TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 
 namespace Tokens.Transformers;
 
@@ -15,7 +15,7 @@ public sealed class RemoveTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 1) throw new TokenizerException($"Remove(value): missing arguments processing: {value}");
+        if (args == null || args.Length != 1) throw new ArgumentException($"Remove(value): missing arguments processing: {value}");
 
         transformed = valueString.Replace(args[0], string.Empty);
 

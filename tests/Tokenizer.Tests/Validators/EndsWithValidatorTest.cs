@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 
 namespace Tokens.Validators;
@@ -26,7 +26,7 @@ public class EndsWithValidatorTest
     [Fact]
     public void TestValidateValueWhenMissingArgument()
     {
-        Assert.Throws<TokenizerException>(() => validator.IsValid("hello world"));
+        Assert.Throws<ArgumentException>(() => validator.IsValid("hello world"));
     }
 
     [Fact]

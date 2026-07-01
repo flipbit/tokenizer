@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 
 namespace Tokens.Validators;
 
@@ -18,7 +18,7 @@ public sealed class EndsWithValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        if (args == null || args.Length == 0) throw new TokenizerException($"EndsWith(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"EndsWith(): missing argument processing: {value}");
 
         return valueString.EndsWith(args[0]);
     }

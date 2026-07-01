@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 
 namespace Tokens.Transformers;
@@ -50,7 +50,7 @@ public class SplitTransformerTests
         var input = "1,2,3,4";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));
     }
 
     [Fact]

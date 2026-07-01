@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Tokens.Extensions;
 
 namespace Tokens.Transformers;
@@ -16,7 +16,7 @@ public sealed class RemoveEndTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 1) throw new TokenizerException($"RemoveEnd(value): missing arguments processing: {value}");
+        if (args == null || args.Length != 1) throw new ArgumentException($"RemoveEnd(value): missing arguments processing: {value}");
 
         if (valueString.EndsWith(args[0]))
         {

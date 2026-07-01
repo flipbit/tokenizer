@@ -1,5 +1,4 @@
 using System;
-using Tokens.Exceptions;
 using Tokens.Extensions;
 
 namespace Tokens.Transformers;
@@ -17,7 +16,7 @@ public sealed class RemoveStartTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 1) throw new TokenizerException($"RemoveStart(value): missing arguments processing: {value}");
+        if (args == null || args.Length != 1) throw new ArgumentException($"RemoveStart(value): missing arguments processing: {value}");
 
         if (valueString.StartsWith(args[0]))
         {

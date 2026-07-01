@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,7 +47,7 @@ public class MinLengthValidatorTests : Tests.TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ValidationException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class MinLengthValidatorTests : Tests.TokenizerTestBase
         var invalidParameter = "hello";
 
         // Act & Assert
-        Assert.Throws<ValidationException>(() => validator.IsValid(input, invalidParameter));
+        Assert.Throws<ArgumentException>(() => validator.IsValid(input, invalidParameter));
     }
 
     [Fact]

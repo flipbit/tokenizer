@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 
 namespace Tokens.Validators;
 
@@ -18,7 +18,7 @@ public sealed class StartsWithValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        if (args == null || args.Length == 0) throw new TokenizerException($"StartsWith(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"StartsWith(): missing argument processing: {value}");
 
         return valueString.StartsWith(args[0]);
     }

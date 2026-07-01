@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -49,7 +49,7 @@ public class RemoveStartTransformerTests : Tests.TokenizerTestBase
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));
     }
 
     [Fact]

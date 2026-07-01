@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 
 namespace Tokens.Transformers;
@@ -28,7 +28,7 @@ public class RemoveEndTransformerTest
     [Fact]
     public void TestSubstringAfterWhenMissingArgument()
     {
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform("one two three", null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.CanTransform("one two three", null!, out var t));
     }
 
     [Fact]

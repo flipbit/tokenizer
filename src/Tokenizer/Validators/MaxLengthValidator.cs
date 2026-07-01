@@ -1,5 +1,4 @@
 using System;
-using Tokens.Exceptions;
 
 namespace Tokens.Validators;
 
@@ -15,7 +14,7 @@ public sealed class MaxLengthValidator : ITokenValidator
     {
         if (args.Length == 0)
         {
-            throw new ValidationException("You must specify a MaxLength value, e.g. 'MaxLength(255)'");
+            throw new ArgumentException("You must specify a MaxLength value, e.g. 'MaxLength(255)'");
         }
 
         try
@@ -26,7 +25,7 @@ public sealed class MaxLengthValidator : ITokenValidator
         }
         catch (FormatException ex)
         {
-            throw new ValidationException("MaxLength parameter must be an integer", ex);
+            throw new ArgumentException("MaxLength parameter must be an integer", ex);
         }
 
     }

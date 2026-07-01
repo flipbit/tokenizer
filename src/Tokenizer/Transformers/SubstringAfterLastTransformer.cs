@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Tokens.Extensions;
 
 namespace Tokens.Transformers;
@@ -16,7 +16,7 @@ public sealed class SubstringAfterLastTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length == 0) throw new TokenizerException($"SubstringAfterLast(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"SubstringAfterLast(): missing argument processing: {value}");
 
         transformed = valueString.SubstringAfterLastString(args[0]);
 

@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Tokens.Extensions;
 
 namespace Tokens.Transformers;
@@ -16,7 +16,7 @@ public sealed class SubstringBeforeTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length == 0) throw new TokenizerException($"SubstringBefore(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"SubstringBefore(): missing argument processing: {value}");
 
         transformed = valueString.SubstringBeforeString(args[0]);
 

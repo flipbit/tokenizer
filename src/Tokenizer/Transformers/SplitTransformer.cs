@@ -1,5 +1,4 @@
 using System;
-using Tokens.Exceptions;
 
 namespace Tokens.Transformers;
 
@@ -16,7 +15,7 @@ public sealed class SplitTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 1) throw new TokenizerException($"Split(value): missing arguments processing: {value}");
+        if (args == null || args.Length != 1) throw new ArgumentException($"Split(value): missing arguments processing: {value}");
 
         var valueArray = valueString.Split(new[] { args[0] }, StringSplitOptions.RemoveEmptyEntries);
         if (valueArray.Length > 1)

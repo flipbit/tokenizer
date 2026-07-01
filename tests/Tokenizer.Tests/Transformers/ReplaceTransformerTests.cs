@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 
 namespace Tokens.Transformers;
@@ -24,13 +24,13 @@ public class ReplaceTransformerTests
     }
 
     [Fact]
-    public void GivenTransformerWithMissingArgument_WhenTransforming_ThenThrowsTokenizerException()
+    public void GivenTransformerWithMissingArgument_WhenTransforming_ThenThrowsArgumentException()
     {
         // Arrange
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => transformer.CanTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => transformer.CanTransform(input, null!, out var t));
     }
 
     [Fact]

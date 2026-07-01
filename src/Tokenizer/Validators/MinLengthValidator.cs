@@ -1,5 +1,4 @@
 using System;
-using Tokens.Exceptions;
 
 namespace Tokens.Validators;
 
@@ -15,7 +14,7 @@ public sealed class MinLengthValidator : ITokenValidator
     {
         if (args.Length == 0)
         {
-            throw new ValidationException("You must specify a MinLength value, e.g. 'MinLength(50)'");
+            throw new ArgumentException("You must specify a MinLength value, e.g. 'MinLength(50)'");
         }
 
         try
@@ -26,7 +25,7 @@ public sealed class MinLengthValidator : ITokenValidator
         }
         catch (FormatException ex)
         {
-            throw new ValidationException("MinLength parameter must be an integer", ex);
+            throw new ArgumentException("MinLength parameter must be an integer", ex);
         }
 
     }

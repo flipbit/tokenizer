@@ -1,4 +1,4 @@
-using Tokens.Exceptions;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,13 +41,13 @@ public class StartsWithValidatorTests : Tests.TokenizerTestBase
     }
 
     [Fact]
-    public void GivenValidatorWithMissingArgument_WhenValidating_ThenThrowsTokenizerException()
+    public void GivenValidatorWithMissingArgument_WhenValidating_ThenThrowsArgumentException()
     {
         // Arrange
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
     }
 
     [Fact]

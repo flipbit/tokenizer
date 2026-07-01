@@ -143,8 +143,8 @@ public class TokenEnumeratorCharTests
         var enumerator = new TokenEnumerator("hello world");
 
         // Act / Assert
-        Assert.True(enumerator.Match("hello"));
-        Assert.False(enumerator.Match("world"));
+        Assert.True(enumerator.TryMatch("hello"));
+        Assert.False(enumerator.TryMatch("world"));
     }
 
     [Fact]

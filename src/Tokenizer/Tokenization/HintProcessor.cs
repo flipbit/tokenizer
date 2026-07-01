@@ -133,7 +133,7 @@ public class HintProcessor : IHintProcessor
             return false;
         }
 
-        var isMatch = enumerator.Match(hint.Text);
+        var isMatch = enumerator.TryMatch(hint.Text);
         log.LogTrace("Hint match validation for '{HintText}': {IsMatch}", hint.Text, isMatch);
 
         return isMatch;

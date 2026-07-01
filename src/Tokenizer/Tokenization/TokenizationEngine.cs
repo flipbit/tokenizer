@@ -145,7 +145,7 @@ public class TokenizationEngine : ITokenizationEngine
             }
 
             // Check for next token
-            if (context.Enumerator.Match(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, matchBuffer))
+            if (context.Enumerator.TryMatch(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, matchBuffer))
             {
                 if (log.IsEnabled(LogLevel.Trace))
                 {
@@ -626,7 +626,7 @@ public class TokenizationEngine : ITokenizationEngine
     private bool ShouldProcessRepeatedToken(ITokenizationContext context)
     {
         return context.Candidates.HasCandidates &&
-               context.Enumerator.Match(context.Candidates.Preamble) &&
+               context.Enumerator.TryMatch(context.Candidates.Preamble) &&
                context.Candidates.Preamble.Length > 0;
     }
 

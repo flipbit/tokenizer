@@ -84,7 +84,7 @@ public class TokenEnumerator
         return pattern[currentLocation + offset];
     }
 
-    public bool Match(string value)
+    public bool TryMatch(string value)
     {
         if (string.IsNullOrEmpty(value)) return true;
         if (currentLocation + value.Length > patternLength) return false;
@@ -104,7 +104,7 @@ public class TokenEnumerator
         }
     }
 
-    public bool Match(IEnumerable<Token> tokens, bool outOfOrderTokens, IList<Token> matches)
+    public bool TryMatch(IEnumerable<Token> tokens, bool outOfOrderTokens, IList<Token> matches)
     {
         matches.Clear();
 
@@ -117,7 +117,7 @@ public class TokenEnumerator
                 continue;
             }
 
-            if (Match(token.Preamble))
+            if (TryMatch(token.Preamble))
             {
                 matches.Add(token);
             }

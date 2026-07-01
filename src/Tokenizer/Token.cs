@@ -34,12 +34,12 @@ namespace Tokens
         /// <summary>
         /// Gets or sets the preamble string that must appear before the token.
         /// </summary>
-        public string Preamble { get; set; }
+        public string Preamble { get; internal set; }
 
         /// <summary>
         /// Gets or sets the value of the token.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         /// Gets the decorators on this Token
@@ -50,25 +50,25 @@ namespace Tokens
         /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
         /// during processing.
         /// </summary>
-        public bool Optional { get; set; }
+        public bool Optional { get; internal set; }
 
         /// <summary>
         /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
         /// an <see cref="IList{T}"/>.
         /// </summary>
-        public bool Repeating { get; set; }
+        public bool Repeating { get; internal set; }
 
         /// <summary>
         /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
         /// newline.
         /// </summary>
-        public bool TerminateOnNewLine { get; set; }
+        public bool TerminateOnNewLine { get; internal set; }
 
         /// <summary>
         /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
         /// the processing to be successful.
         /// </summary>
-        public bool Required { get; set; }
+        public bool Required { get; internal set; }
 
         /// <summary>
         /// The unique id of this token in the <see cref="Template"/>.
@@ -85,34 +85,34 @@ namespace Tokens
         /// <summary>
         /// Determines if this <see cref="Token"/> was defined in the template front matter section.
         /// </summary>
-        public bool IsFrontMatterToken { get; set; }
+        public bool IsFrontMatterToken { get; internal set; }
 
         /// <summary>
         /// Determines if this token is a null placeholder
         /// </summary>
-        public bool IsNull { get; set; }
+        public bool IsNull { get; internal set; }
 
         /// <summary>
         /// The location of this token in the template.
         /// </summary>
-        public FileLocation Location { get; set; }
+        public FileLocation Location { get; internal set; }
 
         /// <summary>
         /// If true, multiple instances of this token will be concatenated together
         /// on the target.
         /// </summary>
-        public bool Concatenate { get; set; }
+        public bool Concatenate { get; internal set; }
 
         /// <summary>
         /// Defines a joining string to use when concatenating two token values.
         /// </summary>
-        public string? ConcatenationString { get; set; }
+        public string? ConcatenationString { get; internal set; }
 
         /// <summary>
 
         /// If true, this token will only be attempted to be matched once. 
         /// </summary>
-        public bool ConsiderOnce { get; set; }
+        public bool ConsiderOnce { get; internal set; }
 
         /// <summary>
         /// Returns the string from which this token was created.

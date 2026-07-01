@@ -5,6 +5,9 @@ using Tokens.Enumerators;
 
 namespace Tokens
 {
+    /// <summary>
+    /// Holds the matched and unmatched tokens produced by a single template tokenization attempt.
+    /// </summary>
     public sealed class TokenResult
     {
         private readonly List<Match> _matches;

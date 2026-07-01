@@ -2,6 +2,9 @@
 
 namespace Tokens.Exceptions
 {
+    /// <summary>
+    /// Thrown when a matched token value cannot be assigned to the target property.
+    /// </summary>
     public class TokenAssignmentException : TokenizerException
     {
         public Token Token { get; }

@@ -22,6 +22,9 @@ namespace Tokens
             EnableDiagnostics = false;
         }
 
+        /// <summary>
+        /// When true, tokens that do not map to a property on the target object are silently ignored.
+        /// </summary>
         public bool IgnoreMissingProperties { get; set; }
 
         /// <summary>
@@ -32,12 +35,21 @@ namespace Tokens
         /// </summary>
         public bool EnableDiagnostics { get; set; }
 
+        /// <summary>
+        /// When true, leading whitespace in the static text preceding a token is trimmed before matching.
+        /// </summary>
         public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
 
+        /// <summary>
+        /// When true, any portion of a token preamble that appears before a newline is discarded.
+        /// </summary>
         public bool TrimPreambleBeforeNewLine { get; set; }
 
         public bool TrimTrailingWhiteSpace { get; set; }
 
+        /// <summary>
+        /// When true, tokens may be matched in any order rather than strictly left-to-right.
+        /// </summary>
         public bool OutOfOrderTokens { get; set; }
 
         /// <summary>

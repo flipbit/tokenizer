@@ -9,15 +9,17 @@ namespace Tokens
     /// </summary>
     public class TokenMatcherResult
     {
+        private readonly List<TokenizeResult> _results;
+
         public TokenMatcherResult()
         {
-            Results = new List<TokenizeResult>();
+            _results = new List<TokenizeResult>();
         }
 
         /// <summary>
         /// Contains the result of processing each <see cref="Template"/> against the input text.
         /// </summary>
-        public IList<TokenizeResult> Results { get; init; }
+        public IReadOnlyList<TokenizeResult> Results => _results;
 
         /// <summary>
         /// Returns the best matching result
@@ -26,7 +28,12 @@ namespace Tokens
 
         public bool Success => BestMatch != null;
 
-        internal TokenizeResult? GetBestMatch() => Results
+        internal void AddResult(TokenizeResult result)
+        {
+            _results.Add(result);
+        }
+
+        internal TokenizeResult? GetBestMatch() => _results
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)
@@ -37,15 +44,17 @@ namespace Tokens
 
     public class TokenMatcherResult<T> where T : class, new()
     {
+        private readonly List<TokenizeResult<T>> _results;
+
         public TokenMatcherResult()
         {
-            Results = new List<TokenizeResult<T>>();
+            _results = new List<TokenizeResult<T>>();
         }
 
         /// <summary>
         /// Contains the result of processing each <see cref="Template"/> against the input text.
         /// </summary>
-        public IList<TokenizeResult<T>> Results { get; init; }
+        public IReadOnlyList<TokenizeResult<T>> Results => _results;
 
         /// <summary>
         /// Returns the best matching result
@@ -54,7 +63,12 @@ namespace Tokens
 
         public bool Success => BestMatch != null;
 
-        internal TokenizeResult<T>? GetBestMatch() => Results
+        internal void AddResult(TokenizeResult<T> result)
+        {
+            _results.Add(result);
+        }
+
+        internal TokenizeResult<T>? GetBestMatch() => _results
             .Where(r => r.Success)
             .OrderByDescending(r => r.Hints.Matches.Count)
             .ThenByDescending(r => r.Tokens.Matches.Count)

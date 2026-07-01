@@ -66,7 +66,7 @@ namespace Tokens
                 {
                     var result = tokenizer.Tokenize(template, input);
 
-                    results.Results.Add(result);
+                    results.AddResult(result);
 
                     log.LogTrace("Match Success: {Success}", result.Success);
                     log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
@@ -119,7 +119,7 @@ namespace Tokens
                 {
                     var result = tokenizer.Tokenize<T>(template, input);
 
-                    results.Results.Add(result);
+                    results.AddResult(result);
 
                     log.LogTrace("Match Success: {Success}", result.Success);
                     log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);

@@ -38,7 +38,7 @@ public class TokenizeResultBuilder
     {
         foreach (var exception in exceptions)
         {
-            _result.Exceptions.Add(exception);
+            _result.AddException(exception);
         }
         return this;
     }
@@ -108,7 +108,7 @@ public class TokenizeResultBuilder<T> where T : class, new()
     {
         foreach (var exception in exceptions)
         {
-            _result.Exceptions.Add(exception);
+            _result.AddException(exception);
         }
         return this;
     }

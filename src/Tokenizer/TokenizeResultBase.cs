@@ -13,9 +13,11 @@ namespace Tokens
         /// <summary>
         ///  Creates a new instance of the <see cref="TokenizeResultBase"/> class.
         /// </summary>
+        private readonly List<Exception> _exceptions;
+
         public TokenizeResultBase(Template template)
         {
-            Exceptions = new List<Exception>();
+            _exceptions = new List<Exception>();
 
             Hints = new HintResult();
             Tokens = new TokenResult();
@@ -32,7 +34,7 @@ namespace Tokens
         /// <summary>
         /// A list of any exceptions that occurred during the matching process
         /// </summary>
-        public IList<Exception> Exceptions { get; }
+        public IReadOnlyList<Exception> Exceptions => _exceptions;
 
         /// <summary>
         /// The matches that where made during the tokenization process
@@ -43,6 +45,11 @@ namespace Tokens
         /// Gets the hints found in the input
         /// </summary>
         public HintResult Hints { get; init; }
+
+        internal void AddException(Exception exception)
+        {
+            _exceptions.Add(exception);
+        }
 
         /// <summary>
         /// Structured diagnostic output from the tokenization process.

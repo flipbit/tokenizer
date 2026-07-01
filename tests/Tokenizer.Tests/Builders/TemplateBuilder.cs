@@ -76,8 +76,8 @@ public class TemplateBuilder
     {
         var template = new Template(_name, _content);
         foreach (var token in _tokens) template.AddToken(token);
-        foreach (var hint in _hints) template.Hints.Add(hint);
-        foreach (var tag in _tags) template.Tags.Add(tag);
+        foreach (var hint in _hints) template.AddHint(hint);
+        foreach (var tag in _tags) template.AddTag(tag);
         if (_options != null) template.Options = _options;
         return template;
     }

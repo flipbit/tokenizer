@@ -54,7 +54,7 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
     {
         var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
         var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
-        template1.Hints.Add(new Hint { Text = "Name", Optional = false });
+        template1.AddHint(new Hint { Text = "Name", Optional = false });
 
         matcher.Templates.Add(template1);
         matcher.Templates.Add(template2);
@@ -73,9 +73,9 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
     {
         var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
         var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
-        template1.Hints.Add(new Hint { Text = "Name", Optional = false });
-        template2.Hints.Add(new Hint { Text = "Name", Optional = false });
-        template2.Hints.Add(new Hint { Text = "Age", Optional = false });
+        template1.AddHint(new Hint { Text = "Name", Optional = false });
+        template2.AddHint(new Hint { Text = "Name", Optional = false });
+        template2.AddHint(new Hint { Text = "Age", Optional = false });
 
         matcher.Templates.Add(template1);
         matcher.Templates.Add(template2);
@@ -129,7 +129,7 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.Tags.Add("no-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30", ["no-age"]);
 
@@ -148,8 +148,8 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.Tags.Add("no-age");
-        matcher.Templates.Get("with-age")!.Tags.Add("with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30", ["Foo"]);
 
@@ -162,8 +162,8 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.Tags.Add("no-age");
-        matcher.Templates.Get("with-age")!.Tags.Add("with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
@@ -181,10 +181,10 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.Tags.Add("no-age");
-        matcher.Templates.Get("no-age")!.Tags.Add("person");
-        matcher.Templates.Get("with-age")!.Tags.Add("with-age");
-        matcher.Templates.Get("with-age")!.Tags.Add("person");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("no-age")!.AddTag("person");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
+        matcher.Templates.Get("with-age")!.AddTag("person");
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30", ["person"]);
 

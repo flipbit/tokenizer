@@ -7,21 +7,24 @@ namespace Tokens
 {
     public class TokenResult
     {
+        private readonly List<Match> _matches;
+        private readonly List<Token> _misses;
+
         public TokenResult()
         {
-            Matches = new List<Match>();
-            Misses = new List<Token>();
+            _matches = new List<Match>();
+            _misses = new List<Token>();
         }
 
-        public IList<Match> Matches { get; }
+        public IReadOnlyList<Match> Matches => _matches;
 
-        public IList<Token> Misses { get; }
+        public IReadOnlyList<Token> Misses => _misses;
 
         internal void AddMatch(Token token, object value, FileLocation location)
         {
             if (TryConcatMatch(token, value, location)) return;
 
-            Matches.Add(new Match(token, value, location.Clone()));
+            _matches.Add(new Match(token, value, location.Clone()));
         }
 
         private bool TryConcatMatch(Token token, object value, FileLocation location)
@@ -42,7 +45,7 @@ namespace Tokens
 
         internal void AddMiss(Token token)
         {
-            Misses.Add(token);
+            _misses.Add(token);
         }
 
         public bool HasMissingRequiredTokens => Misses.Any(m => m.Required);

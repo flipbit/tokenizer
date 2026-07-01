@@ -12,10 +12,12 @@ namespace Tokens
     /// </summary>
     public class TokenDecoratorContext
     {
+        private readonly List<string> _parameters;
+
         public TokenDecoratorContext(Type tokenDecorator)
         {
             DecoratorType = tokenDecorator;
-            Parameters = new List<string>();
+            _parameters = new List<string>();
         }
 
         /// <summary>
@@ -37,7 +39,12 @@ namespace Tokens
         /// <summary>
         /// Contains the parameters to pass the decorator
         /// </summary>
-        public IList<string> Parameters { get; }
+        public IReadOnlyList<string> Parameters => _parameters;
+
+        internal void AddParameter(string parameter)
+        {
+            _parameters.Add(parameter);
+        }
 
         /// <summary>
         /// Returns <c>true</c> if the decorator is a <see cref="ITokenTransformer"/> used to transform
@@ -63,7 +70,7 @@ namespace Tokens
         {
             var instance = (ITokenTransformer) CreateDecorator();
 
-            return instance.CanTransform(value, Parameters.ToArray(), out transformed);
+            return instance.CanTransform(value, _parameters.ToArray(), out transformed);
         }
 
         /// <summary>
@@ -75,10 +82,10 @@ namespace Tokens
 
             if (IsNotValidator)
             {
-                return !instance.IsValid(value, Parameters.ToArray());
+                return !instance.IsValid(value, _parameters.ToArray());
             }
 
-            return instance.IsValid(value, Parameters.ToArray());
+            return instance.IsValid(value, _parameters.ToArray());
         }
     }
 }

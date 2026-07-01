@@ -20,7 +20,7 @@ namespace Tokens
         /// <summary>
         /// A dictionary of values extracted from the input string. 
         /// </summary>
-        public IList<Match> Matches => Tokens.Matches;
+        public IReadOnlyList<Match> Matches => Tokens.Matches;
 
         public object First(string key)
         {
@@ -62,7 +62,7 @@ namespace Tokens
             return default;
         }
 
-        public IList<object> All(string key)
+        public IReadOnlyList<object> All(string key)
         {
             return Matches
                 .Where(m => m.Token.Name == key)

@@ -297,7 +297,7 @@ namespace Tokens.Tokenization
             catch (Exception e)
             {
                 log.LogTrace(e, "Error Assigning Value: {Message}", e.Message);
-                result.Exceptions.Add(e);
+                result.AddException(e);
                 return false;
             }
         }

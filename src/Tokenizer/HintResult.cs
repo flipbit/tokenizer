@@ -10,37 +10,40 @@ namespace Tokens
     /// </summary>
     public class HintResult
     {
+        private readonly List<HintMatch> _matches;
+        private readonly List<Hint> _misses;
+
         public HintResult()
         {
-            Matches = new List<HintMatch>();
-            Misses = new List<Hint>();
+            _matches = new List<HintMatch>();
+            _misses = new List<Hint>();
         }
 
         /// <summary>
         /// Gets the hint matches
         /// </summary>
-        public IList<HintMatch> Matches { get; }
+        public IReadOnlyList<HintMatch> Matches => _matches;
 
         /// <summary>
         /// Gets the hint misses
         /// </summary>
-        public IList<Hint> Misses { get; }
+        public IReadOnlyList<Hint> Misses => _misses;
 
         internal bool AddMatch(Hint hint, TokenEnumerator enumerator)
         {
-            if (Matches.Any(m => m.Text == hint.Text)) return false;
+            if (_matches.Any(m => m.Text == hint.Text)) return false;
 
-            Matches.Add(new HintMatch(hint.Text, hint.Optional, enumerator.Location.Clone()));
+            _matches.Add(new HintMatch(hint.Text, hint.Optional, enumerator.Location.Clone()));
 
             return true;
         }
 
         internal bool AddMiss(Hint hint)
         {
-            if (Misses.Any(m => m.Text == hint.Text) ||
-                Matches.Any(m => m.Text == hint.Text)) return false;
+            if (_misses.Any(m => m.Text == hint.Text) ||
+                _matches.Any(m => m.Text == hint.Text)) return false;
 
-            Misses.Add(hint.Clone());
+            _misses.Add(hint.Clone());
 
             return true;
         }

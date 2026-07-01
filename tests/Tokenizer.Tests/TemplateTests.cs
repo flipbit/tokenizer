@@ -14,7 +14,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagWhenTrue()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
+        template.AddTag("One");
 
         Assert.True(template.HasTag("One"));
     }
@@ -23,7 +23,7 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagWhenTrueWhenDifferentCase()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
+        template.AddTag("One");
 
         Assert.True(template.HasTag("one"));
     }
@@ -32,9 +32,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagWhenTrueWhenMultipleTags()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         Assert.True(template.HasTag("two"));
     }
@@ -43,9 +43,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagWhenMissing()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         Assert.False(template.HasTag("Four"));
     }
@@ -54,9 +54,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagWhenNullInput()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         Assert.False(template.HasTag(null!));
     }
@@ -65,9 +65,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagsWhenTrue()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         Assert.True(template.HasTags(["One", "Two"]));
     }
@@ -76,9 +76,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagsWhenTrueAndDifferentCase()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         Assert.True(template.HasTags(["One", "three"]));
     }
@@ -87,10 +87,10 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagsWhenHasMissingSomeTags()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
-        template.Tags.Add("Four");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
+        template.AddTag("Four");
 
         IList<string> missing;
         var hasTags = template.HasTags(["One", "Five"], out missing);
@@ -120,9 +120,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagsWhenHasNullInput()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         IList<string> missing;
         var hasTags = template.HasTags(null!, out missing);
@@ -136,9 +136,9 @@ public class TemplateTests : Tests.TokenizerTestBase
     public void TestHasTagsWhenHasEmptyInput()
     {
         var template = new Template(string.Empty);
-        template.Tags.Add("One");
-        template.Tags.Add("Two");
-        template.Tags.Add("Three");
+        template.AddTag("One");
+        template.AddTag("Two");
+        template.AddTag("Three");
 
         IList<string> missing;
         var hasTags = template.HasTags(new string[0], out missing);

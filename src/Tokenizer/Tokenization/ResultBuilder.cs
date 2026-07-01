@@ -115,7 +115,7 @@ namespace Tokens.Tokenization
             ArgumentValidation.ThrowIfNull(exception, nameof(exception));
             ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-            result.Exceptions.Add(exception);
+            result.AddException(exception);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Tokens.Tokenization
                     collector.Record(DiagnosticEventType.TokenMissed,
                         tokenName: token.Name, tokenId: token.Id);
 
-                    result.Tokens.Misses.Add(token);
+                    result.Tokens.AddMiss(token);
                     unmatchedCount++;
                 }
             }

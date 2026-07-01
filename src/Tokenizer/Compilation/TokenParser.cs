@@ -143,7 +143,7 @@ namespace Tokens.Compilation
             {
                 if (template.Hints.Any(t => t == hint) == false)
                 {
-                    template.Hints.Add(hint);
+                    template.AddHint(hint);
                     log.LogDebug("Added hint to template {TemplateName}: {Hint}", template.Name, hint);
                 }
             }
@@ -152,7 +152,7 @@ namespace Tokens.Compilation
             {
                 if (template.Tags.Any(t => t == tag) == false)
                 {
-                    template.Tags.Add(tag);
+                    template.AddTag(tag);
                     log.LogDebug("Added tag to template {TemplateName}: {Tag}", template.Name, tag);
                 }
             }
@@ -253,8 +253,8 @@ namespace Tokens.Compilation
             if (string.IsNullOrEmpty(preToken.Value) == false)
             {
                 var setContext = new TokenDecoratorContext(typeof(SetTransformer));
-                setContext.Parameters.Add(preToken.Value);
-                token.Decorators.Add(setContext);
+                setContext.AddParameter(preToken.Value);
+                token.AddDecorator(setContext);
 
                 log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
                     preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
@@ -291,10 +291,10 @@ namespace Tokens.Compilation
 
                         foreach (var arg in decorator.Args)
                         {
-                            context.Parameters.Add(arg);
+                            context.AddParameter(arg);
                         }
 
-                        token.Decorators.Add(context);
+                        token.AddDecorator(context);
 
                         log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
                             preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
@@ -314,12 +314,12 @@ namespace Tokens.Compilation
 
                         foreach (var arg in decorator.Args)
                         {
-                            context.Parameters.Add(arg);
+                            context.AddParameter(arg);
                         }
 
                         context.IsNotValidator = decorator.IsNotDecorator;
 
-                        token.Decorators.Add(context);
+                        token.AddDecorator(context);
 
                         log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
                             preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);

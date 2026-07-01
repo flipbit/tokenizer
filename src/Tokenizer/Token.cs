@@ -22,13 +22,15 @@ namespace Tokens
         /// <summary>
         /// Creates a new instance of the <see cref="Token"/> class.
         /// </summary>
+        private readonly List<TokenDecoratorContext> _decorators;
+
         public Token(string content, string name, string preamble, FileLocation location)
         {
             this.content = content;
             Name = name;
             Preamble = preamble;
             Location = location;
-            Decorators = new List<TokenDecoratorContext>();
+            _decorators = new List<TokenDecoratorContext>();
         }
 
         /// <summary>
@@ -44,7 +46,12 @@ namespace Tokens
         /// <summary>
         /// Gets the decorators on this Token
         /// </summary>
-        public IList<TokenDecoratorContext> Decorators { get; }
+        public IReadOnlyList<TokenDecoratorContext> Decorators => _decorators;
+
+        internal void AddDecorator(TokenDecoratorContext decorator)
+        {
+            _decorators.Add(decorator);
+        }
 
         /// <summary>
         /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped

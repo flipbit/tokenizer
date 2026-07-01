@@ -45,7 +45,7 @@ public class TokenTests : Tests.TokenizerTestBase
         // Arrange
         var person = new Person();
         token.Name = "Person.Age";
-        token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
         // Act
         var assigned = token.Assign(person, "20", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);
@@ -61,7 +61,7 @@ public class TokenTests : Tests.TokenizerTestBase
         // Arrange
         var person = new Person();
         token.Name = "Person.Age";
-        token.Decorators.Add(new TokenDecoratorContext(typeof(IsNumericValidator)));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
         // Act
         var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);

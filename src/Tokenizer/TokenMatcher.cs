@@ -13,7 +13,7 @@ namespace Tokens
     /// Matcher class that can hold multiple <see cref="Template"/> objects, and use
     /// the best match to populate an object from an input string.
     /// </summary>
-    public class TokenMatcher
+    public sealed class TokenMatcher
     {
         private readonly Tokenizer tokenizer;
         private readonly TokenParser parser;

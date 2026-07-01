@@ -6,7 +6,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Trims the token value after the first occurence of the given string 
     /// </summary>
-    public class SubstringAfterLastTransformer : ITokenTransformer
+    public sealed class SubstringAfterLastTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

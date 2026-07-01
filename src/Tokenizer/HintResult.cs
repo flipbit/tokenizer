@@ -8,7 +8,7 @@ namespace Tokens
     /// Contains the results of processing a <see cref="Template"/> for
     /// <see cref="Hint"/> strings.
     /// </summary>
-    public class HintResult
+    public sealed class HintResult
     {
         private readonly List<HintMatch> _matches;
         private readonly List<Hint> _misses;

@@ -5,7 +5,7 @@ namespace Tokens
     /// <summary>
     /// Options for the <see cref="Tokenizer"/>.
     /// </summary>
-    public class TokenizerOptions
+    public sealed class TokenizerOptions
     {
         public static TokenizerOptions Defaults => new TokenizerOptions();
 

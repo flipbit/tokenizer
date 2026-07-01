@@ -9,7 +9,7 @@ namespace Tokens
     /// Represents a template to use to extract data from
     /// free text.
     /// </summary>
-    public class Template
+    public sealed class Template
     {
         private readonly List<Token> tokens;
         private readonly List<Hint> hints;

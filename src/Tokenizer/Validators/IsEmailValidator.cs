@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value is an email address 
     /// </summary>
-    public class IsEmailValidator : ITokenValidator
+    public sealed class IsEmailValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

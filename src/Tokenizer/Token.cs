@@ -14,7 +14,7 @@ namespace Tokens
     /// <summary>
     /// Represents a single token in a string
     /// </summary>
-    public class Token
+    public sealed class Token
     {
         private static readonly ILogger<Token> Log = NullLogger<Token>.Instance;
         private string content;

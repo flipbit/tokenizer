@@ -5,7 +5,7 @@ using Tokens.Enumerators;
 
 namespace Tokens
 {
-    public class TokenResult
+    public sealed class TokenResult
     {
         private readonly List<Match> _matches;
         private readonly List<Token> _misses;

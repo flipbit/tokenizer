@@ -5,7 +5,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Replaces occurrences of a string with another
     /// </summary>
-    public class ReplaceTransformer : ITokenTransformer
+    public sealed class ReplaceTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

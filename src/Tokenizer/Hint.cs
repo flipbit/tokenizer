@@ -6,7 +6,7 @@
     /// Hints are used when determining whether the input is valid, and to determine
     /// tne best matched template for a given input.
     /// </summary>
-    public class Hint
+    public sealed class Hint
     {
         /// <summary>
         /// The text to appear in the input

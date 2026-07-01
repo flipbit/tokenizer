@@ -7,7 +7,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Converts the token value to a <see cref="DateTime"/> in UTC format
     /// </summary>
-    public class ToDateTimeUtcTransformer : ITokenTransformer
+    public sealed class ToDateTimeUtcTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

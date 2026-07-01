@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value ends with a given string
     /// </summary>
-    public class ContainsValidator : ITokenValidator
+    public sealed class ContainsValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

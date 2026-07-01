@@ -10,7 +10,7 @@ namespace Tokens
     /// Contains an instance of a <see cref="ITokenDecorator"/> that can perform
     /// an operation on a <see cref="Token"/>.
     /// </summary>
-    public class TokenDecoratorContext
+    public sealed class TokenDecoratorContext
     {
         private readonly List<string> _parameters;
 

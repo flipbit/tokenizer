@@ -10,7 +10,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Converts the token value to a <see cref="DateTime"/>
     /// </summary>
-    public class ToDateTimeTransformer : ITokenTransformer
+    public sealed class ToDateTimeTransformer : ITokenTransformer
     {
         private static readonly Dictionary<string, string[]> MonthAbbreviations;
         private static readonly object LockHandle;

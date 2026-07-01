@@ -5,7 +5,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Sets the token value 
     /// </summary>
-    public class SetTransformer : ITokenTransformer
+    public sealed class SetTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

@@ -19,7 +19,7 @@ namespace Tokens
     /// Class that creates objects and populates their properties with values
     /// from input strings
     /// </summary>
-    public class Tokenizer
+    public sealed class Tokenizer
     {
         private readonly TokenParser parser;
         private readonly ILogger<Tokenizer> log;

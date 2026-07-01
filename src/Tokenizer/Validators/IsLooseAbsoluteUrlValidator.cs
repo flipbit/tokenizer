@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value is a URL
     /// </summary>
-    public class IsLooseAbsoluteUrlValidator : ITokenValidator
+    public sealed class IsLooseAbsoluteUrlValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

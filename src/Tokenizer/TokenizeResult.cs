@@ -8,7 +8,7 @@ namespace Tokens
     /// Holds the result of attempting to parse an input string against a
     /// <see cref="Template"/>.
     /// </summary>
-    public class TokenizeResult : TokenizeResultBase 
+    public sealed class TokenizeResult : TokenizeResultBase 
     {
         /// <summary>
         ///  Creates a new instance of the <see cref="TokenizeResult"/> class.
@@ -80,7 +80,7 @@ namespace Tokens
     /// Holds the result of attempting to parse an input string against a
     /// <see cref="Template"/> to generate an object of type <see cref="T"/>.
     /// </summary>
-    public class TokenizeResult<T> : TokenizeResultBase where T : class, new()
+    public sealed class TokenizeResult<T> : TokenizeResultBase where T : class, new()
     {
         /// <summary>
         ///  Creates a new instance of the <see cref="TokenizeResult{T}"/> class.

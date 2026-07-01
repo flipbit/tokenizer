@@ -5,7 +5,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Removes occurrences of a string
     /// </summary>
-    public class RemoveTransformer : ITokenTransformer
+    public sealed class RemoveTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

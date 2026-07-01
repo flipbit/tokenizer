@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value is not the specified value
     /// </summary>
-    public class IsNotValidator : ITokenValidator
+    public sealed class IsNotValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

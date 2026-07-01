@@ -7,7 +7,7 @@ namespace Tokens
     /// Contains the result of running a match against multiple <see cref="Template"/>
     /// objects against an input string with the <see cref="TokenMatcher"/>. 
     /// </summary>
-    public class TokenMatcherResult
+    public sealed class TokenMatcherResult
     {
         private readonly List<TokenizeResult> _results;
 
@@ -42,7 +42,7 @@ namespace Tokens
             .FirstOrDefault();
     }
 
-    public class TokenMatcherResult<T> where T : class, new()
+    public sealed class TokenMatcherResult<T> where T : class, new()
     {
         private readonly List<TokenizeResult<T>> _results;
 

@@ -3,7 +3,7 @@
     /// <summary>
     /// Converts the token value to upper case
     /// </summary>
-    public class ToUpperTransformer : ITokenTransformer
+    public sealed class ToUpperTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

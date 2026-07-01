@@ -2,7 +2,7 @@
 
 namespace Tokens
 {
-    public class HintMatch
+    public sealed class HintMatch
     {
         public HintMatch(string text, bool optional, FileLocation location)
         {

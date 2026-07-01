@@ -6,7 +6,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value meets a maximum length requirement
     /// </summary>
-    public class MinLengthValidator : ITokenValidator
+    public sealed class MinLengthValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

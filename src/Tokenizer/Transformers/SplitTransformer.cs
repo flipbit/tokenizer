@@ -6,7 +6,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Removes occurrences of a string from then end of a token value
     /// </summary>
-    public class SplitTransformer : ITokenTransformer
+    public sealed class SplitTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value is a phone number
     /// </summary>
-    public class IsPhoneNumberValidator : ITokenValidator
+    public sealed class IsPhoneNumberValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

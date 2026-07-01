@@ -3,7 +3,7 @@
     /// <summary>
     /// Validator to determine if a token value is not empty 
     /// </summary>
-    public class IsNotEmptyValidator : ITokenValidator
+    public sealed class IsNotEmptyValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

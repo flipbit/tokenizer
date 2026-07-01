@@ -5,7 +5,7 @@ namespace Tokens.Validators
     /// <summary>
     /// Validator to determine if a token value starts with a given string
     /// </summary>
-    public class StartsWithValidator : ITokenValidator
+    public sealed class StartsWithValidator : ITokenValidator
     {
         /// <summary>
         /// Determines whether the specified token is valid.

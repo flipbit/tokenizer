@@ -10,7 +10,7 @@ namespace Tokens.Tokenization
     /// This context manages the state that needs to be shared between different tokenization services,
     /// including candidate tokens, enumerator, replacement state, and tracking collections.
     /// </summary>
-    public class TokenizationContext : ITokenizationContext, IDisposable
+    public sealed class TokenizationContext : ITokenizationContext, IDisposable
     {
         private bool _disposed = false;
 
@@ -115,7 +115,7 @@ namespace Tokens.Tokenization
         /// Disposes of the context and any resources it holds.
         /// </summary>
         /// <param name="disposing">True if called from Dispose(), false if called from finalizer</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposed && disposing)
             {

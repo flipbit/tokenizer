@@ -7,7 +7,7 @@ namespace Tokens.Transformers
     /// <summary>
     /// Removes occurrences of a string from the start of a token value
     /// </summary>
-    public class RemoveStartTransformer : ITokenTransformer
+    public sealed class RemoveStartTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

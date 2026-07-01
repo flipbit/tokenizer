@@ -5,7 +5,7 @@ namespace Tokens
     /// <summary>
     /// Represent a <see cref="Token"/> match in a <see cref="Template"/>
     /// </summary>
-    public class Match
+    public sealed class Match
     {
         public Match(Token token, object value, FileLocation location)
         {

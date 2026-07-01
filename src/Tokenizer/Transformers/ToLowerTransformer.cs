@@ -3,7 +3,7 @@
     /// <summary>
     /// Converts the token value to lower case
     /// </summary>
-    public class ToLowerTransformer : ITokenTransformer
+    public sealed class ToLowerTransformer : ITokenTransformer
     {
         public bool CanTransform(object value, string[] args, out object transformed)
         {

@@ -93,5 +93,5 @@ public sealed class TokenizeResult<T> : TokenizeResultBase where T : class, new(
     /// <summary>
     /// An instance of <see cref="T"/> populated with data from the input string. 
     /// </summary>
-    public T Value { get; set; }
+    public T Value { get; init; }
 }

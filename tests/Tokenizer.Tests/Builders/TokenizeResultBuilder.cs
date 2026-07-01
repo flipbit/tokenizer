@@ -72,67 +72,73 @@ public class TokenizeResultBuilder
 /// </summary>
 public class TokenizeResultBuilder<T> where T : class, new()
 {
-    private TokenizeResult<T> _result = new(new Template(string.Empty));
+    private Template _template = new(string.Empty);
+    private T? _value;
+    private readonly System.Collections.Generic.List<TokenMatch> _matches = new();
+    private readonly System.Collections.Generic.List<Token> _misses = new();
+    private readonly System.Collections.Generic.List<Exception> _exceptions = new();
+    private readonly System.Collections.Generic.List<HintMatch> _hintMatches = new();
+    private readonly System.Collections.Generic.List<Hint> _hintMisses = new();
 
     public TokenizeResultBuilder<T> WithTemplate(Template template)
     {
-        _result = new TokenizeResult<T>(template);
+        _template = template;
         return this;
     }
 
     public TokenizeResultBuilder<T> WithValue(T value)
     {
-        _result.Value = value;
+        _value = value;
         return this;
     }
 
     public TokenizeResultBuilder<T> WithMatches(params TokenMatch[] matches)
     {
-        foreach (var match in matches)
-        {
-            _result.Tokens.AddMatch(match.Token, match.Value, match.Location);
-        }
+        _matches.AddRange(matches);
         return this;
     }
 
     public TokenizeResultBuilder<T> WithMisses(params Token[] misses)
     {
-        foreach (var miss in misses)
-        {
-            _result.Tokens.AddMiss(miss);
-        }
+        _misses.AddRange(misses);
         return this;
     }
 
     public TokenizeResultBuilder<T> WithExceptions(params Exception[] exceptions)
     {
-        foreach (var exception in exceptions)
-        {
-            _result.AddException(exception);
-        }
+        _exceptions.AddRange(exceptions);
         return this;
     }
 
     public TokenizeResultBuilder<T> WithHintMatches(params HintMatch[] hintMatches)
     {
-        foreach (var hintMatch in hintMatches)
-        {
-            _result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
-        }
+        _hintMatches.AddRange(hintMatches);
         return this;
     }
 
     public TokenizeResultBuilder<T> WithHintMisses(params Hint[] hintMisses)
     {
-        foreach (var hintMiss in hintMisses)
-        {
-            _result.Hints.AddMiss(hintMiss);
-        }
+        _hintMisses.AddRange(hintMisses);
         return this;
     }
 
     public TokenizeResult<T> Build()
     {
-        return _result;
+        var result = _value != null
+            ? new TokenizeResult<T>(_template) { Value = _value }
+            : new TokenizeResult<T>(_template);
+
+        foreach (var match in _matches)
+            result.Tokens.AddMatch(match.Token, match.Value, match.Location);
+        foreach (var miss in _misses)
+            result.Tokens.AddMiss(miss);
+        foreach (var exception in _exceptions)
+            result.AddException(exception);
+        foreach (var hintMatch in _hintMatches)
+            result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
+        foreach (var hintMiss in _hintMisses)
+            result.Hints.AddMiss(hintMiss);
+
+        return result;
     }
 }

@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Exporters;
 
 namespace Tokens.Config;
 
@@ -12,6 +11,5 @@ public class BenchmarkConfig : ManualConfig
         AddDiagnoser(MemoryDiagnoser.Default);
         AddDiagnoser(ThreadingDiagnoser.Default);
         AddColumn(StatisticColumn.P95);
-        AddExporter(MarkdownExporter.GitHub);
     }
 }

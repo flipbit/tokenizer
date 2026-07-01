@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Tokens.Transformers;
@@ -12,6 +13,8 @@ namespace Tokens
     /// </summary>
     public sealed class TokenDecoratorContext
     {
+        private static readonly ConcurrentDictionary<Type, ITokenDecorator> DecoratorCache = new();
+
         private readonly List<string> _parameters;
 
         public TokenDecoratorContext(Type tokenDecorator)
@@ -31,9 +34,12 @@ namespace Tokens
         /// <returns></returns>
         public ITokenDecorator CreateDecorator()
         {
-            var instance = Activator.CreateInstance(DecoratorType)
-                ?? throw new InvalidOperationException($"Failed to create instance of {DecoratorType.Name}");
-            return (ITokenDecorator) instance;
+            return DecoratorCache.GetOrAdd(DecoratorType, type =>
+            {
+                var instance = Activator.CreateInstance(type)
+                    ?? throw new InvalidOperationException($"Failed to create instance of {type.Name}");
+                return (ITokenDecorator) instance;
+            });
         }
 
         /// <summary>

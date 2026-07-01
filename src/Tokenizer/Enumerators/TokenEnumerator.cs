@@ -88,11 +88,13 @@ public class TokenEnumerator
     public bool Match(string value)
     {
         if (string.IsNullOrEmpty(value)) return true;
-        if (currentLocation + value.Length > pattern.Length) return false;
+        if (currentLocation + value.Length > patternLength) return false;
 
-        var candidate = pattern.Substring(currentLocation, value.Length);
-
-        return value == candidate;
+#if NET8_0_OR_GREATER
+        return pattern.AsSpan(currentLocation, value.Length).SequenceEqual(value.AsSpan());
+#else
+        return string.CompareOrdinal(pattern, currentLocation, value, 0, value.Length) == 0;
+#endif
     }
 
     public void Advance(int count)

@@ -44,7 +44,7 @@ public class TemplateParserBasicTests
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.False(token.Optional);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
     }
 
@@ -62,7 +62,7 @@ public class TemplateParserBasicTests
         Assert.Equal("This is the preamble", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
         Assert.False(token1.Optional);
-        Assert.False(token1.TerminateOnNewline);
+        Assert.False(token1.TerminateOnNewLine);
         Assert.False(token1.Repeating);
 
         var token2 = template.Tokens.ElementAt(1);
@@ -70,7 +70,7 @@ public class TemplateParserBasicTests
         Assert.Equal("Preamble 2 ", token2.Preamble);
         Assert.Equal("TokenName2", token2.Name);
         Assert.False(token2.Optional);
-        Assert.False(token2.TerminateOnNewline);
+        Assert.False(token2.TerminateOnNewLine);
         Assert.False(token2.Repeating);
     }
 

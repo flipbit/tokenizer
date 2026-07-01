@@ -83,7 +83,7 @@ public class EndToEndParsingTests
         Assert.Equal(4, definition.Tokens.Count);
         foreach (var token in definition.Tokens)
         {
-            Assert.True(token.TerminateOnNewline);
+            Assert.True(token.TerminateOnNewLine);
             if (token.Name.Contains("date"))
             {
                 Assert.Single(token.Decorators);

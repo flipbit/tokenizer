@@ -50,7 +50,7 @@ public class TemplateParserTokenTests
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.True(token.Optional);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
         Assert.True(token.Repeating);
         Assert.True(token.Required);
     }

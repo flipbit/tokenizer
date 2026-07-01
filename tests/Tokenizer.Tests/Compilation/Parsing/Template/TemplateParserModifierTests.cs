@@ -21,7 +21,7 @@ public class TemplateParserModifierTests
     }
 
     [Fact]
-    public void GivenTokenWithNewLineTerminator_WhenParsing_ThenSetsTerminateOnNewline()
+    public void GivenTokenWithNewLineTerminator_WhenParsing_ThenSetsTerminateOnNewLine()
     {
         // Arrange & Act
         var template = _parser.Parse("Preamble{TokenName$}");
@@ -34,7 +34,7 @@ public class TemplateParserModifierTests
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.False(token.Optional);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
     }
 
@@ -59,7 +59,7 @@ public class TemplateParserModifierTests
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.True(token.Optional);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
         Assert.False(token.Required);
     }
@@ -134,7 +134,7 @@ public class TemplateParserModifierTests
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.True(token.Optional);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
     }
 
@@ -231,7 +231,7 @@ public class TemplateParserModifierTests
     }
 
     [Fact]
-    public void GivenTokenWithNewLineLonghand_WhenParsing_ThenSetsTerminateOnNewline()
+    public void GivenTokenWithNewLineLonghand_WhenParsing_ThenSetsTerminateOnNewLine()
     {
         // Arrange & Act
         var template = _parser.Parse("This is the preamble{ TokenName : EOL }");
@@ -243,7 +243,7 @@ public class TemplateParserModifierTests
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
         Assert.Empty(token.Decorators);
     }
 }

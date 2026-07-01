@@ -17,7 +17,7 @@ public sealed class TokenizerOptions
         TrimTrailingWhiteSpace = true;
         TokenStringComparison = StringComparison.InvariantCulture;
         OutOfOrderTokens = false;
-        TerminateOnNewline = false;
+        TerminateOnNewLine = false;
         IgnoreMissingProperties = false;
         EnableDiagnostics = false;
     }
@@ -60,7 +60,7 @@ public sealed class TokenizerOptions
     /// <summary>
     /// If set, token values will be extracted up till the first new line character.
     /// </summary>
-    public bool TerminateOnNewline { get; set; }
+    public bool TerminateOnNewLine { get; set; }
 
     /// <summary>
     /// Maximum allowed length for input text. Default: 1,048,576 (1MB).
@@ -96,7 +96,7 @@ public sealed class TokenizerOptions
             TokenStringComparison = TokenStringComparison,
             OutOfOrderTokens = OutOfOrderTokens,
             TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
-            TerminateOnNewline = TerminateOnNewline,
+            TerminateOnNewLine = TerminateOnNewLine,
             IgnoreMissingProperties = IgnoreMissingProperties,
             MaxInputLength = MaxInputLength,
             MaxTemplateLength = MaxTemplateLength,

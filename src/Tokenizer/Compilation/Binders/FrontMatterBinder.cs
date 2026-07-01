@@ -86,7 +86,7 @@ internal sealed class FrontMatterBinder
                 template.Options.OutOfOrderTokens = ParseBoolean(value, rawName, entry);
                 break;
             case "terminateonnewline":
-                template.Options.TerminateOnNewline = ParseBoolean(value, rawName, entry);
+                template.Options.TerminateOnNewLine = ParseBoolean(value, rawName, entry);
                 break;
             case "ignoremissingproperties":
                 template.Options.IgnoreMissingProperties = ParseBoolean(value, rawName, entry);

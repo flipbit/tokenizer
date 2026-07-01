@@ -168,7 +168,7 @@ internal class TokenParser
 
                 token.Optional = preToken.Optional;
                 token.Repeating = preToken.Repeating;
-                token.TerminateOnNewLine = preToken.TerminateOnNewline;
+                token.TerminateOnNewLine = preToken.TerminateOnNewLine;
                 token.Required = preToken.Required;
                 token.DependsOnId = preToken.DependsOnId;
                 token.IsFrontMatterToken = preToken.IsFrontMatterToken;
@@ -183,7 +183,7 @@ internal class TokenParser
                 }
 
                 // Apply global newline termination option from front matter if set
-                if (token.TerminateOnNewLine == false && template.Options.TerminateOnNewline)
+                if (token.TerminateOnNewLine == false && template.Options.TerminateOnNewLine)
                 {
                     token.TerminateOnNewLine = true;
                     log.LogTrace("Token {TokenId} TerminateOnNewLine applied from global option", token.Id);

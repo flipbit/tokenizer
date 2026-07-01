@@ -34,7 +34,7 @@ public class TokenDefinition
 
     public bool Optional { get; set; }
 
-    public bool TerminateOnNewline { get; set; }
+    public bool TerminateOnNewLine { get; set; }
 
     public bool Repeating { get; set; }
 

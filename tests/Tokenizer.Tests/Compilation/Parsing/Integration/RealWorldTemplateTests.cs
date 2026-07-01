@@ -30,7 +30,7 @@ public class RealWorldTemplateTests
 
         // Assert
         Assert.Equal(7, definition.Tokens.Count);
-        Assert.All(definition.Tokens, token => Assert.True(token.TerminateOnNewline));
+        Assert.All(definition.Tokens, token => Assert.True(token.TerminateOnNewLine));
 
         var dateTokens = definition.Tokens.Where(t => t.Name.Contains("date")).ToList();
         Assert.Equal(3, dateTokens.Count);
@@ -141,7 +141,7 @@ public class RealWorldTemplateTests
         Assert.True(definition.Tokens[3].Repeating);
 
         Assert.Equal("nested_field", definition.Tokens[4].Name);
-        Assert.True(definition.Tokens[4].TerminateOnNewline);
+        Assert.True(definition.Tokens[4].TerminateOnNewLine);
     }
 
     [Fact]

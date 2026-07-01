@@ -45,7 +45,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
 
         Assert.Equal(30, result.Value.Age);
         Assert.Equal("London", result.Value.Address);
-        Assert.True(result.Template.Options.TerminateOnNewline);
+        Assert.True(result.Template.Options.TerminateOnNewLine);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
-        Assert.True(template.Options.TerminateOnNewline);
+        Assert.True(template.Options.TerminateOnNewLine);
     }
 
     [Fact]
@@ -110,6 +110,6 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
-        Assert.False(template.Options.TerminateOnNewline);
+        Assert.False(template.Options.TerminateOnNewLine);
     }
 }

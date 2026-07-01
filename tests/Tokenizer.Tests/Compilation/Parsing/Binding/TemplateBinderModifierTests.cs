@@ -10,7 +10,7 @@ namespace Tokens.Tests.Compilation.Parsing.Binding;
 public class TemplateBinderModifierTests
 {
     [Fact]
-    public void GivenFrontMatterTerminateOnNewLine_WhenBinding_ThenAllTokensTerminateOnNewline()
+    public void GivenFrontMatterTerminateOnNewLine_WhenBinding_ThenAllTokensTerminateOnNewLine()
     {
         // Arrange
         var input = "---\nTerminateOnNewLine: true\n---\nA: {a}\nB: {b}";
@@ -22,7 +22,7 @@ public class TemplateBinderModifierTests
 
         // Assert
         Assert.Equal(2, def.Tokens.Count);
-        Assert.All(def.Tokens, t => Assert.True(t.TerminateOnNewline));
+        Assert.All(def.Tokens, t => Assert.True(t.TerminateOnNewLine));
     }
     private readonly ITemplateDefinitionParser _parser = new AstTemplateDefinitionParser();
 
@@ -63,14 +63,14 @@ public class TemplateBinderModifierTests
     }
 
     [Fact]
-    public void GivenTerminateModifier_WhenBinding_ThenSetsTerminateOnNewline()
+    public void GivenTerminateModifier_WhenBinding_ThenSetsTerminateOnNewLine()
     {
         // Arrange & Act
         var template = _parser.Parse("{name$}");
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class TemplateBinderModifierTests
         var token = Assert.Single(template.Tokens);
         Assert.True(token.Optional);
         Assert.True(token.Repeating);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class TemplateBinderModifierTests
         Assert.False(token.Optional);
         Assert.False(token.Required);
         Assert.False(token.Repeating);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class TemplateBinderModifierTests
         // Assert
         var token = Assert.Single(template.Tokens);
         Assert.True(token.Optional);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
     }
 
     [Fact]

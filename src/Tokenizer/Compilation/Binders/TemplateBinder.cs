@@ -18,7 +18,7 @@ internal static class TemplateBinder
 
         // Read relevant front matter options to influence binding
         var globalTrimPreambleBeforeNewLine = IsFrontMatterOptionTrue(document, "trimpreamblebeforenewline");
-        var globalTerminateOnNewline = IsFrontMatterOptionTrue(document, "terminateonnewline");
+        var globalTerminateOnNewLine = IsFrontMatterOptionTrue(document, "terminateonnewline");
 
         foreach (var node in document.Content)
         {
@@ -30,7 +30,7 @@ internal static class TemplateBinder
                     Optional = tokenNode.Modifiers.IsOptional,
                     Repeating = tokenNode.Modifiers.IsRepeating,
                     Required = tokenNode.Modifiers.IsRequired,
-                    TerminateOnNewline = tokenNode.Modifiers.IsTerminate
+                    TerminateOnNewLine = tokenNode.Modifiers.IsTerminate
                 };
 
                 // Derived semantics: repeating tokens are optional (can match 0 times)
@@ -75,7 +75,7 @@ internal static class TemplateBinder
                     {
                         if (lower == "eol" || lower == "$")
                         {
-                            def.TerminateOnNewline = true;
+                            def.TerminateOnNewLine = true;
                             continue;
                         }
                         if (lower == "optional" || lower == "?")
@@ -121,9 +121,9 @@ internal static class TemplateBinder
                 }
 
                 // Apply global terminate option if set in front matter
-                if (globalTerminateOnNewline)
+                if (globalTerminateOnNewLine)
                 {
-                    def.TerminateOnNewline = true;
+                    def.TerminateOnNewLine = true;
                 }
 
                 // Legacy behavior: expand repeating token with multiline preamble tail
@@ -140,7 +140,7 @@ internal static class TemplateBinder
                         Location = def.Location.Clone(),
                         Optional = true,
                         Repeating = true,
-                        TerminateOnNewline = def.TerminateOnNewline,
+                        TerminateOnNewLine = def.TerminateOnNewLine,
                         Content = def.Content
                     };
                     repeat.AppendName(def.Name);

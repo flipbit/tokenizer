@@ -26,7 +26,7 @@ public class TemplateParserDecoratorTests
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.False(token.Optional);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
         Assert.Single(token.Decorators);
 
@@ -49,7 +49,7 @@ public class TemplateParserDecoratorTests
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
         Assert.False(token.Optional);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
         Assert.Equal(2, token.Decorators.Count);
 

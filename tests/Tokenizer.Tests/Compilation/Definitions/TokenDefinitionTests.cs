@@ -19,7 +19,7 @@ public class TokenDefinitionTests
         Assert.Equal(string.Empty, token.Name);
         Assert.Equal(string.Empty, token.Value);
         Assert.False(token.Optional);
-        Assert.False(token.TerminateOnNewline);
+        Assert.False(token.TerminateOnNewLine);
         Assert.False(token.Repeating);
         Assert.False(token.Required);
         Assert.False(token.IsNull);
@@ -128,16 +128,16 @@ public class TokenDefinitionTests
     }
 
     [Fact]
-    public void GivenTokenDefinition_WhenSettingTerminateOnNewline_ThenTerminateOnNewlineIsSet()
+    public void GivenTokenDefinition_WhenSettingTerminateOnNewLine_ThenTerminateOnNewLineIsSet()
     {
         // Arrange
         var token = new TokenDefinition();
 
         // Act
-        token.TerminateOnNewline = true;
+        token.TerminateOnNewLine = true;
 
         // Assert
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
     }
 
     [Fact]

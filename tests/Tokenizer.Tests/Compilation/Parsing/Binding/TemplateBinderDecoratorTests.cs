@@ -55,7 +55,7 @@ public class TemplateBinderDecoratorTests
 
         // Assert
         var token = Assert.Single(template.Tokens);
-        Assert.True(token.TerminateOnNewline);
+        Assert.True(token.TerminateOnNewLine);
         Assert.Empty(token.Decorators);
     }
 

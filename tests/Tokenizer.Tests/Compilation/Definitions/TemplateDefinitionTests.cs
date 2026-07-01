@@ -70,8 +70,8 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint1 = new Hint { Text = "Hint 1", Optional = false };
-        var hint2 = new Hint { Text = "Hint 2", Optional = true };
+        var hint1 = new Hint(Text: "Hint 1");
+        var hint2 = new Hint(Text: "Hint 2", Optional: true);
 
         // Act
         template.Hints.Add(hint1);
@@ -124,7 +124,7 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint = new Hint { Text = "Test Hint", Optional = false };
+        var hint = new Hint(Text: "Test Hint");
         template.Hints.Add(hint);
 
         // Act
@@ -173,8 +173,8 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint1 = new Hint { Text = "Hint 1", Optional = false };
-        var hint2 = new Hint { Text = "Hint 2", Optional = true };
+        var hint1 = new Hint(Text: "Hint 1");
+        var hint2 = new Hint(Text: "Hint 2", Optional: true);
         template.Hints.Add(hint1);
         template.Hints.Add(hint2);
 
@@ -223,8 +223,8 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint1 = new Hint { Text = "Hint 1", Optional = false };
-        var hint2 = new Hint { Text = "Hint 2", Optional = true };
+        var hint1 = new Hint(Text: "Hint 1");
+        var hint2 = new Hint(Text: "Hint 2", Optional: true);
         template.Hints.Add(hint1);
 
         // Act & Assert
@@ -266,8 +266,8 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint1 = new Hint { Text = "Hint 1", Optional = false };
-        var hint2 = new Hint { Text = "Hint 2", Optional = true };
+        var hint1 = new Hint(Text: "Hint 1");
+        var hint2 = new Hint(Text: "Hint 2", Optional: true);
         template.Hints.Add(hint1);
         template.Hints.Add(hint2);
 
@@ -318,9 +318,9 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var hint1 = new Hint { Text = "Hint 1", Optional = false };
-        var hint2 = new Hint { Text = "Hint 2", Optional = true };
-        var hint3 = new Hint { Text = "Hint 3", Optional = false };
+        var hint1 = new Hint(Text: "Hint 1");
+        var hint2 = new Hint(Text: "Hint 2", Optional: true);
+        var hint3 = new Hint(Text: "Hint 3");
         template.Hints.Add(hint1);
         template.Hints.Add(hint3);
 

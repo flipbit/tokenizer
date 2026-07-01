@@ -43,7 +43,7 @@ public sealed class HintResult
         if (_misses.Any(m => m.Text == hint.Text) ||
             _matches.Any(m => m.Text == hint.Text)) return false;
 
-        _misses.Add(hint.Clone());
+        _misses.Add(hint with { });
 
         return true;
     }

@@ -54,7 +54,7 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
     {
         var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
         var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
-        template1.AddHint(new Hint { Text = "Name", Optional = false });
+        template1.AddHint(new Hint(Text: "Name"));
 
         matcher.Templates.Add(template1);
         matcher.Templates.Add(template2);
@@ -73,9 +73,9 @@ public class TokenMatcherTests : Tests.TokenizerTestBase
     {
         var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
         var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
-        template1.AddHint(new Hint { Text = "Name", Optional = false });
-        template2.AddHint(new Hint { Text = "Name", Optional = false });
-        template2.AddHint(new Hint { Text = "Age", Optional = false });
+        template1.AddHint(new Hint(Text: "Name"));
+        template2.AddHint(new Hint(Text: "Name"));
+        template2.AddHint(new Hint(Text: "Age"));
 
         matcher.Templates.Add(template1);
         matcher.Templates.Add(template2);

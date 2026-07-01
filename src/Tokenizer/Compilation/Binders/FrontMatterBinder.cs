@@ -100,10 +100,10 @@ internal sealed class FrontMatterBinder
                 template.Name = value.Trim();
                 break;
             case "hint":
-                template.Hints.Add(new Hint { Text = entry.RawValue.Trim(), Optional = false });
+                template.Hints.Add(new Hint(Text: entry.RawValue.Trim(), Optional: false));
                 break;
             case "hint?":
-                template.Hints.Add(new Hint { Text = entry.RawValue.Trim(), Optional = true });
+                template.Hints.Add(new Hint(Text: entry.RawValue.Trim(), Optional: true));
                 break;
             case "tag":
                 template.Tags.Add(value.Trim());

@@ -4,30 +4,9 @@ namespace Tokens;
 /// Defines a string of text that can occur in a template's input.
 /// A hint can optionally be required to be present.
 /// Hints are used when determining whether the input is valid, and to determine
-/// tne best matched template for a given input.
+/// the best matched template for a given input.
 /// </summary>
-public sealed class Hint
-{
-    /// <summary>
-    /// The text to appear in the input
-    /// </summary>
-    public string Text { get; set; } = string.Empty;
-
-    /// <summary>
-    /// If <c>true</c> then this hint must appear in the input in order for the
-    /// <see cref="Template"/> to be considered successfully matched.
-    /// </summary>
-    public bool Optional { get; set; }
-
-    /// <summary>
-    /// Clones this instance
-    /// </summary>
-    public Hint Clone()
-    {
-        return new Hint
-        {
-            Text = Text,
-            Optional = Optional
-        };
-    }
-}
+/// <param name="Text">The text to appear in the input</param>
+/// <param name="Optional">If <c>true</c> then this hint must appear in the input in order for the
+/// <see cref="Template"/> to be considered successfully matched.</param>
+public sealed record Hint(string Text = "", bool Optional = false);

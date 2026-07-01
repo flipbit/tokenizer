@@ -47,7 +47,7 @@ public class TokenizeResultBuilder
     {
         foreach (var hintMatch in hintMatches)
         {
-            _result.Hints.AddMatch(new Hint { Text = hintMatch.Text, Optional = hintMatch.Optional }, new TokenEnumerator(""));
+            _result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
         }
         return this;
     }
@@ -117,7 +117,7 @@ public class TokenizeResultBuilder<T> where T : class, new()
     {
         foreach (var hintMatch in hintMatches)
         {
-            _result.Hints.AddMatch(new Hint { Text = hintMatch.Text, Optional = hintMatch.Optional }, new TokenEnumerator(""));
+            _result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
         }
         return this;
     }

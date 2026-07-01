@@ -9,19 +9,19 @@ public class HintBuilder
 
     public HintBuilder WithText(string text)
     {
-        _hint.Text = text;
+        _hint = _hint with { Text = text };
         return this;
     }
 
     public HintBuilder WithOptional(bool optional = true)
     {
-        _hint.Optional = optional;
+        _hint = _hint with { Optional = optional };
         return this;
     }
 
     public HintBuilder WithRequired(bool required = true)
     {
-        _hint.Optional = !required;
+        _hint = _hint with { Optional = !required };
         return this;
     }
 

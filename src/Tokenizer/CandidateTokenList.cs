@@ -74,7 +74,7 @@ public class CandidateTokenList
         return false;
     }
 
-    public bool Any => Count > 0;
+    public bool HasCandidates => Count > 0;
 
     public int Count => tokens.Count;
 

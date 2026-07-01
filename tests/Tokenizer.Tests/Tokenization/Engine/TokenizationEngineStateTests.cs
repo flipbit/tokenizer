@@ -46,7 +46,7 @@ public class TokenizationEngineStateTests
         candidates.Add(token);
 
         // Assert
-        Assert.True(candidates.Any);
+        Assert.True(candidates.HasCandidates);
         Assert.Equal("Test: ", candidates.Preamble);
     }
 
@@ -65,7 +65,7 @@ public class TokenizationEngineStateTests
         candidates.Clear();
 
         // Assert
-        Assert.False(candidates.Any);
+        Assert.False(candidates.HasCandidates);
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public class TokenizationEngineStateTests
         context.ClearReplacement();
 
         // Assert
-        Assert.False(context.Candidates.Any);
+        Assert.False(context.Candidates.HasCandidates);
         Assert.Equal(0, context.Replacement.Length);
     }
 

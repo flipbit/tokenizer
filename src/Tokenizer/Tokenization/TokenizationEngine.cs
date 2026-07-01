@@ -162,7 +162,7 @@ public class TokenizationEngine : ITokenizationEngine
                     location: context.Enumerator.Location);
 
                 // Special case: first token found, just prepare to read token value
-                if (context.Candidates.Any == false)
+                if (context.Candidates.HasCandidates == false)
                 {
                     HandleFirstTokenMatch(context, matchBuffer);
                     continue;
@@ -205,7 +205,7 @@ public class TokenizationEngine : ITokenizationEngine
             TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
                 template.Options, context.ReplacementLocation, result, template, context.MatchIds, collector);
         }
-        else if (context.Candidates.Any)
+        else if (context.Candidates.HasCandidates)
         {
             log.LogTrace("Skipping remaining candidates: ReplacementLength={ReplacementLength}, IsNullToken={IsNullToken}",
                 context.Replacement.Length, context.Candidates.IsNullToken);
@@ -625,7 +625,7 @@ public class TokenizationEngine : ITokenizationEngine
     /// </summary>
     private bool ShouldProcessRepeatedToken(ITokenizationContext context)
     {
-        return context.Candidates.Any &&
+        return context.Candidates.HasCandidates &&
                context.Enumerator.Match(context.Candidates.Preamble) &&
                context.Candidates.Preamble.Length > 0;
     }
@@ -652,7 +652,7 @@ public class TokenizationEngine : ITokenizationEngine
     /// </summary>
     private bool ShouldProcessNewlineTerminatedToken(ITokenizationContext context, char next)
     {
-        return context.Candidates.Any && context.Candidates.TerminateOnNewLine && next == '\n';
+        return context.Candidates.HasCandidates && context.Candidates.TerminateOnNewLine && next == '\n';
     }
 
     /// <summary>
@@ -660,7 +660,7 @@ public class TokenizationEngine : ITokenizationEngine
     /// </summary>
     private bool ShouldProcessRemainingCandidates(ITokenizationContext context)
     {
-        return context.Candidates.Any && context.Replacement.Length > 0 && !context.Candidates.IsNullToken;
+        return context.Candidates.HasCandidates && context.Replacement.Length > 0 && !context.Candidates.IsNullToken;
     }
 
     /// <summary>

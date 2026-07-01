@@ -77,7 +77,7 @@ public class TokenizationContextTests
         context.Candidates.Add(token);
 
         // Assert
-        Assert.True(context.Candidates.Any);
+        Assert.True(context.Candidates.HasCandidates);
         Assert.Contains(token, context.Candidates.Tokens);
     }
 
@@ -134,7 +134,7 @@ public class TokenizationContextTests
         context.ClearCandidates();
 
         // Assert
-        Assert.False(context.Candidates.Any);
+        Assert.False(context.Candidates.HasCandidates);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class TokenizationContextTests
         context.Reset();
 
         // Assert
-        Assert.False(context.Candidates.Any);
+        Assert.False(context.Candidates.HasCandidates);
         Assert.Equal(0, context.Replacement.Length);
         Assert.Empty(context.MatchIds);
         Assert.Empty(context.DisabledRepeatingTokens);

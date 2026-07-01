@@ -36,7 +36,7 @@ internal class TemplateDefinitionEnumerator
     {
         if (IsEmpty) return string.Empty;
 
-        var next = pattern.Substring(currentLocation, 1);
+        var nextChar = pattern[currentLocation];
         currentLocation++;
 
         if (resetNextLine)
@@ -46,15 +46,15 @@ internal class TemplateDefinitionEnumerator
         }
         else
         {
-            Location.Increment(next);
+            Location.Increment(nextChar);
         }
 
-        if (next == "\n")
+        if (nextChar == '\n')
         {
             resetNextLine = true;
         }
 
-        return next;
+        return nextChar.ToString();
     }
 
     public string Next(int length)

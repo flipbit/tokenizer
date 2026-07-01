@@ -35,12 +35,12 @@ public class FileLocation
     /// <summary>
     /// Increments the column count
     /// </summary>
-    internal void Increment(string value)
+    internal void Increment(char value)
     {
-        if (value == "\r") return;
-        if (value == "\n") return;
+        if (value == '\r') return;
+        if (value == '\n') return;
 
-        if (string.IsNullOrWhiteSpace(value) == false)
+        if (char.IsWhiteSpace(value) == false)
         {
             newLineCounter = 0;
         }

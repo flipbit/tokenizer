@@ -578,14 +578,14 @@ public class TokenizationEngine : ITokenizationEngine
     /// <param name="enumerator">The token enumerator</param>
     /// <param name="next">The current character</param>
     /// <returns>The normalized character</returns>
-    private string HandleWindowsNewlines(TokenEnumerator enumerator, string next)
+    private char HandleWindowsNewlines(TokenEnumerator enumerator, char next)
     {
-        if (next == "\r" && enumerator.Peek(1) == "\n")
+        if (next == '\r' && enumerator.Peek(1) == '\n')
         {
             log.LogTrace("Normalizing Windows line ending (CRLF) to Unix (LF) at position Line {Line}, Column {Column}",
                 enumerator.Location.Line, enumerator.Location.Column);
             enumerator.Next();
-            return "\n";
+            return '\n';
         }
         return next;
     }
@@ -620,9 +620,9 @@ public class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Determines if a newline-terminated token should be processed.
     /// </summary>
-    private bool ShouldProcessNewlineTerminatedToken(ITokenizationContext context, string next)
+    private bool ShouldProcessNewlineTerminatedToken(ITokenizationContext context, char next)
     {
-        return context.Candidates.Any && context.Candidates.TerminateOnNewLine && next == "\n";
+        return context.Candidates.Any && context.Candidates.TerminateOnNewLine && next == '\n';
     }
 
     /// <summary>
@@ -700,7 +700,7 @@ public class TokenizationEngine : ITokenizationEngine
     /// </summary>
     /// <param name="context">The tokenization context</param>
     /// <param name="next">The current character to append</param>
-    private void HandleNoTokenMatch(ITokenizationContext context, string next)
+    private void HandleNoTokenMatch(ITokenizationContext context, char next)
     {
         context.Replacement.Append(next);
         context.Enumerator.Next();

@@ -351,7 +351,7 @@ public class TemplateLexer
             var fallbackLocation = location.Clone();
             var cfb = reader.ReadChar();
             if (cfb == -1) break;
-            location.Increment(((char)cfb).ToString());
+            location.Increment((char)cfb);
             absolutePosition++;
             var sfb = ((char)cfb).ToString();
             var fallbackToken = new LexerToken(LexerTokenKind.Text, sfb, sfb, fallbackLocation, absolutePosition - 1, 1);
@@ -474,7 +474,7 @@ public class TemplateLexer
 
         // Regular character increments column
         var c = (char)reader.ReadChar();
-        location.Increment(c.ToString());
+        location.Increment(c);
     }
 
     private static bool IsIdentifierChar(char c)
@@ -520,7 +520,7 @@ public class TemplateLexer
         while (reader.IsEof == false)
         {
             var p = reader.PeekChar(); if (p != ' ' && p != '\t') break;
-            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch.ToString()); absolutePosition++;
+            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
         }
         var text = sb.ToString(); if (text.Length == 0) return false;
         token = new LexerToken(LexerTokenKind.Whitespace, text, text, tokenLocation, start, text.Length);
@@ -532,9 +532,9 @@ public class TemplateLexer
         token = null;
         var next3 = reader.PeekString(3); if (next3 != "---") return false;
         var tokenLocation = location.Clone();
-        reader.ReadChar(); location.Increment("-"); absolutePosition++;
-        reader.ReadChar(); location.Increment("-"); absolutePosition++;
-        reader.ReadChar(); location.Increment("-"); absolutePosition++;
+        reader.ReadChar(); location.Increment('-'); absolutePosition++;
+        reader.ReadChar(); location.Increment('-'); absolutePosition++;
+        reader.ReadChar(); location.Increment('-'); absolutePosition++;
         token = new LexerToken(LexerTokenKind.FrontMatterDelimiter, "---", "---", tokenLocation, absolutePosition - 3, 3);
         return true;
     }
@@ -546,16 +546,16 @@ public class TemplateLexer
         if (next2 == "{{")
         {
             var tokenLocation = location.Clone();
-            reader.ReadChar(); location.Increment("{"); absolutePosition++;
-            reader.ReadChar(); location.Increment("{"); absolutePosition++;
+            reader.ReadChar(); location.Increment('{'); absolutePosition++;
+            reader.ReadChar(); location.Increment('{'); absolutePosition++;
             token = new LexerToken(LexerTokenKind.EscapedOpenBrace, "{{", "{{", tokenLocation, absolutePosition - 2, 2);
             return true;
         }
         if (next2 == "}}")
         {
             var tokenLocation = location.Clone();
-            reader.ReadChar(); location.Increment("}"); absolutePosition++;
-            reader.ReadChar(); location.Increment("}"); absolutePosition++;
+            reader.ReadChar(); location.Increment('}'); absolutePosition++;
+            reader.ReadChar(); location.Increment('}'); absolutePosition++;
             token = new LexerToken(LexerTokenKind.EscapedCloseBrace, "}}", "}}", tokenLocation, absolutePosition - 2, 2);
             return true;
         }
@@ -568,7 +568,7 @@ public class TemplateLexer
         var peek = reader.PeekChar();
         if (peek != '{' && peek != '}' && peek != ':' && peek != '=' && peek != ',' && peek != '(' && peek != ')') return false;
         var tokenLocation = location.Clone();
-        var ch = (char)reader.ReadChar(); location.Increment(ch.ToString()); absolutePosition++;
+        var ch = (char)reader.ReadChar(); location.Increment(ch); absolutePosition++;
         var kind = ch == '{' ? LexerTokenKind.OpenBrace :
                    ch == '}' ? LexerTokenKind.CloseBrace :
                    ch == ':' ? LexerTokenKind.Colon :
@@ -586,7 +586,7 @@ public class TemplateLexer
         var peek = reader.PeekChar();
         if (peek != '?' && peek != '*' && peek != '!' && peek != '$' && peek != '#') return false;
         var tokenLocation = location.Clone();
-        var ch = (char)reader.ReadChar(); location.Increment(ch.ToString()); absolutePosition++;
+        var ch = (char)reader.ReadChar(); location.Increment(ch); absolutePosition++;
         var kind = ch == '?' ? LexerTokenKind.Question :
                    ch == '*' ? LexerTokenKind.Asterisk :
                    ch == '!' ? LexerTokenKind.Exclamation :
@@ -605,7 +605,7 @@ public class TemplateLexer
         while (reader.IsEof == false)
         {
             var p = reader.PeekChar(); if (p == -1 || IsIdentifierChar((char)p) == false) break;
-            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch.ToString()); absolutePosition++;
+            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
         }
         var text = sb.ToString(); if (text.Length == 0) return false;
         token = new LexerToken(LexerTokenKind.Identifier, text, text, tokenLocation, start, text.Length);
@@ -624,7 +624,7 @@ public class TemplateLexer
             if (c == '{' || c == '}' || c == ':' || c == '=' || c == ',' || c == '(' || c == ')') break;
             if (c == '?' || c == '*' || c == '!' || c == '$' || c == '#') break;
             if (IsIdentifierChar(c)) break;
-            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch.ToString()); absolutePosition++;
+            var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
         }
         var text = sb.ToString(); if (text.Length == 0) return false;
         token = new LexerToken(LexerTokenKind.Text, text, text, tokenLocation, start, text.Length);
@@ -646,7 +646,7 @@ public class TemplateLexer
         // consume opening quote
         reader.ReadChar();
         raw.Append(quote);
-        location.Increment(quote.ToString());
+        location.Increment(quote);
         absolutePosition++;
 
         while (true)
@@ -689,7 +689,7 @@ public class TemplateLexer
                 // consume closing quote
                 reader.ReadChar();
                 raw.Append(quote);
-                location.Increment(quote.ToString());
+                location.Increment(quote);
                 absolutePosition++;
                 break;
             }
@@ -700,7 +700,7 @@ public class TemplateLexer
                 // consume backslash
                 reader.ReadChar();
                 raw.Append('\\');
-                location.Increment("\\");
+                location.Increment('\\');
                 absolutePosition++;
 
                 var next = reader.PeekChar();
@@ -718,7 +718,7 @@ public class TemplateLexer
                     reader.ReadChar();
                     raw.Append(nextChar);
                     inner.Append(nextChar);
-                    location.Increment(nextChar.ToString());
+                    location.Increment(nextChar);
                     absolutePosition++;
                     continue;
                 }
@@ -729,7 +729,7 @@ public class TemplateLexer
                 reader.ReadChar();
                 raw.Append(nextChar);
                 inner.Append(nextChar);
-                location.Increment(nextChar.ToString());
+                location.Increment(nextChar);
                 absolutePosition++;
                 continue;
             }
@@ -737,7 +737,7 @@ public class TemplateLexer
             var ch = (char)reader.ReadChar();
             raw.Append(ch);
             inner.Append(ch);
-            location.Increment(ch.ToString());
+            location.Increment(ch);
             absolutePosition++;
         }
 

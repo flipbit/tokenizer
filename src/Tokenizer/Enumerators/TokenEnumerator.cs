@@ -42,11 +42,11 @@ public class TokenEnumerator
 
     public FileLocation Location { get; }
 
-    public string Next()
+    public char Next()
     {
-        if (IsEmpty) return string.Empty;
+        if (IsEmpty) return '\0';
 
-        var next = pattern.Substring(currentLocation, 1);
+        var next = pattern[currentLocation];
         currentLocation++;
 
         if (resetNextLine)
@@ -59,7 +59,7 @@ public class TokenEnumerator
             Location.Increment(next);
         }
 
-        if (next == "\n")
+        if (next == '\n')
         {
             resetNextLine = true;
         }
@@ -67,22 +67,22 @@ public class TokenEnumerator
         return next;
     }
 
-    public string Peek()
+    public char Peek()
     {
-        if (IsEmpty) return string.Empty;
+        if (IsEmpty) return '\0';
 
-        return pattern.Substring(currentLocation, 1);
+        return pattern[currentLocation];
     }
 
-    public string Peek(int offset)
+    public char Peek(int offset)
     {
-        if (IsEmpty) return string.Empty;
+        if (IsEmpty) return '\0';
 
         var location = currentLocation + offset;
 
-        if (location > patternLength) return string.Empty;
+        if (location >= patternLength) return '\0';
 
-        return pattern.Substring(currentLocation + offset, 1);
+        return pattern[currentLocation + offset];
     }
 
     public bool Match(string value)

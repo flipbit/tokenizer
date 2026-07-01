@@ -45,7 +45,7 @@ public class ExceptionLocationTests
 
         for (var c = 1; c < column; c++)
         {
-            location.Increment("x");
+            location.Increment('x');
         }
 
         return location;

@@ -5,7 +5,7 @@ namespace Tokens.Types;
 
 public class EnumTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     private class Student
     {

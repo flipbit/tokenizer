@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class ListTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     public ListTests(ITestOutputHelper output) : base(output)
     {

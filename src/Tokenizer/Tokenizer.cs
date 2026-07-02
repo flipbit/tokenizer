@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -5,8 +6,6 @@ using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Tokens.Exceptions;
 using Tokens.Tokenization;
-using Tokens.Transformers;
-using Tokens.Validators;
 
 namespace Tokens;
 
@@ -14,13 +13,14 @@ namespace Tokens;
 /// Class that creates objects and populates their properties with values
 /// from input strings
 /// </summary>
-public sealed class Tokenizer
+public sealed class Tokenizer : ITokenizer
 {
     private readonly TokenParser parser;
     private readonly ILogger<Tokenizer> log;
     private readonly ITokenizationEngine tokenizationEngine;
     private readonly IHintProcessor hintProcessor;
     private readonly IResultBuilder resultBuilder;
+    private readonly TemplateCache compilationCache;
 
     /// <summary>Gets the options.</summary>
     public TokenizerOptions Options { get; }
@@ -52,6 +52,7 @@ public sealed class Tokenizer
         tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         hintProcessor = new HintProcessor(loggerFactory.CreateLogger<HintProcessor>());
         resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
+        compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
 
     /// <summary>
@@ -71,6 +72,7 @@ public sealed class Tokenizer
         this.tokenizationEngine = tokenizationEngine;
         this.hintProcessor = hintProcessor;
         this.resultBuilder = resultBuilder;
+        compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
 
     /// <summary>
@@ -81,7 +83,7 @@ public sealed class Tokenizer
     /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
     public TokenizeResult Tokenize(string template, string input)
     {
-        var t = parser.Parse(template);
+        var t = Compile(template);
 
         return Tokenize(t, input);
     }
@@ -112,7 +114,7 @@ public sealed class Tokenizer
     /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
     public TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new()
     {
-        var template = parser.Parse(pattern);
+        var template = Compile(pattern);
 
         return Tokenize<T>(template, input);
     }
@@ -216,28 +218,19 @@ public sealed class Tokenizer
         }
     }
 
-    /// <summary>
-    /// Registers a custom transformer so it can be referenced by name in template patterns.
-    /// </summary>
-    /// <typeparam name="T">The transformer type to register.</typeparam>
-    /// <returns>This <see cref="Tokenizer"/> instance, to allow method chaining.</returns>
-    public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer
-    {
-        parser.RegisterTransformer<T>();
+    /// <inheritdoc />
+    public Template Compile(string pattern) => compilationCache.GetOrAdd(pattern, p => parser.Parse(p));
 
-        return this;
-    }
+    /// <inheritdoc />
+    public Template Compile(string pattern, string name) => compilationCache.GetOrAdd(pattern, p => parser.Parse(p, name));
 
-    /// <summary>
-    /// Registers a custom validator so it can be referenced by name in template patterns.
-    /// </summary>
-    /// <typeparam name="T">The validator type to register.</typeparam>
-    /// <returns>This <see cref="Tokenizer"/> instance, to allow method chaining.</returns>
-    public Tokenizer RegisterValidator<T>() where T : ITokenValidator
-    {
-        parser.RegisterValidator<T>();
+    /// <inheritdoc />
+    public Template Compile(TextReader reader) => parser.Parse(reader);
 
-        return this;
-    }
+    /// <inheritdoc />
+    public Template Compile(TextReader reader, string name) => parser.Parse(reader, name);
+
+    /// <inheritdoc />
+    public void ClearCompilationCache() => compilationCache.Clear();
 
 }

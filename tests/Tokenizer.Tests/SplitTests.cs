@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class SplitTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     private class Foo
     {

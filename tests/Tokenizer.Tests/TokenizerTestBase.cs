@@ -21,7 +21,7 @@ public abstract class TokenizerTestBase
     /// <summary>
     /// Creates a Tokenizer with default options and logging enabled.
     /// </summary>
-    protected Tokenizer CreateTokenizer()
+    protected ITokenizer CreateTokenizer()
     {
         return new Tokenizer(new TokenizerOptions(), LoggerFactory);
     }
@@ -29,7 +29,7 @@ public abstract class TokenizerTestBase
     /// <summary>
     /// Creates a Tokenizer with custom options and logging enabled.
     /// </summary>
-    protected Tokenizer CreateTokenizer(TokenizerOptions options)
+    protected ITokenizer CreateTokenizer(TokenizerOptions options)
     {
         return new Tokenizer(options, LoggerFactory);
     }
@@ -37,7 +37,7 @@ public abstract class TokenizerTestBase
     /// <summary>
     /// Creates a Tokenizer with diagnostics enabled and logging.
     /// </summary>
-    protected Tokenizer CreateDiagnosticTokenizer()
+    protected ITokenizer CreateDiagnosticTokenizer()
     {
         return CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
     }

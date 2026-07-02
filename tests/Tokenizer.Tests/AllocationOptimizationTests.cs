@@ -6,7 +6,7 @@ namespace Tokens;
 
 public class AllocationOptimizationTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     public AllocationOptimizationTests(ITestOutputHelper output) : base(output)
     {

@@ -8,7 +8,7 @@ namespace Tokens;
 
 public class TokenizerTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     private class TestClass
     {
@@ -287,10 +287,12 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Enrolled: 1019-01-01, Last Name: Smith";
 
         // Always throws an exception
-        tokenizer.RegisterTransformer<BlowsUpTransformer>();
+        var options = new TokenizerOptions();
+        options.RegisterTransformer<BlowsUpTransformer>();
+        var blowsUpTokenizer = CreateTokenizer(options);
 
         // Act
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var result = blowsUpTokenizer.Tokenize<Student>(pattern, input);
         var student = result.Value;
 
         // Assert

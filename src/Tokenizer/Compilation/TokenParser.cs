@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -124,6 +125,19 @@ internal class TokenParser
         log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
 
         return this;
+    }
+
+    public Template Parse(TextReader reader)
+    {
+        var content = reader.ReadToEnd();
+        var name = GenerateTemplateName(content);
+        return Parse(content, name);
+    }
+
+    public Template Parse(TextReader reader, string name)
+    {
+        var content = reader.ReadToEnd();
+        return Parse(content, name);
     }
 
     public Template Parse(string content)

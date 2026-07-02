@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class ConcatenationTests : TokenizerTestBase
 {
-    private readonly Tokenizer tokenizer;
+    private readonly ITokenizer tokenizer;
 
     private class Foo
     {

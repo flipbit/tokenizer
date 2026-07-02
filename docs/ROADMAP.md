@@ -56,20 +56,20 @@ Ensure the NuGet package meets the bar for a professional .NET library.
 
 Fill functional gaps in the built-in decorator set.
 
-- [ ] **Add `MatchesRegexValidator`** — the universal escape hatch; highest-value single addition
-- [ ] **Add `IsGuidValidator`**
-- [ ] **Add `IsIntegerValidator`** — distinct from float-based `IsNumeric`
-- [ ] **Add `IsAlphanumericValidator`**
-- [ ] **Add `IsInRangeValidator`** — numeric min/max
-- [ ] **Add `IsIpAddressValidator`**
-- [ ] **Add `ToIntTransformer`**
-- [ ] **Add `ToDecimalTransformer`**
-- [ ] **Add `ToBooleanTransformer`**
-- [ ] **Add `ToGuidTransformer`**
-- [ ] **Add `TruncateTransformer`** — cap extracted values to a max length
-- [ ] **Add `DefaultValueTransformer`** — coalesce null/empty to a fallback
-- [ ] **Add `RegexReplaceTransformer`**
-- [ ] **Add `TitleCaseTransformer`**
+- [x] **Add `MatchesRegexValidator`** — the universal escape hatch; highest-value single addition
+- [x] **Add `IsGuidValidator`**
+- [x] **Add `IsIntegerValidator`** — distinct from float-based `IsNumeric`
+- [x] **Add `IsAlphanumericValidator`**
+- [x] **Add `IsInRangeValidator`** — numeric min/max
+- [x] **Add `IsIpAddressValidator`**
+- [x] **Add `ToIntTransformer`**
+- [x] **Add `ToDecimalTransformer`**
+- [x] **Add `ToBooleanTransformer`**
+- [x] **Add `ToGuidTransformer`**
+- [x] **Add `TruncateTransformer`** — cap extracted values to a max length
+- [x] **Add `DefaultValueTransformer`** — coalesce null/empty to a fallback
+- [x] **Add `RegexReplaceTransformer`**
+- [x] **Add `TitleCaseTransformer`**
 
 ## Tier 6: Performance
 

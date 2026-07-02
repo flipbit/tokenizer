@@ -87,6 +87,25 @@ internal class TokenParser
         RegisterValidator<IsIpAddressValidator>();
         RegisterValidator<IsInRangeValidator>();
         RegisterValidator<MatchesRegexValidator>();
+
+        // Register custom transformers/validators from options
+        foreach (var transformerType in options.Transformers)
+        {
+            if (!transformers.Contains(transformerType))
+            {
+                transformers.Add(transformerType);
+                log.LogDebug("Registered custom transformer from options: {TransformerType}", transformerType.Name);
+            }
+        }
+
+        foreach (var validatorType in options.Validators)
+        {
+            if (!validators.Contains(validatorType))
+            {
+                validators.Add(validatorType);
+                log.LogDebug("Registered custom validator from options: {ValidatorType}", validatorType.Name);
+            }
+        }
     }
 
     public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

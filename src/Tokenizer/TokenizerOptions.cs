@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using Tokens.Transformers;
+using Tokens.Validators;
+
 namespace Tokens;
 
 /// <summary>
@@ -72,4 +77,88 @@ public record class TokenizerOptions
     /// Set to a positive value to override.
     /// </summary>
     public int MaxIterations { get; set; }
+
+    /// <summary>
+    /// Maximum number of compiled templates to hold in the compilation cache.
+    /// Default: 500. Set to 0 to disable caching.
+    /// </summary>
+    public int CompilationCacheMaxSize { get; init; } = 500;
+
+    /// <summary>
+    /// Custom transformer types registered on this options instance.
+    /// These are added after the default transformers when building a <see cref="Compilation.TokenParser"/>.
+    /// </summary>
+    public List<Type> Transformers { get; } = new List<Type>();
+
+    /// <summary>
+    /// Custom validator types registered on this options instance.
+    /// These are added after the default validators when building a <see cref="Compilation.TokenParser"/>.
+    /// </summary>
+    public List<Type> Validators { get; } = new List<Type>();
+
+    /// <summary>
+    /// Registers a custom transformer type on this options instance.
+    /// </summary>
+    public TokenizerOptions RegisterTransformer<T>() where T : ITokenTransformer
+    {
+        Transformers.Add(typeof(T));
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a custom validator type on this options instance.
+    /// </summary>
+    public TokenizerOptions RegisterValidator<T>() where T : ITokenValidator
+    {
+        Validators.Add(typeof(T));
+        return this;
+    }
+
+    /// <summary>
+    /// Determines equality based on option settings only; <see cref="Transformers"/> and
+    /// <see cref="Validators"/> are excluded because they are additive registrations,
+    /// not part of the options identity.
+    /// </summary>
+    public virtual bool Equals(TokenizerOptions? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        return IgnoreMissingProperties == other.IgnoreMissingProperties
+            && EnableDiagnostics == other.EnableDiagnostics
+            && TrimLeadingWhitespaceInTokenPreamble == other.TrimLeadingWhitespaceInTokenPreamble
+            && TrimPreambleBeforeNewLine == other.TrimPreambleBeforeNewLine
+            && TrimTrailingWhiteSpace == other.TrimTrailingWhiteSpace
+            && OutOfOrderTokens == other.OutOfOrderTokens
+            && TokenStringComparison == other.TokenStringComparison
+            && TerminateOnNewLine == other.TerminateOnNewLine
+            && MaxInputLength == other.MaxInputLength
+            && MaxTemplateLength == other.MaxTemplateLength
+            && MaxTokenCount == other.MaxTokenCount
+            && MaxIterations == other.MaxIterations
+            && CompilationCacheMaxSize == other.CompilationCacheMaxSize;
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 31 + IgnoreMissingProperties.GetHashCode();
+            hash = hash * 31 + EnableDiagnostics.GetHashCode();
+            hash = hash * 31 + TrimLeadingWhitespaceInTokenPreamble.GetHashCode();
+            hash = hash * 31 + TrimPreambleBeforeNewLine.GetHashCode();
+            hash = hash * 31 + TrimTrailingWhiteSpace.GetHashCode();
+            hash = hash * 31 + OutOfOrderTokens.GetHashCode();
+            hash = hash * 31 + TokenStringComparison.GetHashCode();
+            hash = hash * 31 + TerminateOnNewLine.GetHashCode();
+            hash = hash * 31 + MaxInputLength.GetHashCode();
+            hash = hash * 31 + MaxTemplateLength.GetHashCode();
+            hash = hash * 31 + MaxTokenCount.GetHashCode();
+            hash = hash * 31 + MaxIterations.GetHashCode();
+            hash = hash * 31 + CompilationCacheMaxSize.GetHashCode();
+            return hash;
+        }
+    }
 }

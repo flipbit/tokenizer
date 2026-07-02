@@ -303,21 +303,7 @@ public static class StringExtensions
     /// <returns><c>true</c> if the string ends with a newline sequence; otherwise <c>false</c>.</returns>
     public static bool EndsWithNewLine(this string value)
     {
-        if (string.IsNullOrEmpty(value)) return false;
-
-        // Check Unix format
-        if (value.Substring(value.Length - 1) == "\n")
-        {
-            return true;
-        }
-
-        // Check Windows format
-        if (value.Length >= 2 && value.Substring(value.Length - 2) == "\r\n")
-        {
-            return true;
-        }
-
-        return false;
+        return !string.IsNullOrEmpty(value) && value[value.Length - 1] == '\n';
     }
 
     /// <summary>

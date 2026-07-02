@@ -1,4 +1,3 @@
-using System;
 using Tokens.Enumerators;
 
 namespace Tokens.Compilation.Lexer;

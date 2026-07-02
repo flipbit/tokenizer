@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;

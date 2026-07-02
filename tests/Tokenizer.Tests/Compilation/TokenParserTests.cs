@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Exceptions;
 using Tokens.Transformers;
 using Xunit;

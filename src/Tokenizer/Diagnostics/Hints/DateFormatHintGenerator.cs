@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 
 namespace Tokens.Diagnostics.Hints;

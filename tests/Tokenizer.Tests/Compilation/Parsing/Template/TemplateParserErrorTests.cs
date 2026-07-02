@@ -1,4 +1,3 @@
-using System;
 using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;

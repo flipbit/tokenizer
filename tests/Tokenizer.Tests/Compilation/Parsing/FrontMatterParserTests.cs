@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Compilation.Lexer;
 using Tokens.Compilation.Nodes;
 using Tokens.Enumerators;

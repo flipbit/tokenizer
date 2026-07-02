@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Tokens.Enumerators;
 using Tokens.Tests;
 using Xunit;

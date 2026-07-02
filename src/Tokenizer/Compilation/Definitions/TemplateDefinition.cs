@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Tokens.Compilation.Definitions;
 
 /// <summary>

@@ -1,4 +1,3 @@
-using Tokens.Extensions;
 using Xunit;
 
 namespace Tokens.Extensions;

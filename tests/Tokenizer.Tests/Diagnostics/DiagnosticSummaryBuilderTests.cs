@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;

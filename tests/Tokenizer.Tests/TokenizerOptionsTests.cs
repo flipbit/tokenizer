@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Compilation;
 using Xunit;
 using Xunit.Abstractions;

@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Tokens.Diagnostics.Hints;
 
 /// <summary>

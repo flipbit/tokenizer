@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;

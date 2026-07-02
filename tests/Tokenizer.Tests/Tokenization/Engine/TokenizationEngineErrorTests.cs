@@ -1,4 +1,3 @@
-using System;
 using Tokens.Builders;
 using Tokens.Tokenization;
 using Xunit;

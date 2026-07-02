@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Tokens.Exceptions;
 
 namespace Tokens;
@@ -18,7 +16,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     }
 
     /// <summary>
-    /// A dictionary of values extracted from the input string. 
+    /// A dictionary of values extracted from the input string.
     /// </summary>
     public IReadOnlyList<TokenMatch> Matches => Tokens.Matches;
 
@@ -91,7 +89,7 @@ public sealed class TokenizeResult<T> : TokenizeResultBase where T : class, new(
     }
 
     /// <summary>
-    /// An instance of <see cref="T"/> populated with data from the input string. 
+    /// An instance of <see cref="T"/> populated with data from the input string.
     /// </summary>
     public T Value { get; init; }
 }

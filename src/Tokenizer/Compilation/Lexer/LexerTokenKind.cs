@@ -1,5 +1,3 @@
-using System;
-
 namespace Tokens.Compilation.Lexer;
 
 /// <summary>

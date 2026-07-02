@@ -1,5 +1,3 @@
-using System;
-
 namespace Tokens.Transformers;
 
 public class BlowsUpTransformer : ITokenTransformer

@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Compilation.Parsing;
 using Xunit;
 using Tokens.Compilation.Binders;

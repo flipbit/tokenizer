@@ -53,4 +53,7 @@ public sealed class HintResult
     /// <c>true</c> when at least one required hint was not found in the input.
     /// </summary>
     public bool HasMissingRequiredHints => Misses.Any(m => m.Optional == false);
+
+    /// <inheritdoc />
+    public override string ToString() => $"HintResult({Matches.Count} matched, {Misses.Count} missed)";
 }

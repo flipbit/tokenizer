@@ -10,6 +10,32 @@ namespace Tokens;
 /// </summary>
 public record class TokenizerOptions
 {
+    private readonly List<Type> transformers = new List<Type>();
+    private readonly List<Type> validators = new List<Type>();
+
+    /// <summary>
+    /// Copy constructor used by the record's <c>with</c> expression. Deep-copies the
+    /// transformer and validator lists so the original and the copy do not share references.
+    /// </summary>
+    protected TokenizerOptions(TokenizerOptions original)
+    {
+        IgnoreMissingProperties = original.IgnoreMissingProperties;
+        EnableDiagnostics = original.EnableDiagnostics;
+        TrimLeadingWhitespaceInTokenPreamble = original.TrimLeadingWhitespaceInTokenPreamble;
+        TrimPreambleBeforeNewLine = original.TrimPreambleBeforeNewLine;
+        TrimTrailingWhiteSpace = original.TrimTrailingWhiteSpace;
+        OutOfOrderTokens = original.OutOfOrderTokens;
+        TokenStringComparison = original.TokenStringComparison;
+        TerminateOnNewLine = original.TerminateOnNewLine;
+        MaxInputLength = original.MaxInputLength;
+        MaxTemplateLength = original.MaxTemplateLength;
+        MaxTokenCount = original.MaxTokenCount;
+        MaxIterations = original.MaxIterations;
+        CompilationCacheMaxSize = original.CompilationCacheMaxSize;
+        transformers = new List<Type>(original.transformers);
+        validators = new List<Type>(original.validators);
+    }
+
     /// <summary>
     /// When true, tokens that do not map to a property on the target object are silently ignored.
     /// </summary>
@@ -88,20 +114,20 @@ public record class TokenizerOptions
     /// Custom transformer types registered on this options instance.
     /// These are added after the default transformers when building a <see cref="Compilation.TokenParser"/>.
     /// </summary>
-    public List<Type> Transformers { get; } = new List<Type>();
+    public IReadOnlyList<Type> Transformers => transformers.AsReadOnly();
 
     /// <summary>
     /// Custom validator types registered on this options instance.
     /// These are added after the default validators when building a <see cref="Compilation.TokenParser"/>.
     /// </summary>
-    public List<Type> Validators { get; } = new List<Type>();
+    public IReadOnlyList<Type> Validators => validators.AsReadOnly();
 
     /// <summary>
     /// Registers a custom transformer type on this options instance.
     /// </summary>
     public TokenizerOptions RegisterTransformer<T>() where T : ITokenTransformer
     {
-        Transformers.Add(typeof(T));
+        transformers.Add(typeof(T));
         return this;
     }
 
@@ -110,7 +136,7 @@ public record class TokenizerOptions
     /// </summary>
     public TokenizerOptions RegisterValidator<T>() where T : ITokenValidator
     {
-        Validators.Add(typeof(T));
+        validators.Add(typeof(T));
         return this;
     }
 
@@ -123,6 +149,7 @@ public record class TokenizerOptions
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
+        if (other.EqualityContract != EqualityContract) return false;
 
         return IgnoreMissingProperties == other.IgnoreMissingProperties
             && EnableDiagnostics == other.EnableDiagnostics

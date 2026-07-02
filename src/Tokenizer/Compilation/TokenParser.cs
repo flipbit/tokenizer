@@ -74,6 +74,7 @@ internal class TokenParser
         RegisterValidator<EndsWithValidator>();
         RegisterValidator<ContainsValidator>();
         RegisterValidator<IsAlphanumericValidator>();
+        RegisterValidator<IsIntegerValidator>();
     }
 
     public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

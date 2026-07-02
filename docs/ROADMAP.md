@@ -75,12 +75,12 @@ Fill functional gaps in the built-in decorator set.
 
 Address remaining allocation and computation hotspots.
 
-- [ ] **Cache regex patterns with `RegexOptions.Compiled`** — `StringExtensions.cs:190`, `ToDateTimeTransformer.cs:84`, `PreambleNearMissHintGenerator.cs:57`
-- [ ] **Cache `GetMethod("Add")` in `ObjectExtensions:86`** — uncached reflection on every list property assignment
-- [ ] **Eliminate substring allocations in `StringExtensions`** — `EndsWithNewLine` (lines 308-316) and `TrimLeadingSpaces` (line 219) create substrings for single-char comparisons
-- [ ] **Merge double iteration in `ProcessFrontMatterTokens`** — `TokenizationEngine.cs:342-344` iterates tokens twice (`.Where` + `.Count`)
-- [ ] **Add `ToString()` overrides** on `Match`, `TokenizeResult`, `TokenResult`, `HintResult`, `Hint`, `Template` for debugging
-- [ ] **Add `IEquatable<T>`** on value-like types: `Hint`, `HintMatch`, `Match`, `FileLocation`
+- [x] **Cache regex patterns with `RegexOptions.Compiled`** — `StringExtensions.cs:190`, `ToDateTimeTransformer.cs:84`, `PreambleNearMissHintGenerator.cs:57`
+- [x] **Cache `GetMethod("Add")` in `ObjectExtensions:86`** — uncached reflection on every list property assignment
+- [x] **Eliminate substring allocations in `StringExtensions`** — `EndsWithNewLine` (lines 308-316) and `TrimLeadingSpaces` (line 219) create substrings for single-char comparisons
+- [x] **Merge double iteration in `ProcessFrontMatterTokens`** — `TokenizationEngine.cs:342-344` iterates tokens twice (`.Where` + `.Count`)
+- [x] **Add `ToString()` overrides** on `Match`, `TokenizeResult`, `TokenResult`, `HintResult`, `Hint`, `Template` for debugging
+- [x] **Add `IEquatable<T>`** on value-like types: `Hint`, `HintMatch`, `Match`, `FileLocation`
 
 ## Tier 7: Template Compilation Caching
 

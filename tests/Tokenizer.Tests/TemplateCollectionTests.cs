@@ -82,7 +82,7 @@ public class TemplateCollectionTests : TokenizerTestBase
 
         collection.Clear();
 
-        Assert.Equal(0, collection.Count);
+        Assert.Empty(collection);
     }
 
     [Fact]
@@ -140,6 +140,6 @@ public class TemplateCollectionTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(coll);
-        Assert.Equal(0, coll.Count);
+        Assert.Empty(coll);
     }
 }

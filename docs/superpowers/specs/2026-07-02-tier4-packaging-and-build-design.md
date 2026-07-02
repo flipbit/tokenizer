@@ -31,26 +31,8 @@ Bring the NuGet package and CI/CD infrastructure to professional .NET library st
 ### Changes
 
 - Add `<GenerateDocumentationFile>true</GenerateDocumentationFile>` to `Tokenizer.csproj`
-- Add XML doc comments to all undocumented public members
 
-### Scope Breakdown
-
-| Category | Approx. Warnings | Key Files |
-|----------|------------------|-----------|
-| AST/Compilation internals | ~400 | TokenAst.cs, TokenDefinition.cs, SetTokenDirective.cs |
-| Core engine | ~210 | TokenMatcher.cs, CandidateTokenList.cs, TokenEnumerator.cs |
-| Public API surface | ~150 | Tokenizer.cs, TokenizeResult.cs, TokenizerOptions.cs, Token.cs, Template.cs |
-| Transformers/Validators | ~150 | 14 transformer classes, exception types |
-| Supporting types | ~150 | Extensions, results, hints, front matter nodes |
-
-### Conventions
-
-- Document **what** and **why**, not implementation details
-- Match the voice and style of existing XML docs in the codebase
-- Properties: describe what the value represents
-- Methods: describe what the method does and what it returns
-- Parameters: describe what each parameter controls
-- Exceptions: document thrown exceptions with `<exception cref="...">` where applicable
+All public members already have XML doc comments (verified: zero CS1591 warnings with `TreatWarningsAsErrors`). This was handled by prior commits (`126ca71 Add XML doc coverage to remaining public types` and `025a4dc Make tokenization infrastructure types internal`).
 
 ---
 
@@ -363,7 +345,7 @@ All work lands as direct commits on the `v3` branch:
 
 | Risk | Mitigation |
 |------|-----------|
-| Enabling `GenerateDocumentationFile` with `TreatWarningsAsErrors` breaks the build until all docs are added | Add doc comments before or in the same commit as enabling the flag |
+| Future public members added without XML docs will break the build | Enforced by `TreatWarningsAsErrors` — desirable behavior |
 | Release workflow requires `NUGET_API_KEY` secret | Document as prerequisite; workflow will fail gracefully with clear error if missing |
 | Code coverage tooling may behave differently on Windows vs Linux | Generate coverage report on Ubuntu only to avoid duplicate/conflicting reports |
 | Package icon may not render well at very small sizes (16×16) | Use bold weight icon, test at multiple scales during implementation |

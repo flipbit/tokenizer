@@ -57,6 +57,7 @@ internal class TokenParser
         RegisterTransformer<RemoveEndTransformer>();
         RegisterTransformer<RemoveStartTransformer>();
         RegisterTransformer<SplitTransformer>();
+        RegisterTransformer<ToIntTransformer>();
 
         RegisterValidator<IsNumericValidator>();
         RegisterValidator<MaxLengthValidator>();

@@ -64,6 +64,7 @@ internal class TokenParser
         RegisterTransformer<TruncateTransformer>();
         RegisterTransformer<DefaultValueTransformer>();
         RegisterTransformer<RegexReplaceTransformer>();
+        RegisterTransformer<TitleCaseTransformer>();
 
         RegisterValidator<IsNumericValidator>();
         RegisterValidator<MaxLengthValidator>();

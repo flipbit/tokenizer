@@ -55,4 +55,42 @@ public class TokenizerOptionsRecordTests : TokenizerTestBase
         Assert.Equal(500, options.MaxTokenCount);
         Assert.Equal(0, options.MaxIterations);
     }
+
+    [Fact]
+    public void GivenNoArguments_WhenConstructingTokenizer_ThenUsesDefaultOptions()
+    {
+        // Arrange & Act
+        var tokenizer = new Tokenizer();
+
+        // Assert
+        Assert.NotNull(tokenizer.Options);
+        Assert.True(tokenizer.Options.TrimTrailingWhiteSpace);
+    }
+
+    [Fact]
+    public void GivenCustomOptions_WhenConstructingTokenizer_ThenUsesProvidedOptions()
+    {
+        // Arrange
+        var options = new TokenizerOptions { TrimTrailingWhiteSpace = false };
+
+        // Act
+        var tokenizer = new Tokenizer(options);
+
+        // Assert
+        Assert.False(tokenizer.Options.TrimTrailingWhiteSpace);
+    }
+
+    [Fact]
+    public void GivenTokenizer_WhenTokenizing_ThenProducesResults()
+    {
+        // Arrange
+        var tokenizer = new Tokenizer();
+
+        // Act
+        var result = tokenizer.Tokenize("{name}", "John");
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal("John", result.First("name"));
+    }
 }

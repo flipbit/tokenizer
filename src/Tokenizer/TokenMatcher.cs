@@ -34,7 +34,7 @@ public sealed class TokenMatcher
         log = loggerFactory.CreateLogger<TokenMatcher>();
         parser = new TokenParser(options, loggerFactory.CreateLogger<TokenParser>());
         Templates = new TemplateCollection();
-        tokenizer = Tokenizer.Create(options, loggerFactory);
+        tokenizer = new Tokenizer(options, loggerFactory);
     }
 
     public TemplateCollection Templates { get; }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Tokens.Tokenization;
 
 namespace Tokens.Extensions;
@@ -81,7 +82,7 @@ public static class TokenizerServiceCollectionExtensions
             var hintProcessor = sp.GetRequiredService<IHintProcessor>();
             var resultBuilder = sp.GetRequiredService<IResultBuilder>();
 
-            return new Tokenizer(opts, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
+            return new Tokenizer(Options.Create(opts), logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
         });
 
         return services;

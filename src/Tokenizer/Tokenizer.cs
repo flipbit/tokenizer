@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
@@ -31,54 +32,51 @@ public sealed class Tokenizer
     public TokenizerOptions Options { get; }
 
     /// <summary>
+    /// Creates a new Tokenizer with default options.
+    /// </summary>
+    public Tokenizer() : this(new TokenizerOptions())
+    {
+    }
+
+    /// <summary>
+    /// Creates a new Tokenizer with the specified options.
+    /// </summary>
+    public Tokenizer(TokenizerOptions options) : this(options, null)
+    {
+    }
+
+    /// <summary>
+    /// Creates a new Tokenizer with the specified options and logger factory.
+    /// </summary>
+    public Tokenizer(TokenizerOptions options, ILoggerFactory? loggerFactory)
+    {
+        loggerFactory ??= NullLoggerFactory.Instance;
+
+        Options = options with { };
+        log = loggerFactory.CreateLogger<Tokenizer>();
+        parser = new TokenParser(Options, loggerFactory.CreateLogger<TokenParser>());
+        tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
+        hintProcessor = new HintProcessor(loggerFactory.CreateLogger<HintProcessor>());
+        resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
+    }
+
+    /// <summary>
     /// Internal constructor for dependency injection.
     /// </summary>
     internal Tokenizer(
-        TokenizerOptions options,
+        IOptions<TokenizerOptions> options,
         ILogger<Tokenizer> logger,
         TokenParser parser,
         ITokenizationEngine tokenizationEngine,
         IHintProcessor hintProcessor,
         IResultBuilder resultBuilder)
     {
-        Options = options;
+        Options = options.Value with { };
         log = logger;
         this.parser = parser;
         this.tokenizationEngine = tokenizationEngine;
         this.hintProcessor = hintProcessor;
         this.resultBuilder = resultBuilder;
-    }
-
-    /// <summary>
-    /// Creates a new Tokenizer with default options.
-    /// </summary>
-    public static Tokenizer Create()
-    {
-        return Create(new TokenizerOptions(), null);
-    }
-
-    /// <summary>
-    /// Creates a new Tokenizer with the specified options.
-    /// </summary>
-    public static Tokenizer Create(TokenizerOptions options)
-    {
-        return Create(options, null);
-    }
-
-    /// <summary>
-    /// Creates a new Tokenizer with the specified options and logger factory.
-    /// </summary>
-    public static Tokenizer Create(TokenizerOptions options, ILoggerFactory? loggerFactory)
-    {
-        loggerFactory ??= NullLoggerFactory.Instance;
-
-        var logger = loggerFactory.CreateLogger<Tokenizer>();
-        var parser = new TokenParser(options, loggerFactory.CreateLogger<TokenParser>());
-        var tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
-        var hintProcessor = new HintProcessor(loggerFactory.CreateLogger<HintProcessor>());
-        var resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
-
-        return new Tokenizer(options, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
     }
 
     public TokenizeResult Tokenize(string template, string input)

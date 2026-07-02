@@ -3,7 +3,7 @@ namespace Tokens.Enumerators;
 /// <summary>
 /// Represents a location in a text file
 /// </summary>
-public class FileLocation
+public class FileLocation : IEquatable<FileLocation>
 {
     private int newLineCounter = 0;
 
@@ -89,6 +89,44 @@ public class FileLocation
             Paragraph = Paragraph
         };
     }
+
+    /// <summary>
+    /// Determines whether the specified <see cref="FileLocation"/> is equal to this instance.
+    /// </summary>
+    public bool Equals(FileLocation? other)
+    {
+        return other is not null && Column == other.Column && Line == other.Line && Paragraph == other.Paragraph;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => Equals(obj as FileLocation);
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+#if NETSTANDARD2_0
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 31 + Column;
+            hash = hash * 31 + Line;
+            hash = hash * 31 + Paragraph;
+            return hash;
+        }
+#else
+        return HashCode.Combine(Column, Line, Paragraph);
+#endif
+    }
+
+    /// <summary>
+    /// Determines whether two <see cref="FileLocation"/> instances are equal.
+    /// </summary>
+    public static bool operator ==(FileLocation? left, FileLocation? right) => Equals(left, right);
+
+    /// <summary>
+    /// Determines whether two <see cref="FileLocation"/> instances are not equal.
+    /// </summary>
+    public static bool operator !=(FileLocation? left, FileLocation? right) => !Equals(left, right);
 
     /// <summary>
     /// Returns a string representation of this instance

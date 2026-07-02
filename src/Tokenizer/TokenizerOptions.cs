@@ -5,23 +5,8 @@ namespace Tokens;
 /// <summary>
 /// Options for the <see cref="Tokenizer"/>.
 /// </summary>
-public sealed class TokenizerOptions
+public record class TokenizerOptions
 {
-    public static TokenizerOptions Defaults => new TokenizerOptions();
-
-    public TokenizerOptions()
-    {
-        // Set defaults
-        TrimLeadingWhitespaceInTokenPreamble = true;
-        TrimPreambleBeforeNewLine = false;
-        TrimTrailingWhiteSpace = true;
-        TokenStringComparison = StringComparison.InvariantCulture;
-        OutOfOrderTokens = false;
-        TerminateOnNewLine = false;
-        IgnoreMissingProperties = false;
-        EnableDiagnostics = false;
-    }
-
     /// <summary>
     /// When true, tokens that do not map to a property on the target object are silently ignored.
     /// </summary>
@@ -38,14 +23,14 @@ public sealed class TokenizerOptions
     /// <summary>
     /// When true, leading whitespace in the static text preceding a token is trimmed before matching.
     /// </summary>
-    public bool TrimLeadingWhitespaceInTokenPreamble { get; set; }
+    public bool TrimLeadingWhitespaceInTokenPreamble { get; set; } = true;
 
     /// <summary>
     /// When true, any portion of a token preamble that appears before a newline is discarded.
     /// </summary>
     public bool TrimPreambleBeforeNewLine { get; set; }
 
-    public bool TrimTrailingWhiteSpace { get; set; }
+    public bool TrimTrailingWhiteSpace { get; set; } = true;
 
     /// <summary>
     /// When true, tokens may be matched in any order rather than strictly left-to-right.
@@ -55,7 +40,7 @@ public sealed class TokenizerOptions
     /// <summary>
     /// Determines the <see cref="StringComparison"/> type to use when matching Token names to object properties
     /// </summary>
-    public StringComparison TokenStringComparison { get; set; }
+    public StringComparison TokenStringComparison { get; set; } = StringComparison.InvariantCulture;
 
     /// <summary>
     /// If set, token values will be extracted up till the first new line character.
@@ -85,24 +70,5 @@ public sealed class TokenizerOptions
     /// Default: 0 (auto-calculated as input.Length * 2).
     /// Set to a positive value to override.
     /// </summary>
-    public int MaxIterations { get; set; } = 0;
-
-    public TokenizerOptions Clone()
-    {
-        return new TokenizerOptions
-        {
-            TrimTrailingWhiteSpace = TrimTrailingWhiteSpace,
-            TrimLeadingWhitespaceInTokenPreamble = TrimLeadingWhitespaceInTokenPreamble,
-            TokenStringComparison = TokenStringComparison,
-            OutOfOrderTokens = OutOfOrderTokens,
-            TrimPreambleBeforeNewLine = TrimPreambleBeforeNewLine,
-            TerminateOnNewLine = TerminateOnNewLine,
-            IgnoreMissingProperties = IgnoreMissingProperties,
-            MaxInputLength = MaxInputLength,
-            MaxTemplateLength = MaxTemplateLength,
-            MaxTokenCount = MaxTokenCount,
-            MaxIterations = MaxIterations,
-            EnableDiagnostics = EnableDiagnostics
-        };
-    }
+    public int MaxIterations { get; set; }
 }

@@ -24,7 +24,7 @@ internal class TokenParser
 
     public TokenizerOptions Options { get; set; }
 
-    public TokenParser() : this(TokenizerOptions.Defaults)
+    public TokenParser() : this(new TokenizerOptions())
     {
     }
 

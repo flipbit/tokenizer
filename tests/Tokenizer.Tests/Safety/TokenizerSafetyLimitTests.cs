@@ -11,7 +11,7 @@ public class TokenizerSafetyLimitTests
     public void GivenInputExceedingMaxLength_WhenTokenizing_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxInputLength = 100;
         var tokenizer = Tokenizer.Create(options);
         var input = new string('x', 101);
@@ -28,7 +28,7 @@ public class TokenizerSafetyLimitTests
     public void GivenInputAtMaxLength_WhenTokenizing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxInputLength = 100;
         var tokenizer = Tokenizer.Create(options);
         var input = "Name: " + new string('x', 94);
@@ -44,7 +44,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxInputLengthDisabled_WhenTokenizingLargeInput_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxInputLength = 0;
         var tokenizer = Tokenizer.Create(options);
         var input = "Name: " + new string('x', 200_000);
@@ -60,7 +60,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateExceedingMaxLength_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxTemplateLength = 50;
         var tokenizer = Tokenizer.Create(options);
         var longTemplate = "Name: {Name}" + new string(' ', 50);
@@ -75,7 +75,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateAtMaxLength_WhenParsing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxTemplateLength = 100;
         var tokenizer = Tokenizer.Create(options);
         var template = "Name: {Name}";
@@ -91,7 +91,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxTemplateLengthDisabled_WhenParsingLargeTemplate_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxTemplateLength = 0;
         var tokenizer = Tokenizer.Create(options);
         var template = "Name: {Name}" + new string(' ', 100_000);
@@ -107,7 +107,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateExceedingMaxTokenCount_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxTokenCount = 5;
         var tokenizer = Tokenizer.Create(options);
 
@@ -129,7 +129,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateAtMaxTokenCount_WhenParsing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxTokenCount = 5;
         var tokenizer = Tokenizer.Create(options);
 
@@ -150,7 +150,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxIterationsExceeded_WhenTokenizing_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxIterations = 5;
         var tokenizer = Tokenizer.Create(options);
 
@@ -164,7 +164,7 @@ public class TokenizerSafetyLimitTests
     public void GivenAutoMaxIterations_WhenTokenizingNormalInput_ThenProcessesSuccessfully()
     {
         // Arrange — default MaxIterations=0 means auto (input.Length * 2)
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         var tokenizer = Tokenizer.Create(options);
 
         // Act
@@ -179,7 +179,7 @@ public class TokenizerSafetyLimitTests
     public void GivenCustomMaxIterations_WhenWithinLimit_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         options.MaxIterations = 10000;
         var tokenizer = Tokenizer.Create(options);
 

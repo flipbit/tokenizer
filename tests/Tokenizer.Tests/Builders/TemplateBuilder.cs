@@ -54,7 +54,7 @@ public class TemplateBuilder
 
     public TemplateBuilder WithDefaultOptions()
     {
-        _options = TokenizerOptions.Defaults;
+        _options = new TokenizerOptions();
         return this;
     }
 

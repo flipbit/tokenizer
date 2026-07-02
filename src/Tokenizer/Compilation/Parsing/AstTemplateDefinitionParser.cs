@@ -21,14 +21,14 @@ internal sealed class AstTemplateDefinitionParser : ITemplateDefinitionParser
 {
     public TemplateDefinition Parse(string template)
     {
-        return Parse(template, TokenizerOptions.Defaults);
+        return Parse(template, new TokenizerOptions());
     }
 
     public TemplateDefinition Parse(string template, TokenizerOptions options)
     {
         var parser = new TemplateParser();
         var document = parser.Parse(template);
-        var result = new TemplateDefinition { Options = options.Clone() };
+        var result = new TemplateDefinition { Options = options with { } };
         var binder = new FrontMatterBinder();
         binder.Bind(result, document.FrontMatter);
         // Bind tokens from AST (Phase 2 syntax → definitions)

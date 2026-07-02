@@ -15,7 +15,7 @@ internal sealed class FrontMatterBinder
         if (template == null) throw new ArgumentNullException(nameof(template));
         if (frontMatter == null) return;
         // Ensure options are available for binding
-        template.Options ??= TokenizerOptions.Defaults.Clone();
+        template.Options ??= new TokenizerOptions();
 
         foreach (var node in frontMatter.Entries)
         {

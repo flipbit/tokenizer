@@ -23,7 +23,7 @@ public abstract class TokenizerTestBase
     /// </summary>
     protected Tokenizer CreateTokenizer()
     {
-        return Tokenizer.Create(TokenizerOptions.Defaults, LoggerFactory);
+        return Tokenizer.Create(new TokenizerOptions(), LoggerFactory);
     }
 
     /// <summary>

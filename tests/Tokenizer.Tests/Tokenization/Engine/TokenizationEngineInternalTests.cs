@@ -58,7 +58,7 @@ public class TokenizationEngineInternalTests
 
         var value = new { Name = "World" };
         var replacement = new StringBuilder();
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         var replacementLocation = new FileLocation();
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
@@ -105,7 +105,7 @@ public class TokenizationEngineInternalTests
         var candidates = new CandidateTokenList();
         var value = new { Name = "" };
         var replacement = new StringBuilder("test");
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         var replacementLocation = new FileLocation();
         var result = new TokenizeResultBuilder().Build();
         var template = new TemplateBuilder()

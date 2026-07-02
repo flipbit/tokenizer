@@ -19,7 +19,7 @@ public sealed class TokenMatcher
     private readonly TokenParser parser;
     private readonly ILogger<TokenMatcher> log;
 
-    public TokenMatcher() : this(TokenizerOptions.Defaults, (ILoggerFactory?)null)
+    public TokenMatcher() : this(new TokenizerOptions(), (ILoggerFactory?)null)
     {
     }
 

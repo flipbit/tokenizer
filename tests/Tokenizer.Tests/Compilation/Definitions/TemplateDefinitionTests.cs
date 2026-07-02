@@ -23,7 +23,7 @@ public class TemplateDefinitionTests
     {
         // Arrange
         var template = new TemplateDefinition();
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
 
         // Act
         template.Options = options;

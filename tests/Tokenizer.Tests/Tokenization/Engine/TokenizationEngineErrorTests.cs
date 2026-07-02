@@ -96,7 +96,7 @@ public class TokenizationEngineErrorTests
         var candidates = new CandidateTokenList();
         var value = new { Name = "" };
         var replacement = new System.Text.StringBuilder("test");
-        var options = TokenizerOptions.Defaults;
+        var options = new TokenizerOptions();
         var replacementLocation = new Enumerators.FileLocation();
         var result = new TokenizeResultBuilder().Build();
         var template = new TemplateBuilder()

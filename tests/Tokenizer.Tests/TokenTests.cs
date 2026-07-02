@@ -32,7 +32,7 @@ public class TokenTests : Tests.TokenizerTestBase
         token.Name = "Person.Name";
 
         // Act
-        var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);
@@ -48,7 +48,7 @@ public class TokenTests : Tests.TokenizerTestBase
         token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
         // Act
-        var assigned = token.Assign(person, "20", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = token.Assign(person, "20", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);
@@ -64,7 +64,7 @@ public class TokenTests : Tests.TokenizerTestBase
         token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
 
         // Act
-        var assigned = token.Assign(person, "Twenty", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = token.Assign(person, "Twenty", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(assigned);
@@ -79,7 +79,7 @@ public class TokenTests : Tests.TokenizerTestBase
         token.Name = "Person.Name";
 
         // Act
-        var assigned = token.Assign(person, "Sue", TokenizerOptions.Defaults, new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);

@@ -54,7 +54,7 @@ public sealed class Tokenizer
     /// </summary>
     public static Tokenizer Create()
     {
-        return Create(TokenizerOptions.Defaults, null);
+        return Create(new TokenizerOptions(), null);
     }
 
     /// <summary>

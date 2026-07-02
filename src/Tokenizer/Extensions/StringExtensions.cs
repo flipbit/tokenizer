@@ -9,6 +9,7 @@ namespace Tokens.Extensions;
 /// </summary>
 public static class StringExtensions
 {
+    private static readonly Regex NewLineSplitRegex = new(@"\r\n|\r|\n", RegexOptions.Compiled);
     /// <summary>
     /// Gets the substring after the first matching string.
     /// </summary>
@@ -184,7 +185,7 @@ public static class StringExtensions
             return Array.Empty<string>();
         }
 
-        return Regex.Split(value, "\r\n|\r|\n");
+        return NewLineSplitRegex.Split(value);
     }
 
     /// <summary>

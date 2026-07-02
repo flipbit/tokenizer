@@ -67,4 +67,7 @@ public sealed class TokenResult
     /// <c>true</c> when at least one token was matched in the input.
     /// </summary>
     public bool HasMatches => Matches.Any();
+
+    /// <inheritdoc />
+    public override string ToString() => $"TokenResult({Matches.Count} matched, {Misses.Count} missed)";
 }

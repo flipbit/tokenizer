@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Transformers;
 
-public class ToDateTimeUtcTransformerTests : Tests.TokenizerTestBase
+public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 {
     public ToDateTimeUtcTransformerTests(ITestOutputHelper output) : base(output)
     {

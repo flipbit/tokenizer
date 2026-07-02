@@ -1,8 +1,7 @@
-using Tokens.Compilation;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests.Compilation.Binders;
+namespace Tokens.Compilation.Binders;
 
 public class FrontMatterBinderTests : TokenizerTestBase
 {

@@ -6,7 +6,7 @@ using Tokens.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests.Integration;
+namespace Tokens.Integration;
 
 public class DependencyInjectionTests : TokenizerTestBase
 {

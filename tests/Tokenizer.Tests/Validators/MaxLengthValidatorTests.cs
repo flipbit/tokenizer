@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class MaxLengthValidatorTests : Tests.TokenizerTestBase
+public class MaxLengthValidatorTests : TokenizerTestBase
 {
     public MaxLengthValidatorTests(ITestOutputHelper output) : base(output)
     {

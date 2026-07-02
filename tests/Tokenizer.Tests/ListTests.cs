@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class ListTests : Tests.TokenizerTestBase
+public class ListTests : TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 

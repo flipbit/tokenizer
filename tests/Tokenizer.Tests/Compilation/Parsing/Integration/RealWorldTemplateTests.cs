@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Integration;
+namespace Tokens.Compilation.Parsing.Integration;
 
 /// <summary>
 /// Tests using real-world template patterns

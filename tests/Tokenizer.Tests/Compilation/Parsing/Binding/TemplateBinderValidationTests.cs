@@ -1,8 +1,7 @@
-using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Binding;
+namespace Tokens.Compilation.Parsing.Binding;
 
 /// <summary>
 /// Tests for semantic validation during binding

@@ -1,9 +1,9 @@
 using Tokens.Builders;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
-using Tokens.Diagnostics;
 
-namespace Tokens.Tests.Tokenization.HintProcessorTests;
+namespace Tokens.Tokenization.HintProcessor;
 
 /// <summary>
 /// Tests for basic HintProcessor matching and validation logic
@@ -30,7 +30,7 @@ public class HintProcessorBasicTests
         var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.False(hintsMissing);
+        Assert.False((bool)hintsMissing);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class HintProcessorBasicTests
         var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.False(hintsMissing);
+        Assert.False((bool)hintsMissing);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class HintProcessorBasicTests
         var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.True(hintsMissing);
+        Assert.True((bool)hintsMissing);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class HintProcessorBasicTests
         var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.False(hintsMissing);
+        Assert.False((bool)hintsMissing);
         Assert.True(result.Hints.Matches.Count > 0);
     }
 
@@ -131,7 +131,7 @@ public class HintProcessorBasicTests
         var hintsMissing = _processor.FindAndValidateHints(template, enumerator, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.False(hintsMissing);
+        Assert.False((bool)hintsMissing);
         Assert.True(result.Hints.Matches.Count >= 1);
     }
 
@@ -148,7 +148,7 @@ public class HintProcessorBasicTests
         var isMatch = _processor.IsHintMatch(hint, enumerator);
 
         // Assert
-        Assert.True(isMatch);
+        Assert.True((bool)isMatch);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class HintProcessorBasicTests
         var isMatch = _processor.IsHintMatch(hint, enumerator);
 
         // Assert
-        Assert.False(isMatch);
+        Assert.False((bool)isMatch);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class HintProcessorBasicTests
         var added = _processor.AddHintMatch(hint, enumerator, result);
 
         // Assert
-        Assert.True(added);
+        Assert.True((bool)added);
         Assert.True(result.Hints.Matches.Count > 0);
     }
 
@@ -198,7 +198,7 @@ public class HintProcessorBasicTests
         var added = _processor.AddHintMiss(hint, result);
 
         // Assert
-        Assert.True(added);
+        Assert.True((bool)added);
         Assert.True(result.Hints.Misses.Count > 0);
     }
 

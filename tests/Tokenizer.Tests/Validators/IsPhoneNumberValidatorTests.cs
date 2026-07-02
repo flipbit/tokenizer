@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsPhoneNumberValidatorTests : Tests.TokenizerTestBase
+public class IsPhoneNumberValidatorTests : TokenizerTestBase
 {
     public IsPhoneNumberValidatorTests(ITestOutputHelper output) : base(output)
     {

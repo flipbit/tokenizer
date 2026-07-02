@@ -1,9 +1,8 @@
 using Tokens.Builders;
-using Tokens.Tokenization;
-using Xunit;
 using Tokens.Diagnostics;
+using Xunit;
 
-namespace Tokens.Tests.Tokenization.Engine;
+namespace Tokens.Tokenization.Engine;
 
 /// <summary>
 /// Tests for TokenizationEngine error handling and validation

@@ -1,8 +1,7 @@
-using Tokens.Compilation.Parsing;
-using Xunit;
 using Tokens.Compilation.Binders;
+using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Template;
+namespace Tokens.Compilation.Parsing.Template;
 
 /// <summary>
 /// Tests for whitespace and line ending handling

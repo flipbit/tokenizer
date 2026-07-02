@@ -1,7 +1,7 @@
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tests.Safety;
+namespace Tokens.Safety;
 
 public class TokenizerSafetyLimitTests
 {

@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsNumericValidatorTests : Tests.TokenizerTestBase
+public class IsNumericValidatorTests : TokenizerTestBase
 {
     public IsNumericValidatorTests(ITestOutputHelper output) : base(output)
     {

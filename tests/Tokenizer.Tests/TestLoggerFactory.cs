@@ -3,7 +3,7 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests;
+namespace Tokens;
 
 /// <summary>
 /// Factory for creating loggers that automatically output to XUnit test output.

@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Tokens.Tokenization;
+namespace Tokens.Tokenization.Integration;
 
 public class ServiceConstructorTests
 {
@@ -22,7 +22,7 @@ public class ServiceConstructorTests
         var processor = new HintProcessor();
 
         // Assert
-        Assert.NotNull(processor);
+        Assert.NotNull((object?)processor);
         Assert.IsType<HintProcessor>(processor);
     }
 
@@ -33,7 +33,7 @@ public class ServiceConstructorTests
         var builder = new ResultBuilder();
 
         // Assert
-        Assert.NotNull(builder);
+        Assert.NotNull((object?)builder);
         Assert.IsType<ResultBuilder>(builder);
     }
 
@@ -117,8 +117,8 @@ public class ServiceConstructorTests
         // Act & Assert
         // Both instances should be independent and stateless
         Assert.NotSame(processor1, processor2);
-        Assert.NotNull(processor1);
-        Assert.NotNull(processor2);
+        Assert.NotNull((object?)processor1);
+        Assert.NotNull((object?)processor2);
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class ServiceConstructorTests
         // Act & Assert
         // Both instances should be independent and stateless
         Assert.NotSame(builder1, builder2);
-        Assert.NotNull(builder1);
-        Assert.NotNull(builder2);
+        Assert.NotNull((object?)builder1);
+        Assert.NotNull((object?)builder2);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class ServiceConstructorTests
         // Act & Assert
         // All services should be creatable without external dependencies
         Assert.NotNull(new TokenizationEngine());
-        Assert.NotNull(new HintProcessor());
-        Assert.NotNull(new ResultBuilder());
+        Assert.NotNull((object?)new HintProcessor());
+        Assert.NotNull((object?)new ResultBuilder());
         Assert.NotNull(new TokenizationContext());
     }
 
@@ -216,8 +216,8 @@ public class ServiceConstructorTests
         // Act & Assert
         // Services should be immediately usable after creation
         Assert.NotNull(engine);
-        Assert.NotNull(processor);
-        Assert.NotNull(builder);
+        Assert.NotNull((object?)processor);
+        Assert.NotNull((object?)builder);
         Assert.NotNull(context);
 
         // Context should be usable after initialization

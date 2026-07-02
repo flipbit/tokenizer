@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenMatcherTests : Tests.TokenizerTestBase
+public class TokenMatcherTests : TokenizerTestBase
 {
     private readonly TokenMatcher matcher;
     private readonly TokenParser parser;

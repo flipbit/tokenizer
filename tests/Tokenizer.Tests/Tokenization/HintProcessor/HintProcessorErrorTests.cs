@@ -1,9 +1,9 @@
 using Tokens.Builders;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
-using Tokens.Diagnostics;
 
-namespace Tokens.Tests.Tokenization.HintProcessorTests;
+namespace Tokens.Tokenization.HintProcessor;
 
 /// <summary>
 /// Tests for HintProcessor error handling and validation

@@ -1,8 +1,7 @@
-using Tokens.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests.Diagnostics;
+namespace Tokens.Diagnostics;
 
 public class DiagnosticIntegrationTests : TokenizerTestBase
 {

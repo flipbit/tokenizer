@@ -1,8 +1,7 @@
-using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.FrontMatter;
+namespace Tokens.Compilation.Parsing.FrontMatter;
 
 /// <summary>
 /// Tests for front matter validation and error handling

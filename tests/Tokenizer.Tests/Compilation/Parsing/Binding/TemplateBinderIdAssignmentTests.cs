@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Tokens.Compilation.Parsing;
+namespace Tokens.Compilation.Parsing.Binding;
 
 /// <summary>
 /// Tests for token Id assignment during template construction.

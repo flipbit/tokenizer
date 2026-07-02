@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.FrontMatter;
+namespace Tokens.Compilation.Parsing.FrontMatter;
 
 /// <summary>
 /// Tests for front matter option parsing and binding

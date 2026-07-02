@@ -1,12 +1,11 @@
 using System.Text;
 using Tokens.Builders;
 using Tokens.Compilation;
-using Tokens.Enumerators;
-using Tokens.Tokenization;
-using Xunit;
 using Tokens.Diagnostics;
+using Tokens.Enumerators;
+using Xunit;
 
-namespace Tokens.Tests.Tokenization.Engine;
+namespace Tokens.Tokenization.Engine;
 
 /// <summary>
 /// Tests for TokenizationEngine internal methods (ProcessRepeatedTokens, ProcessNewlineTerminatedTokens, etc.)

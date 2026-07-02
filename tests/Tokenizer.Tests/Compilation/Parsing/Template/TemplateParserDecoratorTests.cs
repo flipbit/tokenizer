@@ -1,8 +1,7 @@
-using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Template;
+namespace Tokens.Compilation.Parsing.Template;
 
 /// <summary>
 /// Tests for decorator parsing

@@ -1,7 +1,6 @@
-using Tokens;
 using Xunit;
 
-namespace Tokenizer.Tests;
+namespace Tokens;
 
 public class ImmutableCollectionsTests
 {

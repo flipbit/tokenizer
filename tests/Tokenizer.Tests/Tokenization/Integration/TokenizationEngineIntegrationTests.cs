@@ -1,10 +1,9 @@
 using Tokens.Builders;
 using Tokens.Compilation;
-using Tokens.Tokenization;
-using Xunit;
 using Tokens.Diagnostics;
+using Xunit;
 
-namespace Tokens.Tests.Tokenization.Integration;
+namespace Tokens.Tokenization.Integration;
 
 /// <summary>
 /// Tests for TokenizationEngine complex integration scenarios (10+ tokens, mixed features, end-to-end)

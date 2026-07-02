@@ -1,7 +1,6 @@
-using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens;
+namespace Tokens.Enumerators;
 
 public class TokenEnumeratorCharTests
 {

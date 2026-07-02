@@ -2,7 +2,7 @@ using System.Text;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization;
+namespace Tokens.Tokenization.Context;
 
 public class TokenizationContextTests
 {

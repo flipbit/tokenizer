@@ -1,8 +1,6 @@
-using Tokens.Diagnostics;
-using Tokens.Diagnostics.Hints;
 using Xunit;
 
-namespace Tokens.Tests.Diagnostics.Hints;
+namespace Tokens.Diagnostics.Hints;
 
 public class RepeatingTokenHintGeneratorTests
 {

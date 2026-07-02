@@ -6,7 +6,7 @@ using Tokens.Diagnostics;
 
 namespace Tokens;
 
-public class TokenTests : Tests.TokenizerTestBase
+public class TokenTests : TokenizerTestBase
 {
     public TokenTests(ITestOutputHelper output) : base(output)
     {

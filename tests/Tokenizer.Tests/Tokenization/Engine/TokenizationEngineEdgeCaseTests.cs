@@ -1,10 +1,9 @@
 using Tokens.Builders;
 using Tokens.Compilation;
-using Tokens.Tokenization;
-using Xunit;
 using Tokens.Diagnostics;
+using Xunit;
 
-namespace Tokens.Tests.Tokenization.Engine;
+namespace Tokens.Tokenization.Engine;
 
 /// <summary>
 /// Tests for TokenizationEngine edge cases (unicode, special chars, long input, etc.)

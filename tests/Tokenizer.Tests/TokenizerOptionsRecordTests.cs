@@ -1,7 +1,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests;
+namespace Tokens;
 
 public class TokenizerOptionsRecordTests : TokenizerTestBase
 {

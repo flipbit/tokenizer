@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Binding;
+namespace Tokens.Compilation.Parsing.Binding;
 
 /// <summary>
 /// Tests for decorator binding logic from AST to DecoratorDefinition

@@ -1,8 +1,7 @@
-using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tests.Diagnostics;
+namespace Tokens.Diagnostics;
 
 public class DiagnosticSummaryBuilderTests
 {

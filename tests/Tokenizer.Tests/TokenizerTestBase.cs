@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests;
+namespace Tokens;
 
 /// <summary>
 /// Base class for all tokenizer tests that provides logging infrastructure.

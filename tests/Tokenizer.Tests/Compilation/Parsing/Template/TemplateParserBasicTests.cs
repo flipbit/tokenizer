@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Template;
+namespace Tokens.Compilation.Parsing.Template;
 
 /// <summary>
 /// Tests for basic template parsing (empty, single, multiple tokens)

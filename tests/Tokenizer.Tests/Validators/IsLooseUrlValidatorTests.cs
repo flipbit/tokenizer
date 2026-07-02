@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsLooseUrlValidatorTests : Tests.TokenizerTestBase
+public class IsLooseUrlValidatorTests : TokenizerTestBase
 {
     public IsLooseUrlValidatorTests(ITestOutputHelper output) : base(output)
     {

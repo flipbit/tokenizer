@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenizerOptionsTests : Tests.TokenizerTestBase
+public class TokenizerOptionsTests : TokenizerTestBase
 {
     public TokenizerOptionsTests(ITestOutputHelper output) : base(output)
     {

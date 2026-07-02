@@ -1,5 +1,4 @@
 using Tokens.Enumerators;
-using Tokens.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

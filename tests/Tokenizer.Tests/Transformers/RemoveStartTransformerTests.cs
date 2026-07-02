@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Transformers;
 
-public class RemoveStartTransformerTests : Tests.TokenizerTestBase
+public class RemoveStartTransformerTests : TokenizerTestBase
 {
     public RemoveStartTransformerTests(ITestOutputHelper output) : base(output)
     {

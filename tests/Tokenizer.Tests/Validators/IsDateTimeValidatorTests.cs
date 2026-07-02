@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens.Validators;
 
-public class IsDateTimeValidatorTests : Tests.TokenizerTestBase
+public class IsDateTimeValidatorTests : TokenizerTestBase
 {
     public IsDateTimeValidatorTests(ITestOutputHelper output) : base(output)
     {

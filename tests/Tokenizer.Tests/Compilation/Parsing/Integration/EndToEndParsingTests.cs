@@ -1,7 +1,6 @@
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Integration;
+namespace Tokens.Compilation.Parsing.Integration;
 
 /// <summary>
 /// End-to-end tests for the full parsing pipeline (Lexer → Parser → Binder → Definition)

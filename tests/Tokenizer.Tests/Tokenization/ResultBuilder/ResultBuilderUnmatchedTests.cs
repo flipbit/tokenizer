@@ -1,10 +1,10 @@
 using Tokens.Builders;
 using Tokens.Compilation;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
-using Tokens.Diagnostics;
 
-namespace Tokens.Tests.Tokenization.ResultBuilderTests;
+namespace Tokens.Tokenization.ResultBuilder;
 
 /// <summary>
 /// Tests for ResultBuilder BuildUnmatchedTokens logic

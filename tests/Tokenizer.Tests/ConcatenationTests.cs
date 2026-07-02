@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class ConcatenationTests : Tests.TokenizerTestBase
+public class ConcatenationTests : TokenizerTestBase
 {
     private readonly Tokenizer tokenizer;
 

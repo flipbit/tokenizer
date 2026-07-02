@@ -3,7 +3,7 @@ using Tokens.Compilation;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tests.Tokenization.ResultBuilderTests;
+namespace Tokens.Tokenization.ResultBuilder;
 
 /// <summary>
 /// Tests for basic ResultBuilder operations (add matches/misses, create results, etc.)
@@ -128,7 +128,7 @@ public class ResultBuilderBasicTests
         var wasLast = _builder.WasLastMatchedToken(result, token);
 
         // Assert
-        Assert.True(wasLast);
+        Assert.True((bool)wasLast);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class ResultBuilderBasicTests
         var wasLast = _builder.WasLastMatchedToken(result, token);
 
         // Assert
-        Assert.False(wasLast);
+        Assert.False((bool)wasLast);
     }
 
     private Template CreateTemplate(string name = "TestTemplate", string content = "Hello {Name}")

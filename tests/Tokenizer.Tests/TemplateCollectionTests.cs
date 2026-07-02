@@ -2,7 +2,7 @@ using Tokens.Builders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tests;
+namespace Tokens;
 
 public class TemplateCollectionTests : TokenizerTestBase
 {

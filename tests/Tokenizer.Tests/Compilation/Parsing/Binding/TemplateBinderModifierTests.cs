@@ -1,8 +1,7 @@
 using Tokens.Compilation.Binders;
-using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Tests.Compilation.Parsing.Binding;
+namespace Tokens.Compilation.Parsing.Binding;
 
 /// <summary>
 /// Tests for modifier binding logic from AST to TokenDefinition

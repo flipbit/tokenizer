@@ -1,10 +1,9 @@
-using Tokens.Compilation;
-using Tokens.Tokenization;
 using Tokens.Builders;
-using Xunit;
+using Tokens.Compilation;
 using Tokens.Diagnostics;
+using Xunit;
 
-namespace Tokens.Tests.Tokenization.Engine;
+namespace Tokens.Tokenization.Engine;
 
 public class TokenizationEngineEmptyPreambleTests
 {

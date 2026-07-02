@@ -25,7 +25,7 @@ public sealed class TruncateTransformer : ITokenTransformer
 
             transformed = valueString.Length <= maxLength
                 ? valueString
-                : valueString[..maxLength];
+                : valueString.Substring(0, maxLength);
 
             return true;
         }

@@ -86,9 +86,9 @@ Address remaining allocation and computation hotspots.
 
 Prevent repeated parsing of the same template pattern.
 
-- [ ] **Introduce internal compilation cache** — `ConcurrentDictionary<string, Template>` behind the string-overload `Tokenize()` methods
-- [ ] **Expose `Compile()` API** — let users explicitly compile a template for reuse, making the `CompiledTemplate` concept first-class
-- [ ] **Add compilation cache benchmarks** — measure the impact in the benchmark suite
+- [x] **Introduce internal compilation cache** — `ConcurrentDictionary<string, Template>` behind the string-overload `Tokenize()` methods
+- [x] **Expose `Compile()` API** — let users explicitly compile a template for reuse, making the `CompiledTemplate` concept first-class
+- [x] **Add compilation cache benchmarks** — measure the impact in the benchmark suite
 
 ## Tier 8: Architecture and Extensibility
 

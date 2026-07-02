@@ -77,6 +77,7 @@ internal class TokenParser
         RegisterValidator<IsIntegerValidator>();
         RegisterValidator<IsGuidValidator>();
         RegisterValidator<IsIpAddressValidator>();
+        RegisterValidator<IsInRangeValidator>();
     }
 
     public TokenParser RegisterTransformer<T>() where T : ITokenTransformer

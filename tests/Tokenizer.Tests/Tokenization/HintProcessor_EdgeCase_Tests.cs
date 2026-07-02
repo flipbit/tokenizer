@@ -3,14 +3,14 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.HintProcessor;
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for HintProcessor edge cases (unicode, special chars, many hints, etc.)
 /// </summary>
-public class HintProcessorEdgeCaseTests
+public class HintProcessor_EdgeCase_Tests
 {
-    private readonly Tokens.Tokenization.HintProcessor _processor = new();
+    private readonly HintProcessor _processor = new();
 
     [Fact]
     public void GivenEmptyHintText_WhenIsHintMatch_ThenReturnsFalse()

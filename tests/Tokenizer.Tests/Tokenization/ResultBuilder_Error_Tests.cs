@@ -3,14 +3,14 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.ResultBuilder;
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for ResultBuilder error handling and validation
 /// </summary>
-public class ResultBuilderErrorTests
+public class ResultBuilder_Error_Tests
 {
-    private readonly Tokens.Tokenization.ResultBuilder _builder = new();
+    private readonly ResultBuilder _builder = new();
 
     [Fact]
     public void GivenNullResult_WhenAddTokenMatch_ThenThrowsException()

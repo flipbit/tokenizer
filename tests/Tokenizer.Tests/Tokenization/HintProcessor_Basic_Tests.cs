@@ -3,14 +3,14 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.HintProcessor;
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for basic HintProcessor matching and validation logic
 /// </summary>
-public class HintProcessorBasicTests
+public class HintProcessor_Basic_Tests
 {
-    private readonly Tokens.Tokenization.HintProcessor _processor = new();
+    private readonly HintProcessor _processor = new();
 
     [Fact]
     public void GivenTemplateWithNoHints_WhenFindAndValidateHints_ThenReturnsFalse()

@@ -3,14 +3,14 @@ using Tokens.Compilation;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.ResultBuilder;
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for basic ResultBuilder operations (add matches/misses, create results, etc.)
 /// </summary>
-public class ResultBuilderBasicTests
+public class ResultBuilder_Basic_Tests
 {
-    private readonly Tokens.Tokenization.ResultBuilder _builder = new();
+    private readonly ResultBuilder _builder = new();
 
     [Fact]
     public void GivenTemplate_WhenCreateTokenizeResult_ThenReturnsValidResult()

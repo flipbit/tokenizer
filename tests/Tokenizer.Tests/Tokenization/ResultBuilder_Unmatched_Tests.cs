@@ -4,14 +4,14 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.ResultBuilder;
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for ResultBuilder BuildUnmatchedTokens logic
 /// </summary>
-public class ResultBuilderUnmatchedTests
+public class ResultBuilder_Unmatched_Tests
 {
-    private readonly Tokens.Tokenization.ResultBuilder _builder = new();
+    private readonly ResultBuilder _builder = new();
 
     [Fact]
     public void GivenTemplateWithTokens_WhenBuildUnmatchedTokens_ThenAddsUnmatchedTokens()

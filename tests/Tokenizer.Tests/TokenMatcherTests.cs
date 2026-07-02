@@ -1,4 +1,3 @@
-using Tokens.Compilation;
 using Tokens.Transformers;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,8 +6,7 @@ namespace Tokens;
 
 public class TokenMatcherTests : TokenizerTestBase
 {
-    private readonly TokenMatcher matcher;
-    private readonly TokenParser parser;
+    private readonly ITokenMatcher matcher;
 
     private class Person
     {
@@ -19,7 +17,6 @@ public class TokenMatcherTests : TokenizerTestBase
     public TokenMatcherTests(ITestOutputHelper output) : base(output)
     {
         matcher = new TokenMatcher();
-        parser = new TokenParser();
     }
 
     [Fact]
@@ -52,12 +49,14 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestMatchWithHint()
     {
-        var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
-        var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        var tokenizer = CreateTokenizer();
+
+        var template1 = tokenizer.Compile("Name: {Person.Name: SubstringBefore(',') }", "no-age");
+        var template2 = tokenizer.Compile("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         template1.AddHint(new Hint(Text: "Name"));
 
-        matcher.Templates.Add(template1);
-        matcher.Templates.Add(template2);
+        matcher.RegisterTemplate(template1);
+        matcher.RegisterTemplate(template2);
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
@@ -71,14 +70,16 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestMatchWithMultipleHints()
     {
-        var template1 = parser.Parse("Name: {Person.Name: SubstringBefore(',') }", "no-age");
-        var template2 = parser.Parse("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        var tokenizer = CreateTokenizer();
+
+        var template1 = tokenizer.Compile("Name: {Person.Name: SubstringBefore(',') }", "no-age");
+        var template2 = tokenizer.Compile("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         template1.AddHint(new Hint(Text: "Name"));
         template2.AddHint(new Hint(Text: "Name"));
         template2.AddHint(new Hint(Text: "Age"));
 
-        matcher.Templates.Add(template1);
-        matcher.Templates.Add(template2);
+        matcher.RegisterTemplate(template1);
+        matcher.RegisterTemplate(template2);
 
         var result = matcher.Match<Person>("Name: Alice, Age: 30");
 
@@ -92,12 +93,14 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsContinuesOnError()
     {
-        matcher.RegisterTransformer<BlowsUpTransformer>();
+        var options = new TokenizerOptions();
+        options.RegisterTransformer<BlowsUpTransformer>();
+        var matcherWithTransformer = new TokenMatcher(options);
 
-        matcher.RegisterTemplate("Name: {Person.Name:BlowsUp}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        matcherWithTransformer.RegisterTemplate("Name: {Person.Name:BlowsUp}", "no-age");
+        matcherWithTransformer.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = matcherWithTransformer.Match<Person>("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
 

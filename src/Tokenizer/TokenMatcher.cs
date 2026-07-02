@@ -1,9 +1,7 @@
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Tokens.Compilation;
 using Tokens.Exceptions;
-using Tokens.Transformers;
-using Tokens.Validators;
 
 namespace Tokens;
 
@@ -11,16 +9,15 @@ namespace Tokens;
 /// Matcher class that can hold multiple <see cref="Template"/> objects, and use
 /// the best match to populate an object from an input string.
 /// </summary>
-public sealed class TokenMatcher
+public sealed class TokenMatcher : ITokenMatcher
 {
-    private readonly Tokenizer tokenizer;
-    private readonly TokenParser parser;
+    private readonly ITokenizer tokenizer;
     private readonly ILogger<TokenMatcher> log;
 
     /// <summary>
     /// Initializes a new instance of <see cref="TokenMatcher"/> with default options.
     /// </summary>
-    public TokenMatcher() : this(new TokenizerOptions(), (ILoggerFactory?)null)
+    public TokenMatcher() : this(new TokenizerOptions())
     {
     }
 
@@ -28,7 +25,7 @@ public sealed class TokenMatcher
     /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified options.
     /// </summary>
     /// <param name="options">The tokenizer options to apply during matching.</param>
-    public TokenMatcher(TokenizerOptions options) : this(options, (ILoggerFactory?)null)
+    public TokenMatcher(TokenizerOptions options) : this(new Tokenizer(options))
     {
     }
 
@@ -38,13 +35,30 @@ public sealed class TokenMatcher
     /// <param name="options">The tokenizer options to apply during matching.</param>
     /// <param name="loggerFactory">The logger factory to use for diagnostic output, or <see langword="null"/> to suppress logging.</param>
     public TokenMatcher(TokenizerOptions options, ILoggerFactory? loggerFactory)
+        : this(new Tokenizer(options, loggerFactory), loggerFactory)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified tokenizer.
+    /// </summary>
+    /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
+    public TokenMatcher(ITokenizer tokenizer) : this(tokenizer, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified tokenizer and logger factory.
+    /// </summary>
+    /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
+    /// <param name="loggerFactory">The logger factory to use for diagnostic output, or <see langword="null"/> to suppress logging.</param>
+    public TokenMatcher(ITokenizer tokenizer, ILoggerFactory? loggerFactory)
     {
         loggerFactory ??= NullLoggerFactory.Instance;
 
+        this.tokenizer = tokenizer;
         log = loggerFactory.CreateLogger<TokenMatcher>();
-        parser = new TokenParser(options, loggerFactory.CreateLogger<TokenParser>());
         Templates = new TemplateCollection();
-        tokenizer = new Tokenizer(options, loggerFactory);
     }
 
     /// <summary>
@@ -184,29 +198,14 @@ public sealed class TokenMatcher
     }
 
     /// <summary>
-    /// Parses the given template content with the specified name and adds it to <see cref="Templates"/>.
-    /// </summary>
-    /// <param name="content">The raw template pattern string to parse.</param>
-    /// <param name="name">The name to assign to the template.</param>
-    /// <returns>This <see cref="TokenMatcher"/> instance, to allow method chaining.</returns>
-    public TokenMatcher RegisterTemplate(string content, string name)
-    {
-        var template = parser.Parse(content, name);
-
-        Templates.Add(template);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Parses the given template content and adds it to <see cref="Templates"/>.
+    /// Compiles and registers a template pattern string.
     /// The template name is derived from its front matter, if present.
     /// </summary>
-    /// <param name="content">The raw template pattern string to parse.</param>
-    /// <returns>This <see cref="TokenMatcher"/> instance, to allow method chaining.</returns>
-    public TokenMatcher RegisterTemplate(string content)
+    /// <param name="content">The raw template pattern string to compile.</param>
+    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
+    public ITokenMatcher RegisterTemplate(string content)
     {
-        var template = parser.Parse(content);
+        var template = tokenizer.Compile(content);
 
         Templates.Add(template);
 
@@ -214,25 +213,57 @@ public sealed class TokenMatcher
     }
 
     /// <summary>
-    /// Registers a custom token transformer that can convert extracted values during tokenization.
+    /// Compiles and registers a template pattern string with the specified name.
     /// </summary>
-    /// <typeparam name="T">The transformer type to register. Must implement <see cref="ITokenTransformer"/>.</typeparam>
-    /// <returns>This <see cref="TokenMatcher"/> instance, to allow method chaining.</returns>
-    public TokenMatcher RegisterTransformer<T>() where T : ITokenTransformer
+    /// <param name="content">The raw template pattern string to compile.</param>
+    /// <param name="name">The name to assign to the template.</param>
+    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
+    public ITokenMatcher RegisterTemplate(string content, string name)
     {
-        parser.RegisterTransformer<T>();
+        var template = tokenizer.Compile(content, name);
+
+        Templates.Add(template);
 
         return this;
     }
 
     /// <summary>
-    /// Registers a custom token validator that can accept or reject extracted values during tokenization.
+    /// Compiles and registers a template from a <see cref="TextReader"/>.
     /// </summary>
-    /// <typeparam name="T">The validator type to register. Must implement <see cref="ITokenValidator"/>.</typeparam>
-    /// <returns>This <see cref="TokenMatcher"/> instance, to allow method chaining.</returns>
-    public TokenMatcher RegisterValidator<T>() where T : ITokenValidator
+    /// <param name="reader">The reader containing the template pattern.</param>
+    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
+    public ITokenMatcher RegisterTemplate(TextReader reader)
     {
-        parser.RegisterValidator<T>();
+        var template = tokenizer.Compile(reader);
+
+        Templates.Add(template);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Compiles and registers a template from a <see cref="TextReader"/> with the specified name.
+    /// </summary>
+    /// <param name="reader">The reader containing the template pattern.</param>
+    /// <param name="name">The name to assign to the template.</param>
+    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
+    public ITokenMatcher RegisterTemplate(TextReader reader, string name)
+    {
+        var template = tokenizer.Compile(reader, name);
+
+        Templates.Add(template);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a pre-compiled template.
+    /// </summary>
+    /// <param name="template">The compiled template to register.</param>
+    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
+    public ITokenMatcher RegisterTemplate(Template template)
+    {
+        Templates.Add(template);
 
         return this;
     }

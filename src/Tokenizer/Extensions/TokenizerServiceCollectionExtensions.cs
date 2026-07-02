@@ -99,7 +99,7 @@ public static class TokenizerServiceCollectionExtensions
             return new ResultBuilder(logger);
         });
 
-        services.TryAddSingleton<Tokenizer>(sp =>
+        services.TryAddSingleton<ITokenizer>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
@@ -110,6 +110,15 @@ public static class TokenizerServiceCollectionExtensions
             var resultBuilder = sp.GetRequiredService<IResultBuilder>();
 
             return new Tokenizer(opts, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
+        });
+
+        services.TryAddSingleton<Tokenizer>(sp => (Tokenizer)sp.GetRequiredService<ITokenizer>());
+
+        services.TryAddSingleton<ITokenMatcher>(sp =>
+        {
+            var tokenizer = sp.GetRequiredService<ITokenizer>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            return new TokenMatcher(tokenizer, loggerFactory);
         });
     }
 }

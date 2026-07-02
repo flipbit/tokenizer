@@ -5,7 +5,7 @@ namespace Tokens;
 /// <summary>
 /// Represents a hint string that a template uses to pre-filter candidate inputs.
 /// </summary>
-public sealed class HintMatch
+public sealed class HintMatch : IEquatable<HintMatch>
 {
     /// <summary>
     /// Creates a new <see cref="HintMatch"/> with the matched hint text, whether it is optional, and its location.
@@ -34,4 +34,33 @@ public sealed class HintMatch
     /// The location in the template pattern where this hint was declared.
     /// </summary>
     public FileLocation Location { get; init; }
+
+    /// <inheritdoc />
+    public bool Equals(HintMatch? other)
+    {
+        return other is not null && Text == other.Text && Optional == other.Optional && Location == other.Location;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => Equals(obj as HintMatch);
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+#if NETSTANDARD2_0
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 31 + (Text?.GetHashCode() ?? 0);
+            hash = hash * 31 + Optional.GetHashCode();
+            hash = hash * 31 + (Location?.GetHashCode() ?? 0);
+            return hash;
+        }
+#else
+        return HashCode.Combine(Text, Optional, Location);
+#endif
+    }
+
+    /// <inheritdoc />
+    public override string ToString() => $"HintMatch('{Text}' @ {Location})";
 }

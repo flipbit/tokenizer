@@ -10,6 +10,7 @@ namespace Tokens.Extensions;
 public static class ObjectExtensions
 {
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
+    private static readonly ConcurrentDictionary<Type, MethodInfo> AddMethodCache = new();
 
     private static PropertyInfo[] GetCachedProperties(Type type)
     {
@@ -92,8 +93,9 @@ public static class ObjectExtensions
                         propertyInfo.SetValue(@object, list, null);
                     }
 
-                    var addMethod = list.GetType().GetMethod("Add")
-                        ?? throw new InvalidOperationException($"Type {list.GetType().Name} does not have an Add method");
+                    var addMethod = AddMethodCache.GetOrAdd(list.GetType(), t =>
+                        t.GetMethod("Add")
+                        ?? throw new InvalidOperationException($"Type {t.Name} does not have an Add method"));
 
                     if (value is IEnumerable<string> valueList)
                     {

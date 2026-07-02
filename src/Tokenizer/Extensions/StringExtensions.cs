@@ -218,21 +218,14 @@ public static class StringExtensions
     /// <returns>The string with leading spaces removed.</returns>
     public static string TrimLeadingSpaces(this string value)
     {
-        var sb = new StringBuilder();
+        if (string.IsNullOrEmpty(value)) return value;
 
-        if (string.IsNullOrEmpty(value) == false)
+        for (var i = 0; i < value.Length; i++)
         {
-            for (var i = 0; i < value.Length; i++)
-            {
-                var character = value.Substring(i, 1);
-
-                if (character == " ") continue;
-
-                return value.Substring(i);
-            }
+            if (value[i] != ' ') return value.Substring(i);
         }
 
-        return sb.ToString();
+        return string.Empty;
     }
 
     /// <summary>

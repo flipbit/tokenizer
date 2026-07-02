@@ -9,4 +9,8 @@ namespace Tokens;
 /// <param name="Text">The text to appear in the input</param>
 /// <param name="Optional">If <c>true</c> then this hint must appear in the input in order for the
 /// <see cref="Template"/> to be considered successfully matched.</param>
-public sealed record Hint(string Text = "", bool Optional = false);
+public sealed record Hint(string Text = "", bool Optional = false)
+{
+    /// <inheritdoc />
+    public override string ToString() => Optional ? $"Hint('{Text}', Optional)" : $"Hint('{Text}')";
+}

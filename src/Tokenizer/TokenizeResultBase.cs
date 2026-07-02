@@ -64,4 +64,8 @@ public class TokenizeResultBase
                            Tokens.HasMissingRequiredTokens == false &&
                            Hints.HasMissingRequiredHints == false &&
                            (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
+
+    /// <inheritdoc />
+    public override string ToString() =>
+        $"TokenizeResult('{Template.Name}': {Tokens.Matches.Count} matched, {Tokens.Misses.Count} missed)";
 }

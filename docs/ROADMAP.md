@@ -9,48 +9,48 @@ Each tier is an independent unit of work, executed in order.
 
 Fix bugs, typos, and inconsistencies that erode trust in a public API.
 
-- [ ] **Fix XML doc copy-paste errors**
-  - `MinLengthValidator:8` says "maximum" instead of "minimum"
-  - `SplitTransformer:8` says "Removes occurrences from end"
-  - `SubstringAfterLastTransformer` / `SubstringBeforeLastTransformer` say "first" instead of "last", misspell "occurence"
-  - `MinLengthValidator:18` / `MaxLengthValidator:18` / `SetTransformer:14` — "must specified" -> "must specify"
-- [ ] **Unify exception types across validators and transformers** — pick one strategy (e.g. `TokenizerException` for missing args everywhere)
-- [ ] **Fix `NewLine` vs `Newline` casing inconsistency** — `Token.TerminateOnNewLine` vs `TokenizerOptions.TerminateOnNewline`
-- [ ] **Fix inconsistent boolean naming on `Token`** — `Optional`, `Repeating`, `Required`, `Concatenate`, `ConsiderOnce` should be `IsOptional`, `IsRepeating`, `IsRequired`, `ShouldConcatenate`, `ShouldConsiderOnce`
-- [ ] **Remove duplicate test files** — `ContainsValidatorTest.cs` + `ContainsValidatorTests.cs` (and similar pairs for EndsWith, RemoveEnd, RemoveStart, Remove, Split, SubstringBefore)
-- [ ] **Clean up stale `#if` guards** — `NET6_0_OR_GREATER` -> `NET8_0_OR_GREATER` in `TemplateLexer.cs`, remove `DOTNET35` guard in `StringExtensions.cs:237`
+- [x] **Fix XML doc copy-paste errors**
+    - `MinLengthValidator:8` says "maximum" instead of "minimum"
+    - `SplitTransformer:8` says "Removes occurrences from end"
+    - `SubstringAfterLastTransformer` / `SubstringBeforeLastTransformer` say "first" instead of "last", misspell "occurence"
+    - `MinLengthValidator:18` / `MaxLengthValidator:18` / `SetTransformer:14` — "must specified" -> "must specify"
+- [x] **Unify exception types across validators and transformers** — pick one strategy (e.g. `TokenizerException` for missing args everywhere)
+- [x] **Fix `NewLine` vs `Newline` casing inconsistency** — `Token.TerminateOnNewLine` vs `TokenizerOptions.TerminateOnNewline`
+- [x] **Fix inconsistent boolean naming on `Token`** — `Optional`, `Repeating`, `Required`, `Concatenate`, `ConsiderOnce` should be `IsOptional`, `IsRepeating`, `IsRequired`, `ShouldConcatenate`, `ShouldConsiderOnce`
+- [x] **Remove duplicate test files** — `ContainsValidatorTest.cs` + `ContainsValidatorTests.cs` (and similar pairs for EndsWith, RemoveEnd, RemoveStart, Remove, Split, SubstringBefore)
+- [x] **Clean up stale `#if` guards** — `NET6_0_OR_GREATER` -> `NET8_0_OR_GREATER` in `TemplateLexer.cs`, remove `DOTNET35` guard in `StringExtensions.cs:237`
 
 ## Tier 2: API Naming and Shape
 
 Rename and reshape the public API to follow .NET Framework Design Guidelines before more users depend on v3 names.
 
-- [ ] **Rename `CanTransform` to `TryTransform`** on `ITokenTransformer` and `TokenDecoratorContext` — current name implies a pure check but it performs the transformation
-- [ ] **Rename `Match` class to `TokenMatch`** — avoids collision with `System.Text.RegularExpressions.Match`
-- [ ] **Rename `CandidateTokenList.Any` to `HasCandidates`** — `Any` reads as a method, not a property
-- [ ] **Rename `TokenEnumerator.Match()` to `TryMatch()` or `StartsWith()`** — clearer intent
-- [ ] **Make `TokenizeResult<T>.Value` have an `init` setter** — result objects shouldn't allow consumer reassignment
-- [ ] **Make `Hint` properties use `init` setters** — currently fully mutable with public setters
-- [ ] **Narrow `ITokenizationEngine` interface** — remove `ProcessRepeatedTokens`, `ProcessNewlineTerminatedTokens`, `TryAssignCandidateTokens` from the contract (these are implementation details)
+- [x] **Rename `CanTransform` to `TryTransform`** on `ITokenTransformer` and `TokenDecoratorContext` — current name implies a pure check but it performs the transformation
+- [x] **Rename `Match` class to `TokenMatch`** — avoids collision with `System.Text.RegularExpressions.Match`
+- [x] **Rename `CandidateTokenList.Any` to `HasCandidates`** — `Any` reads as a method, not a property
+- [x] **Rename `TokenEnumerator.Match()` to `TryMatch()` or `StartsWith()`** — clearer intent
+- [x] **Make `TokenizeResult<T>.Value` have an `init` setter** — result objects shouldn't allow consumer reassignment
+- [x] **Make `Hint` properties use `init` setters** — currently fully mutable with public setters
+- [x] **Narrow `ITokenizationEngine` interface** — remove `ProcessRepeatedTokens`, `ProcessNewlineTerminatedTokens`, `TryAssignCandidateTokens` from the contract (these are implementation details)
 
 ## Tier 3: Immutability and Options
 
 Lock down mutability to prevent misuse and align with modern .NET patterns.
 
-- [ ] **Freeze `TokenizerOptions` after construction** — either `init` setters, a builder, or a `Freeze()` pattern so mutations after `Tokenizer.Create()` are prevented
-- [ ] **Adopt `IOptions<TokenizerOptions>` in DI registration** — use `services.Configure<TokenizerOptions>()` instead of raw singleton registration
-- [ ] **Make `TokenizerOptions.Defaults` a `static readonly` field** — currently allocates a new instance on every access
-- [ ] **Implement `IEnumerable<Template>` on `TemplateCollection`** — users expect to foreach and LINQ over collections
+- [x] **Freeze `TokenizerOptions` after construction** — either `init` setters, a builder, or a `Freeze()` pattern so mutations after `Tokenizer.Create()` are prevented
+- [x] **Adopt `IOptions<TokenizerOptions>` in DI registration** — use `services.Configure<TokenizerOptions>()` instead of raw singleton registration
+- [x] **Make `TokenizerOptions.Defaults` a `static readonly` field** — currently allocates a new instance on every access
+- [x] **Implement `IEnumerable<Template>` on `TemplateCollection`** — users expect to foreach and LINQ over collections
 
 ## Tier 4: Packaging and Build
 
 Ensure the NuGet package meets the bar for a professional .NET library.
 
-- [ ] **Enable `GenerateDocumentationFile`** — IntelliSense XML docs must ship in the package
-- [ ] **Add `ContinuousIntegrationBuild` property** — conditional on CI for deterministic/reproducible builds
-- [ ] **Fix NuGet metadata** — add `PackageIcon`, change `PackageProjectUrl` to HTTPS, update copyright year
-- [ ] **Add trimming/AOT annotations** — `IsTrimmable` and `IsAotCompatible` on net8.0+ targets
-- [ ] **Expand CI matrix** — add Windows/macOS, add code coverage reporting
-- [ ] **Add `CHANGELOG.md`** — release notes convention for v3.0.0
+- [x] **Enable `GenerateDocumentationFile`** — IntelliSense XML docs must ship in the package
+- [x] **Add `ContinuousIntegrationBuild` property** — conditional on CI for deterministic/reproducible builds
+- [x] **Fix NuGet metadata** — add `PackageIcon`, change `PackageProjectUrl` to HTTPS, update copyright year
+- [ ] **Add trimming/AOT annotations** — `IsTrimmable` and `IsAotCompatible` on net8.0+ targets (descoped: library uses reflection for core binding)
+- [x] **Expand CI matrix** — add Windows/macOS, add code coverage reporting
+- [x] **Add `CHANGELOG.md`** — release notes convention for v3.0.0
 
 ## Tier 5: Missing Validators and Transformers
 

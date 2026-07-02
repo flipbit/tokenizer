@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -106,5 +108,52 @@ public class DependencyInjectionTests : TokenizerTestBase
 
         // Assert - just verify it doesn't throw
         Assert.True(result.Success);
+    }
+
+    [Fact]
+    public void AddTokenizer_WithConfigurationSection_BindsOptions()
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Tokenizer:TrimTrailingWhiteSpace"] = "false",
+                ["Tokenizer:OutOfOrderTokens"] = "true"
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddLogging(builder => builder.AddSerilog());
+
+        // Act
+        services.AddTokenizer(configuration.GetSection("Tokenizer"));
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Assert
+        var tokenizer = serviceProvider.GetRequiredService<Tokenizer>();
+        Assert.False(tokenizer.Options.TrimTrailingWhiteSpace);
+        Assert.True(tokenizer.Options.OutOfOrderTokens);
+    }
+
+    [Fact]
+    public void AddTokenizer_WithOptionsInstance_UsesProvidedOptions()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddLogging(builder => builder.AddSerilog());
+        var options = new TokenizerOptions
+        {
+            MaxInputLength = 512,
+            EnableDiagnostics = true
+        };
+
+        // Act
+        services.AddTokenizer(options);
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Assert
+        var tokenizer = serviceProvider.GetRequiredService<Tokenizer>();
+        Assert.Equal(512, tokenizer.Options.MaxInputLength);
+        Assert.True(tokenizer.Options.EnableDiagnostics);
     }
 }

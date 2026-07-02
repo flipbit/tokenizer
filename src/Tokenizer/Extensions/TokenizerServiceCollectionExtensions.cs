@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -14,19 +15,15 @@ public static class TokenizerServiceCollectionExtensions
     /// <summary>
     /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/> with default options.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddTokenizer(this IServiceCollection services)
     {
         return services.AddTokenizer(_ => { });
     }
 
     /// <summary>
-    /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/> with custom configuration.
+    /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/>
+    /// configured via the provided delegate.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-    /// <param name="configure">An action to configure the <see cref="TokenizerOptions"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddTokenizer(
         this IServiceCollection services,
         Action<TokenizerOptions> configure)
@@ -34,57 +31,85 @@ public static class TokenizerServiceCollectionExtensions
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        // Create and configure options
-        var options = new TokenizerOptions();
-        configure(options);
+        services.Configure(configure);
+        RegisterCoreServices(services);
+        return services;
+    }
 
-        // Register options as singleton
-        services.TryAddSingleton(options);
+    /// <summary>
+    /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/>
+    /// bound to a configuration section (e.g. from appsettings.json).
+    /// </summary>
+    public static IServiceCollection AddTokenizer(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        // Register internal services as singletons
+        services.Configure<TokenizerOptions>(configuration);
+        RegisterCoreServices(services);
+        return services;
+    }
+
+    /// <summary>
+    /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/>
+    /// using a pre-constructed <see cref="TokenizerOptions"/> instance.
+    /// </summary>
+    public static IServiceCollection AddTokenizer(
+        this IServiceCollection services,
+        TokenizerOptions options)
+    {
+        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (options == null) throw new ArgumentNullException(nameof(options));
+
+        services.AddSingleton(Options.Create(options));
+        RegisterCoreServices(services);
+        return services;
+    }
+
+    private static void RegisterCoreServices(IServiceCollection services)
+    {
         services.TryAddSingleton<Compilation.TokenParser>(sp =>
         {
-            var opts = sp.GetRequiredService<TokenizerOptions>();
-            var loggerFactory = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+            var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<Compilation.TokenParser>();
-            return new Compilation.TokenParser(opts, logger);
+            return new Compilation.TokenParser(opts.Value, logger);
         });
 
         services.TryAddSingleton<ITokenizationEngine>(sp =>
         {
-            var loggerFactory = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<TokenizationEngine>();
             return new TokenizationEngine(logger);
         });
 
         services.TryAddSingleton<IHintProcessor>(sp =>
         {
-            var loggerFactory = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<HintProcessor>();
             return new HintProcessor(logger);
         });
 
         services.TryAddSingleton<IResultBuilder>(sp =>
         {
-            var loggerFactory = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<ResultBuilder>();
             return new ResultBuilder(logger);
         });
 
-        // Register main Tokenizer as singleton
         services.TryAddSingleton<Tokenizer>(sp =>
         {
-            var opts = sp.GetRequiredService<TokenizerOptions>();
-            var loggerFactory = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+            var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<Tokenizer>();
             var parser = sp.GetRequiredService<Compilation.TokenParser>();
             var tokenizationEngine = sp.GetRequiredService<ITokenizationEngine>();
             var hintProcessor = sp.GetRequiredService<IHintProcessor>();
             var resultBuilder = sp.GetRequiredService<IResultBuilder>();
 
-            return new Tokenizer(Options.Create(opts), logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
+            return new Tokenizer(opts, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
         });
-
-        return services;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace Tokens;
 /// <summary>
 /// Collection of <see cref="Template" /> objects.
 /// </summary>
-public class TemplateCollection
+public class TemplateCollection : IReadOnlyCollection<Template>
 {
     private readonly ConcurrentDictionary<string, Template> templates;
 
@@ -101,5 +102,19 @@ public class TemplateCollection
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the templates in this collection.
+    /// </summary>
+    public IEnumerator<Template> GetEnumerator()
+    {
+        return templates.Values.GetEnumerator();
+    }
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

@@ -147,4 +147,30 @@ public class TemplateTests : TokenizerTestBase
         Assert.Empty(missing);
     }
 
+    [Fact]
+    public void GivenNamedTemplate_WhenToString_ThenReturnsName()
+    {
+        // Arrange
+        var template = new Template("invoice", "Name: {Name}");
+
+        // Act
+        var result = template.ToString();
+
+        // Assert
+        Assert.Equal("Template('invoice')", result);
+    }
+
+    [Fact]
+    public void GivenUnnamedTemplate_WhenToString_ThenReturnsTokenCount()
+    {
+        // Arrange
+        var template = new Template(string.Empty);
+
+        // Act
+        var result = template.ToString();
+
+        // Assert
+        Assert.Equal("Template(0 tokens)", result);
+    }
+
 }

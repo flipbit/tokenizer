@@ -84,6 +84,12 @@ public sealed class Template
     /// </summary>
     public TokenizerOptions Options { get; set; }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return !string.IsNullOrEmpty(name) ? $"Template('{name}')" : $"Template({Tokens.Count} tokens)";
+    }
+
     internal void AddHint(Hint hint)
     {
         hints.Add(hint);

@@ -35,7 +35,7 @@ public class HintProcessor_EdgeCase_Tests
         var longHint = new string('a', 1000);
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText(longHint)
                 .WithRequired()
@@ -61,7 +61,7 @@ public class HintProcessor_EdgeCase_Tests
         var specialHint = "Hello @#$%^&*()_+-=[]{}|;':\",./<>?";
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText(specialHint)
                 .WithRequired()
@@ -87,7 +87,7 @@ public class HintProcessor_EdgeCase_Tests
         var unicodeHint = "你好世界 🌍";
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText(unicodeHint)
                 .WithRequired()
@@ -121,7 +121,7 @@ public class HintProcessor_EdgeCase_Tests
 
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(hints)
             .Build();
 
@@ -143,7 +143,7 @@ public class HintProcessor_EdgeCase_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(
                 new HintBuilder().WithText("Hello").WithRequired().Build(),
                 new HintBuilder().WithText("Hello").WithRequired().Build()
@@ -168,7 +168,7 @@ public class HintProcessor_EdgeCase_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText("Hello")
                 .WithRequired()

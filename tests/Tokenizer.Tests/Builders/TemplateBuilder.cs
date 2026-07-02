@@ -12,18 +12,11 @@ public class TemplateBuilder
     private readonly List<Hint> _hints = new();
     private readonly List<string> _tags = new();
     private string _name = string.Empty;
-    private string _content = string.Empty;
     private TokenizerOptions? _options;
 
     public TemplateBuilder WithName(string name)
     {
         _name = name;
-        return this;
-    }
-
-    public TemplateBuilder WithContent(string content)
-    {
-        _content = content;
         return this;
     }
 
@@ -73,7 +66,7 @@ public class TemplateBuilder
 
     public Template Build()
     {
-        var template = new Template(_name, _content);
+        var template = new Template(_name);
         foreach (var token in _tokens) template.AddToken(token);
         foreach (var hint in _hints) template.AddHint(hint);
         foreach (var tag in _tags) template.AddTag(tag);

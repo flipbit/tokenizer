@@ -163,7 +163,7 @@ public sealed class Tokenizer
                 log.LogTrace("Tokenization context initialized");
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new DiagnosticCollector(template.Content, input)
+                    ? new DiagnosticCollector(null, input)
                     : NullDiagnosticCollector.Instance;
 
                 // Process hints first

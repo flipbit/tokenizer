@@ -153,7 +153,7 @@ internal class TokenParser
                 new Tokens.Enumerators.FileLocation());
         }
 
-        var template = new Template(name, content);
+        var template = new Template(name);
 
         log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
 

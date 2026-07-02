@@ -18,7 +18,7 @@ public class HintProcessor_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .Build();
 
         var enumerator = new TokenEnumerator("Hello World");
@@ -39,7 +39,7 @@ public class HintProcessor_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText("Hello")
                 .WithOptional()
@@ -64,7 +64,7 @@ public class HintProcessor_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText("Goodbye")
                 .WithRequired()
@@ -89,7 +89,7 @@ public class HintProcessor_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(new HintBuilder()
                 .WithText("Hello")
                 .WithRequired()
@@ -115,7 +115,7 @@ public class HintProcessor_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(
                 new HintBuilder().WithText("Hello").WithRequired().Build(),
                 new HintBuilder().WithText("World").WithOptional().Build()
@@ -221,7 +221,7 @@ public class HintProcessor_Basic_Tests
     {
         return new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
+
             .WithHints(hints)
             .Build();
     }

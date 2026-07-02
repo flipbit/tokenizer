@@ -72,9 +72,9 @@ public class TemplateCollectionTests : TokenizerTestBase
     [Fact]
     public void TestCollectionCount()
     {
-        collection.Add(new Template("One", string.Empty));
-        collection.Add(new Template("Two", string.Empty));
-        collection.Add(new Template("Three", string.Empty));
+        collection.Add(new Template("One"));
+        collection.Add(new Template("Two"));
+        collection.Add(new Template("Three"));
 
         Assert.Equal(3, collection.Count);
 
@@ -88,8 +88,8 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
         // Arrange
         var coll = new TemplateCollection();
-        var template1 = new TemplateBuilder().WithName("first").WithContent("a").Build();
-        var template2 = new TemplateBuilder().WithName("second").WithContent("b").Build();
+        var template1 = new TemplateBuilder().WithName("first").Build();
+        var template2 = new TemplateBuilder().WithName("second").Build();
         coll.Add(template1);
         coll.Add(template2);
 
@@ -120,8 +120,8 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
         // Arrange
         var coll = new TemplateCollection();
-        coll.Add(new TemplateBuilder().WithName("alpha").WithContent("a").Build());
-        coll.Add(new TemplateBuilder().WithName("beta").WithContent("b").Build());
+        coll.Add(new TemplateBuilder().WithName("alpha").Build());
+        coll.Add(new TemplateBuilder().WithName("beta").Build());
 
         // Act
         var names = coll.Select(t => t.Name).OrderBy(n => n).ToList();

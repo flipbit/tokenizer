@@ -1,5 +1,3 @@
-using Tokens.Extensions;
-
 namespace Tokens;
 
 /// <summary>
@@ -8,43 +6,35 @@ namespace Tokens;
 /// </summary>
 public sealed class Template
 {
+    private static int templateCounter;
+
     private readonly List<Token> tokens;
     private readonly List<Hint> hints;
     private readonly List<string> tags;
     private string name;
 
     /// <summary>
-    /// Creates a new unnamed template with the given pattern content.
-    /// A hash of the content will be used as the template name.
+    /// Creates a new unnamed template.
     /// </summary>
-    /// <param name="content">The template pattern string.</param>
-    public Template(string content) : this(string.Empty, content)
+    public Template() : this(string.Empty)
     {
     }
 
     /// <summary>
-    /// Creates a new template with the given name and pattern content.
+    /// Creates a new template with the given name.
     /// </summary>
     /// <param name="name">A name that identifies this template.</param>
-    /// <param name="content">The template pattern string.</param>
-    public Template(string name, string content)
+    public Template(string name)
     {
         tokens = new List<Token>();
         hints = new List<Hint>();
         tags = new List<string>();
         Options = new TokenizerOptions();
         this.name = name;
-        Content = content;
     }
 
     /// <summary>
-    /// The template content
-    /// </summary>
-    public string Content { get; set; }
-
-    /// <summary>
-    /// The name of the template.  If no name is specified, the name will be assigned
-    /// a hash of the template content.
+    /// The name of the template. If no name is specified, a unique name is auto-generated.
     /// </summary>
     public string Name
     {
@@ -52,7 +42,7 @@ public sealed class Template
         {
             if (string.IsNullOrEmpty(name))
             {
-                name = Content.ToMd5();
+                name = $"Template_{Interlocked.Increment(ref templateCounter)}";
             }
 
             return name;

@@ -54,11 +54,10 @@ public class ResultBuilder_Unmatched_Tests
         Assert.Equal("Age", result.Tokens.Misses[0].Name);
     }
 
-    private Template CreateTemplate(string name = "TestTemplate", string content = "Hello {Name}")
+    private Template CreateTemplate(string name = "TestTemplate")
     {
         return new TemplateBuilder()
             .WithName(name)
-            .WithContent(content)
             .WithTokens(new TokenBuilder()
                 .WithContent("{Name}")
                 .WithName("Name")

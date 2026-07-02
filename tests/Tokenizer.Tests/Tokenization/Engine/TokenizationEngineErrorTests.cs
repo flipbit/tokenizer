@@ -17,7 +17,6 @@ public class TokenizationEngineErrorTests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
             .WithTokens(new TokenBuilder()
                 .WithContent("{Name}")
                 .WithName("Name")

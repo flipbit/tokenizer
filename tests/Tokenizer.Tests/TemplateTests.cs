@@ -151,7 +151,7 @@ public class TemplateTests : TokenizerTestBase
     public void GivenNamedTemplate_WhenToString_ThenReturnsName()
     {
         // Arrange
-        var template = new Template("invoice", "Name: {Name}");
+        var template = new Template("invoice");
 
         // Act
         var result = template.ToString();

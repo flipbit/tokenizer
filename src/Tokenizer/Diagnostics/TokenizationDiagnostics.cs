@@ -18,12 +18,12 @@ public class TokenizationDiagnostics
         DiagnosticEventType.SingleUseTokenRemoved,
     };
 
-    private readonly string templateContent;
+    private readonly string? templateContent;
     private readonly string inputContent;
     private DiagnosticSummary? summary;
     private string? alignment;
 
-    internal TokenizationDiagnostics(string templateContent, string inputContent)
+    internal TokenizationDiagnostics(string? templateContent, string inputContent)
     {
         this.templateContent = templateContent;
         this.inputContent = inputContent;

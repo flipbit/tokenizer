@@ -18,7 +18,6 @@ public class ResultBuilder_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
             .Build();
 
         // Act
@@ -35,7 +34,6 @@ public class ResultBuilder_Basic_Tests
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
-            .WithContent("Hello {Name}")
             .Build();
 
         // Act
@@ -145,11 +143,10 @@ public class ResultBuilder_Basic_Tests
         Assert.False((bool)wasLast);
     }
 
-    private Template CreateTemplate(string name = "TestTemplate", string content = "Hello {Name}")
+    private Template CreateTemplate(string name = "TestTemplate")
     {
         return new TemplateBuilder()
             .WithName(name)
-            .WithContent(content)
             .WithTokens(new TokenBuilder()
                 .WithContent("{Name}")
                 .WithName("Name")

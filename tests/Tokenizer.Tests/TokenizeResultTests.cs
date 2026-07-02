@@ -8,7 +8,7 @@ public class TokenizeResultTests
     public void GivenTokenizeResult_WhenToString_ThenReturnsCompactFormat()
     {
         // Arrange
-        var template = new Template("test-template", "Name: {Name}");
+        var template = new Template("test-template");
         var result = new TokenizeResult(template);
 
         // Act

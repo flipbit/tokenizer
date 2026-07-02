@@ -84,7 +84,7 @@ public class IsUrlValidatorTests : Tests.TokenizerTestBase
         var input = "Server: 192.168.1.1\nServer: http://www.server.com";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("http://www.server.com", result.First("ServerUrl"));

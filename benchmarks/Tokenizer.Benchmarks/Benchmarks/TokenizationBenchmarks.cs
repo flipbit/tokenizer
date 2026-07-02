@@ -24,7 +24,7 @@ public class TokenizationBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        tokenizer = Tokenizer.Create();
+        tokenizer = new Tokenizer();
         var parser = new TokenParser();
 
         smallTemplate = parser.Parse(WorkloadGenerator.SmallTemplate(), "small");

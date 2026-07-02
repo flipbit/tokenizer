@@ -97,7 +97,7 @@ public class IsLooseAbsoluteUrlValidatorTests : Tests.TokenizerTestBase
         var input = "Server: Not Specified\nServer: www.server.com";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("www.server.com", result.First("ServerUrl"));

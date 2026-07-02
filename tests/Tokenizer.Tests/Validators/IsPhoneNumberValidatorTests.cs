@@ -148,7 +148,7 @@ public class IsPhoneNumberValidatorTests : Tests.TokenizerTestBase
         var input = "Phone: Disconnected  Phone: +44 (0) 1603 555-1234";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("+44 (0) 1603 555-1234", result.First("Phone"));

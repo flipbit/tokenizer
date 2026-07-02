@@ -97,7 +97,7 @@ public class IsDateTimeValidatorTests : Tests.TokenizerTestBase
         var input = "Date: 3rd Oct 2019 Date: 2019-10-04";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("2019-10-04", result.First("Date"));

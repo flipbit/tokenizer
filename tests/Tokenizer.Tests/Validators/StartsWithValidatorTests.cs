@@ -84,7 +84,7 @@ public class StartsWithValidatorTests : Tests.TokenizerTestBase
         var input = "Ip: 80.34.123.45  Ip: 192.168.1.1";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("192.168.1.1", result.First("InternalIpAddress"));

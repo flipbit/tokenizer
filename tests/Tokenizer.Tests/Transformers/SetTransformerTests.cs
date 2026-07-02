@@ -56,7 +56,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         var input = "Name: Bob";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(pattern, input);
+        var result = new Tokenizer().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal("Alice", result.First("Name"));
@@ -70,7 +70,7 @@ public class SetTransformerTests : Tests.TokenizerTestBase
         var input = "Name: Bob";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(pattern, input);
+        var result = new Tokenizer().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal("ALICE", result.First("Name"));

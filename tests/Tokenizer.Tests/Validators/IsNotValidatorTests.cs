@@ -75,7 +75,7 @@ public class IsNotValidatorTests : Tests.TokenizerTestBase
         var input = "Address: N/A\nAddress: 10 Acacia Avenue";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("10 Acacia Avenue", result.First("Address"));

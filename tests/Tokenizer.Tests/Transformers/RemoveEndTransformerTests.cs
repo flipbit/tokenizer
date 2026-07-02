@@ -88,7 +88,7 @@ public class RemoveEndTransformerTests : Tests.TokenizerTestBase
         var input = "Domain Name: domain.com.";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("domain.com", result.First("DomainName"));

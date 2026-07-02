@@ -23,7 +23,7 @@ public abstract class TokenizerTestBase
     /// </summary>
     protected Tokenizer CreateTokenizer()
     {
-        return Tokenizer.Create(new TokenizerOptions(), LoggerFactory);
+        return new Tokenizer(new TokenizerOptions(), LoggerFactory);
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public abstract class TokenizerTestBase
     /// </summary>
     protected Tokenizer CreateTokenizer(TokenizerOptions options)
     {
-        return Tokenizer.Create(options, LoggerFactory);
+        return new Tokenizer(options, LoggerFactory);
     }
 
     /// <summary>

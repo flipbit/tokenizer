@@ -97,7 +97,7 @@ public class IsDomainNameValidatorTests : Tests.TokenizerTestBase
         var input = "Web: n/a Web: www.flipbit.co.uk";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("www.flipbit.co.uk", result.First("Domain"));

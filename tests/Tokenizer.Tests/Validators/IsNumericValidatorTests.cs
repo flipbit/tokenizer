@@ -71,7 +71,7 @@ public class IsNumericValidatorTests : Tests.TokenizerTestBase
         var input = "Age: ten";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(pattern, input);
+        var result = new Tokenizer().Tokenize(pattern, input);
 
         // Assert
         Assert.Equal("ten", result.First("Age"));
@@ -85,7 +85,7 @@ public class IsNumericValidatorTests : Tests.TokenizerTestBase
         var input = "Age: Ten  Age: 10";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("10", result.First("Age"));

@@ -84,7 +84,7 @@ public class EndsWithValidatorTests : Tests.TokenizerTestBase
         var input = "Email: alice@customer.com Email: bob@admin.com";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("bob@admin.com", result.First("AdminEmail"));

@@ -69,7 +69,7 @@ public class MaxLengthValidatorTests : Tests.TokenizerTestBase
         var input = "Zip: 123456  Zip: 78912";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("78912", result.First("ZipCode"));

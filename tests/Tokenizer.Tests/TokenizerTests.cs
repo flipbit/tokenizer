@@ -573,7 +573,7 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Age: Ten, Age: 11";
 
         // Act
-        var person = Tokenizer.Create().Tokenize<TokenTests.Person>(pattern, input).Value;
+        var person = new Tokenizer().Tokenize<TokenTests.Person>(pattern, input).Value;
 
         // Assert
         Assert.Equal(11, person.Age);

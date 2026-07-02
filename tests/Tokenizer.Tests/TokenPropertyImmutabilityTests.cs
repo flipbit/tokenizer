@@ -8,7 +8,7 @@ public class TokenPropertyImmutabilityTests
     public void GivenTemplate_WhenCompiled_ThenTokenPropertiesAreSet()
     {
         // Arrange
-        var tokenizer = Tokenizer.Create();
+        var tokenizer = new Tokenizer();
 
         // Act
         var result = tokenizer.Tokenize<TestClass>("Name: {TestClass.Name}\nAge: {TestClass.Age}", "Name: Alice\nAge: 30");
@@ -22,7 +22,7 @@ public class TokenPropertyImmutabilityTests
     public void GivenOptionalToken_WhenCompiled_ThenOptionalIsTrue()
     {
         // Arrange
-        var tokenizer = Tokenizer.Create();
+        var tokenizer = new Tokenizer();
 
         // Act
         var result = tokenizer.Tokenize("Name: {Name?}", "Name: Alice");

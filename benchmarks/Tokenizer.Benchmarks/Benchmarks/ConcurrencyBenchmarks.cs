@@ -29,7 +29,7 @@ public class ConcurrencyBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        sharedTokenizer = Tokenizer.Create();
+        sharedTokenizer = new Tokenizer();
         var parser = new TokenParser();
 
         mediumTemplateString = WorkloadGenerator.MediumTemplate();
@@ -61,7 +61,7 @@ public class ConcurrencyBenchmarks
             new ParallelOptions { MaxDegreeOfParallelism = ThreadCount },
             _ =>
             {
-                var tokenizer = Tokenizer.Create();
+                var tokenizer = new Tokenizer();
                 tokenizer.Tokenize<MediumRecord>(mediumTemplate, mediumInput);
             });
     }

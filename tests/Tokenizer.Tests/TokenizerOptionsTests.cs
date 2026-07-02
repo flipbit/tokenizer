@@ -39,7 +39,7 @@ public class TokenizerOptionsTests : Tests.TokenizerTestBase
         const string content = "---\nTerminateOnNewLine: true\n---\nAge: { Age }\nAddress: { Address }";
         const string input = "Age: 30\nAddress: London";
 
-        var tokenizer = Tokenizer.Create();
+        var tokenizer = new Tokenizer();
 
         var result = tokenizer.Tokenize<Person>(content, input);
 

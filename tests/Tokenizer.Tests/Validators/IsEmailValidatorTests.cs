@@ -71,7 +71,7 @@ public class IsEmailValidatorTests : Tests.TokenizerTestBase
         var input = "Email: webmaster at host.com Email: hello@domain.com";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("hello@domain.com", result.First("Email"));

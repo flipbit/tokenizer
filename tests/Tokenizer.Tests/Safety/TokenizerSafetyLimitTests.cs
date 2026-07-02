@@ -13,7 +13,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxInputLength = 100;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var input = new string('x', 101);
 
         // Act & Assert
@@ -30,7 +30,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxInputLength = 100;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var input = "Name: " + new string('x', 94);
 
         // Act
@@ -46,7 +46,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxInputLength = 0;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var input = "Name: " + new string('x', 200_000);
 
         // Act
@@ -62,7 +62,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxTemplateLength = 50;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var longTemplate = "Name: {Name}" + new string(' ', 50);
 
         // Act & Assert
@@ -77,7 +77,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxTemplateLength = 100;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var template = "Name: {Name}";
 
         // Act
@@ -93,7 +93,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxTemplateLength = 0;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
         var template = "Name: {Name}" + new string(' ', 100_000);
 
         // Act
@@ -109,7 +109,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxTokenCount = 5;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
 
         var templateBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < 6; i++)
@@ -131,7 +131,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxTokenCount = 5;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
 
         var templateBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < 5; i++)
@@ -152,7 +152,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxIterations = 5;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
 
         // Act & Assert
         var ex = Assert.Throws<TokenizerException>(() =>
@@ -165,7 +165,7 @@ public class TokenizerSafetyLimitTests
     {
         // Arrange — default MaxIterations=0 means auto (input.Length * 2)
         var options = new TokenizerOptions();
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
 
         // Act
         var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
@@ -181,7 +181,7 @@ public class TokenizerSafetyLimitTests
         // Arrange
         var options = new TokenizerOptions();
         options.MaxIterations = 10000;
-        var tokenizer = Tokenizer.Create(options);
+        var tokenizer = new Tokenizer(options);
 
         // Act
         var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
@@ -195,7 +195,7 @@ public class TokenizerSafetyLimitTests
     public void GivenDefaultOptions_WhenTokenizingNormalInput_ThenProcessesSuccessfully()
     {
         // Arrange — verify defaults don't interfere with normal usage
-        var tokenizer = Tokenizer.Create();
+        var tokenizer = new Tokenizer();
 
         // Act
         var result = tokenizer.Tokenize("Name: {Name}\nAge: {Age}", "Name: John\nAge: 30");

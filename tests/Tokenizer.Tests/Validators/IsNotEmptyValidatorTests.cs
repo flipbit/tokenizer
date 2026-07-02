@@ -58,7 +58,7 @@ public class IsNotEmptyValidatorTests : Tests.TokenizerTestBase
         var input = "Middle Name:\nMiddle Name: Charles";
 
         // Act
-        var result = Tokenizer.Create().Tokenize(template, input);
+        var result = new Tokenizer().Tokenize(template, input);
 
         // Assert
         Assert.Equal("Charles", result.First("MiddleName"));

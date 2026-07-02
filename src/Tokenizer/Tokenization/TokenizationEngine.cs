@@ -339,11 +339,11 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(location, nameof(location));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        var frontMatterTokens = template.Tokens.Where(t => t.IsFrontMatterToken);
+        var frontMatterTokens = template.Tokens.Where(t => t.IsFrontMatterToken).ToList();
         if (log.IsEnabled(LogLevel.Trace))
         {
             log.LogTrace("Processing {FrontMatterCount} front matter tokens",
-                template.Tokens.Count(t => t.IsFrontMatterToken));
+                frontMatterTokens.Count);
         }
 
         foreach (var token in frontMatterTokens)

@@ -9,6 +9,8 @@ namespace Tokens.Diagnostics.Hints;
 /// </summary>
 internal sealed class PreambleNearMissHintGenerator : IHintGenerator
 {
+    private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled);
+
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
                                    TokenizationDiagnostics trace)
@@ -53,6 +55,6 @@ internal sealed class PreambleNearMissHintGenerator : IHintGenerator
 
     private static string NormalizeWhitespace(string value)
     {
-        return Regex.Replace(value.Trim(), @"\s+", " ");
+        return WhitespaceRegex.Replace(value.Trim(), " ");
     }
 }

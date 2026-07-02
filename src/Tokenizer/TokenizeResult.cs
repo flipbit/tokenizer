@@ -20,6 +20,13 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// </summary>
     public IReadOnlyList<TokenMatch> Matches => Tokens.Matches;
 
+    /// <summary>
+    /// Returns the value of the first matched token with the given <paramref name="key"/>.
+    /// Throws if no match is found.
+    /// </summary>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns>The matched value.</returns>
+    /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public object First(string key)
     {
         if (Matches.Any(m => m.Token.Name == key) == false)
@@ -30,6 +37,14 @@ public sealed class TokenizeResult : TokenizeResultBase
         return Matches.First(m => m.Token.Name == key).Value;
     }
 
+    /// <summary>
+    /// Returns the value of the first matched token with the given <paramref name="key"/>, cast to <typeparamref name="T"/>.
+    /// Throws if no match is found.
+    /// </summary>
+    /// <typeparam name="T">The type to cast the matched value to.</typeparam>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns>The matched value cast to <typeparamref name="T"/>.</returns>
+    /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public T First<T>(string key)
     {
         if (Matches.Any(m => m.Token.Name == key) == false)
@@ -40,6 +55,12 @@ public sealed class TokenizeResult : TokenizeResultBase
         return (T)Matches.First(m => m.Token.Name == key).Value;
     }
 
+    /// <summary>
+    /// Returns the value of the first matched token with the given <paramref name="key"/>,
+    /// or <c>null</c> if no match was found.
+    /// </summary>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns>The matched value, or <c>null</c>.</returns>
     public object? FirstOrDefault(string key)
     {
         if (Matches.Any(m => m.Token?.Name == key))
@@ -50,6 +71,13 @@ public sealed class TokenizeResult : TokenizeResultBase
         return null;
     }
 
+    /// <summary>
+    /// Returns the value of the first matched token with the given <paramref name="key"/> cast to <typeparamref name="T"/>,
+    /// or the default value of <typeparamref name="T"/> if no match was found.
+    /// </summary>
+    /// <typeparam name="T">The type to cast the matched value to.</typeparam>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns>The matched value cast to <typeparamref name="T"/>, or <c>default</c>.</returns>
     public T? FirstOrDefault<T>(string key)
     {
         if (Matches.Any(m => m.Token?.Name == key))
@@ -60,6 +88,11 @@ public sealed class TokenizeResult : TokenizeResultBase
         return default;
     }
 
+    /// <summary>
+    /// Returns all matched values for the token with the given <paramref name="key"/>.
+    /// </summary>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns>A read-only list of all matched values for the token.</returns>
     public IReadOnlyList<object> All(string key)
     {
         return Matches
@@ -68,6 +101,11 @@ public sealed class TokenizeResult : TokenizeResultBase
             .ToList();
     }
 
+    /// <summary>
+    /// Determines whether a token with the given <paramref name="key"/> was matched in the input.
+    /// </summary>
+    /// <param name="key">The token name to look up.</param>
+    /// <returns><c>true</c> if at least one match exists for the key; otherwise <c>false</c>.</returns>
     public bool Contains(string key)
     {
         return Matches.Any(m => m.Token.Name == key);
@@ -76,7 +114,7 @@ public sealed class TokenizeResult : TokenizeResultBase
 
 /// <summary>
 /// Holds the result of attempting to parse an input string against a
-/// <see cref="Template"/> to generate an object of type <see cref="T"/>.
+/// <see cref="Template"/> to generate an object of type <typeparamref name="T"/>.
 /// </summary>
 public sealed class TokenizeResult<T> : TokenizeResultBase where T : class, new()
 {
@@ -89,7 +127,7 @@ public sealed class TokenizeResult<T> : TokenizeResultBase where T : class, new(
     }
 
     /// <summary>
-    /// An instance of <see cref="T"/> populated with data from the input string.
+    /// An instance of <typeparamref name="T"/> populated with data from the input string.
     /// </summary>
     public T Value { get; init; }
 }

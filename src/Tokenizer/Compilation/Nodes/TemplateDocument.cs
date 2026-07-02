@@ -7,6 +7,14 @@ namespace Tokens.Compilation.Nodes;
 /// </summary>
 public sealed class TemplateDocument : SyntaxNode
 {
+    /// <summary>
+    /// Initializes a new <see cref="TemplateDocument"/> with the given front matter and content.
+    /// </summary>
+    /// <param name="location">The source location at the start of this node.</param>
+    /// <param name="start">The absolute character offset where this node starts.</param>
+    /// <param name="length">The number of characters spanned by this node.</param>
+    /// <param name="frontMatter">The optional front matter block, or <see langword="null"/> if absent.</param>
+    /// <param name="content">The sequence of content nodes following the front matter.</param>
     public TemplateDocument(FileLocation location, int start, int length, FrontMatterBlock? frontMatter, IReadOnlyList<ContentNode> content)
         : base(location, start, length)
     {

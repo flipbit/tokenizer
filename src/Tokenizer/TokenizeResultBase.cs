@@ -11,6 +11,10 @@ public class TokenizeResultBase
     /// </summary>
     private readonly List<Exception> _exceptions;
 
+    /// <summary>
+    /// Creates a new result bound to the specified <paramref name="template"/>.
+    /// </summary>
+    /// <param name="template">The template used for the tokenization attempt.</param>
     public TokenizeResultBase(Template template)
     {
         _exceptions = new List<Exception>();
@@ -23,7 +27,7 @@ public class TokenizeResultBase
 
     /// <summary>
     /// The <see cref="Template"/> containing the mapping between tokens in the
-    /// <see cref="Template"/> and properties on the object <see cref="T"/>.
+    /// template and properties on the target object.
     /// </summary>
     public Template Template { get; init; }
 

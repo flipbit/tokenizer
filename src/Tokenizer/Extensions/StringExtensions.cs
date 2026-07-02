@@ -187,6 +187,11 @@ public static class StringExtensions
         return Regex.Split(value, "\r\n|\r|\n");
     }
 
+    /// <summary>
+    /// Returns <c>true</c> when the string is non-empty and consists entirely of space characters.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <returns><c>true</c> if the string contains only spaces; otherwise <c>false</c>.</returns>
     public static bool IsOnlySpaces(this string value)
     {
         if (string.IsNullOrEmpty(value) == false)
@@ -205,6 +210,11 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>
+    /// Removes all leading space characters from the string, leaving all other characters intact.
+    /// </summary>
+    /// <param name="value">The value to trim.</param>
+    /// <returns>The string with leading spaces removed.</returns>
     public static string TrimLeadingSpaces(this string value)
     {
         var sb = new StringBuilder();
@@ -262,7 +272,6 @@ public static class StringExtensions
     /// Gets the substring before the first newline.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="match">The match.</param>
     /// <returns></returns>
     public static string SubstringBeforeNewLine(this string value)
     {
@@ -286,6 +295,11 @@ public static class StringExtensions
         return value;
     }
 
+    /// <summary>
+    /// Returns <c>true</c> when the string ends with a Unix (<c>\n</c>) or Windows (<c>\r\n</c>) newline.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <returns><c>true</c> if the string ends with a newline sequence; otherwise <c>false</c>.</returns>
     public static bool EndsWithNewLine(this string value)
     {
         if (string.IsNullOrEmpty(value)) return false;
@@ -305,6 +319,11 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>
+    /// Removes a single trailing newline (<c>\n</c> or <c>\r\n</c>) from the string, if present.
+    /// </summary>
+    /// <param name="value">The value to trim.</param>
+    /// <returns>The string with the trailing newline removed, or the original string if none was present.</returns>
     public static string TrimTrailingNewLine(this string value)
     {
         if (value.EndsWithNewLine() == false) return value;
@@ -324,6 +343,12 @@ public static class StringExtensions
         return value;
     }
 
+    /// <summary>
+    /// Converts the value to a compact, log-safe string with control characters escaped
+    /// and the output truncated to 65 characters.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A truncated string with <c>\r</c>, <c>\n</c>, and <c>\t</c> shown as escape sequences.</returns>
     public static string ToLogInfoString(this object value)
     {
         if (value == null) return string.Empty;
@@ -369,6 +394,12 @@ public static class StringExtensions
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Returns the MD5 hash of the string as an uppercase hyphen-separated hex string.
+    /// Returns an empty string when the input is null or empty.
+    /// </summary>
+    /// <param name="value">The value to hash.</param>
+    /// <returns>The MD5 hash of the value.</returns>
     public static string ToMd5(this string value)
     {
         if (string.IsNullOrEmpty(value)) return string.Empty;

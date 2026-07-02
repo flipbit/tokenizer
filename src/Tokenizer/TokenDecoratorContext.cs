@@ -14,6 +14,10 @@ public sealed class TokenDecoratorContext
 
     private readonly List<string> _parameters;
 
+    /// <summary>
+    /// Creates a new <see cref="TokenDecoratorContext"/> for the specified decorator type.
+    /// </summary>
+    /// <param name="tokenDecorator">The <see cref="ITokenDecorator"/> type to wrap.</param>
     public TokenDecoratorContext(Type tokenDecorator)
     {
         DecoratorType = tokenDecorator;

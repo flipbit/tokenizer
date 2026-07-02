@@ -7,6 +7,12 @@ namespace Tokens;
 /// </summary>
 public sealed class HintMatch
 {
+    /// <summary>
+    /// Creates a new <see cref="HintMatch"/> with the matched hint text, whether it is optional, and its location.
+    /// </summary>
+    /// <param name="text">The hint text that was found in the input.</param>
+    /// <param name="optional">Whether the hint is optional.</param>
+    /// <param name="location">The location in the input where the hint was matched.</param>
     public HintMatch(string text, bool optional, FileLocation location)
     {
         Text = text;

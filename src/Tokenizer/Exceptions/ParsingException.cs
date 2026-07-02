@@ -13,6 +13,11 @@ public class ParsingException : TokenizerException
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance with a message and the source location where the error occurred.
+    /// </summary>
+    /// <param name="message">The error message describing the syntax problem.</param>
+    /// <param name="location">The line and column in the template pattern where the error was detected.</param>
     public ParsingException(string message, FileLocation location) : base(message)
     {
         Column = location.Column;
@@ -29,6 +34,9 @@ public class ParsingException : TokenizerException
     /// </summary>
     public int Column { get; internal set; }
 
+    /// <summary>
+    /// The full error message including the line and column number where the parse error occurred.
+    /// </summary>
     public override string Message
     {
         get

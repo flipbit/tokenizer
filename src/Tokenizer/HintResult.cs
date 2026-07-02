@@ -11,6 +11,9 @@ public sealed class HintResult
     private readonly List<HintMatch> _matches;
     private readonly List<Hint> _misses;
 
+    /// <summary>
+    /// Creates a new empty <see cref="HintResult"/>.
+    /// </summary>
     public HintResult()
     {
         _matches = new List<HintMatch>();
@@ -46,5 +49,8 @@ public sealed class HintResult
         return true;
     }
 
+    /// <summary>
+    /// <c>true</c> when at least one required hint was not found in the input.
+    /// </summary>
     public bool HasMissingRequiredHints => Misses.Any(m => m.Optional == false);
 }

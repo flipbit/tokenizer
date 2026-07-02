@@ -7,6 +7,15 @@ namespace Tokens.Compilation.Nodes;
 /// </summary>
 public sealed class SetTokenDirective : SyntaxNode
 {
+    /// <summary>
+    /// Initializes a new <see cref="SetTokenDirective"/> with the given token constituents.
+    /// </summary>
+    /// <param name="location">The source location at the start of this node.</param>
+    /// <param name="start">The absolute character offset where this node starts.</param>
+    /// <param name="length">The number of characters spanned by this node.</param>
+    /// <param name="tokenName">The name of the token being set.</param>
+    /// <param name="value">The optional literal value to assign to the token.</param>
+    /// <param name="decorators">The optional decorators to apply to the token.</param>
     public SetTokenDirective(FileLocation location, int start, int length, string tokenName, string? value = null, IReadOnlyList<SetDecorator>? decorators = null)
         : base(location, start, length)
     {
@@ -15,19 +24,46 @@ public sealed class SetTokenDirective : SyntaxNode
         Decorators = decorators ?? System.Array.Empty<SetDecorator>();
     }
 
+    /// <summary>
+    /// Gets the name of the token being set.
+    /// </summary>
     public string TokenName { get; }
+
+    /// <summary>
+    /// Gets the literal value assigned to the token, or <see langword="null"/> if none.
+    /// </summary>
     public string? Value { get; }
+
+    /// <summary>
+    /// Gets the decorators (validators and transformers) applied to this directive.
+    /// </summary>
     public IReadOnlyList<SetDecorator> Decorators { get; }
 }
 
+/// <summary>
+/// Represents a decorator entry within a <see cref="SetTokenDirective"/>.
+/// </summary>
 public sealed record SetDecorator
 {
+    /// <summary>
+    /// Initializes a new <see cref="SetDecorator"/> with the given name and arguments.
+    /// </summary>
+    /// <param name="name">The decorator name.</param>
+    /// <param name="args">The optional arguments passed to the decorator.</param>
     public SetDecorator(string name, IReadOnlyList<string>? args = null)
     {
         Name = name ?? string.Empty;
         Args = args ?? System.Array.Empty<string>();
     }
+
+    /// <summary>
+    /// Gets the decorator name.
+    /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Gets the arguments passed to the decorator.
+    /// </summary>
     public IReadOnlyList<string> Args { get; }
 }
 

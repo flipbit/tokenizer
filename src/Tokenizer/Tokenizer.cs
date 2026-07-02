@@ -73,6 +73,12 @@ public sealed class Tokenizer
         this.resultBuilder = resultBuilder;
     }
 
+    /// <summary>
+    /// Parses the given <paramref name="template"/> pattern and tokenizes the <paramref name="input"/> string against it.
+    /// </summary>
+    /// <param name="template">The template pattern string to parse and match against.</param>
+    /// <param name="input">The input text to extract values from.</param>
+    /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
     public TokenizeResult Tokenize(string template, string input)
     {
         var t = parser.Parse(template);
@@ -80,6 +86,12 @@ public sealed class Tokenizer
         return Tokenize(t, input);
     }
 
+    /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>.
+    /// </summary>
+    /// <param name="template">The compiled template to match against.</param>
+    /// <param name="input">The input text to extract values from.</param>
+    /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
     public TokenizeResult Tokenize(Template template, string input)
     {
         var result = new TokenizeResult(template);
@@ -90,6 +102,14 @@ public sealed class Tokenizer
 
     }
 
+    /// <summary>
+    /// Parses the given <paramref name="pattern"/> and tokenizes the <paramref name="input"/> string,
+    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type to populate with extracted values.</typeparam>
+    /// <param name="pattern">The template pattern string to parse and match against.</param>
+    /// <param name="input">The input text to extract values from.</param>
+    /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
     public TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new()
     {
         var template = parser.Parse(pattern);
@@ -97,6 +117,14 @@ public sealed class Tokenizer
         return Tokenize<T>(template, input);
     }
 
+    /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>,
+    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type to populate with extracted values.</typeparam>
+    /// <param name="template">The compiled template to match against.</param>
+    /// <param name="input">The input text to extract values from.</param>
+    /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
     public TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new()
     {
         var result = new TokenizeResult<T>(template);
@@ -188,6 +216,11 @@ public sealed class Tokenizer
         }
     }
 
+    /// <summary>
+    /// Registers a custom transformer so it can be referenced by name in template patterns.
+    /// </summary>
+    /// <typeparam name="T">The transformer type to register.</typeparam>
+    /// <returns>This <see cref="Tokenizer"/> instance, to allow method chaining.</returns>
     public Tokenizer RegisterTransformer<T>() where T : ITokenTransformer
     {
         parser.RegisterTransformer<T>();
@@ -195,6 +228,11 @@ public sealed class Tokenizer
         return this;
     }
 
+    /// <summary>
+    /// Registers a custom validator so it can be referenced by name in template patterns.
+    /// </summary>
+    /// <typeparam name="T">The validator type to register.</typeparam>
+    /// <returns>This <see cref="Tokenizer"/> instance, to allow method chaining.</returns>
     public Tokenizer RegisterValidator<T>() where T : ITokenValidator
     {
         parser.RegisterValidator<T>();

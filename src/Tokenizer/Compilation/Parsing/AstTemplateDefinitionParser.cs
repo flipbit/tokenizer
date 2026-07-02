@@ -14,7 +14,7 @@ namespace Tokens.Compilation.Parsing;
 /// </para>
 /// <para>
 /// Intent: optional/behind-flag usage to evaluate the AST approach without affecting the
-/// default <see cref="TemplateDefinitionParser"/>.
+/// default <see cref="ITemplateDefinitionParser"/>.
 /// </para>
 /// </remarks>
 internal sealed class AstTemplateDefinitionParser : ITemplateDefinitionParser

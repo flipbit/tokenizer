@@ -8,6 +8,9 @@ public sealed class TokenMatcherResult
 {
     private readonly List<TokenizeResult> _results;
 
+    /// <summary>
+    /// Initializes a new, empty <see cref="TokenMatcherResult"/>.
+    /// </summary>
     public TokenMatcherResult()
     {
         _results = new List<TokenizeResult>();
@@ -23,6 +26,9 @@ public sealed class TokenMatcherResult
     /// </summary>
     public TokenizeResult? BestMatch { get; internal set; }
 
+    /// <summary>
+    /// Gets a value indicating whether any template produced a successful match.
+    /// </summary>
     public bool Success => BestMatch != null;
 
     internal void AddResult(TokenizeResult result)
@@ -39,10 +45,19 @@ public sealed class TokenMatcherResult
         .FirstOrDefault();
 }
 
+/// <summary>
+/// Contains the result of running a match against multiple <see cref="Template"/>
+/// objects against an input string with the <see cref="TokenMatcher"/>, where each
+/// successful result is bound to a new instance of <typeparamref name="T"/>.
+/// </summary>
+/// <typeparam name="T">The type that matched tokens are reflected onto.</typeparam>
 public sealed class TokenMatcherResult<T> where T : class, new()
 {
     private readonly List<TokenizeResult<T>> _results;
 
+    /// <summary>
+    /// Initializes a new, empty <see cref="TokenMatcherResult{T}"/>.
+    /// </summary>
     public TokenMatcherResult()
     {
         _results = new List<TokenizeResult<T>>();
@@ -58,6 +73,9 @@ public sealed class TokenMatcherResult<T> where T : class, new()
     /// </summary>
     public TokenizeResult<T>? BestMatch { get; internal set; }
 
+    /// <summary>
+    /// Gets a value indicating whether any template produced a successful match.
+    /// </summary>
     public bool Success => BestMatch != null;
 
     internal void AddResult(TokenizeResult<T> result)

@@ -1,10 +1,11 @@
 namespace Tokens.Transformers;
 
 /// <summary>
-/// Sets the token value 
+/// Sets the token value
 /// </summary>
 public sealed class SetTransformer : ITokenTransformer
 {
+    /// <inheritdoc />
     public bool TryTransform(object value, string[] args, out object transformed)
     {
         if (args == null || args.Length != 1)

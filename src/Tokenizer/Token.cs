@@ -21,6 +21,13 @@ public sealed class Token
     /// </summary>
     private readonly List<TokenDecoratorContext> _decorators;
 
+    /// <summary>
+    /// Creates a new <see cref="Token"/> with the specified raw content, name, preamble, and source location.
+    /// </summary>
+    /// <param name="content">The raw token string as it appears in the template.</param>
+    /// <param name="name">The token name used to map the extracted value to a target property.</param>
+    /// <param name="preamble">The static text that must precede this token in the input.</param>
+    /// <param name="location">The location of this token within the template pattern.</param>
     public Token(string content, string name, string preamble, FileLocation location)
     {
         this.content = content;

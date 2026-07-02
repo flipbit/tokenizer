@@ -35,7 +35,7 @@ internal interface ITokenizationContext
     HashSet<int> DisabledRepeatingTokens { get; }
 
     /// <summary>
-    /// Gets a reusable buffer for filtering tokens in <see cref="Template.TokensExcluding"/>.
+    /// Gets a reusable buffer for filtering tokens in <c>Template.TokensExcluding</c>.
     /// </summary>
     List<Token> TokenFilterBuffer { get; }
 

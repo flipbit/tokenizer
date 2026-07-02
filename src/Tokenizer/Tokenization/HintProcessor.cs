@@ -31,6 +31,7 @@ internal class HintProcessor : IHintProcessor
     /// <param name="template">The template containing hint definitions</param>
     /// <param name="enumerator">The token enumerator positioned at the start of input</param>
     /// <param name="result">The result object to populate with hint matches and misses</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if any required hints are missing, false if all required hints are found</returns>
     public bool FindAndValidateHints(
         Template template,

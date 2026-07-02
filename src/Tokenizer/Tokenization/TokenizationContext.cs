@@ -38,7 +38,7 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
     public HashSet<int> DisabledRepeatingTokens { get; private set; }
 
     /// <summary>
-    /// Gets a reusable buffer for filtering tokens in <see cref="Template.TokensExcluding"/>.
+    /// Gets a reusable buffer for filtering tokens in <c>Template.TokensExcluding</c>.
     /// </summary>
     public List<Token> TokenFilterBuffer { get; } = new();
 

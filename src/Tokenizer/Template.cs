@@ -13,10 +13,20 @@ public sealed class Template
     private readonly List<string> tags;
     private string name;
 
+    /// <summary>
+    /// Creates a new unnamed template with the given pattern content.
+    /// A hash of the content will be used as the template name.
+    /// </summary>
+    /// <param name="content">The template pattern string.</param>
     public Template(string content) : this(string.Empty, content)
     {
     }
 
+    /// <summary>
+    /// Creates a new template with the given name and pattern content.
+    /// </summary>
+    /// <param name="name">A name that identifies this template.</param>
+    /// <param name="content">The template pattern string.</param>
     public Template(string name, string content)
     {
         tokens = new List<Token>();

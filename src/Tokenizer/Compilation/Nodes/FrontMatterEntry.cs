@@ -7,6 +7,14 @@ namespace Tokens.Compilation.Nodes;
 /// </summary>
 public sealed class FrontMatterEntry : SyntaxNode
 {
+    /// <summary>
+    /// Initializes a new <see cref="FrontMatterEntry"/> where the raw and normalized values equal <paramref name="value"/>.
+    /// </summary>
+    /// <param name="location">The source location at the start of this node.</param>
+    /// <param name="start">The absolute character offset where this node starts.</param>
+    /// <param name="length">The number of characters spanned by this node.</param>
+    /// <param name="key">The option key.</param>
+    /// <param name="value">The option value.</param>
     public FrontMatterEntry(FileLocation location, int start, int length, string key, string value)
         : base(location, start, length)
     {
@@ -17,8 +25,15 @@ public sealed class FrontMatterEntry : SyntaxNode
     }
 
     /// <summary>
-    /// Initializes a new entry with explicit raw and normalized values.
+    /// Initializes a new <see cref="FrontMatterEntry"/> with explicit raw and normalized values.
     /// </summary>
+    /// <param name="location">The source location at the start of this node.</param>
+    /// <param name="start">The absolute character offset where this node starts.</param>
+    /// <param name="length">The number of characters spanned by this node.</param>
+    /// <param name="key">The option key.</param>
+    /// <param name="value">The parsed option value.</param>
+    /// <param name="rawValue">The raw source text of the value, including any surrounding quotes.</param>
+    /// <param name="normalizedValue">The value after outside-quote whitespace trimming.</param>
     public FrontMatterEntry(FileLocation location, int start, int length, string key, string value, string rawValue, string normalizedValue)
         : base(location, start, length)
     {
@@ -28,6 +43,9 @@ public sealed class FrontMatterEntry : SyntaxNode
         NormalizedValue = normalizedValue ?? (value ?? string.Empty);
     }
 
+    /// <summary>
+    /// Gets the option key identifying which template setting this entry configures.
+    /// </summary>
     public string Key { get; }
 
     /// <summary>

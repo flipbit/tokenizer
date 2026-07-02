@@ -52,6 +52,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="targetObject">The object to populate with matched token values</param>
     /// <param name="context">The tokenization context containing shared state</param>
     /// <param name="result">The result object to populate with matches and misses</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     public void ProcessTokenization(
         Template template,
         string input,
@@ -234,6 +235,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="result">The result object to populate with matches</param>
     /// <param name="template">The template containing token definitions</param>
     /// <param name="matchIds">The set of matched token IDs</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if any tokens were successfully assigned</returns>
     public bool TryAssignCandidateTokens(
         CandidateTokenList candidates,
@@ -324,6 +326,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="targetObject">The object to populate with front matter token values</param>
     /// <param name="location">The current file location</param>
     /// <param name="result">The result object to populate with matches</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     public void ProcessFrontMatterTokens(
         Template template,
         object? targetObject,
@@ -377,6 +380,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
     /// <param name="matchIds">The set of matched token IDs</param>
     /// <param name="template">The template containing token definitions</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if processing should continue, false if candidates were cleared</returns>
     public bool ProcessRepeatedTokens(
         CandidateTokenList candidates,
@@ -505,6 +509,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="matchIds">The set of matched token IDs</param>
     /// <param name="enumerator">The token enumerator</param>
     /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     public void ProcessNewlineTerminatedTokens(
         CandidateTokenList candidates,
         object? targetObject,
@@ -704,6 +709,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="targetObject">The object to populate with matched token values</param>
     /// <param name="result">The result object to populate with matches</param>
     /// <param name="matches">The newly matched tokens</param>
+    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches, IDiagnosticCollector collector)
     {
         if (log.IsEnabled(LogLevel.Trace))

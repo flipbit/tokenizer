@@ -28,6 +28,9 @@ public record class TokenizerOptions
     /// </summary>
     public bool TrimPreambleBeforeNewLine { get; set; }
 
+    /// <summary>
+    /// When true, trailing whitespace is trimmed from each extracted token value.
+    /// </summary>
     public bool TrimTrailingWhiteSpace { get; set; } = true;
 
     /// <summary>

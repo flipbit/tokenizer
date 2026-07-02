@@ -10,14 +10,23 @@ public sealed class TokenResult
     private readonly List<TokenMatch> _matches;
     private readonly List<Token> _misses;
 
+    /// <summary>
+    /// Creates a new empty <see cref="TokenResult"/>.
+    /// </summary>
     public TokenResult()
     {
         _matches = new List<TokenMatch>();
         _misses = new List<Token>();
     }
 
+    /// <summary>
+    /// The tokens that were successfully matched in the input.
+    /// </summary>
     public IReadOnlyList<TokenMatch> Matches => _matches;
 
+    /// <summary>
+    /// The tokens that were not found in the input.
+    /// </summary>
     public IReadOnlyList<Token> Misses => _misses;
 
     internal void AddMatch(Token token, object value, FileLocation location)
@@ -49,7 +58,13 @@ public sealed class TokenResult
         _misses.Add(token);
     }
 
+    /// <summary>
+    /// <c>true</c> when at least one required token was not matched in the input.
+    /// </summary>
     public bool HasMissingRequiredTokens => Misses.Any(m => m.IsRequired);
 
+    /// <summary>
+    /// <c>true</c> when at least one token was matched in the input.
+    /// </summary>
     public bool HasMatches => Matches.Any();
 }

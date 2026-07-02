@@ -18,6 +18,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
         LockHandle = new object();
     }
 
+    /// <inheritdoc />
     public bool TryTransform(object value, string[] args, out object transformed)
     {
         if (TryParseDateTime(value, args, out var result))
@@ -32,11 +33,26 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
         return false;
     }
 
+    /// <summary>
+    /// Attempts to parse a date/time value using the specified format strings and invariant culture.
+    /// </summary>
+    /// <param name="value">The value to parse</param>
+    /// <param name="formats">An array of format strings to try, or null/empty for default parsing</param>
+    /// <param name="result">The parsed <see cref="DateTime"/> if successful; otherwise <see cref="DateTime.MinValue"/></param>
+    /// <returns>true if parsing succeeded; otherwise false</returns>
     public static bool TryParseDateTime(object value, string[] formats, out DateTime result)
     {
         return TryParseDateTime(value, formats, DateTimeStyles.None, out result);
     }
 
+    /// <summary>
+    /// Attempts to parse a date/time value using the specified format strings, date/time styles, and locale-aware cultures.
+    /// </summary>
+    /// <param name="value">The value to parse</param>
+    /// <param name="formats">An array of format strings to try, or null/empty for default parsing</param>
+    /// <param name="dateTimeStyles">Style flags to apply during parsing (e.g., AssumeUniversal)</param>
+    /// <param name="result">The parsed <see cref="DateTime"/> if successful; otherwise <see cref="DateTime.MinValue"/></param>
+    /// <returns>true if parsing succeeded; otherwise false</returns>
     public static bool TryParseDateTime(object value, string[] formats, DateTimeStyles dateTimeStyles, out DateTime result)
     {
         if (value?.ToString() is not { Length: > 0 } rawString)

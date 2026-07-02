@@ -387,7 +387,7 @@ internal class TokenParser
     {
         string preamble;
 
-        if (Options.TrimLeadingWhitespaceInTokenPreamble)
+        if (options.TrimLeadingWhitespaceInTokenPreamble)
         {
             if (preToken.Preamble.IsOnlySpaces())
             {

@@ -1,3 +1,4 @@
+using System.Linq;
 using Tokens.Compilation;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,5 +44,22 @@ public class FrontMatterBinderTests : TokenizerTestBase
         // Original options should be unchanged
         Assert.False(originalOptions.OutOfOrderTokens);
         Assert.False(originalOptions.TerminateOnNewLine);
+    }
+
+    [Fact]
+    public void GivenFrontMatterDisablesTrimLeadingWhitespace_WhenParsed_ThenPreambleRetainsLeadingWhitespace()
+    {
+        // Arrange — parser defaults have TrimLeadingWhitespace=true,
+        // but front matter overrides it to false
+        const string content = "---\nTrimLeadingWhitespace: false\n---\n   Preamble: { Name }";
+        var parser = new TokenParser(new TokenizerOptions { TrimLeadingWhitespaceInTokenPreamble = true });
+
+        // Act
+        var template = parser.Parse(content);
+
+        // Assert — front matter said false, so leading whitespace should be preserved
+        Assert.False(template.Options.TrimLeadingWhitespaceInTokenPreamble);
+        var token = template.Tokens.First(t => t.Name == "Name");
+        Assert.StartsWith("   ", token.Preamble);
     }
 }

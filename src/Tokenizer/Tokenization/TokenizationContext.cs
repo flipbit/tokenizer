@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using Tokens.Enumerators;
 
@@ -70,16 +71,24 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
     }
 
     /// <summary>
-    /// Initializes the context with the input text to be tokenized.
+    /// Initializes the context with a TextReader to be tokenized.
     /// </summary>
-    /// <param name="input">The input text to tokenize</param>
-    public void Initialize(string input)
+    /// <param name="reader">The TextReader providing input to tokenize</param>
+    public void Initialize(TextReader reader)
     {
-        if (string.IsNullOrEmpty(input))
-            throw new ArgumentException("Input cannot be null or empty", nameof(input));
+        ArgumentValidation.ThrowIfNull(reader, nameof(reader));
 
-        Enumerator = new TokenEnumerator(input);
-        Reset();
+        Enumerator = new TokenEnumerator(reader);
+
+        // Clear context state without resetting the enumerator — it's freshly created
+        ClearCandidates();
+        ClearReplacement();
+        MatchIds.Clear();
+        DisabledRepeatingTokens.Clear();
+        TokenFilterBuffer.Clear();
+        TokenFilterIds.Clear();
+        ExclusionBuffer.Clear();
+        ReplacementLocation = new FileLocation();
     }
 
     /// <summary>
@@ -112,7 +121,7 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
         ExclusionBuffer.Clear();
         ReplacementLocation = new FileLocation();
 
-        if (Enumerator != null)
+        if (Enumerator != null && Enumerator.CanReset)
         {
             Enumerator.Reset();
         }

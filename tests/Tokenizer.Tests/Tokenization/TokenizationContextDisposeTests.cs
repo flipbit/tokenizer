@@ -8,7 +8,7 @@ public class TokenizationContextDisposeTests
     public void GivenTokenizationContext_WhenDisposed_ThenCanBeDisposedAgainWithoutError()
     {
         var context = new TokenizationContext();
-        context.Initialize("test input");
+        context.Initialize(new System.IO.StringReader("test input"));
         context.Dispose();
         context.Dispose();
     }
@@ -18,7 +18,7 @@ public class TokenizationContextDisposeTests
     {
         using (var context = new TokenizationContext())
         {
-            context.Initialize("test input");
+            context.Initialize(new System.IO.StringReader("test input"));
         }
     }
 }

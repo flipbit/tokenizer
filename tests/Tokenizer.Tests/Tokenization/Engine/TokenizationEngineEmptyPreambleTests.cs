@@ -16,10 +16,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
+        var input = "abc";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "abc", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -35,10 +37,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
+        var input = "abcdef";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "abcdef", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -54,10 +58,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
+        var input = "ab";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "ab", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -72,10 +78,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("{a}");
         var context = new TokenizationContext();
+        var input = "hello";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "hello", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -89,10 +97,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("X{a}{b}Y{c}");
         var context = new TokenizationContext();
+        var input = "XabYc";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "XabYc", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -108,10 +118,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse("{a}{b}");
         var context = new TokenizationContext();
+        var input = "x";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, "x", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -131,12 +143,12 @@ public class TokenizationEngineEmptyPreambleTests
         var parser = new TokenParser();
         var template = parser.Parse(templateBuilder.ToString());
         var context = new TokenizationContext();
+        var input = new string('x', 100);
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
-        var input = new string('x', 100);
-
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert — the key thing is that this completes (does not hang)
         Assert.Equal(100, result.Tokens.Matches.Count);

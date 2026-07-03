@@ -29,7 +29,7 @@ internal sealed class PreambleNearMissHintGenerator : IHintGenerator
             return null;
 
         var normalizedPreamble = NormalizeWhitespace(preamble);
-        var lines = inputContent.Split(new[] { '\n', '\r' }, StringSplitOptions.None);
+        var lines = inputContent!.Split(new[] { '\n', '\r' }, StringSplitOptions.None);
 
         for (var i = 0; i < lines.Length; i++)
         {

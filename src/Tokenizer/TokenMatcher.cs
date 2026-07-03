@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Exceptions;
@@ -266,6 +267,50 @@ public sealed class TokenMatcher : ITokenMatcher
         Templates.Add(template);
 
         return this;
+    }
+
+    /// <inheritdoc />
+    public TokenMatcherResult Match(TextReader input) => Match(input.ReadToEnd());
+
+    /// <inheritdoc />
+    public TokenMatcherResult Match(TextReader input, string[]? tags) => Match(input.ReadToEnd(), tags);
+
+    /// <inheritdoc />
+    public TokenMatcherResult<T> Match<T>(TextReader input) where T : class, new() => Match<T>(input.ReadToEnd());
+
+    /// <inheritdoc />
+    public TokenMatcherResult<T> Match<T>(TextReader input, string[]? tags) where T : class, new() => Match<T>(input.ReadToEnd(), tags);
+
+    /// <inheritdoc />
+    public TokenMatcherResult Match(Stream input, Encoding encoding)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Match(reader);
+    }
+
+    /// <inheritdoc />
+    public TokenMatcherResult Match(Stream input, Encoding encoding, string[]? tags)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Match(reader, tags);
+    }
+
+    /// <inheritdoc />
+    public TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding) where T : class, new()
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Match<T>(reader);
+    }
+
+    /// <inheritdoc />
+    public TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding, string[]? tags) where T : class, new()
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Match<T>(reader, tags);
     }
 
     private bool CheckTemplateTags(Template template, string[] tags)

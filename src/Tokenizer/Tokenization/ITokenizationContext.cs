@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using Tokens.Enumerators;
 
@@ -55,10 +56,10 @@ internal interface ITokenizationContext
     FileLocation ReplacementLocation { get; set; }
 
     /// <summary>
-    /// Initializes the context with the input text to be tokenized.
+    /// Initializes the context with a TextReader to be tokenized.
     /// </summary>
-    /// <param name="input">The input text to tokenize</param>
-    void Initialize(string input);
+    /// <param name="reader">The TextReader providing input to tokenize</param>
+    void Initialize(TextReader reader);
 
     /// <summary>
     /// Clears the candidate token list.

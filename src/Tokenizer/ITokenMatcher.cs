@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 
 namespace Tokens;
 
@@ -56,4 +57,46 @@ public interface ITokenMatcher
     /// Matches the input string against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
     /// </summary>
     TokenMatcherResult<T> Match<T>(string input, string[]? tags) where T : class, new();
+
+    /// <summary>
+    /// Matches the input from a <see cref="TextReader"/> against all registered templates.
+    /// The caller retains ownership of the reader; it is not disposed.
+    /// </summary>
+    TokenMatcherResult Match(TextReader input);
+
+    /// <summary>
+    /// Matches the input from a <see cref="TextReader"/> against registered templates filtered by tags.
+    /// </summary>
+    TokenMatcherResult Match(TextReader input, string[]? tags);
+
+    /// <summary>
+    /// Matches the input from a <see cref="TextReader"/> against all registered templates and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    TokenMatcherResult<T> Match<T>(TextReader input) where T : class, new();
+
+    /// <summary>
+    /// Matches the input from a <see cref="TextReader"/> against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    TokenMatcherResult<T> Match<T>(TextReader input, string[]? tags) where T : class, new();
+
+    /// <summary>
+    /// Matches the input from a <see cref="Stream"/> against all registered templates.
+    /// The stream is not disposed; it remains open for further use.
+    /// </summary>
+    TokenMatcherResult Match(Stream input, Encoding encoding);
+
+    /// <summary>
+    /// Matches the input from a <see cref="Stream"/> against registered templates filtered by tags.
+    /// </summary>
+    TokenMatcherResult Match(Stream input, Encoding encoding, string[]? tags);
+
+    /// <summary>
+    /// Matches the input from a <see cref="Stream"/> against all registered templates and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding) where T : class, new();
+
+    /// <summary>
+    /// Matches the input from a <see cref="Stream"/> against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding, string[]? tags) where T : class, new();
 }

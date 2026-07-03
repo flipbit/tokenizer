@@ -4,7 +4,7 @@ namespace Tokens.Diagnostics;
 
 internal static class AlignmentRenderer
 {
-    public static string Render(TokenizationDiagnostics diagnostics, string? templateContent, string inputContent)
+    public static string Render(TokenizationDiagnostics diagnostics, string? templateContent, string? inputContent)
     {
         var sb = new StringBuilder();
         var summary = diagnostics.Summary;
@@ -83,13 +83,13 @@ internal static class AlignmentRenderer
         return sb.ToString();
     }
 
-    private static int CountLines(string content)
+    private static int CountLines(string? content)
     {
         if (string.IsNullOrEmpty(content))
             return 0;
 
         var count = 1;
-        foreach (var c in content)
+        foreach (var c in content!)
         {
             if (c == '\n')
                 count++;

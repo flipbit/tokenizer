@@ -15,7 +15,7 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
     /// </summary>
     /// <param name="templateContent">The template pattern being used.</param>
     /// <param name="inputContent">The input text being tokenized.</param>
-    public DiagnosticCollector(string? templateContent, string inputContent)
+    public DiagnosticCollector(string? templateContent, string? inputContent)
     {
         diagnostics = new TokenizationDiagnostics(templateContent, inputContent);
     }

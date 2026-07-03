@@ -19,11 +19,11 @@ public class TokenizationDiagnostics
     };
 
     private readonly string? templateContent;
-    private readonly string inputContent;
+    private readonly string? inputContent;
     private DiagnosticSummary? summary;
     private string? alignment;
 
-    internal TokenizationDiagnostics(string? templateContent, string inputContent)
+    internal TokenizationDiagnostics(string? templateContent, string? inputContent)
     {
         this.templateContent = templateContent;
         this.inputContent = inputContent;
@@ -33,7 +33,7 @@ public class TokenizationDiagnostics
     /// <summary>
     /// The input text that was tokenized. Used by hint generators for near-miss analysis.
     /// </summary>
-    internal string InputContent => inputContent;
+    internal string? InputContent => inputContent;
 
     /// <summary>
     /// All events recorded during this tokenization call, in the order they occurred.

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Tokens.Exceptions;
 using Tokens.Tokenization;
+using Tokens.Tokenization.Strategies;
 
 namespace Tokens;
 
@@ -18,9 +20,9 @@ public sealed class Tokenizer : ITokenizer
     private readonly TokenParser parser;
     private readonly ILogger<Tokenizer> log;
     private readonly ITokenizationEngine tokenizationEngine;
-    private readonly IHintProcessor hintProcessor;
     private readonly IResultBuilder resultBuilder;
     private readonly TemplateCache compilationCache;
+    private readonly IHintStrategy hintStrategy = new ContainsHintStrategy();
 
     /// <summary>Gets the options.</summary>
     public TokenizerOptions Options { get; }
@@ -50,7 +52,6 @@ public sealed class Tokenizer : ITokenizer
         log = loggerFactory.CreateLogger<Tokenizer>();
         parser = new TokenParser(Options, loggerFactory.CreateLogger<TokenParser>());
         tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
-        hintProcessor = new HintProcessor(loggerFactory.CreateLogger<HintProcessor>());
         resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
         compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
@@ -63,14 +64,12 @@ public sealed class Tokenizer : ITokenizer
         ILogger<Tokenizer> logger,
         TokenParser parser,
         ITokenizationEngine tokenizationEngine,
-        IHintProcessor hintProcessor,
         IResultBuilder resultBuilder)
     {
         Options = options.Value with { };
         log = logger;
         this.parser = parser;
         this.tokenizationEngine = tokenizationEngine;
-        this.hintProcessor = hintProcessor;
         this.resultBuilder = resultBuilder;
         compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
@@ -161,7 +160,7 @@ public sealed class Tokenizer : ITokenizer
             // Create and initialize the tokenization context
             using (var context = new TokenizationContext())
             {
-                context.Initialize(input);
+                context.Initialize(new StringReader(input));
                 log.LogTrace("Tokenization context initialized");
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
@@ -170,7 +169,7 @@ public sealed class Tokenizer : ITokenizer
 
                 // Process hints first
                 log.LogTrace("Processing hints");
-                var hintsMissing = hintProcessor.FindAndValidateHints(template, context.Enumerator, result, collector);
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, input, result, collector);
 
                 if (hintsMissing)
                 {
@@ -180,7 +179,12 @@ public sealed class Tokenizer : ITokenizer
                 {
                     log.LogTrace("Hints validated successfully, proceeding with tokenization");
                     // Process the main tokenization using the engine
-                    tokenizationEngine.ProcessTokenization(template, input, value, context, result, collector);
+                    tokenizationEngine.ProcessTokenization(template, input.Length, value, context, result, collector, hintStrategy);
+
+                    if (hintStrategy.PostProcess(result))
+                    {
+                        log.LogWarning("Post-tokenization hint check failed");
+                    }
                 }
 
                 // Build unmatched tokens collection
@@ -210,6 +214,128 @@ public sealed class Tokenizer : ITokenizer
                         }
                     }
                     log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                }
+            }
+
+            log.LogInformation("Tokenization {Result} for template {TemplateName}",
+                result.Success ? "succeeded" : "failed", template.Name);
+        }
+    }
+
+    /// <summary>
+    /// Tokenizes the input from a <see cref="TextReader"/> using the provided compiled <paramref name="template"/>.
+    /// The caller retains ownership of the reader; it is not disposed.
+    /// </summary>
+    public TokenizeResult Tokenize(Template template, TextReader input)
+    {
+        var result = new TokenizeResult(template);
+        Tokenize(result, null, template, input);
+        return result;
+    }
+
+    /// <summary>
+    /// Tokenizes the input from a <see cref="TextReader"/> using the provided compiled <paramref name="template"/>,
+    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// The caller retains ownership of the reader; it is not disposed.
+    /// </summary>
+    public TokenizeResult<T> Tokenize<T>(Template template, TextReader input) where T : class, new()
+    {
+        var result = new TokenizeResult<T>(template);
+        Tokenize(result, result.Value, template, input);
+        return result;
+    }
+
+    /// <summary>
+    /// Tokenizes the input from a <see cref="Stream"/> using the provided compiled <paramref name="template"/>.
+    /// The stream is not disposed; it remains open for further use.
+    /// </summary>
+    public TokenizeResult Tokenize(Template template, Stream input, Encoding encoding)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Tokenize(template, reader);
+    }
+
+    /// <summary>
+    /// Tokenizes the input from a <see cref="Stream"/> using the provided compiled <paramref name="template"/>,
+    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// The stream is not disposed; it remains open for further use.
+    /// </summary>
+    public TokenizeResult<T> Tokenize<T>(Template template, Stream input, Encoding encoding) where T : class, new()
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return Tokenize<T>(template, reader);
+    }
+
+    private void Tokenize(TokenizeResultBase result, object? value, Template template, TextReader input)
+    {
+        using (log.BeginScope(new Dictionary<string, object>
+        {
+            ["TemplateName"] = template.Name,
+            ["TokenCount"] = template.Tokens.Count,
+            ["Operation"] = "Tokenize"
+        }))
+        {
+            log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
+            log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+
+            // Create and initialize the tokenization context
+            using (var context = new TokenizationContext())
+            {
+                context.Initialize(input);
+                log.LogTrace("Tokenization context initialized");
+
+                IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                    ? new DiagnosticCollector(null, null)
+                    : NullDiagnosticCollector.Instance;
+
+                // Process hints first (rawInput is null for TextReader inputs)
+                log.LogTrace("Processing hints");
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
+
+                if (hintsMissing)
+                {
+                    log.LogWarning("Required hints are missing, skipping tokenization");
+                }
+                else
+                {
+                    log.LogTrace("Hints validated successfully, proceeding with tokenization");
+                    // Process the main tokenization using the engine
+                    tokenizationEngine.ProcessTokenization(template, 0, value, context, result, collector, hintStrategy);
+
+                    if (hintStrategy.PostProcess(result))
+                    {
+                        log.LogWarning("Post-tokenization hint check failed");
+                    }
+                }
+
+                // Build unmatched tokens collection
+                log.LogTrace("Building unmatched tokens collection");
+                resultBuilder.BuildUnmatchedTokens(template, result, collector);
+
+                var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
+                log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                    result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+
+                if (requiredMissingCount > 0)
+                {
+                    log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
+                }
+
+                result.Diagnostics = collector.GetResult();
+
+                if (result.Diagnostics != null)
+                {
+                    log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                    foreach (var issue in result.Diagnostics.Summary.Issues)
+                    {
+                        log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                        if (issue.Hint != null)
+                        {
+                            log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                        }
+                    }
                 }
             }
 

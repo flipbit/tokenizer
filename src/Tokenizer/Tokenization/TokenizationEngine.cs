@@ -48,21 +48,22 @@ internal class TokenizationEngine : ITokenizationEngine
     /// and assigning values to the target object.
     /// </summary>
     /// <param name="template">The template containing token definitions</param>
-    /// <param name="input">The input text to tokenize</param>
+    /// <param name="inputLength">The length of the input being tokenized, used for logging and max-iterations calculation</param>
     /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="context">The tokenization context containing shared state</param>
+    /// <param name="context">The tokenization context containing shared state (must be initialized by the caller)</param>
     /// <param name="result">The result object to populate with matches and misses</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
+    /// <param name="hintStrategy">Optional hint strategy to notify when token preambles match.</param>
     public void ProcessTokenization(
         Template template,
-        string input,
+        int inputLength,
         object? targetObject,
         ITokenizationContext context,
         TokenizeResultBase result,
-        IDiagnosticCollector collector)
+        IDiagnosticCollector collector,
+        IHintStrategy? hintStrategy = null)
     {
         ArgumentValidation.ThrowIfNull(template, nameof(template));
-        ArgumentValidation.ThrowIfNull(input, nameof(input));
         // Note: targetObject can be null - this is a valid use case for Tokenize(Template, string)
         ArgumentValidation.ThrowIfNull(context, nameof(context));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
@@ -93,12 +94,10 @@ internal class TokenizationEngine : ITokenizationEngine
 
         log.LogTrace("Start: Processing: {TemplateName}", template.Name);
         log.LogDebug("Tokenization started for template '{TemplateName}' with input length {InputLength}",
-            template.Name, input.Length);
+            template.Name, inputLength);
 
         collector.Record(DiagnosticEventType.TokenizationStarted,
-            detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}, Input length: {input.Length}");
-
-        context.Initialize(input);
+            detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}, Input length: {inputLength}");
 
         log.LogDebug("Phase: Initialization completed. Starting main tokenization loop with {TokenCount} tokens",
             template.Tokens.Count);
@@ -107,7 +106,7 @@ internal class TokenizationEngine : ITokenizationEngine
         var iterationCount = 0;
         var maxIterations = template.Options.MaxIterations > 0
             ? template.Options.MaxIterations
-            : input.Length * 2;
+            : inputLength > 0 ? inputLength * 2 : int.MaxValue;
 
         // Main tokenization loop
         while (context.Enumerator.IsEmpty == false)
@@ -122,9 +121,6 @@ internal class TokenizationEngine : ITokenizationEngine
             }
 
             var next = context.Enumerator.Peek();
-
-            // Handle Windows new lines (normalize to Unix)
-            next = HandleWindowsNewlines(context.Enumerator, next);
 
             // Check for repeated current token
             if (ShouldProcessRepeatedToken(context))
@@ -158,6 +154,15 @@ internal class TokenizationEngine : ITokenizationEngine
                 collector.Record(DiagnosticEventType.PreambleMatched,
                     tokenName: string.Join(", ", matchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
+
+                // Notify hint strategy of matched tokens
+                if (hintStrategy != null)
+                {
+                    foreach (var match in matchBuffer)
+                    {
+                        hintStrategy.OnTokenMatched(match);
+                    }
+                }
 
                 // Special case: first token found, just prepare to read token value
                 if (context.Candidates.HasCandidates == false)
@@ -604,23 +609,6 @@ internal class TokenizationEngine : ITokenizationEngine
         return false;
     }
 
-    /// <summary>
-    /// Handles Windows line ending normalization (CRLF to LF).
-    /// </summary>
-    /// <param name="enumerator">The token enumerator</param>
-    /// <param name="next">The current character</param>
-    /// <returns>The normalized character</returns>
-    private char HandleWindowsNewlines(TokenEnumerator enumerator, char next)
-    {
-        if (next == '\r' && enumerator.Peek(1) == '\n')
-        {
-            log.LogTrace("Normalizing Windows line ending (CRLF) to Unix (LF) at position Line {Line}, Column {Column}",
-                enumerator.Location.Line, enumerator.Location.Column);
-            enumerator.Next();
-            return '\n';
-        }
-        return next;
-    }
 
     /// <summary>
     /// Determines if a repeated token should be processed.

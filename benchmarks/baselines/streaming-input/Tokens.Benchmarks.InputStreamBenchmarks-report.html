@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Tokens.Benchmarks.InputStreamBenchmarks-20260703-123038</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.7.8 (24G809) [Darwin 24.6.0]
+Apple M3, 1 CPU, 8 logical and 8 physical cores
+.NET SDK 10.0.301
+  [Host]     : .NET 10.0.9 (10.0.9, 10.0.926.27113), Arm64 RyuJIT armv8.0-a
+  DefaultJob : .NET 10.0.9 (10.0.9, 10.0.926.27113), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method       </th><th>Mean</th><th>Error</th><th>StdDev</th><th>P95 </th><th>Ratio</th><th>RatioSD</th><th>Completed Work Items</th><th>Lock Contentions</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;String small&#39;</td><td>5.160 &mu;s</td><td>0.0780 &mu;s</td><td>0.0729 &mu;s</td><td>5.262 &mu;s</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>1.6022</td><td>0.0076</td><td>13.12 KB</td><td>1.00</td>
+</tr><tr><td>&#39;String medium&#39;</td><td>35.953 &mu;s</td><td>0.7150 &mu;s</td><td>1.4605 &mu;s</td><td>37.695 &mu;s</td><td>6.97</td><td>0.30</td><td>-</td><td>-</td><td>6.7139</td><td>0.0610</td><td>55.31 KB</td><td>4.22</td>
+</tr><tr><td>&#39;String large&#39;</td><td>271.809 &mu;s</td><td>5.1326 &mu;s</td><td>5.2708 &mu;s</td><td>279.255 &mu;s</td><td>52.68</td><td>1.23</td><td>-</td><td>-</td><td>25.3906</td><td>-</td><td>207.8 KB</td><td>15.84</td>
+</tr><tr><td>&#39;TextReader small&#39;</td><td>5.028 &mu;s</td><td>0.0633 &mu;s</td><td>0.0592 &mu;s</td><td>5.123 &mu;s</td><td>0.97</td><td>0.02</td><td>-</td><td>-</td><td>1.5640</td><td>0.0076</td><td>12.82 KB</td><td>0.98</td>
+</tr><tr><td>&#39;TextReader medium&#39;</td><td>33.290 &mu;s</td><td>0.4720 &mu;s</td><td>0.4415 &mu;s</td><td>34.010 &mu;s</td><td>6.45</td><td>0.12</td><td>-</td><td>-</td><td>6.7139</td><td>0.0610</td><td>55.01 KB</td><td>4.19</td>
+</tr><tr><td>&#39;TextReader large&#39;</td><td>256.914 &mu;s</td><td>3.3424 &mu;s</td><td>2.9629 &mu;s</td><td>262.272 &mu;s</td><td>49.79</td><td>0.88</td><td>-</td><td>-</td><td>25.3906</td><td>-</td><td>207.7 KB</td><td>15.83</td>
+</tr><tr><td>&#39;Stream small&#39;</td><td>5.095 &mu;s</td><td>0.0453 &mu;s</td><td>0.0378 &mu;s</td><td>5.142 &mu;s</td><td>0.99</td><td>0.02</td><td>-</td><td>-</td><td>1.9608</td><td>0.0305</td><td>16.06 KB</td><td>1.22</td>
+</tr><tr><td>&#39;Stream medium&#39;</td><td>33.172 &mu;s</td><td>0.2828 &mu;s</td><td>0.2646 &mu;s</td><td>33.652 &mu;s</td><td>6.43</td><td>0.10</td><td>-</td><td>-</td><td>7.0801</td><td>0.1831</td><td>58.24 KB</td><td>4.44</td>
+</tr><tr><td>&#39;Stream large&#39;</td><td>255.613 &mu;s</td><td>2.7161 &mu;s</td><td>2.1205 &mu;s</td><td>257.970 &mu;s</td><td>49.54</td><td>0.78</td><td>-</td><td>-</td><td>25.3906</td><td>-</td><td>210.93 KB</td><td>16.08</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -85,13 +85,6 @@ public static class TokenizerServiceCollectionExtensions
             return new TokenizationEngine(logger);
         });
 
-        services.TryAddSingleton<IHintProcessor>(sp =>
-        {
-            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger<HintProcessor>();
-            return new HintProcessor(logger);
-        });
-
         services.TryAddSingleton<IResultBuilder>(sp =>
         {
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
@@ -106,10 +99,9 @@ public static class TokenizerServiceCollectionExtensions
             var logger = loggerFactory.CreateLogger<Tokenizer>();
             var parser = sp.GetRequiredService<Compilation.TokenParser>();
             var tokenizationEngine = sp.GetRequiredService<ITokenizationEngine>();
-            var hintProcessor = sp.GetRequiredService<IHintProcessor>();
             var resultBuilder = sp.GetRequiredService<IResultBuilder>();
 
-            return new Tokenizer(opts, logger, parser, tokenizationEngine, hintProcessor, resultBuilder);
+            return new Tokenizer(opts, logger, parser, tokenizationEngine, resultBuilder);
         });
 
         services.TryAddSingleton<Tokenizer>(sp => (Tokenizer)sp.GetRequiredService<ITokenizer>());

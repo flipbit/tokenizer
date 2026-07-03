@@ -48,8 +48,10 @@ Country: USA
 Notes: Test notes
 ";
 
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 8); // At least most tokens matched
@@ -74,8 +76,11 @@ Notes: Test notes
             .WithTemplate(template)
             .Build();
 
+        var input = "R1: Value1\nR2: Value2";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "R1: Value1\nR2: Value2", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -95,9 +100,10 @@ Notes: Test notes
             .Build();
 
         var input = "Title: My List\nItem: First\nItem: Second\nItem: Third";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2); // Title + at least some items
@@ -119,9 +125,10 @@ Content: {Content}");
             .Build();
 
         var input = "Content: Test content";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -140,9 +147,10 @@ Content: {Content}");
             .Build();
 
         var input = "Line1: First\nLine2: Second\nLine3: Third";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -161,9 +169,10 @@ Content: {Content}");
             .Build();
 
         var input = "Line1: First\r\nLine2: Second";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -182,9 +191,10 @@ Content: {Content}");
             .Build();
 
         var input = "Name: john";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -204,9 +214,10 @@ Content: {Content}");
             .Build();
 
         var input = "Name:   john  ";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -225,9 +236,10 @@ Content: {Content}");
             .Build();
 
         var input = "Age: 25";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -246,9 +258,10 @@ Content: {Content}");
             .Build();
 
         var input = "Expected Name: John";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -268,9 +281,10 @@ Content: {Content}");
             .Build();
 
         var input = "Section1: First\n  Item: ItemA\nSection2: Second\n  Item: ItemB";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2);
@@ -289,9 +303,10 @@ Content: {Content}");
             .Build();
 
         var input = "Line: This is content\nNext line should not be included";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);

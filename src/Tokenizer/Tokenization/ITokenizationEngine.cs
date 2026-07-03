@@ -15,12 +15,13 @@ internal interface ITokenizationEngine
     /// and assigning values to the target object.
     /// </summary>
     /// <param name="template">The template containing token definitions</param>
-    /// <param name="input">The input text to tokenize</param>
+    /// <param name="inputLength">The length of the input being tokenized, used for logging and max-iterations calculation</param>
     /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="context">The tokenization context containing shared state</param>
+    /// <param name="context">The tokenization context containing shared state (must be initialized by the caller)</param>
     /// <param name="result">The result object to populate with matches and misses</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    void ProcessTokenization(Template template, string input, object? targetObject, ITokenizationContext context, TokenizeResultBase result, IDiagnosticCollector collector);
+    /// <param name="hintStrategy">Optional hint strategy to notify when token preambles match.</param>
+    void ProcessTokenization(Template template, int inputLength, object? targetObject, ITokenizationContext context, TokenizeResultBase result, IDiagnosticCollector collector, IHintStrategy? hintStrategy = null);
 
     /// <summary>
     /// Processes candidate tokens and attempts to assign values to the target object.

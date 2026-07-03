@@ -28,7 +28,7 @@ public class TokenizationContextTests
         var input = "Hello World";
 
         // Act
-        context.Initialize(input);
+        context.Initialize(new System.IO.StringReader(input));
 
         // Assert
         Assert.NotNull(context.Enumerator);
@@ -40,7 +40,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         // Act
         context.Dispose();
@@ -154,7 +154,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
         context.Candidates.Add(new Token("test", string.Empty, string.Empty, new Tokens.Enumerators.FileLocation()));
         context.Replacement.Append("test");
         context.MatchIds.Add(1);
@@ -177,7 +177,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         // Act & Assert
         context.Dispose(); // Should not throw
@@ -188,7 +188,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         // Act & Assert
         context.Dispose();
@@ -196,23 +196,13 @@ public class TokenizationContextTests
     }
 
     [Fact]
-    public void GivenContext_WhenInitializeWithNullInput_ThenThrowsException()
+    public void GivenContext_WhenInitializeWithNullReader_ThenThrowsException()
     {
         // Arrange
         var context = new TokenizationContext();
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => context.Initialize(null!));
-    }
-
-    [Fact]
-    public void GivenContext_WhenInitializeWithEmptyInput_ThenThrowsException()
-    {
-        // Arrange
-        var context = new TokenizationContext();
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => context.Initialize(""));
+        Assert.Throws<ArgumentNullException>(() => context.Initialize((System.IO.TextReader)null!));
     }
 
     [Fact]
@@ -220,10 +210,10 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("first");
+        context.Initialize(new System.IO.StringReader("first"));
 
         // Act
-        context.Initialize("second");
+        context.Initialize(new System.IO.StringReader("second"));
 
         // Assert
         Assert.NotNull(context.Enumerator);
@@ -235,7 +225,7 @@ public class TokenizationContextTests
         // Arrange & Act
         using (var context = new TokenizationContext())
         {
-            context.Initialize("test");
+            context.Initialize(new System.IO.StringReader("test"));
             // Context should be usable here
             Assert.NotNull(context.Enumerator);
         }
@@ -249,7 +239,7 @@ public class TokenizationContextTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         // Act - Force garbage collection to trigger finalizer
         context = null;
@@ -291,7 +281,7 @@ public class TokenizationContextTests
         var context = new TokenizationContext();
 
         // Act
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         // Assert
         Assert.NotNull(context.Enumerator);

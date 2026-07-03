@@ -143,8 +143,8 @@ public class ServiceConstructorTests
         var context2 = new TokenizationContext();
 
         // Act
-        context1.Initialize("test1");
-        context2.Initialize("test2");
+        context1.Initialize(new System.IO.StringReader("test1"));
+        context2.Initialize(new System.IO.StringReader("test2"));
 
         // Assert
         // Contexts should be independent and hold their own state
@@ -221,7 +221,7 @@ public class ServiceConstructorTests
         Assert.NotNull(context);
 
         // Context should be usable after initialization
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
         Assert.NotNull(context.Enumerator);
     }
 }

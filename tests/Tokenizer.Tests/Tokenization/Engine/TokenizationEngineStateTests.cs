@@ -22,7 +22,7 @@ public class TokenizationEngineStateTests
         var input = "Test input";
 
         // Act
-        context.Initialize(input);
+        context.Initialize(new System.IO.StringReader(input));
 
         // Assert
         Assert.NotNull(context.Enumerator);
@@ -140,7 +140,9 @@ public class TokenizationEngineStateTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, "First: ValueASecond: ValueB", null, context, result, NullDiagnosticCollector.Instance);
+        var input = "First: ValueASecond: ValueB";
+        context.Initialize(new System.IO.StringReader(input));
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert - Both tokens should be processed
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -232,7 +234,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("Test input");
+        context.Initialize(new System.IO.StringReader("Test input"));
 
         var token1 = new TokenBuilder().WithName("Token1").WithPreamble("A: ").Build();
         context.Candidates.Add(token1);

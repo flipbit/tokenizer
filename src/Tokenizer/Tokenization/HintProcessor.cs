@@ -204,7 +204,14 @@ internal class HintProcessor : IHintProcessor
     {
         ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
 
-        log.LogTrace("Resetting enumerator after hint processing");
-        enumerator.Reset();
+        if (enumerator.CanReset)
+        {
+            log.LogTrace("Resetting enumerator after hint processing");
+            enumerator.Reset();
+        }
+        else
+        {
+            log.LogTrace("Skipping enumerator reset — TextReader-based enumerator does not support reset");
+        }
     }
 }

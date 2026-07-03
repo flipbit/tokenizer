@@ -25,7 +25,8 @@ public class TokenizationEngineBasicTests
         var template = parser.Parse("First Name: {FirstName}");
 
         var context = new TokenizationContext();
-        // Don't initialize the context here - ProcessTokenization will do it
+        var input = "First Name: Alice";
+        context.Initialize(new System.IO.StringReader(input));
 
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
@@ -33,9 +34,8 @@ public class TokenizationEngineBasicTests
 
         var value = new Person { FirstName = "Alice" };
 
-        // Act - Follow the same pattern as the original Tokenizer
-        // Initialize context for hint processing
-        _engine.ProcessTokenization(template, "First Name: Alice", value, context, result, NullDiagnosticCollector.Instance);
+        // Act
+        _engine.ProcessTokenization(template, input.Length, value, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0);
@@ -49,14 +49,15 @@ public class TokenizationEngineBasicTests
         var template = parser.Parse("Hello World"); // Template with no tokens
 
         var context = new TokenizationContext();
-        context.Initialize("Hello World");
+        var input = "Hello World";
+        context.Initialize(new System.IO.StringReader(input));
 
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, "Hello World", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -79,7 +80,7 @@ public class TokenizationEngineBasicTests
     private TokenizationContext CreateContext(string input = "Hello World")
     {
         var context = new TokenizationContext();
-        context.Initialize(input);
+        context.Initialize(new System.IO.StringReader(input));
         return context;
     }
 

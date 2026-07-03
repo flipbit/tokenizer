@@ -24,8 +24,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Name: John\nName: Doe";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Name: John\nName: Doe", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -56,8 +59,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Req: Value";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Req: Value", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -76,8 +82,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "John is here";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "John is here", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -96,8 +105,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Name is John";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Name is John", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -116,8 +128,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Item: Apple\nItem: Banana\nItem: Cherry";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Item: Apple\nItem: Banana\nItem: Cherry", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -135,8 +150,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Item: Apple\nItem: Banana\n\nItem: Cherry";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Item: Apple\nItem: Banana\n\nItem: Cherry", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -154,8 +172,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Name: Age: 25";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Name: Age: 25", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0 || result.Tokens.Misses.Count > 0);
@@ -184,8 +205,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Value: Test";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Value: Test", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -203,8 +227,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "JohnDoe";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "JohnDoe", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         // Without separator, tokens can't distinguish boundaries - expect specific behavior
@@ -223,8 +250,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "Name: John everything else";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "Name: John everything else", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -250,8 +280,11 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
+        var input = "No optional here";
+        context.Initialize(new System.IO.StringReader(input));
+
         // Act
-        _engine.ProcessTokenization(template, "No optional here", null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Empty(result.Tokens.Matches);
@@ -271,7 +304,9 @@ public class TokenizationEngineTokenMatchingTests
             .Build();
 
         // Act - Provide input in reverse order
-        _engine.ProcessTokenization(template, "Name: John\nAge: 25", null, context, result, NullDiagnosticCollector.Instance);
+        var input = "Name: John\nAge: 25";
+        context.Initialize(new System.IO.StringReader(input));
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -291,7 +326,9 @@ public class TokenizationEngineTokenMatchingTests
             .Build();
 
         // Act - Provide input in reverse order
-        _engine.ProcessTokenization(template, "Name: John\nAge: 25", null, context, result, NullDiagnosticCollector.Instance);
+        var input = "Name: John\nAge: 25";
+        context.Initialize(new System.IO.StringReader(input));
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert - Behavior depends on strict ordering
         Assert.NotNull(result);

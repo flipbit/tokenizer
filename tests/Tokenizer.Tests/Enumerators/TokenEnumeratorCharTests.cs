@@ -1,3 +1,4 @@
+using System.IO;
 using Xunit;
 
 namespace Tokens.Enumerators;
@@ -87,33 +88,6 @@ public class TokenEnumeratorCharTests
     }
 
     [Fact]
-    public void GivenNonEmptyInput_WhenPeekWithOffset_ThenReturnsCorrectChar()
-    {
-        // Arrange
-        var enumerator = new TokenEnumerator("hello");
-
-        // Act / Assert
-        Assert.Equal('h', enumerator.Peek(0));
-        Assert.Equal('e', enumerator.Peek(1));
-        Assert.Equal('l', enumerator.Peek(2));
-        Assert.Equal('l', enumerator.Peek(3));
-        Assert.Equal('o', enumerator.Peek(4));
-    }
-
-    [Fact]
-    public void GivenNonEmptyInput_WhenPeekBeyondEnd_ThenReturnsNullChar()
-    {
-        // Arrange
-        var enumerator = new TokenEnumerator("hi");
-
-        // Act
-        var result = enumerator.Peek(5);
-
-        // Assert
-        Assert.Equal('\0', result);
-    }
-
-    [Fact]
     public void GivenInputWithNewlines_WhenAdvancingPastNewline_ThenLocationTracksCorrectly()
     {
         // Arrange
@@ -157,5 +131,70 @@ public class TokenEnumeratorCharTests
         Assert.Equal('b', enumerator.Next());
         Assert.Equal('c', enumerator.Next());
         Assert.Equal('\0', enumerator.Next());
+    }
+
+    [Fact]
+    public void GivenThreeChars_WhenConsumedViaNext_ThenIsEmptyAfterThirdNext()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator("abc");
+
+        // Act / Assert
+        Assert.False(enumerator.IsEmpty);
+        enumerator.Next(); // a
+        Assert.False(enumerator.IsEmpty);
+        enumerator.Next(); // b
+        Assert.False(enumerator.IsEmpty);
+        enumerator.Next(); // c
+        Assert.True(enumerator.IsEmpty); // must be true immediately after last char
+    }
+
+    [Fact]
+    public void GivenTextReader_WhenNext_ThenReturnsCharsInOrder()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator(new StringReader("abc"));
+
+        // Act / Assert
+        Assert.Equal('a', enumerator.Next());
+        Assert.Equal('b', enumerator.Next());
+        Assert.Equal('c', enumerator.Next());
+        Assert.Equal('\0', enumerator.Next());
+    }
+
+    [Fact]
+    public void GivenInputWithCRLF_WhenNext_ThenNormalizesToLF()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator(new StringReader("a\r\nb"));
+
+        // Act / Assert
+        Assert.Equal('a', enumerator.Next());
+        Assert.Equal('\n', enumerator.Next());
+        Assert.Equal('b', enumerator.Next());
+    }
+
+    [Fact]
+    public void GivenInputWithLoneCR_WhenNext_ThenNormalizesToLF()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator(new StringReader("a\rb"));
+
+        // Act / Assert
+        Assert.Equal('a', enumerator.Next());
+        Assert.Equal('\n', enumerator.Next());
+        Assert.Equal('b', enumerator.Next());
+    }
+
+    [Fact]
+    public void GivenInputWithLF_WhenNext_ThenReturnsLF()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator(new StringReader("a\nb"));
+
+        // Act / Assert
+        Assert.Equal('a', enumerator.Next());
+        Assert.Equal('\n', enumerator.Next());
+        Assert.Equal('b', enumerator.Next());
     }
 }

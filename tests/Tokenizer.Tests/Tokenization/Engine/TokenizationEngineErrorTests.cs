@@ -12,7 +12,7 @@ public class TokenizationEngineErrorTests
     private readonly TokenizationEngine _engine = new();
 
     [Fact]
-    public void GivenEmptyInput_WhenProcessingTokenization_ThenThrowsException()
+    public void GivenNullReader_WhenInitializingContext_ThenThrowsException()
     {
         // Arrange
         var template = new TemplateBuilder()
@@ -33,7 +33,7 @@ public class TokenizationEngineErrorTests
         var value = new { Name = "" };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => context.Initialize(""));
+        Assert.Throws<ArgumentNullException>(() => context.Initialize((System.IO.TextReader)null!));
     }
 
     [Fact]
@@ -41,14 +41,14 @@ public class TokenizationEngineErrorTests
     {
         // Arrange
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
 
         var result = new TokenizeResultBuilder().Build();
         var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(null!, "test", value, context, result, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(null!, 4, value, context, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, null!, result, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(template, 4, value, null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -78,12 +78,12 @@ public class TokenizationEngineErrorTests
             .Build();
 
         var context = new TokenizationContext();
-        context.Initialize("test");
+        context.Initialize(new System.IO.StringReader("test"));
         var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, "test", value, context, null!, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(template, 4, value, context, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]

@@ -1,69 +1,78 @@
+using System.IO;
+using System.Collections.Generic;
+
 namespace Tokens.Enumerators;
 
 /// <summary>
-/// A forward-only, character-level enumerator over a string that tracks the current
-/// <see cref="FileLocation"/> (line and column) as it advances.
+/// A forward-only, character-level enumerator over a <see cref="TextReader"/> that tracks the current
+/// <see cref="FileLocation"/> (line and column) as it advances. All line endings are normalised to <c>\n</c>.
 /// </summary>
 public class TokenEnumerator
 {
-    private readonly string pattern;
-    private readonly int patternLength;
+    private TextReader reader;
+    private readonly string? originalString;
+    private readonly Queue<char> pushback = new Queue<char>();
 
-    private int currentLocation;
-
+    private bool isEmpty;
     private bool resetNextLine;
 
     /// <summary>
+    /// Initializes a new instance of <see cref="TokenEnumerator"/> over the specified <see cref="TextReader"/>.
+    /// All line endings (<c>\r\n</c>, lone <c>\r</c>) are normalised to <c>\n</c>.
+    /// </summary>
+    /// <param name="reader">The text reader to enumerate.</param>
+    public TokenEnumerator(TextReader reader) : this(reader, null)
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="TokenEnumerator"/> over the specified string.
-    /// Windows-style line endings (<c>\r\n</c>) are normalised to <c>\n</c>.
+    /// All line endings (<c>\r\n</c>, lone <c>\r</c>) are normalised to <c>\n</c>.
     /// </summary>
     /// <param name="pattern">The string to enumerate.</param>
-    public TokenEnumerator(string pattern)
+    public TokenEnumerator(string pattern) : this(new StringReader(pattern ?? string.Empty), pattern ?? string.Empty)
     {
-        if (string.IsNullOrEmpty(pattern) == false)
-        {
-            if (pattern.Contains("\r\n"))
-            {
-                pattern = pattern.Replace("\r\n", "\n");
-            }
-        }
+    }
 
-        if (string.IsNullOrEmpty(pattern))
-        {
-            patternLength = 0;
-        }
-        else
-        {
-            patternLength = pattern.Length;
-        }
-
-        this.pattern = pattern;
-
-        currentLocation = 0;
+    private TokenEnumerator(TextReader reader, string? originalString)
+    {
+        this.reader = reader;
+        this.originalString = originalString;
+        isEmpty = reader.Peek() == -1;
         Location = new FileLocation();
     }
 
     /// <summary>
-    /// Gets a value indicating whether all characters in the string have been consumed.
+    /// Gets a value indicating whether all characters have been consumed.
     /// </summary>
-    public bool IsEmpty => currentLocation >= patternLength;
+    public bool IsEmpty => isEmpty && pushback.Count == 0;
 
     /// <summary>
-    /// Gets the current position in the source string as a line/column <see cref="FileLocation"/>.
+    /// Gets a value indicating whether <see cref="Reset"/> is supported.
+    /// Only string-backed enumerators support reset.
+    /// </summary>
+    public bool CanReset => originalString != null;
+
+    /// <summary>
+    /// Gets the current position in the source as a line/column <see cref="FileLocation"/>.
     /// </summary>
     public FileLocation Location { get; }
 
     /// <summary>
     /// Advances the enumerator by one character and returns it, updating <see cref="Location"/>.
-    /// Returns <c>'\0'</c> if the enumerator is already at the end of the string.
+    /// Returns <c>'\0'</c> if the enumerator is already at the end.
     /// </summary>
     /// <returns>The next character, or <c>'\0'</c> if <see cref="IsEmpty"/> is <see langword="true"/>.</returns>
     public char Next()
     {
-        if (IsEmpty) return '\0';
+        var next = ReadChar();
+        if (next == '\0') return '\0';
 
-        var next = pattern[currentLocation];
-        currentLocation++;
+        // Eagerly detect end-of-input so IsEmpty is accurate immediately
+        if (pushback.Count == 0 && !isEmpty && reader.Peek() == -1)
+        {
+            isEmpty = true;
+        }
 
         if (resetNextLine)
         {
@@ -85,31 +94,35 @@ public class TokenEnumerator
 
     /// <summary>
     /// Returns the next character without advancing the enumerator.
-    /// Returns <c>'\0'</c> if the enumerator is already at the end of the string.
+    /// Returns <c>'\0'</c> if the enumerator is already at the end.
     /// </summary>
     /// <returns>The next character, or <c>'\0'</c> if <see cref="IsEmpty"/> is <see langword="true"/>.</returns>
     public char Peek()
     {
-        if (IsEmpty) return '\0';
+        if (pushback.Count > 0)
+        {
+            return pushback.Peek();
+        }
 
-        return pattern[currentLocation];
-    }
+        if (isEmpty) return '\0';
 
-    /// <summary>
-    /// Returns the character at the specified offset ahead of the current position, without advancing.
-    /// Returns <c>'\0'</c> if the offset is beyond the end of the string or the enumerator is empty.
-    /// </summary>
-    /// <param name="offset">The zero-based number of characters ahead of the current position to look at.</param>
-    /// <returns>The character at the given offset, or <c>'\0'</c> if the position is out of range.</returns>
-    public char Peek(int offset)
-    {
-        if (IsEmpty) return '\0';
+        var raw = reader.Peek();
+        if (raw == -1)
+        {
+            isEmpty = true;
+            return '\0';
+        }
 
-        var location = currentLocation + offset;
+        if (raw == '\r')
+        {
+            // Need to resolve CRLF properly — read through ReadChar and push into pushback
+            var resolved = ReadChar();
+            if (resolved == '\0') return '\0';
+            pushback.Enqueue(resolved);
+            return resolved;
+        }
 
-        if (location >= patternLength) return '\0';
-
-        return pattern[currentLocation + offset];
+        return (char)raw;
     }
 
     /// <summary>
@@ -121,13 +134,20 @@ public class TokenEnumerator
     public bool TryMatch(string value)
     {
         if (string.IsNullOrEmpty(value)) return true;
-        if (currentLocation + value.Length > patternLength) return false;
 
-#if NET8_0_OR_GREATER
-        return pattern.AsSpan(currentLocation, value.Length).SequenceEqual(value.AsSpan());
-#else
-        return string.CompareOrdinal(pattern, currentLocation, value, 0, value.Length) == 0;
-#endif
+        EnsurePushback(value.Length);
+
+        if (pushback.Count < value.Length) return false;
+
+        var index = 0;
+        foreach (var c in pushback)
+        {
+            if (index >= value.Length) break;
+            if (c != value[index]) return false;
+            index++;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -179,11 +199,90 @@ public class TokenEnumerator
     }
 
     /// <summary>
-    /// Resets the enumerator to the beginning of the string and clears the tracked <see cref="Location"/>.
+    /// Resets the enumerator to the beginning and clears the tracked <see cref="Location"/>.
+    /// Only supported for string-backed enumerators.
     /// </summary>
     public void Reset()
     {
-        currentLocation = 0;
+        if (originalString == null)
+        {
+            throw new System.NotSupportedException(
+                "Reset is not supported on TextReader-based enumerators. " +
+                "Use a hint strategy that does not require enumerator reset.");
+        }
+
+        pushback.Clear();
+        reader = new StringReader(originalString);
+        isEmpty = reader.Peek() == -1;
+        resetNextLine = false;
         Location.Reset();
+    }
+
+    /// <summary>
+    /// Reads one character from the pushback queue or the underlying reader,
+    /// normalizing all line endings to <c>\n</c>.
+    /// </summary>
+    private char ReadChar()
+    {
+        if (pushback.Count > 0)
+        {
+            return pushback.Dequeue();
+        }
+
+        if (isEmpty) return '\0';
+
+        var raw = reader.Read();
+        if (raw == -1)
+        {
+            isEmpty = true;
+            return '\0';
+        }
+
+        var c = (char)raw;
+
+        if (c == '\r')
+        {
+            // Check if followed by \n — if so, consume it
+            if (reader.Peek() == '\n')
+            {
+                reader.Read();
+            }
+            return '\n';
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Reads characters from the reader into the pushback queue until it contains
+    /// at least <paramref name="count"/> characters, or the reader is exhausted.
+    /// Only reads from the underlying reader, not from the pushback queue.
+    /// </summary>
+    private void EnsurePushback(int count)
+    {
+        while (pushback.Count < count)
+        {
+            if (isEmpty) break;
+
+            var raw = reader.Read();
+            if (raw == -1)
+            {
+                isEmpty = true;
+                break;
+            }
+
+            if (raw == '\r')
+            {
+                if (reader.Peek() == '\n')
+                {
+                    reader.Read();
+                }
+                pushback.Enqueue('\n');
+            }
+            else
+            {
+                pushback.Enqueue((char)raw);
+            }
+        }
     }
 }

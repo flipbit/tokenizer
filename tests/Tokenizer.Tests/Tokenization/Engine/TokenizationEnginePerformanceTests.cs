@@ -24,13 +24,15 @@ public class TokenizationEnginePerformanceTests
         largeInput.Append(new string('a', 100000));
         largeInput.Append("Name: John");
 
+        var input = largeInput.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, largeInput.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -47,12 +49,13 @@ public class TokenizationEnginePerformanceTests
         var largeInput = new string('x', 1000000);
 
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(largeInput));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, largeInput, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, largeInput.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -81,13 +84,15 @@ public class TokenizationEnginePerformanceTests
         templateBuilder.WithTokens(tokens.ToArray());
         var template = templateBuilder.Build();
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 50); // At least half matched
@@ -106,13 +111,15 @@ public class TokenizationEnginePerformanceTests
             inputBuilder.AppendLine($"Item: Value{i}");
         }
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -132,13 +139,15 @@ public class TokenizationEnginePerformanceTests
             inputBuilder.AppendLine($"Item: Value{i}");
         }
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -162,13 +171,15 @@ public class TokenizationEnginePerformanceTests
         var parser = new TokenParser();
         var template = parser.Parse(templateBuilder.ToString());
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 25); // At least half matched
@@ -192,13 +203,15 @@ public class TokenizationEnginePerformanceTests
         var parser = new TokenParser();
         var template = parser.Parse(templateBuilder.ToString());
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -215,12 +228,13 @@ public class TokenizationEnginePerformanceTests
         var input = $"Content: {longValue}End";
 
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -239,13 +253,15 @@ public class TokenizationEnginePerformanceTests
         inputBuilder.Append("Name: John");
         inputBuilder.Append(new string(' ', 10000));
 
+        var input = inputBuilder.ToString();
         var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, inputBuilder.ToString(), null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -265,11 +281,12 @@ public class TokenizationEnginePerformanceTests
         for (int i = 0; i < 100; i++)
         {
             var context = new TokenizationContext();
+            context.Initialize(new System.IO.StringReader(input));
             var result = new TokenizeResultBuilder()
                 .WithTemplate(template)
                 .Build();
 
-            _engine.ProcessTokenization(template, input, null, context, result, NullDiagnosticCollector.Instance);
+            _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
             results.Add(result);
         }
 
@@ -284,10 +301,16 @@ public class TokenizationEnginePerformanceTests
         // Arrange
         var parser = new TokenParser();
         var template = parser.Parse("Name: {Name}");
+        var input = "Name: Test";
 
         // Act - Create multiple contexts
         var contexts = Enumerable.Range(0, 10)
-            .Select(_ => new TokenizationContext())
+            .Select(_ =>
+            {
+                var c = new TokenizationContext();
+                c.Initialize(new System.IO.StringReader(input));
+                return c;
+            })
             .ToList();
 
         var results = contexts.Select(c =>
@@ -295,7 +318,7 @@ public class TokenizationEnginePerformanceTests
             var result = new TokenizeResultBuilder()
                 .WithTemplate(template)
                 .Build();
-            _engine.ProcessTokenization(template, "Name: Test", null, c, result, NullDiagnosticCollector.Instance);
+            _engine.ProcessTokenization(template, input.Length, null, c, result, NullDiagnosticCollector.Instance);
             return result;
         }).ToList();
 

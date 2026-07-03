@@ -1,3 +1,4 @@
+using System.IO;
 using Tokens.Exceptions;
 using Xunit;
 
@@ -5,6 +6,22 @@ namespace Tokens.Safety;
 
 public class TokenizerSafetyLimitTests
 {
+    [Fact]
+    public void GivenTextReaderInputExceedingMaxLength_WhenTokenizing_ThenDoesNotThrow()
+    {
+        // Arrange — H7: TextReader path currently has no MaxInputLength enforcement
+        var options = new TokenizerOptions();
+        options.MaxInputLength = 100;
+        var tokenizer = new Tokenizer(options);
+        var template = tokenizer.Compile("Name: {Name}");
+        var input = "Name: " + new string('x', 200);
+        using var reader = new StringReader(input);
+
+        // Act & Assert — should NOT throw (bug: MaxInputLength is not checked for TextReader)
+        var result = tokenizer.Tokenize(template, reader);
+        Assert.NotNull(result);
+    }
+
     [Fact]
     public void GivenInputExceedingMaxLength_WhenTokenizing_ThenThrowsTokenizerException()
     {

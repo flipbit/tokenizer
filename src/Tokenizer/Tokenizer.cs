@@ -145,102 +145,7 @@ public sealed class Tokenizer : ITokenizer
                 "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
         }
 
-        using (log.BeginScope(new Dictionary<string, object>
-        {
-            ["TemplateName"] = template.Name,
-            ["InputLength"] = input.Length,
-            ["TokenCount"] = template.Tokens.Count,
-            ["Operation"] = "Tokenize"
-        }))
-        {
-            log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
-            if (log.IsEnabled(LogLevel.Debug))
-            {
-                log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
-                    template.Tokens.Count, input.Length);
-            }
-
-            // Create and initialize the tokenization context
-            using (var context = new TokenizationContext())
-            {
-                context.Initialize(new StringReader(input));
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Tokenization context initialized");
-                }
-
-                IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new DiagnosticCollector(null, input)
-                    : NullDiagnosticCollector.Instance;
-
-                // Process hints first
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Processing hints");
-                }
-                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, input, result, collector);
-
-                if (hintsMissing)
-                {
-                    log.LogWarning("Required hints are missing, skipping tokenization");
-                }
-                else
-                {
-                    if (log.IsEnabled(LogLevel.Trace))
-                    {
-                        log.LogTrace("Hints validated successfully, proceeding with tokenization");
-                    }
-                    // Process the main tokenization using the engine
-                    tokenizationEngine.ProcessTokenization(template, input.Length, value, context, result, collector, hintStrategy);
-
-                    if (hintStrategy.PostProcess(result))
-                    {
-                        log.LogWarning("Post-tokenization hint check failed");
-                    }
-                }
-
-                // Build unmatched tokens collection
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Building unmatched tokens collection");
-                }
-                resultBuilder.BuildUnmatchedTokens(template, result, collector);
-
-                var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
-                        result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
-                }
-
-                if (requiredMissingCount > 0)
-                {
-                    log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
-                }
-
-                result.Diagnostics = collector.GetResult();
-
-                if (result.Diagnostics != null)
-                {
-                    log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
-                    foreach (var issue in result.Diagnostics.Summary.Issues)
-                    {
-                        log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
-                        if (issue.Hint != null)
-                        {
-                            log.LogWarning("  → Hint: {Hint}", issue.Hint);
-                        }
-                    }
-                    if (log.IsEnabled(LogLevel.Debug))
-                    {
-                        log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
-                    }
-                }
-            }
-
-            log.LogInformation("Tokenization {Result} for template {TemplateName}",
-                result.Success ? "succeeded" : "failed", template.Name);
-        }
+        TokenizeCore(result, value, template, new StringReader(input), input);
     }
 
     /// <summary>
@@ -291,38 +196,70 @@ public sealed class Tokenizer : ITokenizer
 
     private void Tokenize(TokenizeResultBase result, object? value, Template template, TextReader input)
     {
-        using (log.BeginScope(new Dictionary<string, object>
+        TokenizeCore(result, value, template, input, rawInput: null);
+    }
+
+    /// <summary>
+    /// Core tokenization logic shared by both the string and TextReader paths.
+    /// </summary>
+    /// <param name="result">The result to populate.</param>
+    /// <param name="value">The target object to assign values to, or null.</param>
+    /// <param name="template">The compiled template.</param>
+    /// <param name="reader">The reader to tokenize from.</param>
+    /// <param name="rawInput">
+    /// The raw input string when tokenizing from a string, or null when tokenizing from a TextReader.
+    /// Drives length-dependent features: hint pre-filtering, input-length-based iteration cap,
+    /// alignment rendering in diagnostics.
+    /// </param>
+    private void TokenizeCore(TokenizeResultBase result, object? value, Template template, TextReader reader, string? rawInput)
+    {
+        var scopeProperties = new Dictionary<string, object>
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,
             ["Operation"] = "Tokenize"
-        }))
+        };
+
+        if (rawInput != null)
+        {
+            scopeProperties["InputLength"] = rawInput.Length;
+        }
+
+        using (log.BeginScope(scopeProperties))
         {
             log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
             if (log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                if (rawInput != null)
+                {
+                    log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
+                        template.Tokens.Count, rawInput.Length);
+                }
+                else
+                {
+                    log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                }
             }
 
             // Create and initialize the tokenization context
             using (var context = new TokenizationContext())
             {
-                context.Initialize(input);
+                context.Initialize(reader);
                 if (log.IsEnabled(LogLevel.Trace))
                 {
                     log.LogTrace("Tokenization context initialized");
                 }
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new DiagnosticCollector(null, null)
+                    ? new DiagnosticCollector(null, rawInput)
                     : NullDiagnosticCollector.Instance;
 
-                // Process hints first (rawInput is null for TextReader inputs)
+                // Process hints first (rawInput is null for TextReader inputs — hint pre-filtering requires the full string)
                 if (log.IsEnabled(LogLevel.Trace))
                 {
                     log.LogTrace("Processing hints");
                 }
-                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
 
                 if (hintsMissing)
                 {
@@ -334,8 +271,9 @@ public sealed class Tokenizer : ITokenizer
                     {
                         log.LogTrace("Hints validated successfully, proceeding with tokenization");
                     }
-                    // Process the main tokenization using the engine
-                    tokenizationEngine.ProcessTokenization(template, 0, value, context, result, collector, hintStrategy);
+                    // inputLength of 0 means "use default" when rawInput is unavailable
+                    var inputLength = rawInput?.Length ?? 0;
+                    tokenizationEngine.ProcessTokenization(template, inputLength, value, context, result, collector, hintStrategy);
 
                     if (hintStrategy.PostProcess(result))
                     {
@@ -366,7 +304,10 @@ public sealed class Tokenizer : ITokenizer
 
                 if (result.Diagnostics != null)
                 {
-                    log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                    if (log.IsEnabled(LogLevel.Information))
+                    {
+                        log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                    }
                     foreach (var issue in result.Diagnostics.Summary.Issues)
                     {
                         log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
@@ -374,6 +315,10 @@ public sealed class Tokenizer : ITokenizer
                         {
                             log.LogWarning("  → Hint: {Hint}", issue.Hint);
                         }
+                    }
+                    if (rawInput != null && log.IsEnabled(LogLevel.Debug))
+                    {
+                        log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
                     }
                 }
             }

@@ -135,6 +135,9 @@ public class TokenEnumerator
     {
         if (string.IsNullOrEmpty(value)) return true;
 
+        // Fast path: check first character before buffering the full length
+        if (value[0] != '\0' && Peek() != value[0]) return false;
+
         EnsurePushback(value.Length);
 
         if (pushback.Count < value.Length) return false;

@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Tokens.Exceptions;
@@ -13,7 +11,6 @@ namespace Tokens;
 /// </summary>
 public sealed class Token
 {
-    private static readonly ILogger<Token> Log = NullLogger<Token>.Instance;
     private string content;
 
     /// <summary>
@@ -151,8 +148,6 @@ public sealed class Token
             }
         }
 
-        Log.LogTrace("Ln: {Line} Col: {Column} : Assigning {TokenName}[{TokenId}] as {Value}", location.Line, location.Column, Name, Id, value.ToLogInfoString());
-
         if (options.TrimTrailingWhiteSpace)
         {
             value = value.TrimEnd();
@@ -168,8 +163,6 @@ public sealed class Token
 
                 if (transformed == false)
                 {
-                    Log.LogTrace("{DecoratorName}: Unable to transform value '{AssignedValue}'!", decorator.DecoratorType.Name, assignedValue);
-
                     collector.Record(DiagnosticEventType.TransformerFailed,
                         tokenName: Name, tokenId: Id,
                         location: location,
@@ -178,23 +171,6 @@ public sealed class Token
                         decoratorArgs: decorator.Parameters.ToArray());
 
                     return false;
-                }
-
-                if (decorator.DecoratorType == typeof(SetTransformer))
-                {
-                    Log.LogTrace("{DecoratorName}: Set value to '{Output}'", decorator.DecoratorType.Name, output);
-                }
-                else if (output is DateTime time)
-                {
-                    Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to {Time:yyyy-MM-dd HH:mm:ss} ({Kind})", decorator.DecoratorType.Name, assignedValue, time, time.Kind);
-                }
-                else if (output is IEnumerable<string> list)
-                {
-                    Log.LogTrace("{DecoratorName}: Split '{AssignedValue}' into [] {{ {List} }}", decorator.DecoratorType.Name, assignedValue, string.Join(", ", list));
-                }
-                else
-                {
-                    Log.LogTrace("{DecoratorName}: Transformed '{AssignedValue}' to '{Output}' ({TypeName})", decorator.DecoratorType.Name, assignedValue, output, output.GetType().Name);
                 }
 
                 collector.Record(DiagnosticEventType.TransformerSucceeded,
@@ -212,8 +188,6 @@ public sealed class Token
             {
                 if (decorator.Validate(assignedValue!))
                 {
-                    Log.LogTrace("{DecoratorName} OK!", decorator.DecoratorType.Name);
-
                     collector.Record(DiagnosticEventType.ValidatorPassed,
                         tokenName: Name, tokenId: Id,
                         value: assignedValue?.ToString(),
@@ -221,8 +195,6 @@ public sealed class Token
                 }
                 else
                 {
-                    Log.LogTrace("{DecoratorName} Validation Failure: {Value}", decorator.DecoratorType.Name, value);
-
                     collector.Record(DiagnosticEventType.ValidatorFailed,
                         tokenName: Name, tokenId: Id,
                         value: value,
@@ -269,17 +241,13 @@ public sealed class Token
         }
         catch (MissingMemberException)
         {
-            Log.LogTrace("Missing property on target: {PropertyName}", Name);
-
             if (options.IgnoreMissingProperties == false)
             {
                 throw;
             }
         }
-        catch (TypeConversionException ex)
+        catch (TypeConversionException)
         {
-            Log.LogTrace("{Message}", ex.Message);
-
             return false;
         }
         catch (Exception e)

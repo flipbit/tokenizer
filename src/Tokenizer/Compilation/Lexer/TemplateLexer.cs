@@ -182,7 +182,10 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(string input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
-        log.LogDebug("Lexing template pattern start: PatternLength={PatternLength}", input.Length);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Lexing template pattern start: PatternLength={PatternLength}", input.Length);
+        }
         using (var reader = new StringReader(input))
         {
             foreach (var token in Tokenize(reader))
@@ -190,7 +193,10 @@ public class TemplateLexer
                 yield return token;
             }
         }
-        log.LogDebug("Lexing template pattern complete: PatternLength={PatternLength}", input.Length);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Lexing template pattern complete: PatternLength={PatternLength}", input.Length);
+        }
     }
 
     /// <summary>
@@ -234,8 +240,11 @@ public class TemplateLexer
         var braceDepth = 0;
         var inFrontMatter = false;
 
-        log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-            absolutePosition, location.Line, location.Column);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                absolutePosition, location.Line, location.Column);
+        }
 
         // Core streaming scanning loop; tokens are yielded lazily.
         while (reader.IsEof == false)
@@ -244,16 +253,22 @@ public class TemplateLexer
             var peek = reader.PeekChar();
             if (peek != -1)
             {
-                log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
-                    (char)peek, absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
+                        (char)peek, absolutePosition, location.Line, location.Column);
+                }
             }
 
             if (TryReadNewline(reader, location, ref absolutePosition, out var nl))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    nl.Kind, nl.Value, nl.RawText, nl.Start, nl.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        nl.Kind, nl.Value, nl.RawText, nl.Start, nl.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return nl;
                 continue;
             }
@@ -262,20 +277,26 @@ public class TemplateLexer
             // but NOT in preamble text between tokens.
             if ((braceDepth > 0 || inFrontMatter) && TryReadQuotedString(reader, location, ref absolutePosition, out var qs))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    qs.Kind, qs.Value, qs.RawText, qs.Start, qs.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        qs.Kind, qs.Value, qs.RawText, qs.Start, qs.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return qs;
                 continue;
             }
 
             if (TryReadWhitespace(reader, location, ref absolutePosition, out var ws))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    ws.Kind, ws.Value, ws.RawText, ws.Start, ws.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        ws.Kind, ws.Value, ws.RawText, ws.Start, ws.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return ws;
                 continue;
             }
@@ -283,20 +304,26 @@ public class TemplateLexer
             if (TryReadFrontMatter(reader, location, ref absolutePosition, out var fm))
             {
                 inFrontMatter = !inFrontMatter;
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    fm.Kind, fm.Value, fm.RawText, fm.Start, fm.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        fm.Kind, fm.Value, fm.RawText, fm.Start, fm.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return fm;
                 continue;
             }
 
             if (TryReadEscapedBraces(reader, location, ref absolutePosition, out var esc))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    esc.Kind, esc.Value, esc.RawText, esc.Start, esc.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        esc.Kind, esc.Value, esc.RawText, esc.Start, esc.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return esc;
                 continue;
             }
@@ -305,40 +332,52 @@ public class TemplateLexer
             {
                 if (st.Kind == LexerTokenKind.OpenBrace) braceDepth++;
                 else if (st.Kind == LexerTokenKind.CloseBrace && braceDepth > 0) braceDepth--;
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    st.Kind, st.Value, st.RawText, st.Start, st.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        st.Kind, st.Value, st.RawText, st.Start, st.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return st;
                 continue;
             }
 
             if (TryReadModifier(reader, location, ref absolutePosition, out var md))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    md.Kind, md.Value, md.RawText, md.Start, md.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        md.Kind, md.Value, md.RawText, md.Start, md.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return md;
                 continue;
             }
 
             if (TryReadIdentifier(reader, location, ref absolutePosition, out var id))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    id.Kind, id.Value, id.RawText, id.Start, id.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        id.Kind, id.Value, id.RawText, id.Start, id.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return id;
                 continue;
             }
 
             if (TryReadText(reader, location, ref absolutePosition, out var tx))
             {
-                log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                    tx.Kind, tx.Value, tx.RawText, tx.Start, tx.Length);
-                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                    absolutePosition, location.Line, location.Column);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                        tx.Kind, tx.Value, tx.RawText, tx.Start, tx.Length);
+                    log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                        absolutePosition, location.Line, location.Column);
+                }
                 yield return tx;
                 continue;
             }
@@ -351,10 +390,13 @@ public class TemplateLexer
             absolutePosition++;
             var sfb = ((char)cfb).ToString();
             var fallbackToken = new LexerToken(LexerTokenKind.Text, sfb, sfb, fallbackLocation, absolutePosition - 1, 1);
-            log.LogDebug("Lexer token produced (fallback): Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-                fallbackToken.Kind, fallbackToken.Value, fallbackToken.RawText, fallbackToken.Start, fallbackToken.Length);
-            log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
-                absolutePosition, location.Line, location.Column);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Lexer token produced (fallback): Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                    fallbackToken.Kind, fallbackToken.Value, fallbackToken.RawText, fallbackToken.Start, fallbackToken.Length);
+                log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+                    absolutePosition, location.Line, location.Column);
+            }
             yield return fallbackToken;
         }
 
@@ -366,8 +408,11 @@ public class TemplateLexer
             location: location.Clone(),
             start: absolutePosition,
             length: 0);
-        log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
-            endToken.Kind, endToken.Value, endToken.RawText, endToken.Start, endToken.Length);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+                endToken.Kind, endToken.Value, endToken.RawText, endToken.Start, endToken.Length);
+        }
         yield return endToken;
     }
 

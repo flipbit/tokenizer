@@ -325,13 +325,13 @@ internal class TokenParser
         catch (TokenizerException ex)
         {
             log.LogError(ex, "Template parsing failed for {TemplateName}: {ErrorMessage}, Pattern: {Pattern}",
-                name, ex.Message, content);
+                name, ex.Message, content.Length > 200 ? content.Substring(0, 200) + "..." : content);
             throw;
         }
         catch (Exception ex)
         {
             log.LogError(ex, "Unexpected error during template parsing: {TemplateName}, Pattern: {Pattern}",
-                name, content);
+                name, content.Length > 200 ? content.Substring(0, 200) + "..." : content);
             throw;
         }
     }
@@ -571,8 +571,6 @@ internal class TokenParser
         for (var i = startIndex; i < content.Length; i++)
         {
             var c = content[i];
-
-
 
             if (char.IsWhiteSpace(c))
             {

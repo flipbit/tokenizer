@@ -73,6 +73,17 @@ public class RegexReplaceTransformerTests
     }
 
     [Fact]
+    public void GivenCatastrophicBacktrackingPattern_WhenTransforming_ThenThrowsRegexMatchTimeoutException()
+    {
+        // Arrange — (a+)+$ is a classic ReDoS pattern; this input causes catastrophic backtracking
+        var input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+
+        // Act & Assert
+        Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(
+            () => transformer.TryTransform(input, [@"(a+)+$", ""], out var _));
+    }
+
+    [Fact]
     public void GivenMissingArgs_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert

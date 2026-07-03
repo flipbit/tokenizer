@@ -78,6 +78,17 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     }
 
     [Fact]
+    public void GivenCatastrophicBacktrackingPattern_WhenValidating_ThenThrowsRegexMatchTimeoutException()
+    {
+        // Arrange — (a+)+$ is a classic ReDoS pattern; this input causes catastrophic backtracking
+        var input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+
+        // Act & Assert
+        Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(
+            () => validator.IsValid(input, @"(a+)+$"));
+    }
+
+    [Fact]
     public void GivenTemplateWithMatchesRegexValidator_WhenInputMatches_ThenExtractsValue()
     {
         // Arrange

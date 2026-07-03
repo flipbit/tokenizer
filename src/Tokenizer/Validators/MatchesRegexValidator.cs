@@ -23,6 +23,6 @@ public sealed class MatchesRegexValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        return Regex.IsMatch(valueString, args[0]);
+        return Regex.IsMatch(valueString, args[0], RegexOptions.None, TimeSpan.FromSeconds(1));
     }
 }

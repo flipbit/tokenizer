@@ -21,7 +21,7 @@ public sealed class RegexReplaceTransformer : ITokenTransformer
             throw new ArgumentException($"RegexReplace(pattern, replacement): missing arguments processing: {value}");
         }
 
-        transformed = Regex.Replace(valueString, args[0], args[1]);
+        transformed = Regex.Replace(valueString, args[0], args[1], RegexOptions.None, TimeSpan.FromSeconds(1));
 
         return true;
     }

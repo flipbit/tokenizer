@@ -72,6 +72,8 @@ internal class TokenizationEngine : ITokenizationEngine
         // Validate that targetObject has settable properties if it's not null and not a dictionary
         if (targetObject != null && !(targetObject is System.Collections.Generic.IDictionary<string, object>))
         {
+            // Entry-point validation only — runs once per Tokenize call, not in the inner loop.
+            // Reflection caching is not warranted here.
             var properties = targetObject.GetType().GetProperties();
             var hasSettableProperty = properties.Any(p => p.CanWrite && p.GetSetMethod() != null);
 
@@ -182,13 +184,6 @@ internal class TokenizationEngine : ITokenizationEngine
                     HandleFirstTokenMatch(context, matchBuffer);
                     continue;
                 }
-
-                // Check candidates hasn't changed
-                {
-
-                }
-
-
 
                 // Only switch if we've accumulated a value — otherwise consume a character first
                 if (context.Replacement.Length > 0)
@@ -359,9 +354,9 @@ internal class TokenizationEngine : ITokenizationEngine
         }
         catch (Exception e)
         {
-            if (log.IsEnabled(LogLevel.Trace))
+            if (log.IsEnabled(LogLevel.Warning))
             {
-                log.LogTrace(e, "Error Assigning Value: {Message}", e.Message);
+                log.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
             }
             result.AddException(e);
             return false;

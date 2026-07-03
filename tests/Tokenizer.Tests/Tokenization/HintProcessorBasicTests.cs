@@ -8,7 +8,7 @@ namespace Tokens.Tokenization;
 /// <summary>
 /// Tests for basic HintProcessor matching and validation logic
 /// </summary>
-public class HintProcessor_Basic_Tests
+public class HintProcessorBasicTests
 {
     private readonly HintProcessor _processor = new();
 

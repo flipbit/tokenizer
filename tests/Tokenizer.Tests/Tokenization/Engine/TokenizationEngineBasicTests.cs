@@ -64,30 +64,4 @@ public class TokenizationEngineBasicTests
         Assert.Empty(result.Tokens.Matches);
     }
 
-    private Template CreateTemplate(string name = "TestTemplate")
-    {
-        return new TemplateBuilder()
-            .WithName(name)
-            .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
-                .WithName("Name")
-                .WithRequired()
-                .Build())
-            .WithDefaultOptions()
-            .Build();
-    }
-
-    private TokenizationContext CreateContext(string input = "Hello World")
-    {
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader(input));
-        return context;
-    }
-
-    private TokenizeResult CreateResult(Template? template = null)
-    {
-        return new TokenizeResultBuilder()
-            .WithTemplate(template ?? CreateTemplate())
-            .Build();
-    }
 }

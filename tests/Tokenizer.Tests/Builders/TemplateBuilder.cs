@@ -1,6 +1,3 @@
-using Tokens.Transformers;
-using Tokens.Validators;
-
 namespace Tokens.Builders;
 
 /// <summary>
@@ -47,20 +44,6 @@ public class TemplateBuilder
     public TemplateBuilder WithDefaultOptions()
     {
         _options = new TokenizerOptions();
-        return this;
-    }
-
-    public TemplateBuilder WithGlobalTransformers(params ITokenTransformer[] transformers)
-    {
-        // Note: GlobalTransformers property doesn't exist in Template
-        // This method is kept for API compatibility
-        return this;
-    }
-
-    public TemplateBuilder WithGlobalValidators(params ITokenValidator[] validators)
-    {
-        // Note: GlobalValidators property doesn't exist in Template
-        // This method is kept for API compatibility
         return this;
     }
 

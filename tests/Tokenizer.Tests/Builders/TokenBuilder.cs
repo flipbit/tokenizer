@@ -39,12 +39,6 @@ public class TokenBuilder
         return this;
     }
 
-    public TokenBuilder WithLocation(int line, int column)
-    {
-        _location = new FileLocation().Clone();
-        return this;
-    }
-
     public TokenBuilder WithRequired(bool required = true)
     {
         _configurations.Add(t => t.IsRequired = required);

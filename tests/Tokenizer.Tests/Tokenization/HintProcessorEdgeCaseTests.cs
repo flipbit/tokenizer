@@ -8,7 +8,7 @@ namespace Tokens.Tokenization;
 /// <summary>
 /// Tests for HintProcessor edge cases (unicode, special chars, many hints, etc.)
 /// </summary>
-public class HintProcessor_EdgeCase_Tests
+public class HintProcessorEdgeCaseTests
 {
     private readonly HintProcessor _processor = new();
 

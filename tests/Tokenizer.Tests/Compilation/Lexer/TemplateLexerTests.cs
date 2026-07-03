@@ -408,21 +408,19 @@ public class TemplateLexerTests
     }
 
     [Fact]
-    public async Task GivenAsyncEnumeration_WhenCanceled_ThenThrowsOperationCanceled()
+    public void GivenMemoryStream_WhenTokenizeStream_ThenStreamRemainsOpen()
     {
         // Arrange
         var lexer = CreateLexer();
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        var bytes = System.Text.Encoding.UTF8.GetBytes("{name:ToUpper}");
+        var stream = new MemoryStream(bytes);
 
-        // Act / Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-        {
-            await foreach (var _ in lexer.TokenizeAsync("abc", cts.Token))
-            {
-                // never reached
-            }
-        });
+        // Act
+        var tokens = lexer.Tokenize(stream).ToList();
+
+        // Assert — stream must still be readable (not disposed) after tokenization
+        Assert.True(stream.CanRead, "Stream should still be readable after Tokenize completes.");
+        Assert.NotEmpty(tokens);
     }
 
     [Fact]

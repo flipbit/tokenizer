@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Enumerators;
@@ -212,7 +211,7 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(Stream input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
-        using (var reader = new StreamReader(input))
+        using (var reader = new StreamReader(input, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
         {
             foreach (var token in Tokenize(reader))
             {
@@ -415,75 +414,6 @@ public class TemplateLexer
         }
         yield return endToken;
     }
-
-#if NET8_0_OR_GREATER
-    /// <summary>
-    /// Asynchronously tokenizes the specified template definition string.
-    /// </summary>
-    /// <param name="input">The template definition string to tokenize.</param>
-    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-    /// <returns>An async-enumerable sequence of <see cref="LexerToken"/>.</returns>
-    /// <remarks>
-    /// This method converts the string to a <see cref="StringReader"/> and delegates to the
-    /// <see cref="TokenizeAsync(TextReader,System.Threading.CancellationToken)"/> overload.
-    /// </remarks>
-    public async IAsyncEnumerable<LexerToken> TokenizeAsync(string input, [EnumeratorCancellation] System.Threading.CancellationToken cancellationToken = default)
-    {
-        if (input == null) throw new ArgumentNullException(nameof(input));
-        using var reader = new StringReader(input);
-        cancellationToken.ThrowIfCancellationRequested();
-        await foreach (var token in TokenizeAsync(reader, cancellationToken))
-        {
-            yield return token;
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes the specified <see cref="Stream"/> of template definition data.
-    /// </summary>
-    /// <param name="input">The input stream to tokenize.</param>
-    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-    /// <returns>An async-enumerable sequence of <see cref="LexerToken"/>.</returns>
-    /// <remarks>
-    /// This method wraps the stream in a <see cref="StreamReader"/> and delegates to the
-    /// <see cref="TokenizeAsync(TextReader,System.Threading.CancellationToken)"/> overload.
-    /// </remarks>
-    public async IAsyncEnumerable<LexerToken> TokenizeAsync(Stream input, [EnumeratorCancellation] System.Threading.CancellationToken cancellationToken = default)
-    {
-        if (input == null) throw new ArgumentNullException(nameof(input));
-        using var reader = new StreamReader(input);
-        cancellationToken.ThrowIfCancellationRequested();
-        await foreach (var token in TokenizeAsync(reader, cancellationToken))
-        {
-            yield return token;
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes the specified <see cref="TextReader"/> of template definition data.
-    /// </summary>
-    /// <param name="input">The <see cref="TextReader"/> that provides the input characters.</param>
-    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-    /// <returns>An async-enumerable sequence of <see cref="LexerToken"/>.</returns>
-    /// <remarks>
-    /// Core streaming lexing path for asynchronous scenarios. All async inputs are funneled here.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="input"/> is null.</exception>
-    /// <exception cref="LexerException">Thrown when invalid or unexpected input is encountered.</exception>
-    public async IAsyncEnumerable<LexerToken> TokenizeAsync(TextReader input, [EnumeratorCancellation] System.Threading.CancellationToken cancellationToken = default)
-    {
-        if (input == null) throw new ArgumentNullException(nameof(input));
-        cancellationToken.ThrowIfCancellationRequested();
-        // For now, reuse the synchronous streaming path to avoid buffering the whole input and
-        // preserve identical token boundaries. Periodically yield to the scheduler and honor cancellation.
-        foreach (var token in Tokenize(input))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            yield return token;
-            await Task.Yield();
-        }
-    }
-#endif
 
     /// <summary>
     /// Advances one logical character, updating <see cref="FileLocation"/> with newline normalization.

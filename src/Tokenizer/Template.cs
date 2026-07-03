@@ -141,15 +141,13 @@ public sealed class Template
 
     internal bool HasOnlyFrontMatterTokens => tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
 
-    internal IEnumerable<int> GetTokenIdsUpTo(Token token)
+    internal void GetTokenIdsUpTo(Token token, HashSet<int> matchIds)
     {
-        var matchIds = new List<int>();
-
         // Only remove match if out-of-order token
         if (Options.OutOfOrderTokens)
         {
             if (token.IsRepeating == false) matchIds.Add(token.Id);
-            return matchIds;
+            return;
         }
 
         foreach (var candidate in tokens)
@@ -165,8 +163,6 @@ public sealed class Template
 
             matchIds.Add(candidate.Id);
         }
-
-        return matchIds;
     }
 
     internal void AddToken(Token token)

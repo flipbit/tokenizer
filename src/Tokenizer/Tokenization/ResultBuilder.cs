@@ -141,10 +141,11 @@ internal class ResultBuilder : IResultBuilder
             log.LogDebug("Building unmatched tokens for template: TemplateName={TemplateName}", template.Name);
         }
 
+        var matchedIds = new HashSet<int>(result.Tokens.Matches.Select(m => m.Token.Id));
         var unmatchedCount = 0;
         foreach (var token in template.Tokens)
         {
-            if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
+            if (matchedIds.Contains(token.Id) == false)
             {
                 if (log.IsEnabled(LogLevel.Debug))
                 {
@@ -192,15 +193,7 @@ internal class ResultBuilder : IResultBuilder
         ArgumentValidation.ThrowIfNull(matchedToken, nameof(matchedToken));
         ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
 
-        var tokenIdsToAdd = template.GetTokenIdsUpTo(matchedToken);
-
-        foreach (var tokenId in tokenIdsToAdd)
-        {
-            if (matchIds.Contains(tokenId) == false)
-            {
-                matchIds.Add(tokenId);
-            }
-        }
+        template.GetTokenIdsUpTo(matchedToken, matchIds);
     }
 
     /// <summary>

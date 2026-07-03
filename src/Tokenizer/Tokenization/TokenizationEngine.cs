@@ -644,15 +644,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="matchIds">The set of matched token IDs to update</param>
     private void AddMatchedTokenIds(Template template, Token matchedToken, HashSet<int> matchIds)
     {
-        var tokenIdsToAdd = template.GetTokenIdsUpTo(matchedToken);
-
-        foreach (var tokenId in tokenIdsToAdd)
-        {
-            if (matchIds.Contains(tokenId) == false)
-            {
-                matchIds.Add(tokenId);
-            }
-        }
+        template.GetTokenIdsUpTo(matchedToken, matchIds);
     }
 
     /// <summary>

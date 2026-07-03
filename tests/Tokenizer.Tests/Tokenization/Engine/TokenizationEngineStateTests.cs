@@ -203,11 +203,7 @@ public class TokenizationEngineStateTests
         var matchedToken = template.Tokens.First();
 
         // Act
-        var tokenIdsToAdd = template.GetTokenIdsUpTo(matchedToken);
-        foreach (var id in tokenIdsToAdd)
-        {
-            matchIds.Add(id);
-        }
+        template.GetTokenIdsUpTo(matchedToken, matchIds);
 
         // Assert
         Assert.Contains(matchedToken.Id, matchIds);

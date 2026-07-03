@@ -68,13 +68,16 @@ internal class ResultBuilder : IResultBuilder
         ArgumentValidation.ThrowIfNull(location, nameof(location));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        log.LogTrace(
-            "Adding token match: TokenId={TokenId}, TokenName={TokenName}, Value={Value}, Line={Line}, Column={Column}",
-            token.Id,
-            token.Name,
-            assignedValue,
-            location.Line,
-            location.Column);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace(
+                "Adding token match: TokenId={TokenId}, TokenName={TokenName}, Value={Value}, Line={Line}, Column={Column}",
+                token.Id,
+                token.Name,
+                assignedValue,
+                location.Line,
+                location.Column);
+        }
 
         result.Tokens.AddMatch(token, assignedValue, location);
     }
@@ -91,11 +94,14 @@ internal class ResultBuilder : IResultBuilder
         ArgumentValidation.ThrowIfNull(token, nameof(token));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        log.LogTrace(
-            "Adding token miss: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
-            token.Id,
-            token.Name,
-            token.IsRequired);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace(
+                "Adding token miss: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
+                token.Id,
+                token.Name,
+                token.IsRequired);
+        }
 
         result.Tokens.AddMiss(token);
     }
@@ -130,18 +136,24 @@ internal class ResultBuilder : IResultBuilder
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        log.LogDebug("Building unmatched tokens for template: TemplateName={TemplateName}", template.Name);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Building unmatched tokens for template: TemplateName={TemplateName}", template.Name);
+        }
 
         var unmatchedCount = 0;
         foreach (var token in template.Tokens)
         {
             if (result.Tokens.Matches.Any(m => m.Token.Id == token.Id) == false)
             {
-                log.LogDebug(
-                    "Token not matched: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
-                    token.Id,
-                    token.Name,
-                    token.IsRequired);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug(
+                        "Token not matched: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
+                        token.Id,
+                        token.Name,
+                        token.IsRequired);
+                }
 
                 collector.Record(DiagnosticEventType.TokenMissed,
                     tokenName: token.Name, tokenId: token.Id);
@@ -154,12 +166,15 @@ internal class ResultBuilder : IResultBuilder
         var matchCount = result.Tokens.Matches.Count;
         var requiredMissCount = result.Tokens.Misses.Count(t => t.IsRequired);
 
-        log.LogDebug(
-            "Tokenization results summary: TotalMatches={TotalMatches}, TotalMisses={TotalMisses}, RequiredMisses={RequiredMisses}, Success={Success}",
-            matchCount,
-            unmatchedCount,
-            requiredMissCount,
-            result.Success);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug(
+                "Tokenization results summary: TotalMatches={TotalMatches}, TotalMisses={TotalMisses}, RequiredMisses={RequiredMisses}, Success={Success}",
+                matchCount,
+                unmatchedCount,
+                requiredMissCount,
+                result.Success);
+        }
     }
 
     /// <summary>

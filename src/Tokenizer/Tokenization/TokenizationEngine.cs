@@ -262,16 +262,18 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
 
+        var replacementValue = replacement.ToString();
+
         if (log.IsEnabled(LogLevel.Trace))
         {
             log.LogTrace("Attempting to assign {CandidateCount} candidate token(s) with value '{ReplacementValue}' at Line {Line}, Column {Column}",
-                candidates.Tokens.Count, replacement.ToString(), location.Line, location.Column);
+                candidates.Tokens.Count, replacementValue, location.Line, location.Column);
         }
 
         collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
             tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
             location: location,
-            value: replacement.ToString());
+            value: replacementValue);
 
         try
         {
@@ -303,14 +305,14 @@ internal class TokenizationEngine : ITokenizationEngine
                 collector.Record(DiagnosticEventType.TokenAssignmentFailed,
                     tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
                     location: location,
-                    value: replacement.ToString());
+                    value: replacementValue);
 
                 if (log.IsEnabled(LogLevel.Trace))
                 {
                     foreach (var token in candidates.Tokens)
                     {
                         log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                            location.Line, location.Column, token.Name, token.Id, replacement.ToString());
+                            location.Line, location.Column, token.Name, token.Id, replacementValue);
                     }
                 }
                 return false;
@@ -405,14 +407,16 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
         ArgumentValidation.ThrowIfNull(template, nameof(template));
 
+        var replacementValue = replacement.ToString();
+
         if (log.IsEnabled(LogLevel.Trace))
         {
             log.LogTrace("Checking if any of {CandidateCount} candidate(s) can assign replacement value '{ReplacementValue}'",
-                candidates.Tokens.Count, replacement.ToString());
+                candidates.Tokens.Count, replacementValue);
         }
 
         // Can't assign, so clear current context and move to next match
-        if (candidates.CanAnyAssign(replacement.ToString()) == false)
+        if (candidates.CanAnyAssign(replacementValue) == false)
         {
             log.LogTrace("Backtracking: None of the {CandidateCount} candidates can assign the replacement value at Line {Line}, Column {Column}",
                 candidates.Tokens.Count, enumerator.Location.Line, enumerator.Location.Column);
@@ -420,7 +424,7 @@ internal class TokenizationEngine : ITokenizationEngine
             collector.Record(DiagnosticEventType.BacktrackStarted,
                 tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
                 location: enumerator.Location,
-                value: replacement.ToString());
+                value: replacementValue);
 
             // Layer 3: Environment Guards
             // Prevent infinite loop when backtracking with empty preamble
@@ -445,12 +449,12 @@ internal class TokenizationEngine : ITokenizationEngine
                 // If repeated token was the last match, then this non-match will stop it
                 // matching any future results
                 var token = candidates.Tokens[i];
-                if (WasLastMatchedToken(result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacement.ToString()))
+                if (WasLastMatchedToken(result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacementValue))
                 {
                     if (log.IsEnabled(LogLevel.Trace))
                     {
                         log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacementValue);
                     }
                     log.LogTrace("Backtracking: Disabling repeating token '{TokenName}' ({TokenId}) - was last matched and failed to repeat",
                         token.Name, token.Id);
@@ -466,7 +470,7 @@ internal class TokenizationEngine : ITokenizationEngine
                     if (log.IsEnabled(LogLevel.Trace))
                     {
                         log.LogTrace("Ln: {Line} Col: {Column} : Skipping & removing {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacementValue);
                     }
                     log.LogTrace("Backtracking: Removing single-use token '{TokenName}' ({TokenId}) and marking as miss",
                         token.Name, token.Id);
@@ -483,7 +487,7 @@ internal class TokenizationEngine : ITokenizationEngine
                     if (log.IsEnabled(LogLevel.Trace))
                     {
                         log.LogTrace("Ln: {Line} Col: {Column} : Skipping {TokenName} ({TokenId}), '{Replacement}' is not a match.",
-                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacement.ToString());
+                            enumerator.Location.Line, enumerator.Location.Column, token.Name, token.Id, replacementValue);
                     }
                 }
             }
@@ -539,16 +543,18 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
         ArgumentValidation.ThrowIfNull(disabledRepeatingTokens, nameof(disabledRepeatingTokens));
 
+        var replacementValue = replacement.ToString();
+
         if (log.IsEnabled(LogLevel.Trace))
         {
             log.LogTrace("Processing newline-terminated token with {CandidateCount} candidates, replacement '{ReplacementValue}'",
-                candidates.Tokens.Count, replacement.ToString());
+                candidates.Tokens.Count, replacementValue);
         }
 
         collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
             tokenName: candidates.Tokens.First().Name,
             tokenId: candidates.Tokens.First().Id,
-            value: replacement.ToString(),
+            value: replacementValue,
             location: location);
 
         if (candidates.Tokens.First().IsRepeating &&

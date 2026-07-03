@@ -122,6 +122,34 @@ public class TokenizationEngineInternalTests
     }
 
     [Fact]
+    public void GivenAssignableReplacement_WhenProcessingRepeatedTokens_ThenReturnsTrue()
+    {
+        // Arrange
+        var parser = new TokenParser();
+        var template = parser.Parse("test: {Name}");
+        var candidates = new CandidateTokenList();
+        var token = template.Tokens.First();
+        candidates.Add(token);
+
+        var enumerator = new TokenEnumerator("test: hello");
+        var replacement = new StringBuilder("hello");
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+        var matchIds = new HashSet<int>();
+        var disabledRepeatingTokens = new HashSet<int>();
+
+        // Act
+        var processed = _engine.ProcessRepeatedTokens(
+            candidates, enumerator, replacement, result,
+            disabledRepeatingTokens, matchIds, template,
+            NullDiagnosticCollector.Instance);
+
+        // Assert
+        Assert.True(processed);
+    }
+
+    [Fact]
     public void GivenTemplateWithOnlyFrontMatterTokens_WhenProcessingFrontMatterTokens_ThenProcessesCorrectly()
     {
         // Arrange

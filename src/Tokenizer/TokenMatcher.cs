@@ -93,7 +93,10 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (!Templates.TryGet(name, out var template)) continue;
 
-            log.LogTrace("Start: Matching: {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
+            }
 
             // Check template has tags
             if (CheckTemplateTags(template, tags) == false)
@@ -107,9 +110,12 @@ public sealed class TokenMatcher : ITokenMatcher
 
                 results.AddResult(result);
 
-                log.LogTrace("Match Success: {Success}", result.Success);
-                log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
-                log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Match Success: {Success}", result.Success);
+                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
+                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+                }
 
             }
             catch (Exception e)
@@ -121,7 +127,10 @@ public sealed class TokenMatcher : ITokenMatcher
                 throw exception;
             }
 
-            log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+            }
         }
 
         // Assign best match
@@ -161,7 +170,10 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (!Templates.TryGet(name, out var template)) continue;
 
-            log.LogTrace("Start: Matching: {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
+            }
 
             // Check template has tags
             if (CheckTemplateTags(template, tags) == false)
@@ -175,9 +187,12 @@ public sealed class TokenMatcher : ITokenMatcher
 
                 results.AddResult(result);
 
-                log.LogTrace("Match Success: {Success}", result.Success);
-                log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
-                log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Match Success: {Success}", result.Success);
+                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
+                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
+                }
 
             }
             catch (Exception e)
@@ -189,7 +204,10 @@ public sealed class TokenMatcher : ITokenMatcher
                 throw exception;
             }
 
-            log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+            }
         }
 
         // Assign best match
@@ -323,12 +341,18 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (template.HasTags(tags, out var missing) == false)
             {
-                log.LogTrace("No tags matching: {MissingTags}", missing);
-                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("No tags matching: {MissingTags}", missing);
+                    log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
+                }
                 return false;
             }
 
-            log.LogTrace("Found tag matching: {Tags}", string.Join(", ", tags));
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Found tag matching: {Tags}", string.Join(", ", tags));
+            }
             return true;
         }
 

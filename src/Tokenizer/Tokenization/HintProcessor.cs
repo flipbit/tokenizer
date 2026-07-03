@@ -45,24 +45,36 @@ internal class HintProcessor : IHintProcessor
 
         if (template.Hints.Count == 0)
         {
-            log.LogDebug("No hints defined in template, skipping hint processing");
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("No hints defined in template, skipping hint processing");
+            }
             return false;
         }
 
-        log.LogDebug("Starting hint processing with {HintCount} hint(s) defined", template.Hints.Count);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Starting hint processing with {HintCount} hint(s) defined", template.Hints.Count);
+        }
 
         while (enumerator.IsEmpty == false)
         {
             // Check hints
             foreach (var hint in template.Hints)
             {
-                log.LogTrace("Checking hint '{HintText}' at position Line:{Line} Col:{Column}",
-                    hint.Text, enumerator.Location.Line, enumerator.Location.Column);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Checking hint '{HintText}' at position Line:{Line} Col:{Column}",
+                        hint.Text, enumerator.Location.Line, enumerator.Location.Column);
+                }
 
                 if (IsHintMatch(hint, enumerator) && AddHintMatch(hint, enumerator, result))
                 {
-                    log.LogTrace("Hint matched and added: '{HintText}' at Line:{Line} Col:{Column}, Optional:{Optional}",
-                        hint.Text, enumerator.Location.Line, enumerator.Location.Column, hint.Optional);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Hint matched and added: '{HintText}' at Line:{Line} Col:{Column}, Optional:{Optional}",
+                            hint.Text, enumerator.Location.Line, enumerator.Location.Column, hint.Optional);
+                    }
 
                     collector.Record(DiagnosticEventType.HintMatched,
                         value: hint.Text,
@@ -73,15 +85,21 @@ internal class HintProcessor : IHintProcessor
             // Exit early if all hints found
             if (result.Hints.Matches.Count == template.Hints.Count)
             {
-                log.LogDebug("All {HintCount} hint(s) found, ending search early", template.Hints.Count);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("All {HintCount} hint(s) found, ending search early", template.Hints.Count);
+                }
                 break;
             }
 
             enumerator.Next();
         }
 
-        log.LogDebug("Hint search complete. Found {MatchCount} of {TotalCount} hint(s)",
-            result.Hints.Matches.Count, template.Hints.Count);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Hint search complete. Found {MatchCount} of {TotalCount} hint(s)",
+                result.Hints.Matches.Count, template.Hints.Count);
+        }
 
         // Build unmatched hint collection
         foreach (var hint in template.Hints)
@@ -105,8 +123,11 @@ internal class HintProcessor : IHintProcessor
         var missingRequiredCount = result.Hints.Misses.Count(h => h.Optional == false);
         var missingOptionalCount = result.Hints.Misses.Count(h => h.Optional);
 
-        log.LogDebug("Hint validation complete. Missing required: {MissingRequired}, Missing optional: {MissingOptional}",
-            missingRequiredCount, missingOptionalCount);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Hint validation complete. Missing required: {MissingRequired}, Missing optional: {MissingOptional}",
+                missingRequiredCount, missingOptionalCount);
+        }
 
         ResetEnumeratorAfterHintProcessing(enumerator);
 
@@ -129,12 +150,18 @@ internal class HintProcessor : IHintProcessor
         // Return false for null or empty hint text
         if (string.IsNullOrEmpty(hint.Text))
         {
-            log.LogTrace("Hint validation failed: hint text is null or empty");
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Hint validation failed: hint text is null or empty");
+            }
             return false;
         }
 
         var isMatch = enumerator.TryMatch(hint.Text);
-        log.LogTrace("Hint match validation for '{HintText}': {IsMatch}", hint.Text, isMatch);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Hint match validation for '{HintText}': {IsMatch}", hint.Text, isMatch);
+        }
 
         return isMatch;
     }
@@ -157,13 +184,16 @@ internal class HintProcessor : IHintProcessor
 
         var added = result.Hints.AddMatch(hint, enumerator);
 
-        if (added)
+        if (log.IsEnabled(LogLevel.Trace))
         {
-            log.LogTrace("Successfully added hint match for '{HintText}' to result", hint.Text);
-        }
-        else
-        {
-            log.LogTrace("Hint match for '{HintText}' was not added (likely already exists)", hint.Text);
+            if (added)
+            {
+                log.LogTrace("Successfully added hint match for '{HintText}' to result", hint.Text);
+            }
+            else
+            {
+                log.LogTrace("Hint match for '{HintText}' was not added (likely already exists)", hint.Text);
+            }
         }
 
         return added;
@@ -184,13 +214,16 @@ internal class HintProcessor : IHintProcessor
 
         var added = result.Hints.AddMiss(hint);
 
-        if (added)
+        if (log.IsEnabled(LogLevel.Trace))
         {
-            log.LogTrace("Added hint miss for '{HintText}', Optional:{Optional}", hint.Text, hint.Optional);
-        }
-        else
-        {
-            log.LogTrace("Hint '{HintText}' was already matched, not adding as miss", hint.Text);
+            if (added)
+            {
+                log.LogTrace("Added hint miss for '{HintText}', Optional:{Optional}", hint.Text, hint.Optional);
+            }
+            else
+            {
+                log.LogTrace("Hint '{HintText}' was already matched, not adding as miss", hint.Text);
+            }
         }
 
         return added;
@@ -206,12 +239,18 @@ internal class HintProcessor : IHintProcessor
 
         if (enumerator.CanReset)
         {
-            log.LogTrace("Resetting enumerator after hint processing");
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Resetting enumerator after hint processing");
+            }
             enumerator.Reset();
         }
         else
         {
-            log.LogTrace("Skipping enumerator reset — TextReader-based enumerator does not support reset");
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Skipping enumerator reset — TextReader-based enumerator does not support reset");
+            }
         }
     }
 }

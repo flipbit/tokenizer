@@ -154,21 +154,30 @@ public sealed class Tokenizer : ITokenizer
         }))
         {
             log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
-            log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
-                template.Tokens.Count, input.Length);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
+                    template.Tokens.Count, input.Length);
+            }
 
             // Create and initialize the tokenization context
             using (var context = new TokenizationContext())
             {
                 context.Initialize(new StringReader(input));
-                log.LogTrace("Tokenization context initialized");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Tokenization context initialized");
+                }
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
                     ? new DiagnosticCollector(null, input)
                     : NullDiagnosticCollector.Instance;
 
                 // Process hints first
-                log.LogTrace("Processing hints");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Processing hints");
+                }
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, input, result, collector);
 
                 if (hintsMissing)
@@ -177,7 +186,10 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    log.LogTrace("Hints validated successfully, proceeding with tokenization");
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Hints validated successfully, proceeding with tokenization");
+                    }
                     // Process the main tokenization using the engine
                     tokenizationEngine.ProcessTokenization(template, input.Length, value, context, result, collector, hintStrategy);
 
@@ -188,12 +200,18 @@ public sealed class Tokenizer : ITokenizer
                 }
 
                 // Build unmatched tokens collection
-                log.LogTrace("Building unmatched tokens collection");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Building unmatched tokens collection");
+                }
                 resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
                 var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-                log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
-                    result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                        result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+                }
 
                 if (requiredMissingCount > 0)
                 {
@@ -213,7 +231,10 @@ public sealed class Tokenizer : ITokenizer
                             log.LogWarning("  → Hint: {Hint}", issue.Hint);
                         }
                     }
-                    log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                    if (log.IsEnabled(LogLevel.Debug))
+                    {
+                        log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                    }
                 }
             }
 
@@ -278,20 +299,29 @@ public sealed class Tokenizer : ITokenizer
         }))
         {
             log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
-            log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+            }
 
             // Create and initialize the tokenization context
             using (var context = new TokenizationContext())
             {
                 context.Initialize(input);
-                log.LogTrace("Tokenization context initialized");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Tokenization context initialized");
+                }
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
                     ? new DiagnosticCollector(null, null)
                     : NullDiagnosticCollector.Instance;
 
                 // Process hints first (rawInput is null for TextReader inputs)
-                log.LogTrace("Processing hints");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Processing hints");
+                }
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
 
                 if (hintsMissing)
@@ -300,7 +330,10 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    log.LogTrace("Hints validated successfully, proceeding with tokenization");
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Hints validated successfully, proceeding with tokenization");
+                    }
                     // Process the main tokenization using the engine
                     tokenizationEngine.ProcessTokenization(template, 0, value, context, result, collector, hintStrategy);
 
@@ -311,12 +344,18 @@ public sealed class Tokenizer : ITokenizer
                 }
 
                 // Build unmatched tokens collection
-                log.LogTrace("Building unmatched tokens collection");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Building unmatched tokens collection");
+                }
                 resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
                 var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-                log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
-                    result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                        result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+                }
 
                 if (requiredMissingCount > 0)
                 {

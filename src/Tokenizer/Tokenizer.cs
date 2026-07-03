@@ -152,6 +152,10 @@ public sealed class Tokenizer : ITokenizer
     /// Tokenizes the input from a <see cref="TextReader"/> using the provided compiled <paramref name="template"/>.
     /// The caller retains ownership of the reader; it is not disposed.
     /// </summary>
+    /// <remarks>
+    /// <see cref="TokenizerOptions.MaxInputLength"/> is not enforced on the TextReader path
+    /// because the total length is unknown without consuming the entire stream.
+    /// </remarks>
     public TokenizeResult Tokenize(Template template, TextReader input)
     {
         var result = new TokenizeResult(template);
@@ -164,6 +168,10 @@ public sealed class Tokenizer : ITokenizer
     /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
     /// The caller retains ownership of the reader; it is not disposed.
     /// </summary>
+    /// <remarks>
+    /// <see cref="TokenizerOptions.MaxInputLength"/> is not enforced on the TextReader path
+    /// because the total length is unknown without consuming the entire stream.
+    /// </remarks>
     public TokenizeResult<T> Tokenize<T>(Template template, TextReader input) where T : class, new()
     {
         var result = new TokenizeResult<T>(template);

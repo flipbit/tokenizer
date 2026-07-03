@@ -49,6 +49,8 @@ public class CandidateTokenList
     public void Clear()
     {
         Preamble = string.Empty;
+        TerminateOnNewLine = false;
+        IsNullToken = false;
         tokens.Clear();
     }
 

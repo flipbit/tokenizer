@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -369,24 +368,4 @@ public static class StringExtensions
         return sb.ToString();
     }
 
-    /// <summary>
-    /// Returns the MD5 hash of the string as an uppercase hyphen-separated hex string.
-    /// Returns an empty string when the input is null or empty.
-    /// </summary>
-    /// <param name="value">The value to hash.</param>
-    /// <returns>The MD5 hash of the value.</returns>
-    public static string ToMd5(this string value)
-    {
-        if (string.IsNullOrEmpty(value)) return string.Empty;
-
-#if NETSTANDARD2_0
-        var md5 = new MD5CryptoServiceProvider();
-#else
-        var md5 = System.Security.Cryptography.MD5.Create();
-#endif
-        var originalBytes = Encoding.Default.GetBytes(value);
-        var encodedBytes = md5.ComputeHash(originalBytes);
-
-        return BitConverter.ToString(encodedBytes);
-    }
 }

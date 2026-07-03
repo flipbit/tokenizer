@@ -60,13 +60,6 @@ public static class ObjectExtensions
 
             set = true;
 
-            // Layer 4: Debug Instrumentation
-            // Log property details before attempting assignment for forensics
-            System.Diagnostics.Debug.WriteLine(
-                $"[SetValue] Attempting to set property '{propertyInfo.Name}' on type '{@object.GetType().Name}'. " +
-                $"CanWrite: {propertyInfo.CanWrite}, HasSetter: {propertyInfo.GetSetMethod() != null}, " +
-                $"PropertyType: {propertyInfo.PropertyType.Name}, ValueType: {value?.GetType().Name ?? "null"}");
-
             if (depth == segments.Length - 1)
             {
                 if (propertyInfo.PropertyType.IsGenericType &&
@@ -184,7 +177,7 @@ public static class ObjectExtensions
 
         if (!set)
         {
-            throw new MissingMemberException($@"Could find property '{segments[depth]}' on {@object.GetType().Name}");
+            throw new MissingMemberException($@"Could not find property '{segments[depth]}' on {@object.GetType().Name}");
         }
 
         return @object;
@@ -286,6 +279,6 @@ public static class ObjectExtensions
             return GetInnerValue<T>(currentValue, segments, depth + 1, stringComparison);
         }
 
-        throw new MissingMemberException($@"Could find property '{segments[depth]}' on {@object.GetType().Name}");
+        throw new MissingMemberException($@"Could not find property '{segments[depth]}' on {@object.GetType().Name}");
     }
 }

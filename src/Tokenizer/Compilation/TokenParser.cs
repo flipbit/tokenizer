@@ -95,7 +95,10 @@ internal class TokenParser
             if (!transformers.Contains(transformerType))
             {
                 transformers.Add(transformerType);
-                log.LogDebug("Registered custom transformer from options: {TransformerType}", transformerType.Name);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Registered custom transformer from options: {TransformerType}", transformerType.Name);
+                }
             }
         }
 
@@ -104,7 +107,10 @@ internal class TokenParser
             if (!validators.Contains(validatorType))
             {
                 validators.Add(validatorType);
-                log.LogDebug("Registered custom validator from options: {ValidatorType}", validatorType.Name);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Registered custom validator from options: {ValidatorType}", validatorType.Name);
+                }
             }
         }
     }
@@ -113,7 +119,10 @@ internal class TokenParser
     {
         transformers.Add(typeof(T));
 
-        log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
+        }
 
         return this;
     }
@@ -122,7 +131,10 @@ internal class TokenParser
     {
         validators.Add(typeof(T));
 
-        log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
+        }
 
         return this;
     }
@@ -169,7 +181,10 @@ internal class TokenParser
 
         var template = new Template(name);
 
-        log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
+        }
 
         try
         {
@@ -177,13 +192,19 @@ internal class TokenParser
 
             template.Options = preTemplate.Options;
 
-            log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
-                preTemplate.Tokens.Count, template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
+                    preTemplate.Tokens.Count, template.Name);
+            }
 
             if (string.IsNullOrWhiteSpace(preTemplate.Name) == false)
             {
                 template.Name = preTemplate.Name;
-                log.LogDebug("Template name set from front matter: {TemplateName}", template.Name);
+                if (log.IsEnabled(LogLevel.Debug))
+                {
+                    log.LogDebug("Template name set from front matter: {TemplateName}", template.Name);
+                }
             }
 
             foreach (var hint in preTemplate.Hints)
@@ -191,7 +212,10 @@ internal class TokenParser
                 if (template.Hints.Any(t => t == hint) == false)
                 {
                     template.AddHint(hint);
-                    log.LogDebug("Added hint to template {TemplateName}: {Hint}", template.Name, hint);
+                    if (log.IsEnabled(LogLevel.Debug))
+                    {
+                        log.LogDebug("Added hint to template {TemplateName}: {Hint}", template.Name, hint);
+                    }
                 }
             }
 
@@ -200,14 +224,20 @@ internal class TokenParser
                 if (template.Tags.Any(t => t == tag) == false)
                 {
                     template.AddTag(tag);
-                    log.LogDebug("Added tag to template {TemplateName}: {Tag}", template.Name, tag);
+                    if (log.IsEnabled(LogLevel.Debug))
+                    {
+                        log.LogDebug("Added tag to template {TemplateName}: {Tag}", template.Name, tag);
+                    }
                 }
             }
 
             foreach (var preToken in preTemplate.Tokens)
             {
-                log.LogTrace("Parsing token {TokenId}: Name={TokenName}, Content={TokenContent}, Optional={Optional}, Repeating={Repeating}",
-                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.IsOptional, preToken.IsRepeating);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Parsing token {TokenId}: Name={TokenName}, Content={TokenContent}, Optional={Optional}, Repeating={Repeating}",
+                        preToken.Id, preToken.Name ?? "(unnamed)", preToken.Content, preToken.IsOptional, preToken.IsRepeating);
+                }
 
                 var preamble = ComputePreamble(preToken, template.Options, log);
                 var location = preToken.Location ?? new Enumerators.FileLocation();
@@ -226,14 +256,20 @@ internal class TokenParser
                 if (template.Options.OutOfOrderTokens)
                 {
                     token.IsOptional = true;
-                    log.LogTrace("Token {TokenId} marked as optional due to OutOfOrderTokens option", token.Id);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Token {TokenId} marked as optional due to OutOfOrderTokens option", token.Id);
+                    }
                 }
 
                 // Apply global newline termination option from front matter if set
                 if (token.TerminateOnNewLine == false && template.Options.TerminateOnNewLine)
                 {
                     token.TerminateOnNewLine = true;
-                    log.LogTrace("Token {TokenId} TerminateOnNewLine applied from global option", token.Id);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Token {TokenId} TerminateOnNewLine applied from global option", token.Id);
+                    }
                 }
 
                 ParseTokenDecorators(preToken, token);
@@ -251,14 +287,20 @@ internal class TokenParser
                     if (previous.Name == token.Name && previous.IsRepeating == false)
                     {
                         token.DependsOnId = previous.Id;
-                        log.LogTrace("Token {TokenId} ({TokenName}) linked as dependent of token {ParentId}",
-                            token.Id, token.Name, previous.Id);
+                        if (log.IsEnabled(LogLevel.Trace))
+                        {
+                            log.LogTrace("Token {TokenId} ({TokenName}) linked as dependent of token {ParentId}",
+                                token.Id, token.Name, previous.Id);
+                        }
                     }
                 }
 
                 if (string.IsNullOrEmpty(token.Name) == false)
                 {
-                    log.LogTrace("Token[{TokenId:000}]: {Token}", token.Id, token);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Token[{TokenId:000}]: {Token}", token.Id, token);
+                    }
                 }
             }
 
@@ -270,7 +312,10 @@ internal class TokenParser
                     new Tokens.Enumerators.FileLocation());
             }
 
-            log.LogTrace("Parsed '{TemplateName}' - {ContentLength} byte(s) in {Elapsed}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Parsed '{TemplateName}' - {ContentLength} byte(s) in {Elapsed}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
+            }
 
             log.LogInformation("Template parsing complete: {TemplateName}, TotalTokens: {TokenCount}, Duration: {Duration}",
                 template.Name, template.Tokens.Count, stopwatch?.Elapsed.TotalMilliseconds ?? 0);
@@ -293,8 +338,11 @@ internal class TokenParser
 
     private void ParseTokenDecorators(TokenDefinition preToken, Token token)
     {
-        log.LogTrace("Parsing decorators for token {TokenId} ({TokenName}): {DecoratorCount} decorator(s) found",
-            preToken.Id, preToken.Name ?? "(unnamed)", preToken.Decorators.Count);
+        if (log.IsEnabled(LogLevel.Trace))
+        {
+            log.LogTrace("Parsing decorators for token {TokenId} ({TokenName}): {DecoratorCount} decorator(s) found",
+                preToken.Id, preToken.Name ?? "(unnamed)", preToken.Decorators.Count);
+        }
 
         // If pre-token has value set, add transformer to set it when parsing
         if (string.IsNullOrEmpty(preToken.Value) == false)
@@ -303,8 +351,11 @@ internal class TokenParser
             setContext.AddParameter(preToken.Value);
             token.AddDecorator(setContext);
 
-            log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
-                preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Token {TokenId} ({TokenName}): Added SetTransformer with value: {Value}",
+                    preToken.Id, preToken.Name ?? "(unnamed)", preToken.Value);
+            }
         }
 
         foreach (var decorator in preToken.Decorators)
@@ -314,8 +365,11 @@ internal class TokenParser
                 token.CanConcatenate = true;
                 token.ConcatenationString = joiningString;
 
-                log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",
-                    preToken.Id, preToken.Name ?? "(unnamed)", joiningString ?? "(empty)");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Token {TokenId} ({TokenName}): Applied concatenation decorator with joining string: {JoiningString}",
+                        preToken.Id, preToken.Name ?? "(unnamed)", joiningString ?? "(empty)");
+                }
 
                 continue;
             }
@@ -343,8 +397,11 @@ internal class TokenParser
 
                     token.AddDecorator(context);
 
-                    log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
-                        preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Token {TokenId} ({TokenName}): Applied transformer {TransformerName} with {ArgCount} argument(s)",
+                            preToken.Id, preToken.Name ?? "(unnamed)", operatorType.Name, decorator.Args.Count);
+                    }
 
                     break;
                 }
@@ -368,8 +425,11 @@ internal class TokenParser
 
                     token.AddDecorator(context);
 
-                    log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
-                        preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);
+                    if (log.IsEnabled(LogLevel.Trace))
+                    {
+                        log.LogTrace("Token {TokenId} ({TokenName}): Applied validator {ValidatorName} with {ArgCount} argument(s), IsNot: {IsNot}",
+                            preToken.Id, preToken.Name ?? "(unnamed)", validatorType.Name, decorator.Args.Count, decorator.IsNotDecorator);
+                    }
 
                     break;
                 }
@@ -395,8 +455,11 @@ internal class TokenParser
             }
             else
             {
-                log.LogTrace("Token {TokenId} ({TokenName}): Front matter token validation passed",
-                    preToken.Id, preToken.Name ?? "(unnamed)");
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Token {TokenId} ({TokenName}): Front matter token validation passed",
+                        preToken.Id, preToken.Name ?? "(unnamed)");
+                }
             }
         }
     }
@@ -410,13 +473,19 @@ internal class TokenParser
         if (decorator.Args.Count == 1)
         {
             joiningString = decorator.Args[0];
-            log.LogTrace("Concat decorator detected for token {TokenName} with joining string: {JoiningString}",
-                name ?? "(unnamed)", joiningString);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Concat decorator detected for token {TokenName} with joining string: {JoiningString}",
+                    name ?? "(unnamed)", joiningString);
+            }
         }
         else if (decorator.Args.Count == 0)
         {
-            log.LogTrace("Concat decorator detected for token {TokenName} with no joining string (will use empty string)",
-                name ?? "(unnamed)");
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Concat decorator detected for token {TokenName} with no joining string (will use empty string)",
+                    name ?? "(unnamed)");
+            }
         }
 
         if (decorator.Args.Count > 1)
@@ -449,8 +518,11 @@ internal class TokenParser
                 preamble = preToken.Preamble.TrimStart();
             }
 
-            log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
-                preToken.Id, preToken.Preamble.Length, preamble.Length);
+            if (log.IsEnabled(LogLevel.Trace))
+            {
+                log.LogTrace("Token {TokenId} preamble trimmed from {OriginalLength} to {TrimmedLength} characters",
+                    preToken.Id, preToken.Preamble.Length, preamble.Length);
+            }
         }
         else
         {
@@ -464,8 +536,11 @@ internal class TokenParser
                 var idx = preamble.LastIndexOf('\n');
                 var tail = preamble.Substring(idx + 1);
 
-                log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
-                    preToken.Id, preamble.Length, tail.Length);
+                if (log.IsEnabled(LogLevel.Trace))
+                {
+                    log.LogTrace("Token {TokenId} preamble trimmed before last newline: {OriginalLength} to {TrimmedLength} characters",
+                        preToken.Id, preamble.Length, tail.Length);
+                }
 
                 preamble = tail;
             }

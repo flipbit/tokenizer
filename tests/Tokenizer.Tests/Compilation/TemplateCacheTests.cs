@@ -152,4 +152,38 @@ public class TemplateCacheTests : TokenizerTestBase
         // Assert
         Assert.Empty(exceptions);
     }
+
+    [Fact]
+    public void GivenSmallCache_WhenAddingBeyondCapacityFromMultipleThreads_ThenCacheNeverExceedsMaxSize()
+    {
+        // Arrange
+        const int maxSize = 5;
+        const int threadCount = 50;
+        const int patternsPerThread = 20;
+        var cache = new TemplateCache(maxSize);
+        var exceptions = new ConcurrentBag<Exception>();
+
+        // Act — flood the cache from many threads with distinct patterns to force constant eviction
+        Parallel.For(0, threadCount, t =>
+        {
+            try
+            {
+                for (var i = 0; i < patternsPerThread; i++)
+                {
+                    var pattern = $"thread-{t}-pattern-{i}";
+                    cache.GetOrAdd(pattern, p => new Template(p));
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+            }
+        });
+
+        // Assert
+        Assert.Empty(exceptions);
+        Assert.True(
+            cache.Count <= maxSize,
+            $"Cache size {cache.Count} exceeded maxSize {maxSize}");
+    }
 }

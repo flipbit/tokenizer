@@ -13,6 +13,7 @@ internal sealed class TemplateCache
     private readonly ConcurrentDictionary<string, CacheEntry> cache = new();
     private readonly int maxSize;
     private long accessCounter;
+    private readonly object evictionLock = new();
 
     public TemplateCache(int maxSize)
     {
@@ -54,24 +55,27 @@ internal sealed class TemplateCache
 
     private void EvictIfOverCapacity()
     {
-        while (cache.Count > maxSize)
+        lock (evictionLock)
         {
-            var oldest = default(KeyValuePair<string, CacheEntry>);
-            var oldestTime = long.MaxValue;
-
-            foreach (var kvp in cache)
+            while (cache.Count > maxSize)
             {
-                var accessed = Interlocked.Read(ref kvp.Value.LastAccessed);
-                if (accessed < oldestTime)
+                var oldest = default(KeyValuePair<string, CacheEntry>);
+                var oldestTime = long.MaxValue;
+
+                foreach (var kvp in cache)
                 {
-                    oldestTime = accessed;
-                    oldest = kvp;
+                    var accessed = Interlocked.Read(ref kvp.Value.LastAccessed);
+                    if (accessed < oldestTime)
+                    {
+                        oldestTime = accessed;
+                        oldest = kvp;
+                    }
                 }
-            }
 
-            if (oldest.Key != null)
-            {
-                cache.TryRemove(oldest.Key, out _);
+                if (oldest.Key != null)
+                {
+                    cache.TryRemove(oldest.Key, out _);
+                }
             }
         }
     }

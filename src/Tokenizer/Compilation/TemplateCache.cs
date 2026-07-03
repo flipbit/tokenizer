@@ -82,6 +82,7 @@ internal sealed class TemplateCache
 
     private static string ComputeHash(string input)
     {
+        // SHA256.HashData and Convert.ToHexString require .NET 6+; other files use NET8_0_OR_GREATER for different APIs (e.g. SearchValues)
 #if NET6_0_OR_GREATER
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
         return Convert.ToHexString(hash);

@@ -10,6 +10,7 @@ namespace Tokens;
 /// </summary>
 public sealed class TokenDecoratorContext
 {
+    // Decorators are cached by type: ITokenTransformer/ITokenValidator are stateless (input via params, output via return). User-registered decorators must be stateless and thread-safe.
     private static readonly ConcurrentDictionary<Type, ITokenDecorator> DecoratorCache = new();
 
     private readonly List<string> _parameters;

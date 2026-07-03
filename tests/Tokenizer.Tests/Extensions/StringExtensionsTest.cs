@@ -255,6 +255,32 @@ public class StringExtensionsTest
     }
 
     [Fact]
+    public void GivenStringIsJustNewLine_WhenTrimTrailingNewLine_ThenReturnsEmpty()
+    {
+        // Arrange
+        var input = "\n";
+
+        // Act
+        var result = input.TrimTrailingNewLine();
+
+        // Assert
+        Assert.Equal("", result);
+    }
+
+    [Fact]
+    public void GivenStringIsJustWindowsNewLine_WhenTrimTrailingNewLine_ThenReturnsEmpty()
+    {
+        // Arrange
+        var input = "\r\n";
+
+        // Act
+        var result = input.TrimTrailingNewLine();
+
+        // Assert
+        Assert.Equal("", result);
+    }
+
+    [Fact]
     public void TestToLogInfoString()
     {
         Assert.Equal("Hello", "Hello".ToLogInfoString());

@@ -308,19 +308,14 @@ public static class StringExtensions
     {
         if (value.EndsWithNewLine() == false) return value;
 
-        // Check Windows format
-        if (value.Length >= 2 && value.Substring(value.Length - 2) == "\r\n")
+        // EndsWithNewLine confirmed value ends with '\n'.
+        // Check for Windows-style '\r\n' by inspecting the penultimate character.
+        if (value.Length >= 2 && value[value.Length - 2] == '\r')
         {
             return value.Substring(0, value.Length - 2);
         }
 
-        // Check Unix format
-        if (value.Substring(value.Length - 1) == "\n")
-        {
-            return value.Substring(0, value.Length - 1);
-        }
-
-        return value;
+        return value.Substring(0, value.Length - 1);
     }
 
     /// <summary>

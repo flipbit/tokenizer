@@ -68,8 +68,8 @@ public class TokenizationEngineInternalTests
         _engine.ProcessNewlineTerminatedTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, enumerator, disabledRepeatingTokens, NullDiagnosticCollector.Instance);
 
         // Assert
-        // Method is void, so we just verify it doesn't throw
-        Assert.True(true);
+        // Empty replacement means no value to assign, so no match should be recorded
+        Assert.Empty(result.Tokens.Matches);
     }
 
     [Fact]
@@ -92,7 +92,8 @@ public class TokenizationEngineInternalTests
         _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.NotNull(result);
+        // Front matter token assigned with empty string to null target — results in one match recorded
+        Assert.Single(result.Tokens.Matches);
     }
 
     [Fact]
@@ -171,6 +172,8 @@ public class TokenizationEngineInternalTests
         _engine.ProcessFrontMatterTokens(template, null, new FileLocation(), result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.NotNull(result);
+        // Template has only front matter tokens; the one token is matched, making the result successful
+        Assert.Single(result.Tokens.Matches);
+        Assert.True(result.Success);
     }
 }

@@ -195,20 +195,12 @@ public sealed class Tokenizer : ITokenizer
             using (var context = new TokenizationContext())
             {
                 context.Initialize(reader);
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Tokenization context initialized");
-                }
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
                     ? new DiagnosticCollector(null, rawInput)
                     : NullDiagnosticCollector.Instance;
 
                 // Process hints first — hint pre-filtering requires the full input string
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Processing hints");
-                }
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
 
                 if (hintsMissing)
@@ -217,10 +209,6 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    if (log.IsEnabled(LogLevel.Trace))
-                    {
-                        log.LogTrace("Hints validated successfully, proceeding with tokenization");
-                    }
                     tokenizationEngine.ProcessTokenization(template, value, context, result, collector, hintStrategy);
 
                     if (hintStrategy.PostProcess(result))
@@ -230,10 +218,6 @@ public sealed class Tokenizer : ITokenizer
                 }
 
                 // Build unmatched tokens collection
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Building unmatched tokens collection");
-                }
                 resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
                 var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);

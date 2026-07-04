@@ -48,7 +48,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(null!, 4, value, context, result, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(null!, value, context, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, 4, value, null!, result, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(template, value, null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -83,19 +83,13 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, 4, value, context, null!, NullDiagnosticCollector.Instance));
+            _engine.ProcessTokenization(template, value, context, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
-    public void GivenExceptionDuringTokenAssignment_WhenTryAssignCandidateTokens_ThenHandlesException()
+    public void GivenTokenizationWithNoMatch_WhenProcessingTokenization_ThenResultHasNonNullExceptions()
     {
-        // Arrange
-        var candidates = new CandidateTokenList();
-        var value = new { Name = "" };
-        var replacement = new System.Text.StringBuilder("test");
-        var options = new TokenizerOptions();
-        var replacementLocation = new Enumerators.FileLocation();
-        var result = new TokenizeResultBuilder().Build();
+        // Arrange — template expects a token that won't be found in input
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
             .WithTokens(new TokenBuilder()
@@ -103,13 +97,15 @@ public class TokenizationEngineErrorTests
                 .WithName("TestToken")
                 .Build())
             .Build();
-        var matchIds = new System.Collections.Generic.HashSet<int>();
+
+        var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader("no match here"));
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var assigned = _engine.TryAssignCandidateTokens(candidates, value, replacement, options, replacementLocation, result, template, matchIds, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.False(assigned);
         Assert.NotNull(result.Exceptions);
     }
 }

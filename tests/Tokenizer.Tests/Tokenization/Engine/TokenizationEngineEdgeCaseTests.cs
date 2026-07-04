@@ -28,7 +28,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(longInput));
 
         // Act
-        _engine.ProcessTokenization(template, longInput.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -51,7 +51,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -74,7 +74,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

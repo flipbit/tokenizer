@@ -35,7 +35,7 @@ public class TokenizationEngineBasicTests
         var value = new Person { FirstName = "Alice" };
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, value, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, value, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0);
@@ -57,7 +57,7 @@ public class TokenizationEngineBasicTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

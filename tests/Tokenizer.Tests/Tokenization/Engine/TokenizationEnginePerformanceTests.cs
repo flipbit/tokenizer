@@ -32,7 +32,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -55,7 +55,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, largeInput.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -92,7 +92,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 50); // At least half matched
@@ -119,7 +119,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -147,7 +147,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -179,7 +179,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 25); // At least half matched
@@ -211,7 +211,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);
@@ -234,7 +234,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -261,7 +261,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -286,7 +286,7 @@ public class TokenizationEnginePerformanceTests
                 .WithTemplate(template)
                 .Build();
 
-            _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+            _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
             results.Add(result);
         }
 
@@ -318,7 +318,7 @@ public class TokenizationEnginePerformanceTests
             var result = new TokenizeResultBuilder()
                 .WithTemplate(template)
                 .Build();
-            _engine.ProcessTokenization(template, input.Length, null, c, result, NullDiagnosticCollector.Instance);
+            _engine.ProcessTokenization(template, null, c, result, NullDiagnosticCollector.Instance);
             return result;
         }).ToList();
 

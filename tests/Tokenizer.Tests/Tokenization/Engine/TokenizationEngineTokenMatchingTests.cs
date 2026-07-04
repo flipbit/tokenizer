@@ -28,7 +28,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -63,7 +63,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -86,7 +86,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -109,7 +109,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -132,7 +132,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -154,7 +154,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -176,7 +176,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0 || result.Tokens.Misses.Count > 0);
@@ -209,7 +209,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -231,7 +231,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         // Without separator, tokens can't distinguish boundaries - expect specific behavior
@@ -254,7 +254,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -284,7 +284,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Empty(result.Tokens.Matches);
@@ -306,7 +306,7 @@ public class TokenizationEngineTokenMatchingTests
         // Act - Provide input in reverse order
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -328,7 +328,7 @@ public class TokenizationEngineTokenMatchingTests
         // Act - Provide input in reverse order
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert - Behavior depends on strict ordering
         Assert.NotNull(result);

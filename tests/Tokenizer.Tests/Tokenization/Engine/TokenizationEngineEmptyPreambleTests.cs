@@ -21,7 +21,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -42,7 +42,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -63,7 +63,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -83,7 +83,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -102,7 +102,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -123,7 +123,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -148,7 +148,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert — the key thing is that this completes (does not hang)
         Assert.Equal(100, result.Tokens.Matches.Count);

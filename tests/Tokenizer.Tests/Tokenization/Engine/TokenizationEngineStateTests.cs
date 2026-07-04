@@ -142,7 +142,7 @@ public class TokenizationEngineStateTests
         // Act
         var input = "First: ValueASecond: ValueB";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, input.Length, null, context, result, NullDiagnosticCollector.Instance);
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert - Both tokens should be processed
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -173,21 +173,14 @@ public class TokenizationEngineStateTests
         var template = parser.Parse("Test{Name}");
 
         var context = new TokenizationContext();
+        var input = "Test Value";
+        context.Initialize(new System.IO.StringReader(input));
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
-        var candidates = new CandidateTokenList();
-        candidates.Add(template.Tokens.First());
-
-        var enumerator = new TokenEnumerator("Test Value");
-        var replacement = new StringBuilder();
-        var matchIds = new HashSet<int>();
-        var disabledRepeatingTokens = new HashSet<int>();
-
-        // Act - Force backtracking scenario
-        var processed = _engine.ProcessRepeatedTokens(candidates, enumerator, replacement,
-            result, disabledRepeatingTokens, matchIds, template, NullDiagnosticCollector.Instance);
+        // Act - Exercise the engine through the public interface
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.NotNull(result);

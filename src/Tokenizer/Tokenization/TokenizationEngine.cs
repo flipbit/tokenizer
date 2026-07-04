@@ -77,7 +77,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// Initializes tokenization state on the context and validates arguments.
     /// This is the setup phase before the main tokenization loop.
     /// </summary>
-    internal void BeginTokenization(
+    public void BeginTokenization(
         Template template,
         object? targetObject,
         TokenizationContext context,
@@ -136,7 +136,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// Runs the main tokenization loop. Returns true when the input is fully consumed,
     /// or false when the enumerator needs a buffer refill (for cooperative async yielding).
     /// </summary>
-    internal bool ContinueTokenization(TokenizationContext context, CancellationToken ct)
+    public bool ContinueTokenization(TokenizationContext context, CancellationToken ct)
     {
         var template = context.Template!;
         var targetObject = context.TargetObject;
@@ -232,7 +232,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Finalizes tokenization by processing remaining candidates and front matter tokens.
     /// </summary>
-    internal void EndTokenization(TokenizationContext context)
+    public void EndTokenization(TokenizationContext context)
     {
         var template = context.Template!;
         var targetObject = context.TargetObject;

@@ -1,3 +1,4 @@
+using System.Threading;
 using Tokens.Diagnostics;
 
 namespace Tokens.Tokenization;
@@ -25,4 +26,26 @@ internal interface ITokenizationEngine
         TokenizeResultBase result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null);
+
+    /// <summary>
+    /// Initializes tokenization state on the context. Setup phase before the main loop.
+    /// </summary>
+    void BeginTokenization(
+        Template template,
+        object? targetObject,
+        TokenizationContext context,
+        TokenizeResultBase result,
+        IDiagnosticCollector collector,
+        IHintStrategy? hintStrategy = null);
+
+    /// <summary>
+    /// Runs the main tokenization loop. Returns true when input is fully consumed,
+    /// false when the enumerator needs a buffer refill.
+    /// </summary>
+    bool ContinueTokenization(TokenizationContext context, CancellationToken ct);
+
+    /// <summary>
+    /// Finalizes tokenization: processes remaining candidates and front matter tokens.
+    /// </summary>
+    void EndTokenization(TokenizationContext context);
 }

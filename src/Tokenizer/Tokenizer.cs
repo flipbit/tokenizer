@@ -384,8 +384,7 @@ public sealed class Tokenizer : ITokenizer
 
         if (!hintsMissing)
         {
-            var engine = (TokenizationEngine)tokenizationEngine;
-            engine.BeginTokenization(template, value, context, result, collector, hintStrategy);
+            tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
             do
             {
                 await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
@@ -398,8 +397,8 @@ public sealed class Tokenizer : ITokenizer
                         "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
                 }
             }
-            while (!engine.ContinueTokenization(context, ct));
-            engine.EndTokenization(context);
+            while (!tokenizationEngine.ContinueTokenization(context, ct));
+            tokenizationEngine.EndTokenization(context);
 
             if (hintStrategy.PostProcess(result))
             {

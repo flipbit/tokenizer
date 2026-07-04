@@ -1,3 +1,8 @@
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Tokens;
 
 /// <summary>
@@ -44,4 +49,26 @@ public interface ITokenizer
     /// Clears the compilation cache, forcing subsequent calls to recompile patterns.
     /// </summary>
     void ClearCompilationCache();
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
+    /// </summary>
+    Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default);
+
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/>, mapping values onto a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new();
+
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/> using a pre-compiled template.
+    /// </summary>
+    Task<TokenizeResult> TokenizeAsync(Template template, Stream input, Encoding encoding, CancellationToken ct = default);
+
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/>, mapping values onto a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new();
+#endif
 }

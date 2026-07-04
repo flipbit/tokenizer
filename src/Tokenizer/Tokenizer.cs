@@ -1,4 +1,7 @@
 using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -281,5 +284,76 @@ public sealed class Tokenizer : ITokenizer
 
     /// <inheritdoc />
     public void ClearCompilationCache() => compilationCache.Clear();
+
+#if NET8_0_OR_GREATER
+    /// <inheritdoc />
+    public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
+    {
+        var result = new TokenizeResult(template);
+        await TokenizeAsyncCore(result, null, template, input, ct).ConfigureAwait(false);
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
+    {
+        var result = new TokenizeResult<T>(template);
+        await TokenizeAsyncCore(result, result.Value, template, input, ct).ConfigureAwait(false);
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<TokenizeResult> TokenizeAsync(Template template, Stream input, Encoding encoding, CancellationToken ct = default)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await TokenizeAsync(template, reader, ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
+    }
+
+    private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
+    {
+        log.LogInformation("Starting async tokenization for template {TemplateName}", template.Name);
+
+        using var context = new TokenizationContext();
+        context.Initialize(reader);
+
+        IDiagnosticCollector collector = template.Options.EnableDiagnostics
+            ? new DiagnosticCollector(null, null)
+            : NullDiagnosticCollector.Instance;
+
+        var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
+
+        if (!hintsMissing)
+        {
+            var engine = (TokenizationEngine)tokenizationEngine;
+            engine.BeginTokenization(template, value, context, result, collector, hintStrategy);
+            do
+            {
+                await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
+            }
+            while (!engine.ContinueTokenization(context, ct));
+            engine.EndTokenization(context);
+
+            if (hintStrategy.PostProcess(result))
+            {
+                log.LogWarning("Post-tokenization hint check failed");
+            }
+        }
+
+        resultBuilder.BuildUnmatchedTokens(template, result, collector);
+        result.Diagnostics = collector.GetResult();
+
+        log.LogInformation("Async tokenization {Result} for template {TemplateName}",
+            result.Success ? "succeeded" : "failed", template.Name);
+    }
+#endif
 
 }

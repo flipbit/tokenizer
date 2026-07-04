@@ -18,6 +18,7 @@ public class TokenEnumerator
     private readonly string? originalString;
 
     private char[] buffer;
+    private char[] stagingBuffer;
     private int readPos;
     private int writePos;
     private int bufferedCount;
@@ -48,6 +49,7 @@ public class TokenEnumerator
         this.reader = reader;
         this.originalString = originalString;
         buffer = new char[DefaultBufferSize];
+        stagingBuffer = new char[DefaultBufferSize];
         readPos = 0;
         writePos = 0;
         bufferedCount = 0;
@@ -103,11 +105,11 @@ public class TokenEnumerator
     {
         if (readerExhausted) return;
 
-        // Read into a temporary staging buffer, then copy with CRLF normalization
+        // Read into the reusable staging buffer, then copy with CRLF normalization
         var available = buffer.Length - bufferedCount;
         if (available <= 0) return;
 
-        var staging = new char[available];
+        var staging = stagingBuffer;
         var read = reader.Read(staging, 0, available);
         if (read == 0)
         {
@@ -131,7 +133,7 @@ public class TokenEnumerator
         var available = buffer.Length - bufferedCount;
         if (available <= 0) return;
 
-        var staging = new char[available];
+        var staging = stagingBuffer;
 #if NET8_0_OR_GREATER
         var read = await reader.ReadAsync(staging.AsMemory(0, available), ct).ConfigureAwait(false);
 #else
@@ -355,6 +357,11 @@ public class TokenEnumerator
         buffer = newBuffer;
         readPos = 0;
         writePos = bufferedCount;
+
+        if (newSize > stagingBuffer.Length)
+        {
+            stagingBuffer = new char[newSize];
+        }
     }
 
     /// <summary>

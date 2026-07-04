@@ -177,45 +177,4 @@ internal class ResultBuilder : IResultBuilder
                 result.Success);
         }
     }
-
-    /// <summary>
-    /// Adds matched token IDs to the tracking set for template ordering logic.
-    /// </summary>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchedToken">The token that was matched</param>
-    /// <param name="matchIds">The set of matched token IDs to update</param>
-    public void AddMatchedTokenIds(
-        Template template,
-        Token matchedToken,
-        HashSet<int> matchIds)
-    {
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-        ArgumentValidation.ThrowIfNull(matchedToken, nameof(matchedToken));
-        ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
-
-        template.GetTokenIdsUpTo(matchedToken, matchIds);
-    }
-
-    /// <summary>
-    /// Checks if a token was the last matched token in the result.
-    /// </summary>
-    /// <param name="result">The result object to check</param>
-    /// <param name="token">The token to check</param>
-    /// <returns>True if the token was the last matched token</returns>
-    public bool WasLastMatchedToken(
-        TokenizeResultBase result,
-        Token token)
-    {
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-        ArgumentValidation.ThrowIfNull(token, nameof(token));
-
-        var lastMatch = result.Tokens.Matches.LastOrDefault();
-
-        if (lastMatch != null)
-        {
-            return lastMatch.Token.Id == token.Id;
-        }
-
-        return false;
-    }
 }

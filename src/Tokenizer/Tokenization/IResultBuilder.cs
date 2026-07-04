@@ -55,20 +55,4 @@ internal interface IResultBuilder
     /// <param name="result">The result object to populate with unmatched tokens</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     void BuildUnmatchedTokens(Template template, TokenizeResultBase result, IDiagnosticCollector collector);
-
-    /// <summary>
-    /// Adds matched token IDs to the tracking set for template ordering logic.
-    /// </summary>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchedToken">The token that was matched</param>
-    /// <param name="matchIds">The set of matched token IDs to update</param>
-    void AddMatchedTokenIds(Template template, Token matchedToken, HashSet<int> matchIds);
-
-    /// <summary>
-    /// Checks if a token was the last matched token in the result.
-    /// </summary>
-    /// <param name="result">The result object to check</param>
-    /// <param name="token">The token to check</param>
-    /// <returns>True if the token was the last matched token</returns>
-    bool WasLastMatchedToken(TokenizeResultBase result, Token token);
 }

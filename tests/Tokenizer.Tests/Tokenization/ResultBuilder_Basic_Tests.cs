@@ -96,53 +96,6 @@ public class ResultBuilder_Basic_Tests
         Assert.Contains(exception, result.Exceptions);
     }
 
-    [Fact]
-    public void GivenTemplateAndMatch_WhenAddMatchedTokenIds_ThenAddsTokenIds()
-    {
-        // Arrange
-        var parser = new TokenParser();
-        var template = parser.Parse("Hello {Name}");
-
-        var match = template.Tokens.First();
-        var matchIds = new HashSet<int>();
-
-        // Act
-        _builder.AddMatchedTokenIds(template, match, matchIds);
-
-        // Assert
-        Assert.True(matchIds.Count > 0);
-    }
-
-    [Fact]
-    public void GivenResultWithLastMatch_WhenWasLastMatchedToken_ThenReturnsTrue()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
-        var result = new TokenizeResultBuilder()
-            .WithMatches(new TokenMatch(token, "TestName", new FileLocation()))
-            .Build();
-
-        // Act
-        var wasLast = _builder.WasLastMatchedToken(result, token);
-
-        // Assert
-        Assert.True((bool)wasLast);
-    }
-
-    [Fact]
-    public void GivenResultWithoutMatches_WhenWasLastMatchedToken_ThenReturnsFalse()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
-        var result = new TokenizeResultBuilder().Build();
-
-        // Act
-        var wasLast = _builder.WasLastMatchedToken(result, token);
-
-        // Assert
-        Assert.False((bool)wasLast);
-    }
-
     private Template CreateTemplate(string name = "TestTemplate")
     {
         return new TemplateBuilder()

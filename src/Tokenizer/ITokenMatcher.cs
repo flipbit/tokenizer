@@ -1,3 +1,8 @@
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Tokens;
 
 /// <summary>
@@ -44,4 +49,64 @@ public interface ITokenMatcher
     /// Matches the input string against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
     /// </summary>
     TokenMatcherResult<T> Match<T>(string input, string[]? tags) where T : class, new();
+
+    /// <summary>
+    /// Compiles and registers a template read from a <see cref="TextReader"/>.
+    /// </summary>
+    Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default);
+
+    /// <summary>
+    /// Compiles and registers a template read from a <see cref="TextReader"/> with an explicit name.
+    /// </summary>
+    Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, string name, CancellationToken ct = default);
+
+    /// <summary>
+    /// Compiles and registers a template read from a <see cref="Stream"/>.
+    /// </summary>
+    Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default);
+
+    /// <summary>
+    /// Compiles and registers a template read from a <see cref="Stream"/> with an explicit name.
+    /// </summary>
+    Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default);
+
+    /// <summary>
+    /// Matches input from a <see cref="TextReader"/> against all registered templates.
+    /// </summary>
+    Task<TokenMatcherResult> MatchAsync(TextReader input, CancellationToken ct = default);
+
+    /// <summary>
+    /// Matches input from a <see cref="TextReader"/> against registered templates filtered by tags.
+    /// </summary>
+    Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default);
+
+    /// <summary>
+    /// Matches input from a <see cref="TextReader"/> against all registered templates and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, CancellationToken ct = default) where T : class, new();
+
+    /// <summary>
+    /// Matches input from a <see cref="TextReader"/> against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new();
+
+    /// <summary>
+    /// Matches input from a <see cref="Stream"/> against all registered templates.
+    /// </summary>
+    Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, CancellationToken ct = default);
+
+    /// <summary>
+    /// Matches input from a <see cref="Stream"/> against registered templates filtered by tags.
+    /// </summary>
+    Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default);
+
+    /// <summary>
+    /// Matches input from a <see cref="Stream"/> against all registered templates and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new();
+
+    /// <summary>
+    /// Matches input from a <see cref="Stream"/> against registered templates filtered by tags and populates a new <typeparamref name="T"/>.
+    /// </summary>
+    Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default) where T : class, new();
 }

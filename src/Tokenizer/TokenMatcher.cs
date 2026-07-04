@@ -1,3 +1,7 @@
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Exceptions;
@@ -182,6 +186,179 @@ public sealed class TokenMatcher : ITokenMatcher
             try
             {
                 var result = tokenize(template);
+                addResult(results, result);
+            }
+            catch (Exception e)
+            {
+                var exception = new TokenMatcherException(e.Message, template, e);
+                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+                throw exception;
+            }
+        }
+
+        assignBestMatch(results);
+        return results;
+    }
+
+    /// <inheritdoc />
+    public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default)
+    {
+        var template = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
+        Templates.Add(template);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, string name, CancellationToken ct = default)
+    {
+        var template = await tokenizer.CompileAsync(reader, name, ct).ConfigureAwait(false);
+        Templates.Add(template);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+    {
+        var template = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
+        Templates.Add(template);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default)
+    {
+        var template = await tokenizer.CompileAsync(input, encoding, name, ct).ConfigureAwait(false);
+        Templates.Add(template);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public Task<TokenMatcherResult> MatchAsync(TextReader input, CancellationToken ct = default)
+        => MatchAsync(input, null, ct);
+
+    /// <inheritdoc />
+    public async Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default)
+    {
+        var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+        return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
+            stream, tags, ct,
+            (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
+            () => new TokenMatcherResult(),
+            (r, result) => r.AddResult(result),
+            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, CancellationToken ct = default) where T : class, new()
+        => MatchAsync<T>(input, null, ct);
+
+    /// <inheritdoc />
+    public async Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
+    {
+        var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+        return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
+            stream, tags, ct,
+            (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
+            () => new TokenMatcherResult<T>(),
+            (r, result) => r.AddResult(result),
+            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+        => MatchAsync(input, encoding, null, ct);
+
+    /// <inheritdoc />
+    public async Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default)
+    {
+        var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
+        return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
+            seekable, tags, ct,
+            (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
+            () => new TokenMatcherResult(),
+            (r, result) => r.AddResult(result),
+            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
+        => MatchAsync<T>(input, encoding, null, ct);
+
+    /// <inheritdoc />
+    public async Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default) where T : class, new()
+    {
+        var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
+        return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
+            seekable, tags, ct,
+            (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
+            () => new TokenMatcherResult<T>(),
+            (r, result) => r.AddResult(result),
+            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+    }
+
+    private async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
+    {
+        var buffer = new MemoryStream();
+        using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
+        var charBuf = new char[4096];
+        int read;
+        while ((read = await reader.ReadAsync(charBuf, 0, charBuf.Length).ConfigureAwait(false)) > 0)
+        {
+            ct.ThrowIfCancellationRequested();
+            await writer.WriteAsync(charBuf, 0, read).ConfigureAwait(false);
+        }
+        await writer.FlushAsync().ConfigureAwait(false);
+        buffer.Position = 0;
+        return buffer;
+    }
+
+    private async Task<Stream> EnsureSeekableAsync(Stream input, CancellationToken ct)
+    {
+        if (input.CanSeek) return input;
+
+        if (!tokenizer.Options.AllowStreamBuffering)
+        {
+            throw new TokenizerException(
+                "Stream is not seekable. Provide a seekable stream or " +
+                "set TokenizerOptions.AllowStreamBuffering = true to allow buffering into memory.");
+        }
+
+        var buffer = new MemoryStream();
+#if NET8_0_OR_GREATER
+        await input.CopyToAsync(buffer, ct).ConfigureAwait(false);
+#else
+        await input.CopyToAsync(buffer, 81920, ct).ConfigureAwait(false);
+#endif
+        buffer.Position = 0;
+        return buffer;
+    }
+
+    private async Task<TResult> MatchAsyncFromSeekableStream<TResult, TTokenizeResult>(
+        Stream stream,
+        string[]? tags,
+        CancellationToken ct,
+        Func<Template, TextReader, CancellationToken, Task<TTokenizeResult>> tokenizeAsync,
+        Func<TResult> createResult,
+        Action<TResult, TTokenizeResult> addResult,
+        Action<TResult> assignBestMatch)
+        where TTokenizeResult : TokenizeResultBase
+    {
+        tags ??= Array.Empty<string>();
+        var results = createResult();
+        var startPos = stream.Position;
+
+        foreach (var name in Templates.Names)
+        {
+            if (!Templates.TryGet(name, out var template)) continue;
+            if (!CheckTemplateTags(template, tags)) continue;
+
+            stream.Position = startPos;
+            var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true,
+                bufferSize: 1024, leaveOpen: true);
+
+            try
+            {
+                var result = await tokenizeAsync(template, reader, ct).ConfigureAwait(false);
                 addResult(results, result);
             }
             catch (Exception e)

@@ -3,6 +3,39 @@ using Xunit;
 
 namespace Tokens.Enumerators;
 
+/// <summary>
+/// A TextReader that returns -1 from Peek() even when more data is available,
+/// and delivers data in small chunks — simulating a non-buffered reader
+/// (e.g. NetworkStream-backed StreamReader where Peek() returns -1 between reads).
+/// </summary>
+internal class NonBufferedTextReader : TextReader
+{
+    private readonly string data;
+    private int position;
+    private readonly int chunkSize;
+
+    public NonBufferedTextReader(string data, int chunkSize = 5)
+    {
+        this.data = data;
+        this.chunkSize = chunkSize;
+    }
+
+    public override int Read(char[] buffer, int index, int count)
+    {
+        if (position >= data.Length) return 0;
+        var available = Math.Min(Math.Min(count, chunkSize), data.Length - position);
+        data.CopyTo(position, buffer, index, available);
+        position += available;
+        return available;
+    }
+
+    public override int Peek()
+    {
+        // Always return -1, simulating a non-buffered reader
+        return -1;
+    }
+}
+
 public class TokenEnumeratorRingBufferTests
 {
     [Fact]
@@ -139,13 +172,36 @@ public class TokenEnumeratorRingBufferTests
     }
 
     [Fact]
-    public void GivenNeedsRefillProperty_WhenBufferLow_ThenReportsCorrectly()
+    public void GivenNeedsRefillProperty_WhenBufferLowAndReaderExhausted_ThenReturnsFalse()
     {
-        // Arrange
+        // Arrange — short input fully buffered. Reader exhaustion is discovered
+        // lazily (when a Read returns 0), so drain the buffer first.
         var enumerator = new TokenEnumerator(new StringReader("hi"));
+        enumerator.Next(); // 'h'
+        enumerator.Next(); // 'i'
 
-        // Act / Assert — short input is fully buffered, reader exhausted
+        // Force exhaustion discovery via IsEmpty (triggers a FillBuffer that returns 0)
+        Assert.True(enumerator.IsEmpty);
+
+        // Act / Assert — reader now known to be exhausted
         Assert.False(enumerator.NeedsRefill);
+    }
+
+    [Fact]
+    public void GivenNeedsRefillProperty_WhenBufferLowAndReaderHasData_ThenReturnsTrue()
+    {
+        // Arrange — large input, buffer has some data but reader has more
+        var input = new string('x', 2000);
+        var enumerator = new TokenEnumerator(new StringReader(input));
+
+        // Consume most of the buffer to get below watermark
+        for (var i = 0; i < 900; i++)
+        {
+            enumerator.Next();
+        }
+
+        // Act / Assert — buffer is below watermark and reader has more data
+        Assert.True(enumerator.NeedsRefill);
     }
 
     [Fact]
@@ -157,5 +213,28 @@ public class TokenEnumeratorRingBufferTests
         // Act / Assert — calling FillBuffer again after constructor should be safe
         enumerator.FillBuffer();
         Assert.Equal('t', enumerator.Peek());
+    }
+
+    [Fact]
+    public void GivenNonBufferedReader_WhenPeekReturnsMinus1_ThenDoesNotTruncateInput()
+    {
+        // Arrange — reader whose Peek() always returns -1 (simulates NetworkStream-backed StreamReader)
+        var input = "hello world";
+        var reader = new NonBufferedTextReader(input);
+        var enumerator = new TokenEnumerator(reader);
+
+        // Act — consume all characters
+        var result = new char[input.Length];
+        for (var i = 0; i < input.Length; i++)
+        {
+            result[i] = enumerator.Next();
+        }
+
+        // Assert — all characters consumed, not truncated by premature Peek()-based exhaustion
+        Assert.Equal(input, new string(result));
+        Assert.Equal(input.Length, enumerator.CharactersConsumed);
+        // Peek triggers a FillBuffer that discovers the reader is exhausted
+        Assert.Equal('\0', enumerator.Peek());
+        Assert.True(enumerator.IsEmpty);
     }
 }

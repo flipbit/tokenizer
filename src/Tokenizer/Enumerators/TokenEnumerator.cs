@@ -58,8 +58,21 @@ public class TokenEnumerator
 
     /// <summary>
     /// Gets a value indicating whether all characters have been consumed.
+    /// When the buffer is empty and the reader has not been marked exhausted,
+    /// this property attempts a fill to discover exhaustion.
     /// </summary>
-    public bool IsEmpty => bufferedCount == 0 && readerExhausted;
+    public bool IsEmpty
+    {
+        get
+        {
+            if (bufferedCount == 0 && !readerExhausted)
+            {
+                FillBuffer();
+            }
+
+            return bufferedCount == 0 && readerExhausted;
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether <see cref="Reset"/> is supported.
@@ -103,12 +116,6 @@ public class TokenEnumerator
         }
 
         CopyToRingBuffer(staging, read);
-
-        // Check if reader is now exhausted
-        if (reader.Peek() == -1)
-        {
-            readerExhausted = true;
-        }
     }
 
     /// <summary>
@@ -137,11 +144,6 @@ public class TokenEnumerator
         }
 
         CopyToRingBuffer(staging, read);
-
-        if (reader.Peek() == -1)
-        {
-            readerExhausted = true;
-        }
     }
 
     /// <summary>

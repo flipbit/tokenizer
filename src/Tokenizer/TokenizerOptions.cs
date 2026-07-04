@@ -31,6 +31,7 @@ public record class TokenizerOptions
         MaxTemplateLength = original.MaxTemplateLength;
         MaxTokenCount = original.MaxTokenCount;
         MaxIterations = original.MaxIterations;
+        AllowStreamBuffering = original.AllowStreamBuffering;
         CompilationCacheMaxSize = original.CompilationCacheMaxSize;
         transformers = new List<Type>(original.transformers);
         validators = new List<Type>(original.validators);
@@ -105,6 +106,14 @@ public record class TokenizerOptions
     public int MaxIterations { get; set; }
 
     /// <summary>
+    /// When true, allows non-seekable streams (e.g. NetworkStream) to be buffered into memory
+    /// for operations that require re-reading the input (such as TokenMatcher matching against
+    /// multiple templates). Default: false.
+    /// When false, passing a non-seekable stream to such operations throws a TokenizerException.
+    /// </summary>
+    public bool AllowStreamBuffering { get; init; }
+
+    /// <summary>
     /// Maximum number of compiled templates to hold in the compilation cache.
     /// Default: 500. Set to 0 to disable caching.
     /// </summary>
@@ -163,6 +172,7 @@ public record class TokenizerOptions
             && MaxTemplateLength == other.MaxTemplateLength
             && MaxTokenCount == other.MaxTokenCount
             && MaxIterations == other.MaxIterations
+            && AllowStreamBuffering == other.AllowStreamBuffering
             && CompilationCacheMaxSize == other.CompilationCacheMaxSize;
     }
 
@@ -184,6 +194,7 @@ public record class TokenizerOptions
             hash = hash * 31 + MaxTemplateLength.GetHashCode();
             hash = hash * 31 + MaxTokenCount.GetHashCode();
             hash = hash * 31 + MaxIterations.GetHashCode();
+            hash = hash * 31 + AllowStreamBuffering.GetHashCode();
             hash = hash * 31 + CompilationCacheMaxSize.GetHashCode();
             return hash;
         }

@@ -59,6 +59,11 @@ public class TokenEnumerator
     public FileLocation Location { get; }
 
     /// <summary>
+    /// Gets the total number of characters consumed via <see cref="Next"/>.
+    /// </summary>
+    public long CharactersConsumed { get; private set; }
+
+    /// <summary>
     /// Advances the enumerator by one character and returns it, updating <see cref="Location"/>.
     /// Returns <c>'\0'</c> if the enumerator is already at the end.
     /// </summary>
@@ -67,6 +72,8 @@ public class TokenEnumerator
     {
         var next = ReadChar();
         if (next == '\0') return '\0';
+
+        CharactersConsumed++;
 
         // Eagerly detect end-of-input so IsEmpty is accurate immediately
         if (pushback.Count == 0 && !isEmpty && reader.Peek() == -1)
@@ -219,6 +226,7 @@ public class TokenEnumerator
         isEmpty = reader.Peek() == -1;
         resetNextLine = false;
         Location.Reset();
+        CharactersConsumed = 0;
     }
 
     /// <summary>

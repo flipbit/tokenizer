@@ -197,4 +197,48 @@ public class TokenEnumeratorCharTests
         Assert.Equal('\n', enumerator.Next());
         Assert.Equal('b', enumerator.Next());
     }
+
+    [Fact]
+    public void GivenEnumerator_WhenAdvancing_ThenCharactersConsumedIsTracked()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator("hello");
+
+        // Act
+        enumerator.Next(); // 'h'
+        enumerator.Next(); // 'e'
+        enumerator.Next(); // 'l'
+
+        // Assert
+        Assert.Equal(3, enumerator.CharactersConsumed);
+    }
+
+    [Fact]
+    public void GivenEnumerator_WhenPeeking_ThenCharactersConsumedDoesNotIncrement()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator("hello");
+
+        // Act
+        enumerator.Peek();
+        enumerator.Peek();
+
+        // Assert
+        Assert.Equal(0, enumerator.CharactersConsumed);
+    }
+
+    [Fact]
+    public void GivenEnumerator_WhenReset_ThenCharactersConsumedResets()
+    {
+        // Arrange
+        var enumerator = new TokenEnumerator("hi");
+        enumerator.Next();
+        enumerator.Next();
+
+        // Act
+        enumerator.Reset();
+
+        // Assert
+        Assert.Equal(0, enumerator.CharactersConsumed);
+    }
 }

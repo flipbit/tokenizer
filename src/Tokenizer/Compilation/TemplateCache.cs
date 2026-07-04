@@ -22,6 +22,9 @@ internal sealed class TemplateCache
 
     public int Count => cache.Count;
 
+    // Intentional race-to-add: two threads may compile the same pattern concurrently.
+    // Duplicate work is harmless (both produce correct results). Lazy<T> wrapper would
+    // add overhead to every cache hit to prevent a rare, benign edge case.
     public Template GetOrAdd(string pattern, Func<string, Template> compile)
     {
         if (maxSize <= 0)

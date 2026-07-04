@@ -272,14 +272,14 @@ public sealed class Tokenizer : ITokenizer
     /// <inheritdoc />
     public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
-        var content = await ReadToEndAsync(reader, ct).ConfigureAwait(false);
+        var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
         return parser.Parse(content);
     }
 
     /// <inheritdoc />
     public async Task<Template> CompileAsync(TextReader reader, string name, CancellationToken ct = default)
     {
-        var content = await ReadToEndAsync(reader, ct).ConfigureAwait(false);
+        var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
         return parser.Parse(content, name);
     }
 
@@ -299,7 +299,7 @@ public sealed class Tokenizer : ITokenizer
         return await CompileAsync(reader, name, ct).ConfigureAwait(false);
     }
 
-    private static async Task<string> ReadToEndAsync(TextReader reader, CancellationToken ct)
+    private static async Task<string> ReadToEndAsync(TextReader reader, CancellationToken ct, int maxLength = 0)
     {
         var sb = new StringBuilder();
         var buffer = new char[4096];
@@ -309,12 +309,24 @@ public sealed class Tokenizer : ITokenizer
         {
             ct.ThrowIfCancellationRequested();
             sb.Append(buffer, 0, read);
+            if (maxLength > 0 && sb.Length > maxLength)
+            {
+                throw new TokenizerException(
+                    $"Template length {sb.Length:N0} exceeds maximum allowed length of {maxLength:N0}. " +
+                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
+            }
         }
 #else
         while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
         {
             ct.ThrowIfCancellationRequested();
             sb.Append(buffer, 0, read);
+            if (maxLength > 0 && sb.Length > maxLength)
+            {
+                throw new TokenizerException(
+                    $"Template length {sb.Length:N0} exceeds maximum allowed length of {maxLength:N0}. " +
+                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
+            }
         }
 #endif
         return sb.ToString();

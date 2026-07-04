@@ -206,6 +206,22 @@ public class TokenizerSafetyLimitTests
     }
 
     [Fact]
+    public async Task GivenAsyncTemplateExceedingMaxLength_WhenCompileAsync_ThenThrowsTokenizerException()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+        options.MaxTemplateLength = 50;
+        var tokenizer = new Tokenizer(options);
+        var largeTemplate = new string('x', 200);
+        using var reader = new StringReader(largeTemplate);
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<TokenizerException>(
+            () => tokenizer.CompileAsync(reader));
+        Assert.Contains("MaxTemplateLength", ex.Message);
+    }
+
+    [Fact]
     public async Task GivenAsyncInputExceedingMaxLength_WhenTokenizeAsync_ThenThrowsTokenizerException()
     {
         // Arrange

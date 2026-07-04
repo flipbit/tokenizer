@@ -158,12 +158,6 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
     public void Dispose()
     {
         if (_disposed) return;
-
-        if (Enumerator is IDisposable disposableEnumerator)
-        {
-            disposableEnumerator.Dispose();
-        }
-
         _disposed = true;
     }
 }

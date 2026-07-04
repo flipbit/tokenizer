@@ -355,46 +355,107 @@ public sealed class Tokenizer : ITokenizer
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new ContainsHintStrategy();
-        log.LogInformation("Starting async tokenization for template {TemplateName}", template.Name);
-
-        using var context = new TokenizationContext();
-        context.Initialize(reader);
-
-        IDiagnosticCollector collector = template.Options.EnableDiagnostics
-            ? new DiagnosticCollector(null, null)
-            : NullDiagnosticCollector.Instance;
-
-        var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
-
-        if (!hintsMissing)
+        var scopeProperties = new Dictionary<string, object>
         {
-            tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
-            do
-            {
-                await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
+            ["TemplateName"] = template.Name,
+            ["TokenCount"] = template.Tokens.Count,
+            ["Operation"] = "TokenizeAsync"
+        };
 
-                if (template.Options.MaxInputLength > 0 &&
-                    context.Enumerator.TotalCharactersSeen > template.Options.MaxInputLength)
+        using (log.BeginScope(scopeProperties))
+        {
+            log.LogInformation("Starting async tokenization for template {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+            }
+
+            using var context = new TokenizationContext();
+            context.Initialize(reader);
+
+            IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                ? new DiagnosticCollector(null, null)
+                : NullDiagnosticCollector.Instance;
+
+            try
+            {
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
+
+                if (hintsMissing)
                 {
-                    throw new TokenizerException(
-                        $"Input length exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
-                        "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+                    log.LogWarning("Required hints are missing, skipping tokenization");
+                }
+                else
+                {
+                    tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
+                    do
+                    {
+                        await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
+
+                        if (template.Options.MaxInputLength > 0 &&
+                            context.Enumerator.TotalCharactersSeen > template.Options.MaxInputLength)
+                        {
+                            throw new TokenizerException(
+                                $"Input length exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
+                                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+                        }
+                    }
+                    while (!tokenizationEngine.ContinueTokenization(context, ct));
+                    tokenizationEngine.EndTokenization(context);
+
+                    if (hintStrategy.PostProcess(result))
+                    {
+                        log.LogWarning("Post-tokenization hint check failed");
+                    }
                 }
             }
-            while (!tokenizationEngine.ContinueTokenization(context, ct));
-            tokenizationEngine.EndTokenization(context);
-
-            if (hintStrategy.PostProcess(result))
+            catch (OperationCanceledException)
             {
-                log.LogWarning("Post-tokenization hint check failed");
+                log.LogWarning("Async tokenization cancelled for template {TemplateName}", template.Name);
+                throw;
             }
+            catch (TokenizerException ex)
+            {
+                log.LogError(ex, "Async tokenization failed for template {TemplateName}: {Message}", template.Name, ex.Message);
+                throw;
+            }
+
+            // Build unmatched tokens collection
+            resultBuilder.BuildUnmatchedTokens(template, result, collector);
+
+            var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                    result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+            }
+
+            if (requiredMissingCount > 0)
+            {
+                log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
+            }
+
+            result.Diagnostics = collector.GetResult();
+
+            if (result.Diagnostics != null)
+            {
+                if (log.IsEnabled(LogLevel.Information))
+                {
+                    log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                }
+                foreach (var issue in result.Diagnostics.Summary.Issues)
+                {
+                    log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                    if (issue.Hint != null)
+                    {
+                        log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                    }
+                }
+            }
+
+            log.LogInformation("Async tokenization {Result} for template {TemplateName}",
+                result.Success ? "succeeded" : "failed", template.Name);
         }
-
-        resultBuilder.BuildUnmatchedTokens(template, result, collector);
-        result.Diagnostics = collector.GetResult();
-
-        log.LogInformation("Async tokenization {Result} for template {TemplateName}",
-            result.Success ? "succeeded" : "failed", template.Name);
     }
 
 }

@@ -28,9 +28,10 @@ internal interface ITokenizationEngine
         IHintStrategy? hintStrategy = null);
 
     /// <summary>
-    /// Initializes tokenization state on the context. Setup phase before the main loop.
+    /// Initializes tokenization state and returns a continuation handle.
+    /// The handle must be passed to <see cref="ContinueTokenization"/> and <see cref="EndTokenization"/>.
     /// </summary>
-    void BeginTokenization(
+    TokenizationContinuation BeginTokenization(
         Template template,
         object? targetObject,
         TokenizationContext context,
@@ -42,10 +43,10 @@ internal interface ITokenizationEngine
     /// Runs the main tokenization loop. Returns true when input is fully consumed,
     /// false when the enumerator needs a buffer refill.
     /// </summary>
-    bool ContinueTokenization(TokenizationContext context, CancellationToken ct);
+    bool ContinueTokenization(TokenizationContinuation continuation, TokenizationContext context, CancellationToken ct);
 
     /// <summary>
     /// Finalizes tokenization: processes remaining candidates and front matter tokens.
     /// </summary>
-    void EndTokenization(TokenizationContext context);
+    void EndTokenization(TokenizationContinuation continuation, TokenizationContext context);
 }

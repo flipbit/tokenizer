@@ -64,20 +64,20 @@ internal class TokenizationEngine : ITokenizationEngine
     {
         var ctx = (TokenizationContext)context;
 
-        BeginTokenization(template, targetObject, ctx, result, collector, hintStrategy);
+        var continuation = BeginTokenization(template, targetObject, ctx, result, collector, hintStrategy);
         do
         {
             ctx.Enumerator.FillBuffer();
         }
-        while (!ContinueTokenization(ctx, CancellationToken.None));
-        EndTokenization(ctx);
+        while (!ContinueTokenization(continuation, ctx, CancellationToken.None));
+        EndTokenization(continuation, ctx);
     }
 
     /// <summary>
     /// Initializes tokenization state on the context and validates arguments.
     /// This is the setup phase before the main tokenization loop.
     /// </summary>
-    public void BeginTokenization(
+    public TokenizationContinuation BeginTokenization(
         Template template,
         object? targetObject,
         TokenizationContext context,
@@ -121,28 +121,24 @@ internal class TokenizationEngine : ITokenizationEngine
         collector.Record(DiagnosticEventType.TokenizationStarted,
             detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}");
 
-        // Store state on context for Continue/End phases
-        context.Template = template;
-        context.TargetObject = targetObject;
-        context.Result = result;
-        context.Collector = collector;
-        context.HintStrategy = hintStrategy;
-        context.HasExplicitLimit = template.Options.MaxIterations > 0;
-        context.IterationCount = 0;
         context.MatchBuffer.Clear();
+
+        return new TokenizationContinuation(
+            template, targetObject, result, collector, hintStrategy,
+            hasExplicitLimit: template.Options.MaxIterations > 0);
     }
 
     /// <summary>
     /// Runs the main tokenization loop. Returns true when the input is fully consumed,
     /// or false when the enumerator needs a buffer refill (for cooperative async yielding).
     /// </summary>
-    public bool ContinueTokenization(TokenizationContext context, CancellationToken ct)
+    public bool ContinueTokenization(TokenizationContinuation continuation, TokenizationContext context, CancellationToken ct)
     {
-        var template = context.Template!;
-        var targetObject = context.TargetObject;
-        var result = context.Result!;
-        var collector = context.Collector!;
-        var hintStrategy = context.HintStrategy;
+        var template = continuation.Template;
+        var targetObject = continuation.TargetObject;
+        var result = continuation.Result;
+        var collector = continuation.Collector;
+        var hintStrategy = continuation.HintStrategy;
 
         while (context.Enumerator.IsEmpty == false)
         {
@@ -151,8 +147,8 @@ internal class TokenizationEngine : ITokenizationEngine
 
             ct.ThrowIfCancellationRequested();
 
-            context.IterationCount++;
-            if (context.HasExplicitLimit && context.IterationCount > template.Options.MaxIterations)
+            continuation.IterationCount++;
+            if (continuation.HasExplicitLimit && continuation.IterationCount > template.Options.MaxIterations)
             {
                 throw new TokenizerException(
                     $"Tokenization exceeded maximum iteration count of {template.Options.MaxIterations:N0}. " +
@@ -160,10 +156,10 @@ internal class TokenizationEngine : ITokenizationEngine
                     "Increase TokenizerOptions.MaxIterations to allow more iterations.");
             }
 
-            if (!context.HasExplicitLimit && context.IterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
+            if (!continuation.HasExplicitLimit && continuation.IterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
             {
                 throw new TokenizerException(
-                    $"Tokenization exceeded derived iteration limit (iterations: {context.IterationCount:N0}, " +
+                    $"Tokenization exceeded derived iteration limit (iterations: {continuation.IterationCount:N0}, " +
                     $"characters consumed: {context.Enumerator.CharactersConsumed:N0}). " +
                     "This may indicate a problematic template pattern. " +
                     "Set TokenizerOptions.MaxIterations to override the automatic limit.");
@@ -232,12 +228,12 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Finalizes tokenization by processing remaining candidates and front matter tokens.
     /// </summary>
-    public void EndTokenization(TokenizationContext context)
+    public void EndTokenization(TokenizationContinuation continuation, TokenizationContext context)
     {
-        var template = context.Template!;
-        var targetObject = context.TargetObject;
-        var result = context.Result!;
-        var collector = context.Collector!;
+        var template = continuation.Template;
+        var targetObject = continuation.TargetObject;
+        var result = continuation.Result;
+        var collector = continuation.Collector;
 
         // Handle remaining candidates
         if (ShouldProcessRemainingCandidates(context))

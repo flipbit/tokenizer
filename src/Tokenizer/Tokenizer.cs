@@ -399,7 +399,7 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
+                    var continuation = tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
                     do
                     {
                         await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
@@ -412,8 +412,8 @@ public sealed class Tokenizer : ITokenizer
                                 "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
                         }
                     }
-                    while (!tokenizationEngine.ContinueTokenization(context, ct));
-                    tokenizationEngine.EndTokenization(context);
+                    while (!tokenizationEngine.ContinueTokenization(continuation, context, ct));
+                    tokenizationEngine.EndTokenization(continuation, context);
 
                     if (hintStrategy.PostProcess(result))
                     {

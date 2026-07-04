@@ -48,7 +48,6 @@ internal class TokenizationEngine : ITokenizationEngine
     /// and assigning values to the target object.
     /// </summary>
     /// <param name="template">The template containing token definitions</param>
-    /// <param name="inputLength">The length of the input being tokenized, used for logging and max-iterations calculation</param>
     /// <param name="targetObject">The object to populate with matched token values</param>
     /// <param name="context">The tokenization context containing shared state (must be initialized by the caller)</param>
     /// <param name="result">The result object to populate with matches and misses</param>
@@ -56,7 +55,6 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="hintStrategy">Optional hint strategy to notify when token preambles match.</param>
     public void ProcessTokenization(
         Template template,
-        int inputLength,
         object? targetObject,
         ITokenizationContext context,
         TokenizeResultBase result,
@@ -103,12 +101,11 @@ internal class TokenizationEngine : ITokenizationEngine
         }
         if (log.IsEnabled(LogLevel.Debug))
         {
-            log.LogDebug("Tokenization started for template '{TemplateName}' with input length {InputLength}",
-                template.Name, inputLength);
+            log.LogDebug("Tokenization started for template '{TemplateName}'", template.Name);
         }
 
         collector.Record(DiagnosticEventType.TokenizationStarted,
-            detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}, Input length: {inputLength}");
+            detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}");
 
         if (log.IsEnabled(LogLevel.Debug))
         {
@@ -118,20 +115,27 @@ internal class TokenizationEngine : ITokenizationEngine
 
         var matchBuffer = new List<Token>();
         var iterationCount = 0;
-        var maxIterations = template.Options.MaxIterations > 0
-            ? template.Options.MaxIterations
-            : inputLength > 0 ? inputLength * 2 : int.MaxValue;
+        var hasExplicitLimit = template.Options.MaxIterations > 0;
 
         // Main tokenization loop
         while (context.Enumerator.IsEmpty == false)
         {
             iterationCount++;
-            if (iterationCount > maxIterations)
+            if (hasExplicitLimit && iterationCount > template.Options.MaxIterations)
             {
                 throw new TokenizerException(
-                    $"Tokenization exceeded maximum iteration count of {maxIterations:N0}. " +
+                    $"Tokenization exceeded maximum iteration count of {template.Options.MaxIterations:N0}. " +
                     "This may indicate a problematic template pattern. " +
                     "Increase TokenizerOptions.MaxIterations to allow more iterations.");
+            }
+
+            if (!hasExplicitLimit && iterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
+            {
+                throw new TokenizerException(
+                    $"Tokenization exceeded derived iteration limit (iterations: {iterationCount:N0}, " +
+                    $"characters consumed: {context.Enumerator.CharactersConsumed:N0}). " +
+                    "This may indicate a problematic template pattern. " +
+                    "Set TokenizerOptions.MaxIterations to override the automatic limit.");
             }
 
             var next = context.Enumerator.Peek();
@@ -267,7 +271,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="matchIds">The set of matched token IDs</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if any tokens were successfully assigned</returns>
-    public bool TryAssignCandidateTokens(
+    private bool TryAssignCandidateTokens(
         CandidateTokenList candidates,
         object? targetObject,
         StringBuilder replacement,
@@ -371,7 +375,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="location">The current file location</param>
     /// <param name="result">The result object to populate with matches</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    public void ProcessFrontMatterTokens(
+    private void ProcessFrontMatterTokens(
         Template template,
         object? targetObject,
         FileLocation location,
@@ -435,7 +439,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="template">The template containing token definitions</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if processing should continue, false if candidates were cleared</returns>
-    public bool ProcessRepeatedTokens(
+    private bool ProcessRepeatedTokens(
         CandidateTokenList candidates,
         TokenEnumerator enumerator,
         StringBuilder replacement,
@@ -574,7 +578,7 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <param name="enumerator">The token enumerator</param>
     /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    public void ProcessNewlineTerminatedTokens(
+    private void ProcessNewlineTerminatedTokens(
         CandidateTokenList candidates,
         object? targetObject,
         StringBuilder replacement,

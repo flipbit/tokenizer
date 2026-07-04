@@ -1,6 +1,4 @@
-using System.Text;
 using Tokens.Diagnostics;
-using Tokens.Enumerators;
 
 namespace Tokens.Tokenization;
 
@@ -15,70 +13,16 @@ internal interface ITokenizationEngine
     /// and assigning values to the target object.
     /// </summary>
     /// <param name="template">The template containing token definitions</param>
-    /// <param name="inputLength">The length of the input being tokenized, used for logging and max-iterations calculation</param>
     /// <param name="targetObject">The object to populate with matched token values</param>
     /// <param name="context">The tokenization context containing shared state (must be initialized by the caller)</param>
     /// <param name="result">The result object to populate with matches and misses</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <param name="hintStrategy">Optional hint strategy to notify when token preambles match.</param>
-    void ProcessTokenization(Template template, int inputLength, object? targetObject, ITokenizationContext context, TokenizeResultBase result, IDiagnosticCollector collector, IHintStrategy? hintStrategy = null);
-
-    /// <summary>
-    /// Processes candidate tokens and attempts to assign values to the target object.
-    /// </summary>
-    /// <param name="candidates">The list of candidate tokens to process</param>
-    /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="options">The tokenizer options</param>
-    /// <param name="location">The location where the token was found</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    /// <returns>True if any tokens were successfully assigned</returns>
-    bool TryAssignCandidateTokens(CandidateTokenList candidates, object? targetObject, StringBuilder replacement,
-        TokenizerOptions options, FileLocation location, TokenizeResultBase result, Template template, HashSet<int> matchIds, IDiagnosticCollector collector);
-
-    /// <summary>
-    /// Processes front matter tokens that don't require input text matching.
-    /// </summary>
-    /// <param name="template">The template containing front matter token definitions</param>
-    /// <param name="targetObject">The object to populate with front matter token values</param>
-    /// <param name="location">The current file location</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    void ProcessFrontMatterTokens(Template template, object? targetObject, FileLocation location, TokenizeResultBase result, IDiagnosticCollector collector);
-
-    /// <summary>
-    /// Handles the processing of repeated tokens and manages disabled repeating tokens.
-    /// </summary>
-    /// <param name="candidates">The list of candidate tokens</param>
-    /// <param name="enumerator">The token enumerator</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="result">The result object</param>
-    /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    /// <returns>True if processing should continue, false if candidates were cleared</returns>
-    bool ProcessRepeatedTokens(CandidateTokenList candidates, TokenEnumerator enumerator, StringBuilder replacement,
-        TokenizeResultBase result, HashSet<int> disabledRepeatingTokens, HashSet<int> matchIds, Template template, IDiagnosticCollector collector);
-
-    /// <summary>
-    /// Handles newline-terminated token processing.
-    /// </summary>
-    /// <param name="candidates">The list of candidate tokens</param>
-    /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="options">The tokenizer options</param>
-    /// <param name="location">The current file location</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="enumerator">The token enumerator</param>
-    /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    void ProcessNewlineTerminatedTokens(CandidateTokenList candidates, object? targetObject, StringBuilder replacement,
-        TokenizerOptions options, FileLocation location, TokenizeResultBase result, Template template,
-        HashSet<int> matchIds, TokenEnumerator enumerator, HashSet<int> disabledRepeatingTokens, IDiagnosticCollector collector);
+    void ProcessTokenization(
+        Template template,
+        object? targetObject,
+        ITokenizationContext context,
+        TokenizeResultBase result,
+        IDiagnosticCollector collector,
+        IHintStrategy? hintStrategy = null);
 }

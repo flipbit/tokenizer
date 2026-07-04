@@ -279,9 +279,7 @@ public sealed class Tokenizer : ITokenizer
                     {
                         log.LogTrace("Hints validated successfully, proceeding with tokenization");
                     }
-                    // inputLength of 0 means "use default" when rawInput is unavailable
-                    var inputLength = rawInput?.Length ?? 0;
-                    tokenizationEngine.ProcessTokenization(template, inputLength, value, context, result, collector, hintStrategy);
+                    tokenizationEngine.ProcessTokenization(template, value, context, result, collector, hintStrategy);
 
                     if (hintStrategy.PostProcess(result))
                     {

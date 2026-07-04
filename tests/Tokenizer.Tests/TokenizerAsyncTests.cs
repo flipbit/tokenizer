@@ -115,6 +115,45 @@ public class TokenizerAsyncTests : TokenizerTestBase
         Assert.Equal("Diana", result.Value.Name);
     }
 
+    [Fact]
+    public async Task GivenTemplateWithHints_WhenConcurrentSyncAndAsync_ThenBothProduceCorrectResults()
+    {
+        // Arrange — template with a hint; sync path uses string.Contains, async uses fallback
+        const string pattern = """
+                               ---
+                               Hint: Name
+                               ---
+                               Name: {Name}
+                               """;
+        var template = _tokenizer.Compile(pattern);
+        var syncInput = "Name: SyncAlice";
+        var asyncInput = "Name: AsyncBob";
+
+        // Act — run sync and async concurrently many times to stress the hint strategy
+        var errors = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var tasks = Enumerable.Range(0, 50).Select(i => Task.Run(async () =>
+        {
+            if (i % 2 == 0)
+            {
+                var result = _tokenizer.Tokenize(template, syncInput);
+                if (!result.Success || result.Tokens.Matches.All(m => m.Value?.ToString() != "SyncAlice"))
+                    errors.Add($"Sync iteration {i} failed");
+            }
+            else
+            {
+                using var reader = new StringReader(asyncInput);
+                var result = await _tokenizer.TokenizeAsync(template, reader);
+                if (!result.Success || result.Tokens.Matches.All(m => m.Value?.ToString() != "AsyncBob"))
+                    errors.Add($"Async iteration {i} failed");
+            }
+        }));
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        Assert.Empty(errors);
+    }
+
     private class Person
     {
         public string Name { get; set; } = null!;

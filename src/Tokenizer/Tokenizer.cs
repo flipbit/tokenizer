@@ -24,7 +24,6 @@ public sealed class Tokenizer : ITokenizer
     private readonly ITokenizationEngine tokenizationEngine;
     private readonly IResultBuilder resultBuilder;
     private readonly TemplateCache compilationCache;
-    private readonly IHintStrategy hintStrategy = new ContainsHintStrategy();
 
     /// <summary>Gets the options.</summary>
     public TokenizerOptions Options { get; }
@@ -163,6 +162,7 @@ public sealed class Tokenizer : ITokenizer
     /// </param>
     private void TokenizeCore(TokenizeResultBase result, object? value, Template template, TextReader reader, string? rawInput)
     {
+        var hintStrategy = new ContainsHintStrategy();
         var scopeProperties = new Dictionary<string, object>
         {
             ["TemplateName"] = template.Name,
@@ -370,6 +370,7 @@ public sealed class Tokenizer : ITokenizer
 
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
+        var hintStrategy = new ContainsHintStrategy();
         log.LogInformation("Starting async tokenization for template {TemplateName}", template.Name);
 
         using var context = new TokenizationContext();

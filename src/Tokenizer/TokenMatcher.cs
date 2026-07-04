@@ -296,6 +296,9 @@ public sealed class TokenMatcher : ITokenMatcher
             r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
     }
 
+    // AllowStreamBuffering is intentionally not checked here. Unlike Stream (which can be
+    // seekable), TextReader has no seek concept — buffering into a MemoryStream is the only
+    // way to support rewinding between multiple template matches.
     private async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
     {
         var buffer = new MemoryStream();

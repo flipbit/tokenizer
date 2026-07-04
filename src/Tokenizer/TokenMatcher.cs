@@ -93,11 +93,6 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (!Templates.TryGet(name, out var template)) continue;
 
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
-            }
-
             // Check template has tags
             if (CheckTemplateTags(template, tags) == false)
             {
@@ -109,14 +104,6 @@ public sealed class TokenMatcher : ITokenMatcher
                 var result = tokenizer.Tokenize(template, input);
 
                 results.AddResult(result);
-
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Match Success: {Success}", result.Success);
-                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
-                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
-                }
-
             }
             catch (Exception e)
             {
@@ -125,11 +112,6 @@ public sealed class TokenMatcher : ITokenMatcher
                 log.LogError(e, "Error processing template: {TemplateName}", template.Name);
 
                 throw exception;
-            }
-
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
             }
         }
 
@@ -170,11 +152,6 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (!Templates.TryGet(name, out var template)) continue;
 
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                log.LogTrace("Start: Matching: {TemplateName}", template.Name);
-            }
-
             // Check template has tags
             if (CheckTemplateTags(template, tags) == false)
             {
@@ -186,14 +163,6 @@ public sealed class TokenMatcher : ITokenMatcher
                 var result = tokenizer.Tokenize<T>(template, input);
 
                 results.AddResult(result);
-
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("Match Success: {Success}", result.Success);
-                    log.LogTrace("Total Matches: {MatchCount}", result.Tokens.Matches.Count);
-                    log.LogTrace("Total Errors : {ErrorCount}", result.Exceptions.Count);
-                }
-
             }
             catch (Exception e)
             {
@@ -202,11 +171,6 @@ public sealed class TokenMatcher : ITokenMatcher
                 log.LogError(e, "Error processing template: {TemplateName}", template.Name);
 
                 throw exception;
-            }
-
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
             }
         }
 
@@ -341,18 +305,9 @@ public sealed class TokenMatcher : ITokenMatcher
         {
             if (template.HasTags(tags, out var missing) == false)
             {
-                if (log.IsEnabled(LogLevel.Trace))
-                {
-                    log.LogTrace("No tags matching: {MissingTags}", missing);
-                    log.LogTrace("Finish: Matching: {TemplateName}", template.Name);
-                }
                 return false;
             }
 
-            if (log.IsEnabled(LogLevel.Trace))
-            {
-                log.LogTrace("Found tag matching: {Tags}", string.Join(", ", tags));
-            }
             return true;
         }
 

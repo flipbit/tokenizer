@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,33 +40,6 @@ public class CompileApiTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenTextReader_WhenCompiling_ThenReturnsTemplateWithTokens()
-    {
-        // Arrange
-        using var reader = new StringReader("Name: {Name}");
-
-        // Act
-        var template = tokenizer.Compile(reader);
-
-        // Assert
-        Assert.NotNull(template);
-        Assert.Single(template.Tokens);
-    }
-
-    [Fact]
-    public void GivenTextReaderAndName_WhenCompiling_ThenTemplateHasExplicitName()
-    {
-        // Arrange
-        using var reader = new StringReader("Name: {Name}");
-
-        // Act
-        var template = tokenizer.Compile(reader, "reader-template");
-
-        // Assert
-        Assert.Equal("reader-template", template.Name);
-    }
-
-    [Fact]
     public void GivenSamePatternCompiledTwice_WhenUsingStringOverload_ThenCacheReturnsSameTemplate()
     {
         // Arrange
@@ -79,17 +51,6 @@ public class CompileApiTests : TokenizerTestBase
 
         // Assert
         Assert.Same(t1, t2);
-    }
-
-    [Fact]
-    public void GivenTextReaderCompilation_WhenCompiledTwice_ThenCacheIsNotUsed()
-    {
-        // Arrange & Act
-        var t1 = tokenizer.Compile(new StringReader("Name: {Name}"));
-        var t2 = tokenizer.Compile(new StringReader("Name: {Name}"));
-
-        // Assert
-        Assert.NotSame(t1, t2);
     }
 
     [Fact]

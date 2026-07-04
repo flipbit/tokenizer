@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -149,75 +148,15 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <summary>
-    /// Tokenizes the input from a <see cref="TextReader"/> using the provided compiled <paramref name="template"/>.
-    /// The caller retains ownership of the reader; it is not disposed.
-    /// </summary>
-    /// <remarks>
-    /// <see cref="TokenizerOptions.MaxInputLength"/> is not enforced on the TextReader path
-    /// because the total length is unknown without consuming the entire stream.
-    /// </remarks>
-    public TokenizeResult Tokenize(Template template, TextReader input)
-    {
-        var result = new TokenizeResult(template);
-        Tokenize(result, null, template, input);
-        return result;
-    }
-
-    /// <summary>
-    /// Tokenizes the input from a <see cref="TextReader"/> using the provided compiled <paramref name="template"/>,
-    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
-    /// The caller retains ownership of the reader; it is not disposed.
-    /// </summary>
-    /// <remarks>
-    /// <see cref="TokenizerOptions.MaxInputLength"/> is not enforced on the TextReader path
-    /// because the total length is unknown without consuming the entire stream.
-    /// </remarks>
-    public TokenizeResult<T> Tokenize<T>(Template template, TextReader input) where T : class, new()
-    {
-        var result = new TokenizeResult<T>(template);
-        Tokenize(result, result.Value, template, input);
-        return result;
-    }
-
-    /// <summary>
-    /// Tokenizes the input from a <see cref="Stream"/> using the provided compiled <paramref name="template"/>.
-    /// The stream is not disposed; it remains open for further use.
-    /// </summary>
-    public TokenizeResult Tokenize(Template template, Stream input, Encoding encoding)
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Tokenize(template, reader);
-    }
-
-    /// <summary>
-    /// Tokenizes the input from a <see cref="Stream"/> using the provided compiled <paramref name="template"/>,
-    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
-    /// The stream is not disposed; it remains open for further use.
-    /// </summary>
-    public TokenizeResult<T> Tokenize<T>(Template template, Stream input, Encoding encoding) where T : class, new()
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Tokenize<T>(template, reader);
-    }
-
-    private void Tokenize(TokenizeResultBase result, object? value, Template template, TextReader input)
-    {
-        TokenizeCore(result, value, template, input, rawInput: null);
-    }
-
-    /// <summary>
-    /// Core tokenization logic shared by both the string and TextReader paths.
+    /// Core tokenization logic.
     /// </summary>
     /// <param name="result">The result to populate.</param>
     /// <param name="value">The target object to assign values to, or null.</param>
     /// <param name="template">The compiled template.</param>
     /// <param name="reader">The reader to tokenize from.</param>
     /// <param name="rawInput">
-    /// The raw input string when tokenizing from a string, or null when tokenizing from a TextReader.
-    /// Drives length-dependent features: hint pre-filtering, input-length-based iteration cap,
-    /// alignment rendering in diagnostics.
+    /// The raw input string. Drives length-dependent features: hint pre-filtering,
+    /// input-length-based iteration cap, alignment rendering in diagnostics.
     /// </param>
     private void TokenizeCore(TokenizeResultBase result, object? value, Template template, TextReader reader, string? rawInput)
     {
@@ -262,7 +201,7 @@ public sealed class Tokenizer : ITokenizer
                     ? new DiagnosticCollector(null, rawInput)
                     : NullDiagnosticCollector.Instance;
 
-                // Process hints first (rawInput is null for TextReader inputs — hint pre-filtering requires the full string)
+                // Process hints first — hint pre-filtering requires the full input string
                 if (log.IsEnabled(LogLevel.Trace))
                 {
                     log.LogTrace("Processing hints");
@@ -339,12 +278,6 @@ public sealed class Tokenizer : ITokenizer
 
     /// <inheritdoc />
     public Template Compile(string pattern, string name) => compilationCache.GetOrAdd(pattern, p => parser.Parse(p, name));
-
-    /// <inheritdoc />
-    public Template Compile(TextReader reader) => parser.Parse(reader);
-
-    /// <inheritdoc />
-    public Template Compile(TextReader reader, string name) => parser.Parse(reader, name);
 
     /// <inheritdoc />
     public void ClearCompilationCache() => compilationCache.Clear();

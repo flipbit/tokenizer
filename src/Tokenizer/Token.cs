@@ -246,8 +246,12 @@ public sealed class Token
                 throw;
             }
         }
-        catch (TypeConversionException)
+        catch (TypeConversionException ex)
         {
+            collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                tokenName: Name, tokenId: Id,
+                value: value,
+                detail: $"Type conversion failed: {ex.Message}");
             return false;
         }
         catch (Exception e)

@@ -1,5 +1,7 @@
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tokens.Enumerators;
 
@@ -9,11 +11,18 @@ namespace Tokens.Enumerators;
 /// </summary>
 public class TokenEnumerator
 {
+    private const int DefaultBufferSize = 1024;
+    private const int RefillWatermark = 256;
+
     private TextReader reader;
     private readonly string? originalString;
-    private readonly Queue<char> pushback = new Queue<char>();
 
-    private bool isEmpty;
+    private char[] buffer;
+    private int readPos;
+    private int writePos;
+    private int bufferedCount;
+
+    private bool readerExhausted;
     private bool resetNextLine;
 
     /// <summary>
@@ -38,14 +47,19 @@ public class TokenEnumerator
     {
         this.reader = reader;
         this.originalString = originalString;
-        isEmpty = reader.Peek() == -1;
+        buffer = new char[DefaultBufferSize];
+        readPos = 0;
+        writePos = 0;
+        bufferedCount = 0;
+        readerExhausted = false;
         Location = new FileLocation();
+        FillBuffer();
     }
 
     /// <summary>
     /// Gets a value indicating whether all characters have been consumed.
     /// </summary>
-    public bool IsEmpty => isEmpty && pushback.Count == 0;
+    public bool IsEmpty => bufferedCount == 0 && readerExhausted;
 
     /// <summary>
     /// Gets a value indicating whether <see cref="Reset"/> is supported.
@@ -64,22 +78,81 @@ public class TokenEnumerator
     public long CharactersConsumed { get; private set; }
 
     /// <summary>
+    /// Gets a value indicating whether the buffer is below the refill watermark
+    /// and the reader has more data available.
+    /// </summary>
+    public bool NeedsRefill => bufferedCount < RefillWatermark && !readerExhausted;
+
+    /// <summary>
+    /// Reads a bulk chunk from the underlying reader into the ring buffer (synchronous path).
+    /// </summary>
+    public void FillBuffer()
+    {
+        if (readerExhausted) return;
+
+        // Read into a temporary staging buffer, then copy with CRLF normalization
+        var available = buffer.Length - bufferedCount;
+        if (available <= 0) return;
+
+        var staging = new char[available];
+        var read = reader.Read(staging, 0, available);
+        if (read == 0)
+        {
+            readerExhausted = true;
+            return;
+        }
+
+        CopyToRingBuffer(staging, read);
+
+        // Check if reader is now exhausted
+        if (reader.Peek() == -1)
+        {
+            readerExhausted = true;
+        }
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Reads a bulk chunk from the underlying reader into the ring buffer (asynchronous path).
+    /// </summary>
+    /// <param name="ct">A cancellation token to observe.</param>
+    public async ValueTask FillBufferAsync(CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        if (readerExhausted) return;
+
+        var available = buffer.Length - bufferedCount;
+        if (available <= 0) return;
+
+        var staging = new char[available];
+        var read = await reader.ReadAsync(staging.AsMemory(0, available), ct).ConfigureAwait(false);
+        if (read == 0)
+        {
+            readerExhausted = true;
+            return;
+        }
+
+        CopyToRingBuffer(staging, read);
+
+        if (reader.Peek() == -1)
+        {
+            readerExhausted = true;
+        }
+    }
+#endif
+
+    /// <summary>
     /// Advances the enumerator by one character and returns it, updating <see cref="Location"/>.
     /// Returns <c>'\0'</c> if the enumerator is already at the end.
     /// </summary>
     /// <returns>The next character, or <c>'\0'</c> if <see cref="IsEmpty"/> is <see langword="true"/>.</returns>
     public char Next()
     {
-        var next = ReadChar();
+        var next = DequeueChar();
         if (next == '\0') return '\0';
 
         CharactersConsumed++;
-
-        // Eagerly detect end-of-input so IsEmpty is accurate immediately
-        if (pushback.Count == 0 && !isEmpty && reader.Peek() == -1)
-        {
-            isEmpty = true;
-        }
 
         if (resetNextLine)
         {
@@ -106,30 +179,14 @@ public class TokenEnumerator
     /// <returns>The next character, or <c>'\0'</c> if <see cref="IsEmpty"/> is <see langword="true"/>.</returns>
     public char Peek()
     {
-        if (pushback.Count > 0)
+        if (bufferedCount == 0)
         {
-            return pushback.Peek();
+            if (readerExhausted) return '\0';
+            FillBuffer();
+            if (bufferedCount == 0) return '\0';
         }
 
-        if (isEmpty) return '\0';
-
-        var raw = reader.Peek();
-        if (raw == -1)
-        {
-            isEmpty = true;
-            return '\0';
-        }
-
-        if (raw == '\r')
-        {
-            // Need to resolve CRLF properly — read through ReadChar and push into pushback
-            var resolved = ReadChar();
-            if (resolved == '\0') return '\0';
-            pushback.Enqueue(resolved);
-            return resolved;
-        }
-
-        return (char)raw;
+        return buffer[readPos];
     }
 
     /// <summary>
@@ -145,16 +202,16 @@ public class TokenEnumerator
         // Fast path: check first character before buffering the full length
         if (value[0] != '\0' && Peek() != value[0]) return false;
 
-        EnsurePushback(value.Length);
+        EnsureBuffered(value.Length);
 
-        if (pushback.Count < value.Length) return false;
+        if (bufferedCount < value.Length) return false;
 
-        var index = 0;
-        foreach (var c in pushback)
+        var pos = readPos;
+        for (var i = 0; i < value.Length; i++)
         {
-            if (index >= value.Length) break;
-            if (c != value[index]) return false;
-            index++;
+            if (buffer[pos] != value[i]) return false;
+            pos++;
+            if (pos >= buffer.Length) pos = 0;
         }
 
         return true;
@@ -221,79 +278,124 @@ public class TokenEnumerator
                 "Use a hint strategy that does not require enumerator reset.");
         }
 
-        pushback.Clear();
         reader = new StringReader(originalString);
-        isEmpty = reader.Peek() == -1;
+        readPos = 0;
+        writePos = 0;
+        bufferedCount = 0;
+        readerExhausted = false;
         resetNextLine = false;
         Location.Reset();
         CharactersConsumed = 0;
+        FillBuffer();
     }
 
     /// <summary>
-    /// Reads one character from the pushback queue or the underlying reader,
-    /// normalizing all line endings to <c>\n</c>.
+    /// Reads one character from the ring buffer, transparently refilling from the reader if needed.
+    /// Returns <c>'\0'</c> if no more characters are available.
     /// </summary>
-    private char ReadChar()
+    private char DequeueChar()
     {
-        if (pushback.Count > 0)
+        if (bufferedCount == 0)
         {
-            return pushback.Dequeue();
+            if (readerExhausted) return '\0';
+            FillBuffer();
+            if (bufferedCount == 0) return '\0';
         }
 
-        if (isEmpty) return '\0';
-
-        var raw = reader.Read();
-        if (raw == -1)
-        {
-            isEmpty = true;
-            return '\0';
-        }
-
-        var c = (char)raw;
-
-        if (c == '\r')
-        {
-            // Check if followed by \n — if so, consume it
-            if (reader.Peek() == '\n')
-            {
-                reader.Read();
-            }
-            return '\n';
-        }
+        var c = buffer[readPos];
+        readPos++;
+        if (readPos >= buffer.Length) readPos = 0;
+        bufferedCount--;
 
         return c;
     }
 
     /// <summary>
-    /// Reads characters from the reader into the pushback queue until it contains
-    /// at least <paramref name="count"/> characters, or the reader is exhausted.
-    /// Only reads from the underlying reader, not from the pushback queue.
+    /// Ensures at least <paramref name="count"/> characters are buffered, growing the buffer if necessary.
     /// </summary>
-    private void EnsurePushback(int count)
+    private void EnsureBuffered(int count)
     {
-        while (pushback.Count < count)
+        while (bufferedCount < count && !readerExhausted)
         {
-            if (isEmpty) break;
-
-            var raw = reader.Read();
-            if (raw == -1)
+            if (bufferedCount >= buffer.Length)
             {
-                isEmpty = true;
-                break;
+                GrowBuffer();
             }
+            FillBuffer();
+        }
+    }
 
-            if (raw == '\r')
+    /// <summary>
+    /// Doubles the ring buffer capacity, linearizing existing data into the new buffer.
+    /// </summary>
+    private void GrowBuffer()
+    {
+        var newSize = buffer.Length * 2;
+        var newBuffer = new char[newSize];
+
+        // Linearize existing data into the new buffer
+        if (bufferedCount > 0)
+        {
+            if (readPos + bufferedCount <= buffer.Length)
             {
-                if (reader.Peek() == '\n')
-                {
-                    reader.Read();
-                }
-                pushback.Enqueue('\n');
+                Array.Copy(buffer, readPos, newBuffer, 0, bufferedCount);
             }
             else
             {
-                pushback.Enqueue((char)raw);
+                var firstChunk = buffer.Length - readPos;
+                Array.Copy(buffer, readPos, newBuffer, 0, firstChunk);
+                Array.Copy(buffer, 0, newBuffer, firstChunk, bufferedCount - firstChunk);
             }
+        }
+
+        buffer = newBuffer;
+        readPos = 0;
+        writePos = bufferedCount;
+    }
+
+    /// <summary>
+    /// Copies characters from a staging buffer into the ring buffer,
+    /// normalizing all line endings (<c>\r\n</c>, lone <c>\r</c>) to <c>\n</c>.
+    /// </summary>
+    private void CopyToRingBuffer(char[] staging, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var c = staging[i];
+
+            if (c == '\r')
+            {
+                // Check if next char is \n — if so, skip the \r (the \n will be written next iteration)
+                if (i + 1 < count && staging[i + 1] == '\n')
+                {
+                    continue; // skip \r, the \n follows
+                }
+
+                // Lone \r or \r at end of staging — need to check reader for \n
+                if (i + 1 >= count)
+                {
+                    // \r is at the end of our staging read — peek at reader to check for \n
+                    var peek = reader.Peek();
+                    if (peek == '\n')
+                    {
+                        // \r\n split across reads — skip the \r, write \n, consume the \n from reader
+                        reader.Read();
+                    }
+                }
+
+                // Write \n instead of lone \r
+                c = '\n';
+            }
+
+            if (bufferedCount >= buffer.Length)
+            {
+                GrowBuffer();
+            }
+
+            buffer[writePos] = c;
+            writePos++;
+            if (writePos >= buffer.Length) writePos = 0;
+            bufferedCount++;
         }
     }
 }

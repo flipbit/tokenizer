@@ -93,6 +93,11 @@ public class TokenEnumerator
     public long CharactersConsumed { get; private set; }
 
     /// <summary>
+    /// Gets the total number of characters seen so far (consumed + still buffered).
+    /// </summary>
+    public long TotalCharactersSeen => CharactersConsumed + bufferedCount;
+
+    /// <summary>
     /// Gets a value indicating whether the buffer is below the refill watermark
     /// and the reader has more data available.
     /// </summary>

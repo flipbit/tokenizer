@@ -389,6 +389,14 @@ public sealed class Tokenizer : ITokenizer
             do
             {
                 await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
+
+                if (template.Options.MaxInputLength > 0 &&
+                    context.Enumerator.TotalCharactersSeen > template.Options.MaxInputLength)
+                {
+                    throw new TokenizerException(
+                        $"Input length exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
+                        "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+                }
             }
             while (!engine.ContinueTokenization(context, ct));
             engine.EndTokenization(context);

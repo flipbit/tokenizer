@@ -1,3 +1,5 @@
+using System.IO;
+using System.Threading.Tasks;
 using Tokens.Exceptions;
 using Xunit;
 
@@ -201,5 +203,22 @@ public class TokenizerSafetyLimitTests
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
+    }
+
+    [Fact]
+    public async Task GivenAsyncInputExceedingMaxLength_WhenTokenizeAsync_ThenThrowsTokenizerException()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+        options.MaxInputLength = 100;
+        var tokenizer = new Tokenizer(options);
+        var template = tokenizer.Compile("Name: {Name}");
+        var input = new string('x', 200);
+        using var reader = new StringReader(input);
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<TokenizerException>(
+            () => tokenizer.TokenizeAsync(template, reader));
+        Assert.Contains("MaxInputLength", ex.Message);
     }
 }

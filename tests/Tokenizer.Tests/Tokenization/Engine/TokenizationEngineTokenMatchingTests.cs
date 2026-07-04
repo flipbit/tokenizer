@@ -134,8 +134,9 @@ public class TokenizationEngineTokenMatchingTests
         // Act
         _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
-        // Assert
-        Assert.True(result.Tokens.Matches.Count >= 1);
+        // Assert — 3 items in input, all should match the repeating token
+        Assert.True(result.Tokens.Matches.Count >= 3,
+            $"Expected at least 3 matches for 3 input items, got {result.Tokens.Matches.Count}");
     }
 
     [Fact]
@@ -233,9 +234,13 @@ public class TokenizationEngineTokenMatchingTests
         // Act
         _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
-        // Assert
-        // Without separator, tokens can't distinguish boundaries - expect specific behavior
-        Assert.NotNull(result);
+        // Assert — without a separator, the first token captures all input and the second gets nothing
+        Assert.True(result.Tokens.Matches.Count >= 1,
+            $"Expected at least 1 match, got {result.Tokens.Matches.Count}");
+        // Verify that we got a match with the full input or a portion of it
+        var firstMatch = result.Tokens.Matches.FirstOrDefault();
+        Assert.NotNull(firstMatch);
+        Assert.False(string.IsNullOrEmpty(firstMatch.Value?.ToString()));
     }
 
     [Fact]

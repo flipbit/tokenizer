@@ -66,65 +66,25 @@ public class TokenizationEngineStateTests
     }
 
     [Fact]
-    public void GivenMatchIds_WhenTrackingMatches_ThenMaintainsUniqueSet()
+    public void GivenRepeatingToken_WhenTokenized_ThenMatchIdsTrackCorrectly()
     {
         // Arrange
-        var matchIds = new HashSet<int>();
+        var parser = new TokenParser();
+        var template = parser.Parse("Item: {Item*}");
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+        var input = "Item: Apple\nItem: Banana";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        matchIds.Add(1);
-        matchIds.Add(2);
-        matchIds.Add(1); // Duplicate
+        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
-        // Assert
-        Assert.Equal(2, matchIds.Count);
-        Assert.Contains(1, matchIds);
-        Assert.Contains(2, matchIds);
-    }
-
-    [Fact]
-    public void GivenDisabledRepeatingTokens_WhenTrackingDisabled_ThenPreventsRematching()
-    {
-        // Arrange
-        var disabledTokens = new HashSet<int>();
-        var tokenId = 42;
-
-        // Act
-        disabledTokens.Add(tokenId);
-
-        // Assert
-        Assert.Contains(tokenId, disabledTokens);
-    }
-
-    [Fact]
-    public void GivenReplacementBuffer_WhenAccumulatingCharacters_ThenBuildsCorrectly()
-    {
-        // Arrange
-        var replacement = new StringBuilder();
-
-        // Act
-        replacement.Append('T');
-        replacement.Append('e');
-        replacement.Append('s');
-        replacement.Append('t');
-
-        // Assert
-        Assert.Equal("Test", replacement.ToString());
-        Assert.Equal(4, replacement.Length);
-    }
-
-    [Fact]
-    public void GivenReplacementBuffer_WhenClearing_ThenResetsState()
-    {
-        // Arrange
-        var replacement = new StringBuilder("Test");
-
-        // Act
-        replacement.Clear();
-
-        // Assert
-        Assert.Equal(0, replacement.Length);
-        Assert.Equal("", replacement.ToString());
+        // Assert — the repeating token should have matched multiple times
+        Assert.True(result.Tokens.Matches.Count >= 2,
+            $"Expected at least 2 matches for repeating token, got {result.Tokens.Matches.Count}");
+        Assert.All(result.Tokens.Matches, m => Assert.Equal("Item", m.Token.Name));
     }
 
     [Fact]

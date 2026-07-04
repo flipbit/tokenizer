@@ -111,6 +111,77 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
+    public async Task GivenTemplatesWithTags_WhenMatchAsyncWithTags_ThenFiltersCorrectly()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
+
+        using var reader = new StringReader("Name: Alice, Age: 30");
+
+        // Act — filter to only "with-age" tag
+        var result = await matcher.MatchAsync(reader, new[] { "with-age" });
+
+        // Assert
+        Assert.NotNull(result.BestMatch);
+        Assert.Equal("with-age", result.BestMatch.Template.Name);
+    }
+
+    [Fact]
+    public async Task GivenTemplatesWithTags_WhenMatchAsyncGenericWithTags_ThenFiltersCorrectly()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
+
+        using var reader = new StringReader("Name: Alice, Age: 30");
+
+        // Act
+        var result = await matcher.MatchAsync<Person>(reader, new[] { "no-age" });
+
+        // Assert
+        Assert.NotNull(result.BestMatch);
+        Assert.Equal("no-age", result.BestMatch.Template.Name);
+        Assert.Equal("Alice", result.BestMatch.Value.Name);
+    }
+
+    [Fact]
+    public async Task GivenStream_WhenRegisterTemplateAsync_ThenTemplateIsRegistered()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        var bytes = Encoding.UTF8.GetBytes("Name: {Name}");
+        using var stream = new MemoryStream(bytes);
+
+        // Act
+        await matcher.RegisterTemplateAsync(stream, Encoding.UTF8);
+
+        // Assert
+        Assert.Single(matcher.Templates.Names);
+    }
+
+    [Fact]
+    public async Task GivenStream_WhenRegisterTemplateAsyncWithName_ThenTemplateHasName()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        var bytes = Encoding.UTF8.GetBytes("Name: {Name}");
+        using var stream = new MemoryStream(bytes);
+
+        // Act
+        await matcher.RegisterTemplateAsync(stream, Encoding.UTF8, "stream-template");
+
+        // Assert
+        Assert.True(matcher.Templates.TryGet("stream-template", out _));
+    }
+
+    [Fact]
     public async Task GivenUnicodeEncodedStream_WhenMatchAsync_ThenDecodesCorrectly()
     {
         // Arrange — UTF-16 encoded stream

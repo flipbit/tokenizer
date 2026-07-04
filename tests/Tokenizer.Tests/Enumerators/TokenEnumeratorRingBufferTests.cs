@@ -80,15 +80,24 @@ public class TokenEnumeratorRingBufferTests
 
 #if NET8_0_OR_GREATER
     [Fact]
-    public async Task GivenTextReaderEnumerator_WhenFillBufferAsyncCalled_ThenBuffersCharacters()
+    public async Task GivenTextReaderEnumerator_WhenFillBufferAsyncCalled_ThenRefillsBuffer()
     {
-        // Arrange
-        var enumerator = new TokenEnumerator(new StringReader("async test"));
+        // Arrange — large input that requires multiple fills
+        var input = new string('a', 1200); // > DefaultBufferSize (1024)
+        var enumerator = new TokenEnumerator(new StringReader(input));
 
-        // Act / Assert — constructor already filled buffer
+        // Consume the initial buffer contents
+        for (var i = 0; i < 1024; i++)
+        {
+            enumerator.Next();
+        }
+
+        // Act — explicitly refill via async path
+        await enumerator.FillBufferAsync(CancellationToken.None);
+
+        // Assert — remaining characters are now available
+        Assert.False(enumerator.IsEmpty);
         Assert.Equal('a', enumerator.Peek());
-        Assert.Equal('a', enumerator.Next());
-        Assert.Equal('s', enumerator.Next());
     }
 
     [Fact]
@@ -202,6 +211,29 @@ public class TokenEnumeratorRingBufferTests
 
         // Act / Assert — buffer is below watermark and reader has more data
         Assert.True(enumerator.NeedsRefill);
+    }
+
+    [Fact]
+    public void GivenValueLongerThanBuffer_WhenTryMatch_ThenGrowsBufferAndMatches()
+    {
+        // Arrange — value longer than DefaultBufferSize (1024) forces GrowBuffer
+        var longValue = new string('x', 1500);
+        var enumerator = new TokenEnumerator(new StringReader(longValue + " tail"));
+
+        // Act / Assert — TryMatch must grow buffer to hold 1500 chars
+        Assert.True(enumerator.TryMatch(longValue));
+        Assert.False(enumerator.TryMatch(" tail")); // at start, not at tail position
+    }
+
+    [Fact]
+    public void GivenValueDoublingBuffer_WhenTryMatch_ThenGrowsBufferMultipleTimes()
+    {
+        // Arrange — value > 2048 forces multiple GrowBuffer calls (1024 → 2048 → 4096)
+        var longValue = new string('y', 3000);
+        var enumerator = new TokenEnumerator(new StringReader(longValue));
+
+        // Act / Assert
+        Assert.True(enumerator.TryMatch(longValue));
     }
 
     [Fact]

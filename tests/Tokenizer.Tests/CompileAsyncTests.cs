@@ -43,6 +43,19 @@ public class CompileAsyncTests : TokenizerTestBase
     }
 
     [Fact]
+    public async Task GivenPreCancelledToken_WhenCompileAsync_ThenThrowsOperationCancelled()
+    {
+        // Arrange
+        using var reader = new StringReader("Name: {Name}");
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => _tokenizer.CompileAsync(reader, cts.Token));
+    }
+
+    [Fact]
     public async Task GivenTextReader_WhenCompileAsync_ThenProducesSameResultAsSync()
     {
         var pattern = "Hello {Name}, welcome to {Place}!";

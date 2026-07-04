@@ -1,5 +1,3 @@
-using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Exceptions;
@@ -85,41 +83,12 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>A <see cref="TokenMatcherResult"/> containing results for each matched template, including the best match.</returns>
     public TokenMatcherResult Match(string input, string[]? tags)
     {
-        if (tags == null) tags = Array.Empty<string>();
-
         var results = new TokenMatcherResult();
-
-        foreach (var name in Templates.Names)
-        {
-            if (!Templates.TryGet(name, out var template)) continue;
-
-            // Check template has tags
-            if (CheckTemplateTags(template, tags) == false)
-            {
-                continue;
-            }
-
-            try
-            {
-                var result = tokenizer.Tokenize(template, input);
-
-                results.AddResult(result);
-            }
-            catch (Exception e)
-            {
-                var exception = new TokenMatcherException(e.Message, template, e);
-
-                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
-
-                throw exception;
-            }
-        }
-
-        // Assign best match
-        results.BestMatch = results.GetBestMatch();
-
-        return results;
-
+        return MatchCore(
+            input, tags, results,
+            template => tokenizer.Tokenize(template, input),
+            (r, result) => r.AddResult((TokenizeResult)result),
+            r => r.BestMatch = r.GetBestMatch());
     }
 
     /// <summary>
@@ -144,40 +113,12 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>A <see cref="TokenMatcherResult{T}"/> containing typed results for each matched template, including the best match.</returns>
     public TokenMatcherResult<T> Match<T>(string input, string[]? tags) where T : class, new()
     {
-        if (tags == null) tags = Array.Empty<string>();
-
         var results = new TokenMatcherResult<T>();
-
-        foreach (var name in Templates.Names)
-        {
-            if (!Templates.TryGet(name, out var template)) continue;
-
-            // Check template has tags
-            if (CheckTemplateTags(template, tags) == false)
-            {
-                continue;
-            }
-
-            try
-            {
-                var result = tokenizer.Tokenize<T>(template, input);
-
-                results.AddResult(result);
-            }
-            catch (Exception e)
-            {
-                var exception = new TokenMatcherException(e.Message, template, e);
-
-                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
-
-                throw exception;
-            }
-        }
-
-        // Assign best match
-        results.BestMatch = results.GetBestMatch();
-
-        return results;
+        return MatchCore(
+            input, tags, results,
+            template => tokenizer.Tokenize<T>(template, input),
+            (r, result) => r.AddResult((TokenizeResult<T>)result),
+            r => r.BestMatch = r.GetBestMatch());
     }
 
     /// <summary>
@@ -211,35 +152,6 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     /// <summary>
-    /// Compiles and registers a template from a <see cref="TextReader"/>.
-    /// </summary>
-    /// <param name="reader">The reader containing the template pattern.</param>
-    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
-    public ITokenMatcher RegisterTemplate(TextReader reader)
-    {
-        var template = tokenizer.Compile(reader);
-
-        Templates.Add(template);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Compiles and registers a template from a <see cref="TextReader"/> with the specified name.
-    /// </summary>
-    /// <param name="reader">The reader containing the template pattern.</param>
-    /// <param name="name">The name to assign to the template.</param>
-    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
-    public ITokenMatcher RegisterTemplate(TextReader reader, string name)
-    {
-        var template = tokenizer.Compile(reader, name);
-
-        Templates.Add(template);
-
-        return this;
-    }
-
-    /// <summary>
     /// Registers a pre-compiled template.
     /// </summary>
     /// <param name="template">The compiled template to register.</param>
@@ -251,48 +163,37 @@ public sealed class TokenMatcher : ITokenMatcher
         return this;
     }
 
-    /// <inheritdoc />
-    public TokenMatcherResult Match(TextReader input) => Match(input.ReadToEnd());
-
-    /// <inheritdoc />
-    public TokenMatcherResult Match(TextReader input, string[]? tags) => Match(input.ReadToEnd(), tags);
-
-    /// <inheritdoc />
-    public TokenMatcherResult<T> Match<T>(TextReader input) where T : class, new() => Match<T>(input.ReadToEnd());
-
-    /// <inheritdoc />
-    public TokenMatcherResult<T> Match<T>(TextReader input, string[]? tags) where T : class, new() => Match<T>(input.ReadToEnd(), tags);
-
-    /// <inheritdoc />
-    public TokenMatcherResult Match(Stream input, Encoding encoding)
+    private TResult MatchCore<TResult>(
+        string input,
+        string[]? tags,
+        TResult results,
+        Func<Template, TokenizeResultBase> tokenize,
+        Action<TResult, TokenizeResultBase> addResult,
+        Action<TResult> assignBestMatch)
     {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Match(reader);
-    }
+        tags ??= Array.Empty<string>();
 
-    /// <inheritdoc />
-    public TokenMatcherResult Match(Stream input, Encoding encoding, string[]? tags)
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Match(reader, tags);
-    }
+        foreach (var name in Templates.Names)
+        {
+            if (!Templates.TryGet(name, out var template)) continue;
 
-    /// <inheritdoc />
-    public TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding) where T : class, new()
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Match<T>(reader);
-    }
+            if (!CheckTemplateTags(template, tags)) continue;
 
-    /// <inheritdoc />
-    public TokenMatcherResult<T> Match<T>(Stream input, Encoding encoding, string[]? tags) where T : class, new()
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return Match<T>(reader, tags);
+            try
+            {
+                var result = tokenize(template);
+                addResult(results, result);
+            }
+            catch (Exception e)
+            {
+                var exception = new TokenMatcherException(e.Message, template, e);
+                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+                throw exception;
+            }
+        }
+
+        assignBestMatch(results);
+        return results;
     }
 
     private bool CheckTemplateTags(Template template, string[] tags)

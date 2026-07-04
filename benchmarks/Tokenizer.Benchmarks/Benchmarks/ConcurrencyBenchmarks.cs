@@ -1,3 +1,4 @@
+using System.IO;
 using BenchmarkDotNet.Attributes;
 using Tokens.Compilation;
 using Tokens.Config;
@@ -91,5 +92,29 @@ public class ConcurrencyBenchmarks
                 }
                 matcher.Match<MediumRecord>(mediumInput);
             });
+    }
+
+    [Benchmark(Description = "Parallel tokenize async - shared Tokenizer instance")]
+    public async Task ParallelTokenizeAsync_SharedInstance()
+    {
+        var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
+            .Select(_ =>
+            {
+                var reader = new StringReader(mediumInput);
+                return sharedTokenizer.TokenizeAsync<MediumRecord>(mediumTemplate, reader);
+            });
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark(Description = "Parallel match async - shared TokenMatcher instance")]
+    public async Task ParallelMatchAsync_SharedInstance()
+    {
+        var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
+            .Select(_ =>
+            {
+                var reader = new StringReader(mediumInput);
+                return sharedMatcher.MatchAsync<MediumRecord>(reader);
+            });
+        await Task.WhenAll(tasks);
     }
 }

@@ -9,7 +9,7 @@ namespace Tokens.Benchmarks;
 
 /// <summary>
 /// Compares tokenization performance across input source types:
-/// string, TextReader, and Stream for small, medium, and large workloads.
+/// string (sync), TextReader (async), and Stream (async) for small, medium, and large workloads.
 /// </summary>
 [Config(typeof(BenchmarkConfig))]
 public class InputStreamBenchmarks
@@ -50,45 +50,45 @@ public class InputStreamBenchmarks
     [Benchmark(Description = "String large")]
     public TokenizeResult String_Large() => tokenizer.Tokenize(largeTemplate, largeInput);
 
-    [Benchmark(Description = "TextReader small")]
-    public TokenizeResult TextReader_Small()
+    [Benchmark(Description = "TextReader async small")]
+    public async Task<TokenizeResult> TextReaderAsync_Small()
     {
         using var reader = new StringReader(smallInput);
-        return tokenizer.Tokenize(smallTemplate, reader);
+        return await tokenizer.TokenizeAsync(smallTemplate, reader);
     }
 
-    [Benchmark(Description = "TextReader medium")]
-    public TokenizeResult TextReader_Medium()
+    [Benchmark(Description = "TextReader async medium")]
+    public async Task<TokenizeResult> TextReaderAsync_Medium()
     {
         using var reader = new StringReader(mediumInput);
-        return tokenizer.Tokenize(mediumTemplate, reader);
+        return await tokenizer.TokenizeAsync(mediumTemplate, reader);
     }
 
-    [Benchmark(Description = "TextReader large")]
-    public TokenizeResult TextReader_Large()
+    [Benchmark(Description = "TextReader async large")]
+    public async Task<TokenizeResult> TextReaderAsync_Large()
     {
         using var reader = new StringReader(largeInput);
-        return tokenizer.Tokenize(largeTemplate, reader);
+        return await tokenizer.TokenizeAsync(largeTemplate, reader);
     }
 
-    [Benchmark(Description = "Stream small")]
-    public TokenizeResult Stream_Small()
+    [Benchmark(Description = "Stream async small")]
+    public async Task<TokenizeResult> StreamAsync_Small()
     {
         using var stream = new MemoryStream(smallBytes);
-        return tokenizer.Tokenize(smallTemplate, stream, Encoding.UTF8);
+        return await tokenizer.TokenizeAsync(smallTemplate, stream, Encoding.UTF8);
     }
 
-    [Benchmark(Description = "Stream medium")]
-    public TokenizeResult Stream_Medium()
+    [Benchmark(Description = "Stream async medium")]
+    public async Task<TokenizeResult> StreamAsync_Medium()
     {
         using var stream = new MemoryStream(mediumBytes);
-        return tokenizer.Tokenize(mediumTemplate, stream, Encoding.UTF8);
+        return await tokenizer.TokenizeAsync(mediumTemplate, stream, Encoding.UTF8);
     }
 
-    [Benchmark(Description = "Stream large")]
-    public TokenizeResult Stream_Large()
+    [Benchmark(Description = "Stream async large")]
+    public async Task<TokenizeResult> StreamAsync_Large()
     {
         using var stream = new MemoryStream(largeBytes);
-        return tokenizer.Tokenize(largeTemplate, stream, Encoding.UTF8);
+        return await tokenizer.TokenizeAsync(largeTemplate, stream, Encoding.UTF8);
     }
 }

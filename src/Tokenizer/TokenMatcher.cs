@@ -239,7 +239,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default)
     {
-        var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+        using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
             stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
@@ -255,7 +255,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
     {
-        var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+        using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
             stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
@@ -357,7 +357,7 @@ public sealed class TokenMatcher : ITokenMatcher
             if (!CheckTemplateTags(template, tags)) continue;
 
             stream.Position = startPos;
-            var reader = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: true,
+            using var reader = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: true,
                 bufferSize: 1024, leaveOpen: true);
 
             try

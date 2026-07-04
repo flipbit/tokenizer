@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using Tokens.Diagnostics;
 using Tokens.Enumerators;
 
 namespace Tokens.Tokenization;
@@ -57,6 +58,30 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
     /// Gets or sets the current replacement location in the input text.
     /// </summary>
     public FileLocation ReplacementLocation { get; set; }
+
+    /// <summary>Iteration count for safety limit tracking across Continue calls.</summary>
+    internal int IterationCount { get; set; }
+
+    /// <summary>Reusable buffer for token match results.</summary>
+    internal List<Token> MatchBuffer { get; } = new();
+
+    /// <summary>Template reference for Continue/End phases.</summary>
+    internal Template? Template { get; set; }
+
+    /// <summary>Target object reference for Continue/End phases.</summary>
+    internal object? TargetObject { get; set; }
+
+    /// <summary>Result object for Continue/End phases.</summary>
+    internal TokenizeResultBase? Result { get; set; }
+
+    /// <summary>Diagnostic collector for Continue/End phases.</summary>
+    internal IDiagnosticCollector? Collector { get; set; }
+
+    /// <summary>Hint strategy for Continue phase.</summary>
+    internal IHintStrategy? HintStrategy { get; set; }
+
+    /// <summary>Whether an explicit MaxIterations limit is set.</summary>
+    internal bool HasExplicitLimit { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TokenizationContext"/> class.

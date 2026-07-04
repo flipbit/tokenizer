@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Diagnostics;
@@ -61,8 +62,30 @@ internal class TokenizationEngine : ITokenizationEngine
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null)
     {
+        var ctx = (TokenizationContext)context;
+
+        BeginTokenization(template, targetObject, ctx, result, collector, hintStrategy);
+        do
+        {
+            ctx.Enumerator.FillBuffer();
+        }
+        while (!ContinueTokenization(ctx, CancellationToken.None));
+        EndTokenization(ctx);
+    }
+
+    /// <summary>
+    /// Initializes tokenization state on the context and validates arguments.
+    /// This is the setup phase before the main tokenization loop.
+    /// </summary>
+    internal void BeginTokenization(
+        Template template,
+        object? targetObject,
+        TokenizationContext context,
+        TokenizeResultBase result,
+        IDiagnosticCollector collector,
+        IHintStrategy? hintStrategy = null)
+    {
         ArgumentValidation.ThrowIfNull(template, nameof(template));
-        // Note: targetObject can be null - this is a valid use case for Tokenize(Template, string)
         ArgumentValidation.ThrowIfNull(context, nameof(context));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
@@ -98,15 +121,38 @@ internal class TokenizationEngine : ITokenizationEngine
         collector.Record(DiagnosticEventType.TokenizationStarted,
             detail: $"Template: {template.Name}, Tokens: {template.Tokens.Count}");
 
-        var matchBuffer = new List<Token>();
-        var iterationCount = 0;
-        var hasExplicitLimit = template.Options.MaxIterations > 0;
+        // Store state on context for Continue/End phases
+        context.Template = template;
+        context.TargetObject = targetObject;
+        context.Result = result;
+        context.Collector = collector;
+        context.HintStrategy = hintStrategy;
+        context.HasExplicitLimit = template.Options.MaxIterations > 0;
+        context.IterationCount = 0;
+        context.MatchBuffer.Clear();
+    }
 
-        // Main tokenization loop
+    /// <summary>
+    /// Runs the main tokenization loop. Returns true when the input is fully consumed,
+    /// or false when the enumerator needs a buffer refill (for cooperative async yielding).
+    /// </summary>
+    internal bool ContinueTokenization(TokenizationContext context, CancellationToken ct)
+    {
+        var template = context.Template!;
+        var targetObject = context.TargetObject;
+        var result = context.Result!;
+        var collector = context.Collector!;
+        var hintStrategy = context.HintStrategy;
+
         while (context.Enumerator.IsEmpty == false)
         {
-            iterationCount++;
-            if (hasExplicitLimit && iterationCount > template.Options.MaxIterations)
+            if (context.Enumerator.NeedsRefill)
+                return false;
+
+            ct.ThrowIfCancellationRequested();
+
+            context.IterationCount++;
+            if (context.HasExplicitLimit && context.IterationCount > template.Options.MaxIterations)
             {
                 throw new TokenizerException(
                     $"Tokenization exceeded maximum iteration count of {template.Options.MaxIterations:N0}. " +
@@ -114,10 +160,10 @@ internal class TokenizationEngine : ITokenizationEngine
                     "Increase TokenizerOptions.MaxIterations to allow more iterations.");
             }
 
-            if (!hasExplicitLimit && iterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
+            if (!context.HasExplicitLimit && context.IterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
             {
                 throw new TokenizerException(
-                    $"Tokenization exceeded derived iteration limit (iterations: {iterationCount:N0}, " +
+                    $"Tokenization exceeded derived iteration limit (iterations: {context.IterationCount:N0}, " +
                     $"characters consumed: {context.Enumerator.CharactersConsumed:N0}). " +
                     "This may indicate a problematic template pattern. " +
                     "Set TokenizerOptions.MaxIterations to override the automatic limit.");
@@ -142,16 +188,16 @@ internal class TokenizationEngine : ITokenizationEngine
             }
 
             // Check for next token
-            if (context.Enumerator.TryMatch(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, matchBuffer))
+            if (context.Enumerator.TryMatch(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, context.MatchBuffer))
             {
                 collector.Record(DiagnosticEventType.PreambleMatched,
-                    tokenName: string.Join(", ", matchBuffer.Select(m => m.Name)),
+                    tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
 
                 // Notify hint strategy of matched tokens
                 if (hintStrategy != null)
                 {
-                    foreach (var match in matchBuffer)
+                    foreach (var match in context.MatchBuffer)
                     {
                         hintStrategy.OnTokenMatched(match);
                     }
@@ -160,14 +206,14 @@ internal class TokenizationEngine : ITokenizationEngine
                 // Special case: first token found, just prepare to read token value
                 if (context.Candidates.HasCandidates == false)
                 {
-                    HandleFirstTokenMatch(context, matchBuffer);
+                    HandleFirstTokenMatch(context, context.MatchBuffer);
                     continue;
                 }
 
                 // Only switch if we've accumulated a value — otherwise consume a character first
                 if (context.Replacement.Length > 0)
                 {
-                    HandleTokenSwitch(context, template, targetObject, result, matchBuffer, collector);
+                    HandleTokenSwitch(context, template, targetObject, result, context.MatchBuffer, collector);
                 }
                 else
                 {
@@ -179,6 +225,19 @@ internal class TokenizationEngine : ITokenizationEngine
                 HandleNoTokenMatch(context, next);
             }
         }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Finalizes tokenization by processing remaining candidates and front matter tokens.
+    /// </summary>
+    internal void EndTokenization(TokenizationContext context)
+    {
+        var template = context.Template!;
+        var targetObject = context.TargetObject;
+        var result = context.Result!;
+        var collector = context.Collector!;
 
         // Handle remaining candidates
         if (ShouldProcessRemainingCandidates(context))

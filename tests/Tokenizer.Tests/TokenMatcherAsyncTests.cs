@@ -110,6 +110,25 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         Assert.True(matcher.Templates.TryGet("my-template", out _));
     }
 
+    [Fact]
+    public async Task GivenUnicodeEncodedStream_WhenMatchAsync_ThenDecodesCorrectly()
+    {
+        // Arrange — UTF-16 encoded stream
+        var matcher = new TokenMatcher();
+        matcher.RegisterTemplate("Name: {Name}", "name-only");
+        var bytes = Encoding.Unicode.GetBytes("Name: Alice");
+        using var stream = new MemoryStream(bytes);
+
+        // Act
+        var result = await matcher.MatchAsync(stream, Encoding.Unicode);
+
+        // Assert
+        Assert.NotNull(result.BestMatch);
+        var nameMatch = result.BestMatch.Tokens.Matches.FirstOrDefault(m => m.Token.Name == "Name");
+        Assert.NotNull(nameMatch);
+        Assert.Equal("Alice", nameMatch.Value);
+    }
+
     /// <summary>
     /// A stream wrapper that does not support seeking — simulates a NetworkStream.
     /// </summary>

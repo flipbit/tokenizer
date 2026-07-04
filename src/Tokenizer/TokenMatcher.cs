@@ -241,7 +241,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
-            stream, tags, ct,
+            stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
             () => new TokenMatcherResult(),
             (r, result) => r.AddResult(result),
@@ -257,7 +257,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
-            stream, tags, ct,
+            stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
             () => new TokenMatcherResult<T>(),
             (r, result) => r.AddResult(result),
@@ -273,7 +273,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
-            seekable, tags, ct,
+            seekable, encoding, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
             () => new TokenMatcherResult(),
             (r, result) => r.AddResult(result),
@@ -289,7 +289,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
-            seekable, tags, ct,
+            seekable, encoding, tags, ct,
             (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
             () => new TokenMatcherResult<T>(),
             (r, result) => r.AddResult(result),
@@ -335,6 +335,7 @@ public sealed class TokenMatcher : ITokenMatcher
 
     private async Task<TResult> MatchAsyncFromSeekableStream<TResult, TTokenizeResult>(
         Stream stream,
+        Encoding encoding,
         string[]? tags,
         CancellationToken ct,
         Func<Template, TextReader, CancellationToken, Task<TTokenizeResult>> tokenizeAsync,
@@ -353,7 +354,7 @@ public sealed class TokenMatcher : ITokenMatcher
             if (!CheckTemplateTags(template, tags)) continue;
 
             stream.Position = startPos;
-            var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true,
+            var reader = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: true,
                 bufferSize: 1024, leaveOpen: true);
 
             try

@@ -51,6 +51,26 @@ public interface ITokenizer
     void ClearCompilationCache();
 
     /// <summary>
+    /// Asynchronously compiles a template from a <see cref="TextReader"/>.
+    /// </summary>
+    Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default);
+
+    /// <summary>
+    /// Asynchronously compiles a template from a <see cref="TextReader"/> with an explicit name.
+    /// </summary>
+    Task<Template> CompileAsync(TextReader reader, string name, CancellationToken ct = default);
+
+    /// <summary>
+    /// Asynchronously compiles a template from a <see cref="Stream"/>.
+    /// </summary>
+    Task<Template> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default);
+
+    /// <summary>
+    /// Asynchronously compiles a template from a <see cref="Stream"/> with an explicit name.
+    /// </summary>
+    Task<Template> CompileAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default);
+
+    /// <summary>
     /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
     /// </summary>
     Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default);

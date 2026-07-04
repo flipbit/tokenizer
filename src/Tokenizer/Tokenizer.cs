@@ -286,6 +286,57 @@ public sealed class Tokenizer : ITokenizer
     public void ClearCompilationCache() => compilationCache.Clear();
 
     /// <inheritdoc />
+    public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)
+    {
+        var content = await ReadToEndAsync(reader, ct).ConfigureAwait(false);
+        return parser.Parse(content);
+    }
+
+    /// <inheritdoc />
+    public async Task<Template> CompileAsync(TextReader reader, string name, CancellationToken ct = default)
+    {
+        var content = await ReadToEndAsync(reader, ct).ConfigureAwait(false);
+        return parser.Parse(content, name);
+    }
+
+    /// <inheritdoc />
+    public async Task<Template> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await CompileAsync(reader, ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<Template> CompileAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await CompileAsync(reader, name, ct).ConfigureAwait(false);
+    }
+
+    private static async Task<string> ReadToEndAsync(TextReader reader, CancellationToken ct)
+    {
+        var sb = new StringBuilder();
+        var buffer = new char[4096];
+        int read;
+#if NET8_0_OR_GREATER
+        while ((read = await reader.ReadAsync(buffer.AsMemory(), ct).ConfigureAwait(false)) > 0)
+        {
+            ct.ThrowIfCancellationRequested();
+            sb.Append(buffer, 0, read);
+        }
+#else
+        while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+        {
+            ct.ThrowIfCancellationRequested();
+            sb.Append(buffer, 0, read);
+        }
+#endif
+        return sb.ToString();
+    }
+
+    /// <inheritdoc />
     public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
         var result = new TokenizeResult(template);

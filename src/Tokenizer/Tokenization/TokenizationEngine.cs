@@ -351,10 +351,10 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(location, nameof(location));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        var frontMatterTokens = template.Tokens.Where(t => t.IsFrontMatterToken).ToList();
-
-        foreach (var token in frontMatterTokens)
+        foreach (var token in template.Tokens)
         {
+            if (!token.IsFrontMatterToken) continue;
+
             if (token.Assign(targetObject, string.Empty, template.Options, location, out var assignedValue, collector))
             {
                 collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,

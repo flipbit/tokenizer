@@ -50,7 +50,6 @@ public interface ITokenizer
     /// </summary>
     void ClearCompilationCache();
 
-#if NET8_0_OR_GREATER
     /// <summary>
     /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
     /// </summary>
@@ -70,5 +69,4 @@ public interface ITokenizer
     /// Asynchronously tokenizes input from a <see cref="Stream"/>, mapping values onto a new <typeparamref name="T"/>.
     /// </summary>
     Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new();
-#endif
 }

@@ -285,7 +285,6 @@ public sealed class Tokenizer : ITokenizer
     /// <inheritdoc />
     public void ClearCompilationCache() => compilationCache.Clear();
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc />
     public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
@@ -354,6 +353,5 @@ public sealed class Tokenizer : ITokenizer
         log.LogInformation("Async tokenization {Result} for template {TemplateName}",
             result.Success ? "succeeded" : "failed", template.Name);
     }
-#endif
 
 }

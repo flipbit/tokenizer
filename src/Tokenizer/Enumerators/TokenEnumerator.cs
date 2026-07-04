@@ -111,7 +111,6 @@ public class TokenEnumerator
         }
     }
 
-#if NET8_0_OR_GREATER
     /// <summary>
     /// Reads a bulk chunk from the underlying reader into the ring buffer (asynchronous path).
     /// </summary>
@@ -126,7 +125,11 @@ public class TokenEnumerator
         if (available <= 0) return;
 
         var staging = new char[available];
+#if NET8_0_OR_GREATER
         var read = await reader.ReadAsync(staging.AsMemory(0, available), ct).ConfigureAwait(false);
+#else
+        var read = await reader.ReadAsync(staging, 0, available).ConfigureAwait(false);
+#endif
         if (read == 0)
         {
             readerExhausted = true;
@@ -140,7 +143,6 @@ public class TokenEnumerator
             readerExhausted = true;
         }
     }
-#endif
 
     /// <summary>
     /// Advances the enumerator by one character and returns it, updating <see cref="Location"/>.

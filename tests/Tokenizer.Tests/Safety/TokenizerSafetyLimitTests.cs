@@ -38,6 +38,8 @@ public class TokenizerSafetyLimitTests
 
         // Assert
         Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.True(result.Tokens.Matches.Count >= 1);
     }
 
     [Fact]
@@ -54,6 +56,8 @@ public class TokenizerSafetyLimitTests
 
         // Assert
         Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.True(result.Tokens.Matches.Count >= 1);
     }
 
     [Fact]
@@ -85,6 +89,8 @@ public class TokenizerSafetyLimitTests
 
         // Assert
         Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.True(result.Tokens.Matches.Count >= 1);
     }
 
     [Fact]
@@ -101,6 +107,8 @@ public class TokenizerSafetyLimitTests
 
         // Assert
         Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.True(result.Tokens.Matches.Count >= 1);
     }
 
     [Fact]
@@ -144,6 +152,7 @@ public class TokenizerSafetyLimitTests
 
         // Assert
         Assert.NotNull(result);
+        Assert.True(result.Tokens.Matches.Count >= 1);
     }
 
     [Fact]

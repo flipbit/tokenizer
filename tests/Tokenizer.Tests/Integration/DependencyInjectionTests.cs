@@ -15,7 +15,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_WithDefaultOptions_RegistersAllServices()
+    public void GivenDefaultOptions_WhenAddTokenizer_ThenRegistersAllServices()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -32,7 +32,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_WithCustomOptions_AppliesConfiguration()
+    public void GivenCustomOptions_WhenAddTokenizer_ThenAppliesConfiguration()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -54,7 +54,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_RegistersAsSingleton()
+    public void GivenAddTokenizer_WhenResolvingMultipleTimes_ThenReturnsSingleton()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -71,7 +71,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_TokenizerCanTokenizeInput()
+    public void GivenAddTokenizer_WhenTokenizingInput_ThenReturnsResult()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -89,7 +89,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_WithLogging_LogsAreCreated()
+    public void GivenAddTokenizerWithLogging_WhenTokenizing_ThenLogsAreCreated()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -110,7 +110,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_WithConfigurationSection_BindsOptions()
+    public void GivenConfigurationSection_WhenAddTokenizer_ThenBindsOptions()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -135,7 +135,7 @@ public class DependencyInjectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void AddTokenizer_WithOptionsInstance_UsesProvidedOptions()
+    public void GivenOptionsInstance_WhenAddTokenizer_ThenUsesProvidedOptions()
     {
         // Arrange
         var services = new ServiceCollection();

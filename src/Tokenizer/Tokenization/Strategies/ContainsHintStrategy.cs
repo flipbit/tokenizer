@@ -6,31 +6,23 @@ namespace Tokens.Tokenization.Strategies;
 /// <summary>
 /// Hint strategy that uses string.Contains() on the raw input string to find hints.
 /// Does not touch the enumerator, so no reset is needed.
-/// When raw input is unavailable (TextReader inputs), automatically falls back to
-/// single-pass integrated hint tracking via <see cref="IntegratedHintStrategy"/>.
+/// Only used on the sync path where rawInput is always available.
 /// </summary>
 internal class ContainsHintStrategy : IHintStrategy
 {
-    private readonly IntegratedHintStrategy fallback = new();
-    private bool usingFallback;
-
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
                            string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector)
     {
         if (template.Hints.Count == 0)
         {
-            usingFallback = false;
             return false;
         }
 
         if (rawInput == null)
         {
-            usingFallback = true;
-            return fallback.PreProcess(template, enumerator, rawInput, result, collector);
+            throw new ArgumentNullException(nameof(rawInput), "ContainsHintStrategy requires rawInput — use IntegratedHintStrategy for streaming inputs");
         }
-
-        usingFallback = false;
 
         foreach (var hint in template.Hints)
         {
@@ -67,20 +59,12 @@ internal class ContainsHintStrategy : IHintStrategy
     /// <inheritdoc />
     public void OnTokenMatched(Token token)
     {
-        if (usingFallback)
-        {
-            fallback.OnTokenMatched(token);
-        }
+        // ContainsHintStrategy uses upfront scanning, not per-token tracking — no-op
     }
 
     /// <inheritdoc />
     public bool PostProcess(TokenizeResultBase result)
     {
-        if (usingFallback)
-        {
-            return fallback.PostProcess(result);
-        }
-
         return false;
     }
 }

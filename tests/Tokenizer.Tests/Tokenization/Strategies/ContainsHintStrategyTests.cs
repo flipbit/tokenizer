@@ -121,7 +121,7 @@ public class ContainsHintStrategyTests
     }
 
     [Fact]
-    public void GivenNullRawInputWithHints_WhenPreProcess_ThenFallsBackToIntegratedStrategy()
+    public void GivenNullRawInputWithHints_WhenPreProcess_ThenThrowsArgumentNullException()
     {
         // Arrange
         var template = new TemplateBuilder()
@@ -136,11 +136,9 @@ public class ContainsHintStrategyTests
             .WithTemplate(template)
             .Build();
 
-        // Act — should not throw, falls back to integrated strategy
-        var missing = _strategy.PreProcess(template, enumerator, null, result, NullDiagnosticCollector.Instance);
-
-        // Assert — integrated strategy always returns false from PreProcess
-        Assert.False(missing);
+        // Act & Assert — sync path always provides rawInput; null is a programming error
+        Assert.Throws<ArgumentNullException>(() =>
+            _strategy.PreProcess(template, enumerator, null, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]

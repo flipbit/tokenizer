@@ -360,7 +360,7 @@ public sealed class Tokenizer : ITokenizer
     // helper extraction awkward without introducing tangled abstractions.
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
-        var hintStrategy = new ContainsHintStrategy();
+        var hintStrategy = new IntegratedHintStrategy();
         var scopeProperties = new Dictionary<string, object>
         {
             ["TemplateName"] = template.Name,
@@ -385,9 +385,9 @@ public sealed class Tokenizer : ITokenizer
 
             try
             {
-                // Async path passes null for rawInput — early hint rejection requires the full
-                // input string, which isn't available during streaming. Hints are instead checked
-                // via the integrated single-pass strategy (OnTokenMatched callbacks).
+                // Async path uses IntegratedHintStrategy directly — it tracks hints via
+                // OnTokenMatched callbacks during single-pass tokenization, since the full
+                // input string isn't available during streaming.
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
 
                 if (hintsMissing)

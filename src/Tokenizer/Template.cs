@@ -122,7 +122,14 @@ public sealed class Template
     /// </summary>
     public bool HasTags(IList<string> tags)
     {
-        return HasTags(tags, out _);
+        if (tags == null) return false;
+
+        foreach (var tag in tags)
+        {
+            if (!HasTag(tag)) return false;
+        }
+
+        return true;
     }
 
     /// <summary>

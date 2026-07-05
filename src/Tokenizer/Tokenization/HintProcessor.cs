@@ -182,7 +182,7 @@ internal class HintProcessor : IHintProcessor
         ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        var added = result.Hints.AddMatch(hint, enumerator);
+        var added = result.Hints.TryAddMatch(hint, enumerator);
 
         if (log.IsEnabled(LogLevel.Trace))
         {
@@ -212,7 +212,7 @@ internal class HintProcessor : IHintProcessor
         ArgumentValidation.ThrowIfNull(hint, nameof(hint));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        var added = result.Hints.AddMiss(hint);
+        var added = result.Hints.TryAddMiss(hint);
 
         if (log.IsEnabled(LogLevel.Trace))
         {

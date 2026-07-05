@@ -46,7 +46,7 @@ public class TokenizeResultBuilder
     {
         foreach (var hintMatch in hintMatches)
         {
-            _result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
+            _result.Hints.TryAddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
         }
         return this;
     }
@@ -55,7 +55,7 @@ public class TokenizeResultBuilder
     {
         foreach (var hintMiss in hintMisses)
         {
-            _result.Hints.AddMiss(hintMiss);
+            _result.Hints.TryAddMiss(hintMiss);
         }
         return this;
     }
@@ -134,9 +134,9 @@ public class TokenizeResultBuilder<T> where T : class, new()
         foreach (var exception in _exceptions)
             result.AddException(exception);
         foreach (var hintMatch in _hintMatches)
-            result.Hints.AddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
+            result.Hints.TryAddMatch(new Hint(Text: hintMatch.Text, Optional: hintMatch.Optional), new TokenEnumerator(""));
         foreach (var hintMiss in _hintMisses)
-            result.Hints.AddMiss(hintMiss);
+            result.Hints.TryAddMiss(hintMiss);
 
         return result;
     }

@@ -33,7 +33,7 @@ internal class ContainsHintStrategy : IHintStrategy
 
             if (rawInput.Contains(hint.Text))
             {
-                result.Hints.AddMatch(hint, enumerator);
+                result.Hints.TryAddMatch(hint, enumerator);
 
                 collector.Record(DiagnosticEventType.HintMatched,
                     value: hint.Text,
@@ -43,10 +43,7 @@ internal class ContainsHintStrategy : IHintStrategy
 
         foreach (var hint in template.Hints)
         {
-            result.Hints.AddMiss(hint);
-
-            if (hint.Optional == false &&
-                result.Hints.Misses.Any(m => m.Text == hint.Text))
+            if (result.Hints.TryAddMiss(hint) && !hint.Optional)
             {
                 collector.Record(DiagnosticEventType.HintMissing,
                     value: hint.Text);

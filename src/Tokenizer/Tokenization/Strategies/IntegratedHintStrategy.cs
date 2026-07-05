@@ -51,13 +51,13 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
 
             if (satisfied)
             {
-                result.Hints.AddMatch(hint, new TokenEnumerator(string.Empty));
+                result.Hints.TryAddMatch(hint, new TokenEnumerator(string.Empty));
             }
         }
 
         foreach (var hint in currentTemplate.Hints)
         {
-            result.Hints.AddMiss(hint);
+            result.Hints.TryAddMiss(hint);
         }
 
         return result.Hints.Misses.Any(h => h.Optional == false);

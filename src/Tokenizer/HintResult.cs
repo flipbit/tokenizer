@@ -30,7 +30,7 @@ public sealed class HintResult
     /// </summary>
     public IReadOnlyList<Hint> Misses => _misses;
 
-    internal bool AddMatch(Hint hint, TokenEnumerator enumerator)
+    internal bool TryAddMatch(Hint hint, TokenEnumerator enumerator)
     {
         if (_matches.Any(m => m.Text == hint.Text)) return false;
 
@@ -39,7 +39,7 @@ public sealed class HintResult
         return true;
     }
 
-    internal bool AddMiss(Hint hint)
+    internal bool TryAddMiss(Hint hint)
     {
         if (_misses.Any(m => m.Text == hint.Text) ||
             _matches.Any(m => m.Text == hint.Text)) return false;

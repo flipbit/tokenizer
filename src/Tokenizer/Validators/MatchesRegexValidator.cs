@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace Tokens.Validators;
@@ -7,6 +8,8 @@ namespace Tokens.Validators;
 /// </summary>
 public sealed class MatchesRegexValidator : ITokenValidator
 {
+    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new();
+
     /// <summary>
     /// Determines whether the specified token is valid.
     /// </summary>
@@ -23,6 +26,9 @@ public sealed class MatchesRegexValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        return Regex.IsMatch(valueString, args[0], RegexOptions.None, TimeSpan.FromSeconds(1));
+        var regex = RegexCache.GetOrAdd(args[0],
+            pattern => new Regex(pattern, RegexOptions.Compiled, TimeSpan.FromSeconds(1)));
+
+        return regex.IsMatch(valueString);
     }
 }

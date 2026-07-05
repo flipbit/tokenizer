@@ -265,13 +265,13 @@ public class TokenizationContextTests
     }
 
     [Fact]
-    public void GivenContext_WhenEnumeratorNotInitialized_ThenEnumeratorIsNotNull()
+    public void GivenContext_WhenEnumeratorNotInitialized_ThenEnumeratorIsNull()
     {
         // Arrange
         var context = new TokenizationContext();
 
         // Act & Assert
-        Assert.NotNull(context.Enumerator);
+        Assert.Null(context.Enumerator);
     }
 
     [Fact]

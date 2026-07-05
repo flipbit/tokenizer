@@ -21,7 +21,7 @@ internal sealed class TokenizationContext : ITokenizationContext, IDisposable
     /// <summary>
     /// Gets the token enumerator that provides access to the input text being processed.
     /// </summary>
-    public TokenEnumerator Enumerator { get; private set; } = new TokenEnumerator(string.Empty);
+    public TokenEnumerator Enumerator { get; private set; } = null!;
 
     /// <summary>
     /// Gets the StringBuilder used for building replacement values during tokenization.

@@ -112,7 +112,7 @@ internal class HintProcessor : IHintProcessor
                 }
                 else
                 {
-                    log.LogError("Required hint missing: '{HintText}'", hint.Text);
+                    log.LogWarning("Required hint missing: '{HintText}'", hint.Text);
 
                     collector.Record(DiagnosticEventType.HintMissing,
                         value: hint.Text);

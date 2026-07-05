@@ -19,8 +19,13 @@ public class CompileAsyncTests : TokenizerTestBase
     [Fact]
     public async Task GivenTextReader_WhenCompileAsync_ThenProducesValidTemplate()
     {
+        // Arrange
         using var reader = new StringReader("Name: {Name}, Age: {Age}");
+
+        // Act
         var template = await _tokenizer.CompileAsync(reader);
+
+        // Assert
         Assert.NotNull(template);
         Assert.Equal(2, template.Tokens.Count);
     }
@@ -28,16 +33,26 @@ public class CompileAsyncTests : TokenizerTestBase
     [Fact]
     public async Task GivenTextReaderWithName_WhenCompileAsync_ThenTemplateHasName()
     {
+        // Arrange
         using var reader = new StringReader("Name: {Name}");
+
+        // Act
         var template = await _tokenizer.CompileAsync(reader, "my-template");
+
+        // Assert
         Assert.Equal("my-template", template.Name);
     }
 
     [Fact]
     public async Task GivenStream_WhenCompileAsync_ThenProducesValidTemplate()
     {
+        // Arrange
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Value: {Value}"));
+
+        // Act
         var template = await _tokenizer.CompileAsync(stream, Encoding.UTF8);
+
+        // Assert
         Assert.NotNull(template);
         Assert.Single(template.Tokens);
     }
@@ -72,10 +87,15 @@ public class CompileAsyncTests : TokenizerTestBase
     [Fact]
     public async Task GivenTextReader_WhenCompileAsync_ThenProducesSameResultAsSync()
     {
+        // Arrange
         var pattern = "Hello {Name}, welcome to {Place}!";
         var syncTemplate = _tokenizer.Compile(pattern);
         using var reader = new StringReader(pattern);
+
+        // Act
         var asyncTemplate = await _tokenizer.CompileAsync(reader);
+
+        // Assert
         Assert.Equal(syncTemplate.Tokens.Count, asyncTemplate.Tokens.Count);
         var syncTokens = syncTemplate.Tokens.ToList();
         var asyncTokens = asyncTemplate.Tokens.ToList();

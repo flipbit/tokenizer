@@ -87,14 +87,42 @@ public class TokenizationEngineErrorTests
     }
 
     [Fact]
-    public void GivenTokenizationWithNoMatch_WhenProcessingTokenization_ThenResultHasNonNullExceptions()
+    public void GivenReadOnlyTargetObject_WhenProcessingTokenization_ThenThrowsArgumentException()
     {
-        // Arrange — template expects a token that won't be found in input
+        // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
             .WithTokens(new TokenBuilder()
-                .WithContent("test")
+                .WithContent("{Name}")
+                .WithName("Name")
+                .Build())
+            .WithDefaultOptions()
+            .Build();
+
+        var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader("test"));
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        var readOnlyTarget = new ReadOnlyTarget("test");
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() =>
+            _engine.ProcessTokenization(template, readOnlyTarget, context, result, NullDiagnosticCollector.Instance));
+
+        Assert.Contains("no settable properties", ex.Message);
+    }
+
+    [Fact]
+    public void GivenTokenizationWithNoMatch_WhenProcessingTokenization_ThenResultHasNoExceptionsAndFails()
+    {
+        // Arrange — template expects a required token whose preamble won't be found in input
+        var template = new TemplateBuilder()
+            .WithName("TestTemplate")
+            .WithTokens(new TokenBuilder()
+                .WithContent("{TestToken}")
                 .WithName("TestToken")
+                .WithPreamble("PREAMBLE_NOT_IN_INPUT:")
+                .WithRequired()
                 .Build())
             .Build();
 
@@ -106,6 +134,13 @@ public class TokenizationEngineErrorTests
         _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
 
         // Assert
-        Assert.NotNull(result.Exceptions);
+        Assert.Empty(result.Exceptions);
+        Assert.False(result.Success);
+    }
+
+    private sealed class ReadOnlyTarget
+    {
+        public ReadOnlyTarget(string name) { Name = name; }
+        public string Name { get; }
     }
 }

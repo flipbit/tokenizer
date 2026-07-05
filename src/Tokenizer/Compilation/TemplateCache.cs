@@ -1,12 +1,14 @@
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
+#if NET8_0_OR_GREATER
+using System.IO.Hashing;
+#endif
 using System.Text;
 
 namespace Tokens.Compilation;
 
 /// <summary>
 /// Thread-safe compilation cache with LRU eviction.
-/// Keys are SHA256 hashes of template pattern strings.
+/// Keys are non-cryptographic hashes of template pattern strings.
 /// </summary>
 internal sealed class TemplateCache
 {
@@ -85,19 +87,24 @@ internal sealed class TemplateCache
 
     private static string ComputeHash(string input)
     {
-        // SHA256.HashData and Convert.ToHexString require .NET 6+; other files use NET8_0_OR_GREATER for different APIs (e.g. SearchValues)
-#if NET6_0_OR_GREATER
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-        return Convert.ToHexString(hash);
+#if NET8_0_OR_GREATER
+        var hash = XxHash64.HashToUInt64(Encoding.UTF8.GetBytes(input));
+        return hash.ToString("X16");
 #else
-        using var sha = SHA256.Create();
-        var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-        var sb = new StringBuilder(hash.Length * 2);
-        foreach (var b in hash)
+        // FNV-1a 64-bit
+        const ulong fnvOffset = 14695981039346656037;
+        const ulong fnvPrime = 1099511628211;
+
+        var hash = fnvOffset;
+        var bytes = Encoding.UTF8.GetBytes(input);
+
+        foreach (var b in bytes)
         {
-            sb.Append(b.ToString("X2"));
+            hash ^= b;
+            hash *= fnvPrime;
         }
-        return sb.ToString();
+
+        return hash.ToString("X16");
 #endif
     }
 

@@ -13,7 +13,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// <summary>
     /// Returns the names of the templates in this collection
     /// </summary>
-    public IList<string> Names => templates.Keys.ToList();
+    public IReadOnlyCollection<string> Names => templates.Keys.ToArray();
 
     /// <summary>
     /// Returns the number of templates in this collection
@@ -71,10 +71,8 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool ContainsTag(string tag)
     {
-        foreach (var name in Names)
+        foreach (var template in this)
         {
-            if (!TryGet(name, out var template)) continue;
-
             if (template.HasTag(tag))
             {
                 return true;
@@ -89,10 +87,8 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool ContainsAllTags(params string[] tags)
     {
-        foreach (var name in Names)
+        foreach (var template in this)
         {
-            if (!TryGet(name, out var template)) continue;
-
             if (template.HasTags(tags))
             {
                 return true;

@@ -306,18 +306,9 @@ public sealed class Tokenizer : ITokenizer
         int read;
 #if NET8_0_OR_GREATER
         while ((read = await reader.ReadAsync(buffer.AsMemory(), ct).ConfigureAwait(false)) > 0)
-        {
-            ct.ThrowIfCancellationRequested();
-            sb.Append(buffer, 0, read);
-            if (maxLength > 0 && sb.Length > maxLength)
-            {
-                throw new TokenizerException(
-                    $"Template length {sb.Length:N0} exceeds maximum allowed length of {maxLength:N0}. " +
-                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
-            }
-        }
 #else
         while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+#endif
         {
             ct.ThrowIfCancellationRequested();
             sb.Append(buffer, 0, read);
@@ -328,7 +319,6 @@ public sealed class Tokenizer : ITokenizer
                     "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
             }
         }
-#endif
         return sb.ToString();
     }
 

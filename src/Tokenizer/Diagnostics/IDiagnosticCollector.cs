@@ -11,6 +11,12 @@ namespace Tokens.Diagnostics;
 public interface IDiagnosticCollector
 {
     /// <summary>
+    /// Returns true when this collector is actively recording events.
+    /// Use this to guard expensive argument evaluation at call sites.
+    /// </summary>
+    bool IsEnabled { get; }
+
+    /// <summary>
     /// Records a diagnostic event. Implementations may discard the event
     /// (NullDiagnosticCollector) or store it (DiagnosticCollector).
     /// </summary>

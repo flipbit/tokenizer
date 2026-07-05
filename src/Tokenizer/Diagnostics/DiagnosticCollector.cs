@@ -21,6 +21,9 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
     }
 
     /// <inheritdoc />
+    public bool IsEnabled => true;
+
+    /// <inheritdoc />
     public void Record(DiagnosticEventType type, string? tokenName = null, int? tokenId = null,
                        FileLocation? location = null, string? value = null, string? detail = null,
                        string? decoratorName = null, string[]? decoratorArgs = null)

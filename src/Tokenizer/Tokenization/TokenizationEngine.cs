@@ -180,9 +180,12 @@ internal class TokenizationEngine : ITokenizationEngine
             // Check for next token
             if (context.Enumerator.TryMatch(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, context.MatchBuffer))
             {
-                continuation.Collector.Record(DiagnosticEventType.PreambleMatched,
-                    tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
-                    location: context.Enumerator.Location);
+                if (continuation.Collector.IsEnabled)
+                {
+                    continuation.Collector.Record(DiagnosticEventType.PreambleMatched,
+                        tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
+                        location: context.Enumerator.Location);
+                }
 
                 // Notify hint strategy of matched tokens
                 if (continuation.HintStrategy != null)
@@ -249,21 +252,25 @@ internal class TokenizationEngine : ITokenizationEngine
         TokenizationContext context,
         FileLocation location)
     {
-        var replacementValue = context.Replacement.ToString();
-
-        continuation.Collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
-            tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
-            location: location,
-            value: replacementValue);
+        if (continuation.Collector.IsEnabled)
+        {
+            continuation.Collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
+                tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
+                location: location,
+                value: context.Replacement.ToString());
+        }
 
         try
         {
             if (context.Candidates.TryAssign(continuation.TargetObject, context.Replacement, continuation.Template.Options, location, out var assigned, out var assignedValue, continuation.Collector))
             {
-                continuation.Collector.Record(DiagnosticEventType.TokenAssigned,
-                    tokenName: assigned.Name, tokenId: assigned.Id,
-                    location: location,
-                    value: assignedValue?.ToString());
+                if (continuation.Collector.IsEnabled)
+                {
+                    continuation.Collector.Record(DiagnosticEventType.TokenAssigned,
+                        tokenName: assigned.Name, tokenId: assigned.Id,
+                        location: location,
+                        value: assignedValue?.ToString());
+                }
 
                 if (assignedValue != null)
                 {
@@ -275,10 +282,13 @@ internal class TokenizationEngine : ITokenizationEngine
             }
             else
             {
-                continuation.Collector.Record(DiagnosticEventType.TokenAssignmentFailed,
-                    tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
-                    location: location,
-                    value: replacementValue);
+                if (continuation.Collector.IsEnabled)
+                {
+                    continuation.Collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                        tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
+                        location: location,
+                        value: context.Replacement.ToString());
+                }
 
                 return false;
             }
@@ -340,10 +350,13 @@ internal class TokenizationEngine : ITokenizationEngine
         // Can't assign, so clear current context and move to next match
         if (context.Candidates.CanAnyAssign(replacementValue) == false)
         {
-            continuation.Collector.Record(DiagnosticEventType.BacktrackStarted,
-                tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
-                location: context.Enumerator.Location,
-                value: replacementValue);
+            if (continuation.Collector.IsEnabled)
+            {
+                continuation.Collector.Record(DiagnosticEventType.BacktrackStarted,
+                    tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
+                    location: context.Enumerator.Location,
+                    value: replacementValue);
+            }
 
             // Prevent infinite loop when backtracking with empty preamble
             var advanceLength = context.Candidates.Preamble.Length;
@@ -369,18 +382,24 @@ internal class TokenizationEngine : ITokenizationEngine
                 var token = context.Candidates.Tokens[i];
                 if (WasLastMatchedToken(continuation.Result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacementValue))
                 {
-                    continuation.Collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
-                        tokenName: token.Name, tokenId: token.Id,
-                        location: context.Enumerator.Location);
+                    if (continuation.Collector.IsEnabled)
+                    {
+                        continuation.Collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
+                            tokenName: token.Name, tokenId: token.Id,
+                            location: context.Enumerator.Location);
+                    }
                     context.DisabledRepeatingTokens.Add(token.Id);
                     context.Candidates.Remove(token);
                     i--;
                 }
                 else if (token.IsSingleUse)
                 {
-                    continuation.Collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
-                        tokenName: token.Name, tokenId: token.Id,
-                        location: context.Enumerator.Location);
+                    if (continuation.Collector.IsEnabled)
+                    {
+                        continuation.Collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
+                            tokenName: token.Name, tokenId: token.Id,
+                            location: context.Enumerator.Location);
+                    }
                     context.Candidates.Remove(token);
                     continuation.Result.Tokens.AddMiss(token);
                     context.MatchIds.Add(token.Id);
@@ -406,14 +425,16 @@ internal class TokenizationEngine : ITokenizationEngine
         TokenizationContext context,
         FileLocation location)
     {
-        var replacementValue = context.Replacement.ToString();
         var firstToken = context.Candidates.Tokens[0];
 
-        continuation.Collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
-            tokenName: firstToken.Name,
-            tokenId: firstToken.Id,
-            value: replacementValue,
-            location: location);
+        if (continuation.Collector.IsEnabled)
+        {
+            continuation.Collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
+                tokenName: firstToken.Name,
+                tokenId: firstToken.Id,
+                value: context.Replacement.ToString(),
+                location: location);
+        }
 
         if (firstToken.IsRepeating &&
             string.IsNullOrWhiteSpace(context.Candidates.Preamble) &&

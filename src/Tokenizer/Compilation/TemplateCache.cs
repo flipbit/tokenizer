@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 #if NET8_0_OR_GREATER
 using System.IO.Hashing;
 #endif
-using System.Text;
 
 namespace Tokens.Compilation;
 
@@ -12,7 +11,7 @@ namespace Tokens.Compilation;
 /// </summary>
 internal sealed class TemplateCache
 {
-    private readonly ConcurrentDictionary<string, CacheEntry> cache = new();
+    private readonly ConcurrentDictionary<ulong, CacheEntry> cache = new();
     private readonly int maxSize;
     private long accessCounter;
     private readonly object evictionLock = new();
@@ -64,8 +63,9 @@ internal sealed class TemplateCache
         {
             while (cache.Count > maxSize)
             {
-                var oldest = default(KeyValuePair<string, CacheEntry>);
+                var oldestKey = 0UL;
                 var oldestTime = long.MaxValue;
+                var found = false;
 
                 foreach (var kvp in cache)
                 {
@@ -73,38 +73,37 @@ internal sealed class TemplateCache
                     if (accessed < oldestTime)
                     {
                         oldestTime = accessed;
-                        oldest = kvp;
+                        oldestKey = kvp.Key;
+                        found = true;
                     }
                 }
 
-                if (oldest.Key != null)
+                if (found)
                 {
-                    cache.TryRemove(oldest.Key, out _);
+                    cache.TryRemove(oldestKey, out _);
                 }
             }
         }
     }
 
-    private static string ComputeHash(string input)
+    private static ulong ComputeHash(string input)
     {
 #if NET8_0_OR_GREATER
-        var hash = XxHash64.HashToUInt64(Encoding.UTF8.GetBytes(input));
-        return hash.ToString("X16");
+        return XxHash64.HashToUInt64(System.Runtime.InteropServices.MemoryMarshal.AsBytes(input.AsSpan()));
 #else
-        // FNV-1a 64-bit
+        // FNV-1a 64-bit over chars
         const ulong fnvOffset = 14695981039346656037;
         const ulong fnvPrime = 1099511628211;
 
         var hash = fnvOffset;
-        var bytes = Encoding.UTF8.GetBytes(input);
 
-        foreach (var b in bytes)
+        foreach (var c in input)
         {
-            hash ^= b;
+            hash ^= c;
             hash *= fnvPrime;
         }
 
-        return hash.ToString("X16");
+        return hash;
 #endif
     }
 

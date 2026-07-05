@@ -23,7 +23,7 @@ internal class TokenParser
 
     private readonly ILogger<TokenParser> log;
 
-    public TokenizerOptions Options { get; private set; }
+    public TokenizerOptions Options { get; }
 
     public TokenParser() : this(new TokenizerOptions())
     {

@@ -43,6 +43,20 @@ public class CompileAsyncTests : TokenizerTestBase
     }
 
     [Fact]
+    public async Task GivenStreamWithName_WhenCompileAsync_ThenTemplateHasName()
+    {
+        // Arrange
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: {Name}"));
+
+        // Act
+        var template = await _tokenizer.CompileAsync(stream, Encoding.UTF8, "stream-template");
+
+        // Assert
+        Assert.Equal("stream-template", template.Name);
+        Assert.Single(template.Tokens);
+    }
+
+    [Fact]
     public async Task GivenPreCancelledToken_WhenCompileAsync_ThenThrowsOperationCancelled()
     {
         // Arrange

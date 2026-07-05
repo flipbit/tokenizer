@@ -182,6 +182,49 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
+    public async Task GivenStreamWithTags_WhenMatchAsync_ThenFiltersCorrectly()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
+
+        var bytes = Encoding.UTF8.GetBytes("Name: Alice, Age: 30");
+        using var stream = new MemoryStream(bytes);
+
+        // Act — filter to only "with-age" tag
+        var result = await matcher.MatchAsync(stream, Encoding.UTF8, new[] { "with-age" });
+
+        // Assert
+        Assert.NotNull(result.BestMatch);
+        Assert.Equal("with-age", result.BestMatch.Template.Name);
+    }
+
+    [Fact]
+    public async Task GivenStreamWithTags_WhenMatchAsyncGeneric_ThenFiltersCorrectly()
+    {
+        // Arrange
+        var matcher = new TokenMatcher();
+        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        matcher.Templates.Get("with-age")!.AddTag("with-age");
+
+        var bytes = Encoding.UTF8.GetBytes("Name: Alice, Age: 30");
+        using var stream = new MemoryStream(bytes);
+
+        // Act — filter to only "no-age" tag
+        var result = await matcher.MatchAsync<Person>(stream, Encoding.UTF8, new[] { "no-age" });
+
+        // Assert
+        Assert.NotNull(result.BestMatch);
+        Assert.Equal("no-age", result.BestMatch.Template.Name);
+        Assert.Equal("Alice", result.BestMatch.Value.Name);
+    }
+
+    [Fact]
     public async Task GivenUnicodeEncodedStream_WhenMatchAsync_ThenDecodesCorrectly()
     {
         // Arrange — UTF-16 encoded stream

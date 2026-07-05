@@ -138,7 +138,8 @@ public sealed class Tokenizer : ITokenizer
 
     private void Tokenize(TokenizeResultBase result, object? value, Template template, string input)
     {
-        // Safety limit: maximum input length
+        // template.Options reflects merged instance + front matter overrides — intentionally
+        // used instead of this.Options so per-template front matter settings take effect.
         if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
         {
             throw new TokenizerException(
@@ -177,7 +178,10 @@ public sealed class Tokenizer : ITokenizer
 
         using (log.BeginScope(scopeProperties))
         {
-            log.LogInformation("Starting tokenization for template {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
+            }
             if (log.IsEnabled(LogLevel.Debug))
             {
                 if (rawInput != null)
@@ -236,9 +240,9 @@ public sealed class Tokenizer : ITokenizer
 
                 if (result.Diagnostics != null)
                 {
-                    if (log.IsEnabled(LogLevel.Information))
+                    if (log.IsEnabled(LogLevel.Debug))
                     {
-                        log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                        log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
                     }
                     foreach (var issue in result.Diagnostics.Summary.Issues)
                     {
@@ -255,8 +259,11 @@ public sealed class Tokenizer : ITokenizer
                 }
             }
 
-            log.LogInformation("Tokenization {Result} for template {TemplateName}",
-                result.Success ? "succeeded" : "failed", template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Tokenization {Result} for template {TemplateName}",
+                    result.Success ? "succeeded" : "failed", template.Name);
+            }
         }
     }
 
@@ -370,7 +377,10 @@ public sealed class Tokenizer : ITokenizer
 
         using (log.BeginScope(scopeProperties))
         {
-            log.LogInformation("Starting async tokenization for template {TemplateName}", template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Starting async tokenization for template {TemplateName}", template.Name);
+            }
             if (log.IsEnabled(LogLevel.Debug))
             {
                 log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
@@ -448,9 +458,9 @@ public sealed class Tokenizer : ITokenizer
 
             if (result.Diagnostics != null)
             {
-                if (log.IsEnabled(LogLevel.Information))
+                if (log.IsEnabled(LogLevel.Debug))
                 {
-                    log.LogInformation("{Verdict}", result.Diagnostics.Summary.Verdict);
+                    log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
                 }
                 foreach (var issue in result.Diagnostics.Summary.Issues)
                 {
@@ -462,8 +472,11 @@ public sealed class Tokenizer : ITokenizer
                 }
             }
 
-            log.LogInformation("Async tokenization {Result} for template {TemplateName}",
-                result.Success ? "succeeded" : "failed", template.Name);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Async tokenization {Result} for template {TemplateName}",
+                    result.Success ? "succeeded" : "failed", template.Name);
+            }
         }
     }
 

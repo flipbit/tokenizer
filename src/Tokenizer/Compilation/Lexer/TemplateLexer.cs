@@ -353,9 +353,9 @@ public class TemplateLexer
 
     private void LogTokenProduced(LexerToken token, int absolutePosition, FileLocation location)
     {
-        if (log.IsEnabled(LogLevel.Debug))
+        if (log.IsEnabled(LogLevel.Trace))
         {
-            log.LogDebug("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+            log.LogTrace("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
                 token.Kind, token.Value, token.RawText, token.Start, token.Length);
             log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
                 absolutePosition, location.Line, location.Column);

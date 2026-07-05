@@ -171,7 +171,10 @@ internal class TokenParser
             stopwatch.Start();
         }
 
-        log.LogInformation("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
+        }
 
         if (Options.MaxTemplateLength > 0 && content.Length > Options.MaxTemplateLength)
         {
@@ -317,8 +320,11 @@ internal class TokenParser
                 log.LogTrace("Parsed '{TemplateName}' - {ContentLength} byte(s) in {Elapsed}", template.Name, content.Length, stopwatch?.Elapsed.ToString("g"));
             }
 
-            log.LogInformation("Template parsing complete: {TemplateName}, TotalTokens: {TokenCount}, Duration: {Duration}",
-                template.Name, template.Tokens.Count, stopwatch?.Elapsed.TotalMilliseconds ?? 0);
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("Template parsing complete: {TemplateName}, TotalTokens: {TokenCount}, Duration: {Duration}",
+                    template.Name, template.Tokens.Count, stopwatch?.Elapsed.TotalMilliseconds ?? 0);
+            }
 
             return template;
         }

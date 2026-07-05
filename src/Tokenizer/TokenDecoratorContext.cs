@@ -10,8 +10,8 @@ namespace Tokens;
 /// </summary>
 public sealed class TokenDecoratorContext
 {
-    // Decorators are cached by type: ITokenTransformer/ITokenValidator are stateless (input via params, output via return). User-registered decorators must be stateless and thread-safe.
-    private static readonly ConcurrentDictionary<Type, ITokenDecorator> DecoratorCache = new();
+    // Decorators are cached by type within a TokenParser instance: ITokenTransformer/ITokenValidator are stateless (input via params, output via return). User-registered decorators must be stateless and thread-safe.
+    private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache;
 
     private readonly List<string> _parameters;
     private string[]? _parameterArray;
@@ -20,10 +20,12 @@ public sealed class TokenDecoratorContext
     /// Creates a new <see cref="TokenDecoratorContext"/> for the specified decorator type.
     /// </summary>
     /// <param name="tokenDecorator">The <see cref="ITokenDecorator"/> type to wrap.</param>
-    public TokenDecoratorContext(Type tokenDecorator)
+    /// <param name="decoratorCache">The instance-scoped cache shared across all contexts for this parser.</param>
+    public TokenDecoratorContext(Type tokenDecorator, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache)
     {
         DecoratorType = tokenDecorator;
         _parameters = new List<string>();
+        _decoratorCache = decoratorCache;
     }
 
     /// <summary>
@@ -37,7 +39,7 @@ public sealed class TokenDecoratorContext
     /// <returns></returns>
     public ITokenDecorator CreateDecorator()
     {
-        return DecoratorCache.GetOrAdd(DecoratorType, type =>
+        return _decoratorCache.GetOrAdd(DecoratorType, type =>
         {
             var instance = Activator.CreateInstance(type)
                 ?? throw new InvalidOperationException($"Failed to create instance of {type.Name}");

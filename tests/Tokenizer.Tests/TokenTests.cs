@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Tokens.Enumerators;
 using Tokens.Validators;
 using Xunit;
@@ -44,7 +45,7 @@ public class TokenTests : TokenizerTestBase
         // Arrange
         var person = new Person();
         token.Name = "Person.Age";
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
         var assigned = token.Assign(person, "20", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
@@ -60,7 +61,7 @@ public class TokenTests : TokenizerTestBase
         // Arrange
         var person = new Person();
         token.Name = "Person.Age";
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator)));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
         var assigned = token.Assign(person, "Twenty", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);

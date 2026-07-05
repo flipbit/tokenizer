@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -20,6 +21,7 @@ internal class TokenParser
 {
     private readonly List<Type> transformers;
     private readonly List<Type> validators;
+    private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
     private readonly ILogger<TokenParser> log;
 
@@ -345,7 +347,7 @@ internal class TokenParser
         // If pre-token has value set, add transformer to set it when parsing
         if (string.IsNullOrEmpty(preToken.Value) == false)
         {
-            var setContext = new TokenDecoratorContext(typeof(SetTransformer));
+            var setContext = new TokenDecoratorContext(typeof(SetTransformer), _decoratorCache);
             setContext.AddParameter(preToken.Value);
             token.AddDecorator(setContext);
 
@@ -386,7 +388,7 @@ internal class TokenParser
                         throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
                     }
 
-                    context = new TokenDecoratorContext(operatorType);
+                    context = new TokenDecoratorContext(operatorType, _decoratorCache);
 
                     foreach (var arg in decorator.Args)
                     {
@@ -412,7 +414,7 @@ internal class TokenParser
                 if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
                     string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    context = new TokenDecoratorContext(validatorType);
+                    context = new TokenDecoratorContext(validatorType, _decoratorCache);
 
                     foreach (var arg in decorator.Args)
                     {

@@ -9,7 +9,7 @@ public class TokenParserTests
     private readonly TokenParser parser = new();
 
     [Fact]
-    public void TestParseToken()
+    public void GivenTemplateWithDecorator_WhenParsing_ThenTokenHasDecorator()
     {
         var template = parser.Parse("Preamble{Token:ToDateTime(yyyy-MM-dd)}", "name");
 
@@ -28,7 +28,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseTokenWithTrailingNewLine()
+    public void GivenTemplateWithTrailingNewLine_WhenParsing_ThenTokenHasDecorator()
     {
         var template = parser.Parse("Preamble{Token:ToDateTime(yyyy-MM-dd)}\n", "name");
 
@@ -47,7 +47,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseTokenWithRequiredFlag()
+    public void GivenTemplateWithRequiredFlag_WhenParsing_ThenTokenIsRequired()
     {
         var template = parser.Parse("Preamble{Token!}\n", "name");
 
@@ -60,7 +60,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetName()
+    public void GivenSimpleText_WhenParsing_ThenNameIsText()
     {
         var template = parser.Parse("Preamble");
 
@@ -68,7 +68,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetNameLimitToThreeWords()
+    public void GivenTextWithManyWords_WhenParsing_ThenNameIsTruncated()
     {
         var template = parser.Parse("One Two Three Four");
 
@@ -76,7 +76,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetNameCountsNewLines()
+    public void GivenTextWithNewLines_WhenParsing_ThenNewLinesCountAsWordBreaks()
     {
         var template = parser.Parse("One Two\r\nThree Four");
 
@@ -85,7 +85,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetNameIgnoresFrontmatterWithWindowsNewlines()
+    public void GivenFrontMatterWithWindowsNewlines_WhenParsing_ThenNameIgnoresFrontMatter()
     {
         var template = parser.Parse("---\r\nOutOfOrder: true\r\n---\r\nOne Two\r\nThree Four");
 
@@ -93,7 +93,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetNameIgnoresFrontmatterWithUnixNewlines()
+    public void GivenFrontMatterWithUnixNewlines_WhenParsing_ThenNameIgnoresFrontMatter()
     {
         var template = parser.Parse("---\nOutOfOrder: true\n---\nOne Two\nThree Four");
 
@@ -101,7 +101,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetNameWhenEmpty()
+    public void GivenEmptyContent_WhenParsing_ThenNameIsEmpty()
     {
         var template = parser.Parse("");
 
@@ -109,7 +109,7 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseSetsTags()
+    public void GivenFrontMatterWithTag_WhenParsing_ThenTemplateHasTag()
     {
         var template = parser.Parse("---\nTag: tag\n---\nOne Two\nThree Four");
 
@@ -118,13 +118,13 @@ public class TokenParserTests
     }
 
     [Fact]
-    public void TestParseFrontMatterTokenWithoutSet()
+    public void GivenFrontMatterTokenWithoutSetValue_WhenParsing_ThenThrowsException()
     {
         Assert.Throws<TokenizerException>(() => parser.Parse("---\nset: Decorator\n---\nOne Two\nThree Four"));
     }
 
     [Fact]
-    public void TestParseFrontMatterToken()
+    public void GivenFrontMatterTokenWithSetValue_WhenParsing_ThenTokenHasName()
     {
         var template = parser.Parse("---\nset : Foo = tag\n---\nOne Two\nThree Four");
 

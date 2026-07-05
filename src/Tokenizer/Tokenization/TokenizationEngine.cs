@@ -133,10 +133,6 @@ internal class TokenizationEngine : ITokenizationEngine
     public bool ContinueTokenization(TokenizationContinuation continuation, TokenizationContext context, CancellationToken ct)
     {
         var template = continuation.Template;
-        var targetObject = continuation.TargetObject;
-        var result = continuation.Result;
-        var collector = continuation.Collector;
-        var hintStrategy = continuation.HintStrategy;
 
         while (context.Enumerator.IsEmpty == false)
         {
@@ -168,7 +164,7 @@ internal class TokenizationEngine : ITokenizationEngine
             // Check for repeated current token
             if (ShouldProcessRepeatedToken(context))
             {
-                if (!HandleRepeatedTokenMatching(context, template, result, targetObject, collector))
+                if (!HandleRepeatedTokenMatching(continuation, context))
                 {
                     continue;
                 }
@@ -177,23 +173,23 @@ internal class TokenizationEngine : ITokenizationEngine
             // Assign newline terminated token
             if (ShouldProcessNewlineTerminatedToken(context, next))
             {
-                HandleNewlineTerminatedToken(context, template, targetObject, result, collector);
+                HandleNewlineTerminatedToken(continuation, context);
                 continue;
             }
 
             // Check for next token
             if (context.Enumerator.TryMatch(template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds), template.Options.OutOfOrderTokens, context.MatchBuffer))
             {
-                collector.Record(DiagnosticEventType.PreambleMatched,
+                continuation.Collector.Record(DiagnosticEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
 
                 // Notify hint strategy of matched tokens
-                if (hintStrategy != null)
+                if (continuation.HintStrategy != null)
                 {
                     foreach (var match in context.MatchBuffer)
                     {
-                        hintStrategy.OnTokenMatched(match);
+                        continuation.HintStrategy.OnTokenMatched(match);
                     }
                 }
 
@@ -207,7 +203,7 @@ internal class TokenizationEngine : ITokenizationEngine
                 // Only switch if we've accumulated a value — otherwise consume a character first
                 if (context.Replacement.Length > 0)
                 {
-                    HandleTokenSwitch(context, template, targetObject, result, context.MatchBuffer, collector);
+                    HandleTokenSwitch(continuation, context, context.MatchBuffer);
                 }
                 else
                 {
@@ -228,86 +224,59 @@ internal class TokenizationEngine : ITokenizationEngine
     /// </summary>
     public void EndTokenization(TokenizationContinuation continuation, TokenizationContext context)
     {
-        var template = continuation.Template;
-        var targetObject = continuation.TargetObject;
-        var result = continuation.Result;
-        var collector = continuation.Collector;
-
         // Handle remaining candidates
         if (ShouldProcessRemainingCandidates(context))
         {
-            TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
-                template.Options, context.ReplacementLocation, result, template, context.MatchIds, collector);
+            TryAssignCandidateTokens(continuation, context, context.ReplacementLocation);
         }
 
         // Process front matter tokens
-        ProcessFrontMatterTokens(template, targetObject, context.Enumerator.Location, result, collector);
+        ProcessFrontMatterTokens(continuation, context.Enumerator.Location);
 
-        collector.Record(DiagnosticEventType.TokenizationCompleted,
-            detail: $"Matches: {result.Tokens.Matches.Count}, Misses: {result.Tokens.Misses.Count}");
+        continuation.Collector.Record(DiagnosticEventType.TokenizationCompleted,
+            detail: $"Matches: {continuation.Result.Tokens.Matches.Count}, Misses: {continuation.Result.Tokens.Misses.Count}");
     }
 
     /// <summary>
     /// Processes candidate tokens and attempts to assign values to the target object.
     /// </summary>
-    /// <param name="candidates">The list of candidate tokens to process</param>
-    /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="options">The tokenizer options</param>
-    /// <param name="location">The location where the token was found</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
+    /// <param name="continuation">The continuation state from BeginTokenization.</param>
+    /// <param name="context">The tokenization context containing candidates and replacement state.</param>
+    /// <param name="location">The location where the token was found.</param>
     /// <returns>True if any tokens were successfully assigned</returns>
     private bool TryAssignCandidateTokens(
-        CandidateTokenList candidates,
-        object? targetObject,
-        StringBuilder replacement,
-        TokenizerOptions options,
-        FileLocation location,
-        TokenizeResultBase result,
-        Template template,
-        HashSet<int> matchIds,
-        IDiagnosticCollector collector)
+        TokenizationContinuation continuation,
+        TokenizationContext context,
+        FileLocation location)
     {
-        ArgumentValidation.ThrowIfNull(candidates, nameof(candidates));
-        // Note: targetObject can be null - this is a valid use case for Tokenize(Template, string)
-        ArgumentValidation.ThrowIfNull(replacement, nameof(replacement));
-        ArgumentValidation.ThrowIfNull(options, nameof(options));
-        ArgumentValidation.ThrowIfNull(location, nameof(location));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-        ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
+        var replacementValue = context.Replacement.ToString();
 
-        var replacementValue = replacement.ToString();
-
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
-            tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
+        continuation.Collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
+            tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
             location: location,
             value: replacementValue);
 
         try
         {
-            if (candidates.TryAssign(targetObject, replacement, options, location, out var assigned, out var assignedValue, collector))
+            if (context.Candidates.TryAssign(continuation.TargetObject, context.Replacement, continuation.Template.Options, location, out var assigned, out var assignedValue, continuation.Collector))
             {
-                collector.Record(DiagnosticEventType.TokenAssigned,
+                continuation.Collector.Record(DiagnosticEventType.TokenAssigned,
                     tokenName: assigned.Name, tokenId: assigned.Id,
                     location: location,
                     value: assignedValue?.ToString());
 
                 if (assignedValue != null)
                 {
-                    result.Tokens.AddMatch(assigned, assignedValue, location);
-                    AddMatchedTokenIds(template, assigned, matchIds);
+                    continuation.Result.Tokens.AddMatch(assigned, assignedValue, location);
+                    AddMatchedTokenIds(continuation.Template, assigned, context.MatchIds);
                 }
 
                 return true;
             }
             else
             {
-                collector.Record(DiagnosticEventType.TokenAssignmentFailed,
-                    tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
+                continuation.Collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                    tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                     location: location,
                     value: replacementValue);
 
@@ -320,7 +289,7 @@ internal class TokenizationEngine : ITokenizationEngine
             {
                 log.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
             }
-            result.AddException(e);
+            continuation.Result.AddException(e);
             return false;
         }
     }
@@ -328,40 +297,29 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Processes front matter tokens that don't require input text matching.
     /// </summary>
-    /// <param name="template">The template containing front matter token definitions</param>
-    /// <param name="targetObject">The object to populate with front matter token values</param>
-    /// <param name="location">The current file location</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
+    /// <param name="continuation">The continuation state from BeginTokenization.</param>
+    /// <param name="location">The current file location.</param>
     private void ProcessFrontMatterTokens(
-        Template template,
-        object? targetObject,
-        FileLocation location,
-        TokenizeResultBase result,
-        IDiagnosticCollector collector)
+        TokenizationContinuation continuation,
+        FileLocation location)
     {
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-        // Note: targetObject can be null - this is a valid use case for Tokenize(Template, string)
-        ArgumentValidation.ThrowIfNull(location, nameof(location));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-
-        foreach (var token in template.Tokens)
+        foreach (var token in continuation.Template.Tokens)
         {
             if (!token.IsFrontMatterToken) continue;
 
-            if (token.Assign(targetObject, string.Empty, template.Options, location, out var assignedValue, collector))
+            if (token.Assign(continuation.TargetObject, string.Empty, continuation.Template.Options, location, out var assignedValue, continuation.Collector))
             {
-                collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
+                continuation.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
                     tokenName: token.Name, tokenId: token.Id,
                     value: assignedValue?.ToString());
                 if (assignedValue != null)
                 {
-                    result.Tokens.AddMatch(token, assignedValue, token.Location);
+                    continuation.Result.Tokens.AddMatch(token, assignedValue, token.Location);
                 }
             }
             else
             {
-                collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
+                continuation.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
                     tokenName: token.Name, tokenId: token.Id);
             }
         }
@@ -370,54 +328,33 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Handles the processing of repeated tokens and manages disabled repeating tokens.
     /// </summary>
-    /// <param name="candidates">The list of candidate tokens</param>
-    /// <param name="enumerator">The token enumerator</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="result">The result object</param>
-    /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
+    /// <param name="continuation">The continuation state from BeginTokenization.</param>
+    /// <param name="context">The tokenization context containing candidates and replacement state.</param>
     /// <returns>True if processing should continue, false if candidates were cleared</returns>
     private bool ProcessRepeatedTokens(
-        CandidateTokenList candidates,
-        TokenEnumerator enumerator,
-        StringBuilder replacement,
-        TokenizeResultBase result,
-        HashSet<int> disabledRepeatingTokens,
-        HashSet<int> matchIds,
-        Template template,
-        IDiagnosticCollector collector)
+        TokenizationContinuation continuation,
+        TokenizationContext context)
     {
-        ArgumentValidation.ThrowIfNull(candidates, nameof(candidates));
-        ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
-        ArgumentValidation.ThrowIfNull(replacement, nameof(replacement));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-        ArgumentValidation.ThrowIfNull(disabledRepeatingTokens, nameof(disabledRepeatingTokens));
-        ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-
-        var replacementValue = replacement.ToString();
+        var replacementValue = context.Replacement.ToString();
 
         // Can't assign, so clear current context and move to next match
-        if (candidates.CanAnyAssign(replacementValue) == false)
+        if (context.Candidates.CanAnyAssign(replacementValue) == false)
         {
-            collector.Record(DiagnosticEventType.BacktrackStarted,
-                tokenName: string.Join(", ", candidates.Tokens.Select(t => t.Name)),
-                location: enumerator.Location,
+            continuation.Collector.Record(DiagnosticEventType.BacktrackStarted,
+                tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
+                location: context.Enumerator.Location,
                 value: replacementValue);
 
-            // Layer 3: Environment Guards
             // Prevent infinite loop when backtracking with empty preamble
-            var advanceLength = candidates.Preamble.Length;
-            if (advanceLength == 0 && candidates.Tokens.Count > 0)
+            var advanceLength = context.Candidates.Preamble.Length;
+            if (advanceLength == 0 && context.Candidates.Tokens.Count > 0)
             {
-                var tokenNames = string.Join(", ", candidates.Tokens.Select(t => t.Name));
+                var tokenNames = string.Join(", ", context.Candidates.Tokens.Select(t => t.Name));
                 log.LogError(
                     "Infinite loop detected: Cannot backtrack with empty preamble for tokens [{TokenNames}]. " +
                     "This occurs when consecutive tokens have no separator and assignment fails. " +
                     "Current position: Line {Line}, Column {Column}",
-                    tokenNames, enumerator.Location.Line, enumerator.Location.Column);
+                    tokenNames, context.Enumerator.Location.Line, context.Enumerator.Location.Column);
 
                 throw new InvalidOperationException(
                     $"Tokenization cannot proceed: tokens with empty preambles ({tokenNames}) cannot be " +
@@ -425,33 +362,33 @@ internal class TokenizationEngine : ITokenizationEngine
                     $"or ensure the target object has writable properties.");
             }
 
-            for (var i = 0; i < candidates.Tokens.Count; i++)
+            for (var i = 0; i < context.Candidates.Tokens.Count; i++)
             {
                 // If repeated token was the last match, then this non-match will stop it
                 // matching any future results
-                var token = candidates.Tokens[i];
-                if (WasLastMatchedToken(result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacementValue))
+                var token = context.Candidates.Tokens[i];
+                if (WasLastMatchedToken(continuation.Result, token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacementValue))
                 {
-                    collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
+                    continuation.Collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
                         tokenName: token.Name, tokenId: token.Id,
-                        location: enumerator.Location);
-                    disabledRepeatingTokens.Add(token.Id);
-                    candidates.Remove(token);
+                        location: context.Enumerator.Location);
+                    context.DisabledRepeatingTokens.Add(token.Id);
+                    context.Candidates.Remove(token);
                     i--;
                 }
                 else if (token.IsSingleUse)
                 {
-                    collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
+                    continuation.Collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
                         tokenName: token.Name, tokenId: token.Id,
-                        location: enumerator.Location);
-                    candidates.Remove(token);
-                    result.Tokens.AddMiss(token);
-                    matchIds.Add(token.Id);
+                        location: context.Enumerator.Location);
+                    context.Candidates.Remove(token);
+                    continuation.Result.Tokens.AddMiss(token);
+                    context.MatchIds.Add(token.Id);
                 }
             }
 
-            replacement.Clear();
-            enumerator.Advance(advanceLength);
+            context.Replacement.Clear();
+            context.Enumerator.Advance(advanceLength);
             return false;
         }
 
@@ -461,64 +398,40 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Handles newline-terminated token processing.
     /// </summary>
-    /// <param name="candidates">The list of candidate tokens</param>
-    /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="replacement">The StringBuilder containing the token value</param>
-    /// <param name="options">The tokenizer options</param>
-    /// <param name="location">The current file location</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="matchIds">The set of matched token IDs</param>
-    /// <param name="enumerator">The token enumerator</param>
-    /// <param name="disabledRepeatingTokens">The set of disabled repeating token IDs</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
+    /// <param name="continuation">The continuation state from BeginTokenization.</param>
+    /// <param name="context">The tokenization context containing candidates and replacement state.</param>
+    /// <param name="location">The location where the newline was found.</param>
     private void ProcessNewlineTerminatedTokens(
-        CandidateTokenList candidates,
-        object? targetObject,
-        StringBuilder replacement,
-        TokenizerOptions options,
-        FileLocation location,
-        TokenizeResultBase result,
-        Template template,
-        HashSet<int> matchIds,
-        TokenEnumerator enumerator,
-        HashSet<int> disabledRepeatingTokens,
-        IDiagnosticCollector collector)
+        TokenizationContinuation continuation,
+        TokenizationContext context,
+        FileLocation location)
     {
-        ArgumentValidation.ThrowIfNull(candidates, nameof(candidates));
-        // Note: targetObject can be null - this is a valid use case for Tokenize(Template, string)
-        ArgumentValidation.ThrowIfNull(replacement, nameof(replacement));
-        ArgumentValidation.ThrowIfNull(options, nameof(options));
-        ArgumentValidation.ThrowIfNull(location, nameof(location));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-        ArgumentValidation.ThrowIfNull(matchIds, nameof(matchIds));
-        ArgumentValidation.ThrowIfNull(enumerator, nameof(enumerator));
-        ArgumentValidation.ThrowIfNull(disabledRepeatingTokens, nameof(disabledRepeatingTokens));
+        var replacementValue = context.Replacement.ToString();
+        var firstToken = context.Candidates.Tokens[0];
 
-        var replacementValue = replacement.ToString();
-
-        collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
-            tokenName: candidates.Tokens.First().Name,
-            tokenId: candidates.Tokens.First().Id,
+        continuation.Collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
+            tokenName: firstToken.Name,
+            tokenId: firstToken.Id,
             value: replacementValue,
             location: location);
 
-        if (candidates.Tokens.First().IsRepeating &&
-            string.IsNullOrWhiteSpace(candidates.Preamble) &&
-            result.Tokens.HasMatches)
+        if (firstToken.IsRepeating &&
+            string.IsNullOrWhiteSpace(context.Candidates.Preamble) &&
+            continuation.Result.Tokens.HasMatches)
         {
-            if (result.Tokens.Matches.Last().Token.Id == candidates.Tokens.First().Id)
+            var matches = continuation.Result.Tokens.Matches;
+            var lastMatch = matches[matches.Count - 1];
+            if (lastMatch.Token.Id == firstToken.Id)
             {
-                if (enumerator.Location.Line > result.Tokens.Matches.Last().Location.Line + 1)
+                if (context.Enumerator.Location.Line > lastMatch.Location.Line + 1)
                 {
-                    disabledRepeatingTokens.Add(candidates.Tokens.First().Id);
-                    candidates.Remove(candidates.Tokens.First());
+                    context.DisabledRepeatingTokens.Add(firstToken.Id);
+                    context.Candidates.Remove(firstToken);
                 }
             }
         }
 
-        TryAssignCandidateTokens(candidates, targetObject, replacement, options, location, result, template, matchIds, collector);
+        TryAssignCandidateTokens(continuation, context, location);
     }
 
     /// <summary>
@@ -564,14 +477,9 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Handles matching of repeated tokens.
     /// </summary>
-    private bool HandleRepeatedTokenMatching(ITokenizationContext context, Template template, TokenizeResultBase result, object? targetObject, IDiagnosticCollector collector)
+    private bool HandleRepeatedTokenMatching(TokenizationContinuation continuation, TokenizationContext context)
     {
-        if (!ProcessRepeatedTokens(context.Candidates, context.Enumerator, context.Replacement,
-            result, context.DisabledRepeatingTokens, context.MatchIds, template, collector))
-        {
-            return false;
-        }
-        return true;
+        return ProcessRepeatedTokens(continuation, context);
     }
 
     /// <summary>
@@ -593,11 +501,9 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <summary>
     /// Handles processing of newline-terminated tokens.
     /// </summary>
-    private void HandleNewlineTerminatedToken(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IDiagnosticCollector collector)
+    private void HandleNewlineTerminatedToken(TokenizationContinuation continuation, TokenizationContext context)
     {
-        ProcessNewlineTerminatedTokens(context.Candidates, targetObject, context.Replacement,
-            template.Options, context.Enumerator.Location, result, template,
-            context.MatchIds, context.Enumerator, context.DisabledRepeatingTokens, collector);
+        ProcessNewlineTerminatedTokens(continuation, context, context.Enumerator.Location);
 
         context.ClearCandidates();
         context.ClearReplacement();
@@ -620,16 +526,12 @@ internal class TokenizationEngine : ITokenizationEngine
     /// Handles switching from one token to another, assigning the previous token's value
     /// and preparing to collect the new token's value.
     /// </summary>
-    /// <param name="context">The tokenization context</param>
-    /// <param name="template">The template containing token definitions</param>
-    /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="result">The result object to populate with matches</param>
-    /// <param name="matches">The newly matched tokens</param>
-    /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    private void HandleTokenSwitch(ITokenizationContext context, Template template, object? targetObject, TokenizeResultBase result, IList<Token> matches, IDiagnosticCollector collector)
+    /// <param name="continuation">The continuation state from BeginTokenization.</param>
+    /// <param name="context">The tokenization context.</param>
+    /// <param name="matches">The newly matched tokens.</param>
+    private void HandleTokenSwitch(TokenizationContinuation continuation, TokenizationContext context, IList<Token> matches)
     {
-        TryAssignCandidateTokens(context.Candidates, targetObject, context.Replacement,
-            template.Options, context.ReplacementLocation, result, template, context.MatchIds, collector);
+        TryAssignCandidateTokens(continuation, context, context.ReplacementLocation);
 
         context.ClearCandidates();
         context.Candidates.AddRange(matches);

@@ -205,6 +205,24 @@ public class TokenizerSafetyLimitTests
     }
 
     [Fact]
+    public void GivenNoExplicitMaxIterations_WhenTokenizingComplexPattern_ThenDerivedLimitIsNotExceeded()
+    {
+        // Arrange — derived limit is CharactersConsumed * 2 + 100. Normal tokenization keeps
+        // iterations well below this threshold even for complex multi-token templates on longer input.
+        // This test confirms that the auto-limit does not interfere with legitimate tokenization.
+        var tokenizer = new Tokenizer();
+
+        // Act — complex template with many tokens on a moderately-sized input
+        var result = tokenizer.Tokenize(
+            "A:{A} B:{B} C:{C} D:{D} E:{E} F:{F}",
+            "A:1 B:2 C:3 D:4 E:5 F:6");
+
+        // Assert — no exception thrown and all tokens matched
+        Assert.True(result.Success);
+        Assert.Equal(6, result.Tokens.Matches.Count);
+    }
+
+    [Fact]
     public async Task GivenAsyncTemplateExceedingMaxLength_WhenCompileAsync_ThenThrowsTokenizerException()
     {
         // Arrange

@@ -14,6 +14,7 @@ public sealed class TokenDecoratorContext
     private static readonly ConcurrentDictionary<Type, ITokenDecorator> DecoratorCache = new();
 
     private readonly List<string> _parameters;
+    private string[]? _parameterArray;
 
     /// <summary>
     /// Creates a new <see cref="TokenDecoratorContext"/> for the specified decorator type.
@@ -54,6 +55,11 @@ public sealed class TokenDecoratorContext
         _parameters.Add(parameter);
     }
 
+    private string[] GetParameterArray()
+    {
+        return _parameterArray ??= _parameters.ToArray();
+    }
+
     /// <summary>
     /// Returns <c>true</c> if the decorator is a <see cref="ITokenTransformer"/> used to transform
     /// the token value.
@@ -78,7 +84,7 @@ public sealed class TokenDecoratorContext
     {
         var instance = (ITokenTransformer)CreateDecorator();
 
-        return instance.TryTransform(value, _parameters.ToArray(), out transformed);
+        return instance.TryTransform(value, GetParameterArray(), out transformed);
     }
 
     /// <summary>
@@ -90,9 +96,9 @@ public sealed class TokenDecoratorContext
 
         if (IsNotValidator)
         {
-            return !instance.IsValid(value, _parameters.ToArray());
+            return !instance.IsValid(value, GetParameterArray());
         }
 
-        return instance.IsValid(value, _parameters.ToArray());
+        return instance.IsValid(value, GetParameterArray());
     }
 }

@@ -131,6 +131,41 @@ public class TokenizationEngineEmptyPreambleTests
     }
 
     [Fact]
+    public void GivenConsecutiveTokensWithEmptyPreamble_WhenTargetHasNoSettableProperties_ThenThrowsArgumentException()
+    {
+        // Arrange — a read-only target with no settable properties is rejected at the entry-point
+        // validation before the tokenization loop begins. The error message documents that the
+        // empty-preambles guard (which would fire deeper in the loop) is pre-empted by this check.
+        var template = new TemplateBuilder()
+            .WithName("TestTemplate")
+            .WithTokens(
+                new TokenBuilder()
+                    .WithContent("{First}")
+                    .WithName("First")
+                    .WithPreamble("")
+                    .Build(),
+                new TokenBuilder()
+                    .WithContent("{Second}")
+                    .WithName("Second")
+                    .WithPreamble("")
+                    .Build())
+            .WithDefaultOptions()
+            .Build();
+
+        var context = new TokenizationContext();
+        context.Initialize(new System.IO.StringReader("some input text"));
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+
+        var target = new ReadOnlyTarget("value");
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() =>
+            _engine.ProcessTokenization(template, target, context, result, NullDiagnosticCollector.Instance));
+
+        Assert.Contains("no settable properties", ex.Message);
+    }
+
+    [Fact]
     public void GivenManyConsecutiveTokensWithNoPreambles_WhenTokenizing_ThenCompletes()
     {
         // Arrange
@@ -152,5 +187,11 @@ public class TokenizationEngineEmptyPreambleTests
 
         // Assert — the key thing is that this completes (does not hang)
         Assert.Equal(100, result.Tokens.Matches.Count);
+    }
+
+    private sealed class ReadOnlyTarget
+    {
+        public ReadOnlyTarget(string name) { Name = name; }
+        public string Name { get; }
     }
 }

@@ -4,7 +4,7 @@ namespace Tokens;
 /// Base class that holds the result of attempting to parse an input string against a
 /// <see cref="Template"/>.
 /// </summary>
-public class TokenizeResultBase
+public abstract class TokenizeResultBase
 {
     /// <summary>
     ///  Creates a new instance of the <see cref="TokenizeResultBase"/> class.

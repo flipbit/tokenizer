@@ -40,7 +40,7 @@ public record class TokenizerOptions
     /// <summary>
     /// When true, tokens that do not map to a property on the target object are silently ignored.
     /// </summary>
-    public bool IgnoreMissingProperties { get; set; }
+    public bool IgnoreMissingProperties { get; init; }
 
     /// <summary>
     /// When true, tokenization results include a <see cref="Diagnostics.TokenizationDiagnostics"/>
@@ -48,62 +48,62 @@ public record class TokenizerOptions
     /// with adaptive hints, and a visual alignment diff.
     /// Default: false. Has no performance impact when disabled.
     /// </summary>
-    public bool EnableDiagnostics { get; set; }
+    public bool EnableDiagnostics { get; init; }
 
     /// <summary>
     /// When true, leading whitespace in the static text preceding a token is trimmed before matching.
     /// </summary>
-    public bool TrimLeadingWhitespaceInTokenPreamble { get; set; } = true;
+    public bool TrimLeadingWhitespaceInTokenPreamble { get; init; } = true;
 
     /// <summary>
     /// When true, any portion of a token preamble that appears before a newline is discarded.
     /// </summary>
-    public bool TrimPreambleBeforeNewLine { get; set; }
+    public bool TrimPreambleBeforeNewLine { get; init; }
 
     /// <summary>
     /// When true, trailing whitespace is trimmed from each extracted token value.
     /// </summary>
-    public bool TrimTrailingWhiteSpace { get; set; } = true;
+    public bool TrimTrailingWhiteSpace { get; init; } = true;
 
     /// <summary>
     /// When true, tokens may be matched in any order rather than strictly left-to-right.
     /// </summary>
-    public bool OutOfOrderTokens { get; set; }
+    public bool OutOfOrderTokens { get; init; }
 
     /// <summary>
     /// Determines the <see cref="StringComparison"/> type to use when matching Token names to object properties
     /// </summary>
-    public StringComparison TokenStringComparison { get; set; } = StringComparison.InvariantCulture;
+    public StringComparison TokenStringComparison { get; init; } = StringComparison.InvariantCulture;
 
     /// <summary>
     /// If set, token values will be extracted up till the first new line character.
     /// </summary>
-    public bool TerminateOnNewLine { get; set; }
+    public bool TerminateOnNewLine { get; init; }
 
     /// <summary>
     /// Maximum allowed length for input text. Default: 1,048,576 (1MB).
     /// Set to 0 to disable.
     /// </summary>
-    public int MaxInputLength { get; set; } = 1_048_576;
+    public int MaxInputLength { get; init; } = 1_048_576;
 
     /// <summary>
     /// Maximum allowed length for template pattern text. Default: 65,536 (64KB).
     /// Set to 0 to disable.
     /// </summary>
-    public int MaxTemplateLength { get; set; } = 65_536;
+    public int MaxTemplateLength { get; init; } = 65_536;
 
     /// <summary>
     /// Maximum number of tokens allowed in a template. Default: 500.
     /// Set to 0 to disable.
     /// </summary>
-    public int MaxTokenCount { get; set; } = 500;
+    public int MaxTokenCount { get; init; } = 500;
 
     /// <summary>
     /// Maximum number of iterations in the tokenization loop.
     /// Default: 0 (auto-calculated as input.Length * 2).
     /// Set to a positive value to override.
     /// </summary>
-    public int MaxIterations { get; set; }
+    public int MaxIterations { get; init; }
 
     /// <summary>
     /// When true, allows non-seekable streams (e.g. NetworkStream) to be buffered into memory
@@ -132,21 +132,23 @@ public record class TokenizerOptions
     public IReadOnlyList<Type> Validators => validators.AsReadOnly();
 
     /// <summary>
-    /// Registers a custom transformer type on this options instance.
+    /// Returns a new <see cref="TokenizerOptions"/> instance with the given transformer type appended.
     /// </summary>
-    public TokenizerOptions RegisterTransformer<T>() where T : ITokenTransformer
+    public TokenizerOptions WithTransformer<T>() where T : ITokenTransformer
     {
-        transformers.Add(typeof(T));
-        return this;
+        var copy = this with { };
+        copy.transformers.Add(typeof(T));
+        return copy;
     }
 
     /// <summary>
-    /// Registers a custom validator type on this options instance.
+    /// Returns a new <see cref="TokenizerOptions"/> instance with the given validator type appended.
     /// </summary>
-    public TokenizerOptions RegisterValidator<T>() where T : ITokenValidator
+    public TokenizerOptions WithValidator<T>() where T : ITokenValidator
     {
-        validators.Add(typeof(T));
-        return this;
+        var copy = this with { };
+        copy.validators.Add(typeof(T));
+        return copy;
     }
 
     /// <summary>

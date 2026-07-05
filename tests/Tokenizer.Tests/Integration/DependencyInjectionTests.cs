@@ -39,10 +39,10 @@ public class DependencyInjectionTests : TokenizerTestBase
         services.AddLogging(builder => builder.AddSerilog());
 
         // Act
-        services.AddTokenizer(options =>
+        services.AddTokenizer(new TokenizerOptions
         {
-            options.TrimTrailingWhiteSpace = false;
-            options.OutOfOrderTokens = true;
+            TrimTrailingWhiteSpace = false,
+            OutOfOrderTokens = true
         });
         var serviceProvider = services.BuildServiceProvider();
 

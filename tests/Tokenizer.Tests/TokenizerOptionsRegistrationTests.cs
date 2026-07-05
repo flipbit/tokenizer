@@ -14,10 +14,10 @@ public class TokenizerOptionsRegistrationTests
         var options = new TokenizerOptions();
 
         // Act
-        options.RegisterTransformer<ToUpperTransformer>();
+        var result = options.WithTransformer<ToUpperTransformer>();
 
         // Assert
-        Assert.Contains(typeof(ToUpperTransformer), options.Transformers);
+        Assert.Contains(typeof(ToUpperTransformer), result.Transformers);
     }
 
     [Fact]
@@ -27,23 +27,36 @@ public class TokenizerOptionsRegistrationTests
         var options = new TokenizerOptions();
 
         // Act
-        options.RegisterValidator<IsNumericValidator>();
+        var result = options.WithValidator<IsNumericValidator>();
 
         // Assert
-        Assert.Contains(typeof(IsNumericValidator), options.Validators);
+        Assert.Contains(typeof(IsNumericValidator), result.Validators);
     }
 
     [Fact]
-    public void GivenNewOptions_WhenRegisteringTransformer_ThenReturnsSameOptionsForChaining()
+    public void GivenNewOptions_WhenRegisteringTransformer_ThenReturnsNewInstance()
     {
         // Arrange
         var options = new TokenizerOptions();
 
         // Act
-        var result = options.RegisterTransformer<ToUpperTransformer>();
+        var result = options.WithTransformer<ToUpperTransformer>();
 
-        // Assert
-        Assert.Same(options, result);
+        // Assert — WithTransformer returns a new instance (immutability)
+        Assert.NotSame(options, result);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenRegisteringTransformer_ThenOriginalIsUnchanged()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        options.WithTransformer<ToUpperTransformer>();
+
+        // Assert — original options are not mutated
+        Assert.DoesNotContain(typeof(ToUpperTransformer), options.Transformers);
     }
 
     [Fact]
@@ -70,8 +83,7 @@ public class TokenizerOptionsRegistrationTests
     public void GivenOptionsWithBuiltInTransformer_WhenRegisteringSameType_ThenTokenParserDoesNotDuplicate()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.RegisterTransformer<ToUpperTransformer>(); // ToUpper is a built-in
+        var options = new TokenizerOptions().WithTransformer<ToUpperTransformer>(); // ToUpper is a built-in
 
         // Act — no exception expected; TokenParser deduplicates built-ins vs. custom registrations
         var parser = new TokenParser(options);

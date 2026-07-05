@@ -17,23 +17,7 @@ public static class TokenizerServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddTokenizer(this IServiceCollection services)
     {
-        return services.AddTokenizer(_ => { });
-    }
-
-    /// <summary>
-    /// Adds Tokenizer services to the specified <see cref="IServiceCollection"/>
-    /// configured via the provided delegate.
-    /// </summary>
-    public static IServiceCollection AddTokenizer(
-        this IServiceCollection services,
-        Action<TokenizerOptions> configure)
-    {
-        if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
-
-        services.Configure(configure);
-        RegisterCoreServices(services);
-        return services;
+        return services.AddTokenizer(new TokenizerOptions());
     }
 
     /// <summary>

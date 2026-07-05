@@ -93,8 +93,7 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsContinuesOnError()
     {
-        var options = new TokenizerOptions();
-        options.RegisterTransformer<BlowsUpTransformer>();
+        var options = new TokenizerOptions().WithTransformer<BlowsUpTransformer>();
         var matcherWithTransformer = new TokenMatcher(options);
 
         matcherWithTransformer.RegisterTemplate("Name: {Person.Name:BlowsUp}", "no-age");

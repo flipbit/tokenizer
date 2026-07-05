@@ -287,8 +287,7 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Enrolled: 1019-01-01, Last Name: Smith";
 
         // Always throws an exception
-        var options = new TokenizerOptions();
-        options.RegisterTransformer<BlowsUpTransformer>();
+        var options = new TokenizerOptions().WithTransformer<BlowsUpTransformer>();
         var blowsUpTokenizer = CreateTokenizer(options);
 
         // Act

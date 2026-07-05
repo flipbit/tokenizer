@@ -11,8 +11,7 @@ public class TokenizerSafetyLimitTests
     public void GivenInputExceedingMaxLength_WhenTokenizing_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxInputLength = 100;
+        var options = new TokenizerOptions { MaxInputLength = 100 };
         var tokenizer = new Tokenizer(options);
         var input = new string('x', 101);
 
@@ -28,8 +27,7 @@ public class TokenizerSafetyLimitTests
     public void GivenInputAtMaxLength_WhenTokenizing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxInputLength = 100;
+        var options = new TokenizerOptions { MaxInputLength = 100 };
         var tokenizer = new Tokenizer(options);
         var input = "Name: " + new string('x', 94);
 
@@ -46,8 +44,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxInputLengthDisabled_WhenTokenizingLargeInput_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxInputLength = 0;
+        var options = new TokenizerOptions { MaxInputLength = 0 };
         var tokenizer = new Tokenizer(options);
         var input = "Name: " + new string('x', 200_000);
 
@@ -64,8 +61,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateExceedingMaxLength_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTemplateLength = 50;
+        var options = new TokenizerOptions { MaxTemplateLength = 50 };
         var tokenizer = new Tokenizer(options);
         var longTemplate = "Name: {Name}" + new string(' ', 50);
 
@@ -79,8 +75,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateAtMaxLength_WhenParsing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTemplateLength = 100;
+        var options = new TokenizerOptions { MaxTemplateLength = 100 };
         var tokenizer = new Tokenizer(options);
         var template = "Name: {Name}";
 
@@ -97,8 +92,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxTemplateLengthDisabled_WhenParsingLargeTemplate_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTemplateLength = 0;
+        var options = new TokenizerOptions { MaxTemplateLength = 0 };
         var tokenizer = new Tokenizer(options);
         var template = "Name: {Name}" + new string(' ', 100_000);
 
@@ -115,8 +109,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateExceedingMaxTokenCount_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTokenCount = 5;
+        var options = new TokenizerOptions { MaxTokenCount = 5 };
         var tokenizer = new Tokenizer(options);
 
         var templateBuilder = new System.Text.StringBuilder();
@@ -137,8 +130,7 @@ public class TokenizerSafetyLimitTests
     public void GivenTemplateAtMaxTokenCount_WhenParsing_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTokenCount = 5;
+        var options = new TokenizerOptions { MaxTokenCount = 5 };
         var tokenizer = new Tokenizer(options);
 
         var templateBuilder = new System.Text.StringBuilder();
@@ -159,8 +151,7 @@ public class TokenizerSafetyLimitTests
     public void GivenMaxIterationsExceeded_WhenTokenizing_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxIterations = 5;
+        var options = new TokenizerOptions { MaxIterations = 5 };
         var tokenizer = new Tokenizer(options);
 
         // Act & Assert
@@ -188,8 +179,7 @@ public class TokenizerSafetyLimitTests
     public void GivenCustomMaxIterations_WhenWithinLimit_ThenProcessesSuccessfully()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxIterations = 10000;
+        var options = new TokenizerOptions { MaxIterations = 10000 };
         var tokenizer = new Tokenizer(options);
 
         // Act
@@ -218,8 +208,7 @@ public class TokenizerSafetyLimitTests
     public async Task GivenAsyncTemplateExceedingMaxLength_WhenCompileAsync_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxTemplateLength = 50;
+        var options = new TokenizerOptions { MaxTemplateLength = 50 };
         var tokenizer = new Tokenizer(options);
         var largeTemplate = new string('x', 200);
         using var reader = new StringReader(largeTemplate);
@@ -234,8 +223,7 @@ public class TokenizerSafetyLimitTests
     public async Task GivenAsyncInputExceedingMaxLength_WhenTokenizeAsync_ThenThrowsTokenizerException()
     {
         // Arrange
-        var options = new TokenizerOptions();
-        options.MaxInputLength = 100;
+        var options = new TokenizerOptions { MaxInputLength = 100 };
         var tokenizer = new Tokenizer(options);
         var template = tokenizer.Compile("Name: {Name}");
         var input = new string('x', 200);

@@ -15,9 +15,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
     {
         const string content = "Should be trimmed\r\nPreamble: { First } Second: { Second }";
 
-        var parser = new TokenParser();
-
-        parser.Options.TrimPreambleBeforeNewLine = true;
+        var parser = new TokenParser(new TokenizerOptions { TrimPreambleBeforeNewLine = true });
 
         var template = parser.Parse(content);
 
@@ -52,9 +50,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
     {
         const string content = "Should not be trimmed\r\nPreamble: { First } Second: { Second }";
 
-        var parser = new TokenParser();
-
-        parser.Options.TrimPreambleBeforeNewLine = false;
+        var parser = new TokenParser(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
         var template = parser.Parse(content);
 
@@ -68,9 +64,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
     {
         const string content = "---\nTrimPreambleBeforeNewLine: true\n---\nShould be trimmed\r\nPreamble: { First } Second: { Second }";
 
-        var parser = new TokenParser();
-
-        parser.Options.TrimPreambleBeforeNewLine = false;
+        var parser = new TokenParser(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
         var template = parser.Parse(content);
 
@@ -85,9 +79,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
     {
         const string content = "---\nTerminateOnNewLine: true\n---\nPreamble: { First }\n Trimmed";
 
-        var parser = new TokenParser();
-
-        parser.Options.TrimPreambleBeforeNewLine = false;
+        var parser = new TokenParser(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
         var template = parser.Parse(content);
 
@@ -101,9 +93,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
     {
         const string content = "Preamble: { First }\n Trimmed";
 
-        var parser = new TokenParser();
-
-        parser.Options.TrimPreambleBeforeNewLine = false;
+        var parser = new TokenParser(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
         var template = parser.Parse(content);
 

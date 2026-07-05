@@ -299,9 +299,8 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokensInDifferentOrder_WhenOutOfOrderEnabled_ThenMatchesAll()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TokenParser(new TokenizerOptions { OutOfOrderTokens = true });
         var template = parser.Parse("Age: {Age}\nName: {Name}");
-        template.Options.OutOfOrderTokens = true;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -321,9 +320,8 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokensInDifferentOrder_WhenOutOfOrderDisabled_ThenMatchesInOrder()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TokenParser(new TokenizerOptions { OutOfOrderTokens = false });
         var template = parser.Parse("Age: {Age}\nName: {Name}");
-        template.Options.OutOfOrderTokens = false;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()

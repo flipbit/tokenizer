@@ -354,6 +354,10 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
     }
 
+    // TokenizeAsyncCore intentionally diverges from TokenizeCore: async uses Begin/Continue/End
+    // cooperative protocol with buffer refills, lacks rawInput for diagnostics alignment, and
+    // adds cancellation-aware exception handling. These structural differences make shared
+    // helper extraction awkward without introducing tangled abstractions.
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new ContainsHintStrategy();
@@ -381,6 +385,9 @@ public sealed class Tokenizer : ITokenizer
 
             try
             {
+                // Async path passes null for rawInput — early hint rejection requires the full
+                // input string, which isn't available during streaming. Hints are instead checked
+                // via the integrated single-pass strategy (OnTokenMatched callbacks).
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
 
                 if (hintsMissing)

@@ -18,6 +18,9 @@ internal interface IHintStrategy
     /// <param name="result">The result object to populate with hint matches and misses.</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if required hints are missing, false if all required hints are found.</returns>
+    // rawInput enables fast string-based hint pre-filtering on sync paths where the full
+    // input is available. Async/streaming paths pass null and fall back to integrated
+    // single-pass hint checking via OnTokenMatched callbacks.
     bool PreProcess(Template template, TokenEnumerator enumerator,
                     string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector);
 

@@ -341,6 +341,8 @@ public class TokenEnumerator
     /// </summary>
     private void GrowBuffer()
     {
+        // Buffer growth is bounded by TokenizerOptions.MaxInputLength, which is validated
+        // by both sync and async tokenization paths before processing continues.
         var newSize = buffer.Length * 2;
         var newBuffer = new char[newSize];
 

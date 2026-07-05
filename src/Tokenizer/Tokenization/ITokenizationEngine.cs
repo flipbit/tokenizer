@@ -27,6 +27,9 @@ internal interface ITokenizationEngine
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null);
 
+    // Begin/Continue/End are intentionally on this interface (not concrete-only) to enable
+    // test substitution. The interface is internal with a single implementor.
+
     /// <summary>
     /// Initializes tokenization state and returns a continuation handle.
     /// The handle must be passed to <see cref="ContinueTokenization"/> and <see cref="EndTokenization"/>.

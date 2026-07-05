@@ -133,77 +133,15 @@ public sealed class Token
     {
         assignedValue = null;
 
-        if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return false;
-        if (IsNull) return false;
-        if (string.IsNullOrWhiteSpace(Name)) return false;
-
-        value = value.TrimTrailingNewLine();
-
-        if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
-        {
-            var index = value.IndexOf("\n");
-            if (index > 0)
-            {
-                value = value.Substring(0, index);
-            }
-        }
+        var prepared = PrepareValue(value);
+        if (prepared == null) return false;
 
         if (options.TrimTrailingWhiteSpace)
         {
-            value = value.TrimEnd();
+            prepared = prepared.TrimEnd();
         }
 
-        assignedValue = value;
-
-        foreach (var decorator in Decorators)
-        {
-            if (decorator.IsTransformer)
-            {
-                var transformed = decorator.TryTransform(assignedValue!, out var output);
-
-                if (transformed == false)
-                {
-                    collector.Record(DiagnosticEventType.TransformerFailed,
-                        tokenName: Name, tokenId: Id,
-                        location: location,
-                        value: assignedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name,
-                        decoratorArgs: decorator.Parameters.ToArray());
-
-                    return false;
-                }
-
-                collector.Record(DiagnosticEventType.TransformerSucceeded,
-                    tokenName: Name, tokenId: Id,
-                    location: location,
-                    value: assignedValue?.ToString(),
-                    detail: output?.ToString(),
-                    decoratorName: decorator.DecoratorType.Name,
-                    decoratorArgs: decorator.Parameters.ToArray());
-
-                assignedValue = output;
-            }
-
-            if (decorator.IsValidator)
-            {
-                if (decorator.Validate(assignedValue!))
-                {
-                    collector.Record(DiagnosticEventType.ValidatorPassed,
-                        tokenName: Name, tokenId: Id,
-                        value: assignedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
-                }
-                else
-                {
-                    collector.Record(DiagnosticEventType.ValidatorFailed,
-                        tokenName: Name, tokenId: Id,
-                        value: value,
-                        decoratorName: decorator.DecoratorType.Name);
-
-                    return false;
-                }
-            }
-        }
+        if (RunDecoratorPipeline(prepared, collector, location, out assignedValue) == false) return false;
 
         if (target is IDictionary<string, object> dictionary)
         {
@@ -295,12 +233,20 @@ public sealed class Token
 
     internal bool CanAssign(string value)
     {
-        if (string.IsNullOrEmpty(value)) return false;
+        var prepared = PrepareValue(value);
+        if (prepared == null) return false;
 
-        // Trim trailing new line
+        return RunDecoratorPipeline(prepared, null, null, out _);
+    }
+
+    private string? PrepareValue(string value)
+    {
+        if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return null;
+        if (IsNull) return null;
+        if (string.IsNullOrWhiteSpace(Name)) return null;
+
         value = value.TrimTrailingNewLine();
 
-        // Only check up to new line if set
         if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
         {
             var index = value.IndexOf("\n");
@@ -310,24 +256,57 @@ public sealed class Token
             }
         }
 
-        object input = value;
+        return value;
+    }
+
+    private bool RunDecoratorPipeline(object input, IDiagnosticCollector? collector,
+        FileLocation? location, out object? assignedValue)
+    {
+        assignedValue = input;
 
         foreach (var decorator in Decorators)
         {
             if (decorator.IsTransformer)
             {
-                if (decorator.TryTransform(input, out var output) == false)
+                if (decorator.TryTransform(assignedValue!, out var output) == false)
                 {
+                    collector?.Record(DiagnosticEventType.TransformerFailed,
+                        tokenName: Name, tokenId: Id,
+                        location: location,
+                        value: assignedValue?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name,
+                        decoratorArgs: decorator.Parameters.ToArray());
+
                     return false;
                 }
 
-                input = output;
+                collector?.Record(DiagnosticEventType.TransformerSucceeded,
+                    tokenName: Name, tokenId: Id,
+                    location: location,
+                    value: assignedValue?.ToString(),
+                    detail: output?.ToString(),
+                    decoratorName: decorator.DecoratorType.Name,
+                    decoratorArgs: decorator.Parameters.ToArray());
+
+                assignedValue = output;
             }
 
             if (decorator.IsValidator)
             {
-                if (decorator.Validate(input) == false)
+                if (decorator.Validate(assignedValue!))
                 {
+                    collector?.Record(DiagnosticEventType.ValidatorPassed,
+                        tokenName: Name, tokenId: Id,
+                        value: assignedValue?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name);
+                }
+                else
+                {
+                    collector?.Record(DiagnosticEventType.ValidatorFailed,
+                        tokenName: Name, tokenId: Id,
+                        value: input?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name);
+
                     return false;
                 }
             }

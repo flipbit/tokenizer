@@ -49,11 +49,12 @@ public class TemplateBuilder
 
     public Template Build()
     {
-        var template = new Template(_name);
+        var template = _options != null
+            ? new Template(_name, _options)
+            : new Template(_name);
         foreach (var token in _tokens) template.AddToken(token);
         foreach (var hint in _hints) template.AddHint(hint);
         foreach (var tag in _tags) template.AddTag(tag);
-        if (_options != null) template.Options = _options;
         return template;
     }
 }

@@ -179,18 +179,16 @@ internal class TokenParser
                 new Tokens.Enumerators.FileLocation());
         }
 
-        var template = new Template(name);
-
         if (log.IsEnabled(LogLevel.Trace))
         {
-            log.LogTrace("Start: Parsing Template: {TemplateName}", template.Name);
+            log.LogTrace("Start: Parsing Template: {TemplateName}", name);
         }
 
         try
         {
             var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
 
-            template.Options = preTemplate.Options;
+            var template = new Template(name, preTemplate.Options);
 
             if (log.IsEnabled(LogLevel.Debug))
             {

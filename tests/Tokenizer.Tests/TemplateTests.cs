@@ -173,4 +173,17 @@ public class TemplateTests : TokenizerTestBase
         Assert.Equal("Template(0 tokens)", result);
     }
 
+    [Fact]
+    public void GivenTemplate_WhenConstructedWithOptions_ThenOptionsAreAccessible()
+    {
+        // Arrange
+        var options = new TokenizerOptions { TrimTrailingWhiteSpace = false };
+
+        // Act
+        var template = new Template("test", options);
+
+        // Assert
+        Assert.False(template.Options.TrimTrailingWhiteSpace);
+    }
+
 }

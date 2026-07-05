@@ -24,12 +24,21 @@ public sealed class Template
     /// Creates a new template with the given name.
     /// </summary>
     /// <param name="name">A name that identifies this template.</param>
-    public Template(string name)
+    public Template(string name) : this(name, new TokenizerOptions())
+    {
+    }
+
+    /// <summary>
+    /// Creates a new template with the given name and options.
+    /// </summary>
+    /// <param name="name">A name that identifies this template.</param>
+    /// <param name="options">The options to use when parsing this template.</param>
+    public Template(string name, TokenizerOptions options)
     {
         tokens = new List<Token>();
         hints = new List<Hint>();
         tags = new List<string>();
-        Options = new TokenizerOptions();
+        Options = options;
         this.name = name;
     }
 
@@ -72,7 +81,7 @@ public sealed class Template
     /// <summary>
     /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
     /// </summary>
-    public TokenizerOptions Options { get; set; }
+    public TokenizerOptions Options { get; init; }
 
     /// <inheritdoc />
     public override string ToString()

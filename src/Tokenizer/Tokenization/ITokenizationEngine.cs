@@ -15,14 +15,14 @@ internal interface ITokenizationEngine
     /// </summary>
     /// <param name="template">The template containing token definitions</param>
     /// <param name="targetObject">The object to populate with matched token values</param>
-    /// <param name="context">The tokenization context containing shared state (must be initialized by the caller)</param>
+    /// <param name="context">The concrete tokenization context containing shared state (must be initialized by the caller)</param>
     /// <param name="result">The result object to populate with matches and misses</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <param name="hintStrategy">Optional hint strategy to notify when token preambles match.</param>
     void ProcessTokenization(
         Template template,
         object? targetObject,
-        ITokenizationContext context,
+        TokenizationContext context,
         TokenizeResultBase result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null);

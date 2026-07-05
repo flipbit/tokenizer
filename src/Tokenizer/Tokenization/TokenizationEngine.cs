@@ -57,20 +57,18 @@ internal class TokenizationEngine : ITokenizationEngine
     public void ProcessTokenization(
         Template template,
         object? targetObject,
-        ITokenizationContext context,
+        TokenizationContext context,
         TokenizeResultBase result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null)
     {
-        var ctx = (TokenizationContext)context;
-
-        var continuation = BeginTokenization(template, targetObject, ctx, result, collector, hintStrategy);
+        var continuation = BeginTokenization(template, targetObject, context, result, collector, hintStrategy);
         do
         {
-            ctx.Enumerator.FillBuffer();
+            context.Enumerator.FillBuffer();
         }
-        while (!ContinueTokenization(continuation, ctx, CancellationToken.None));
-        EndTokenization(continuation, ctx);
+        while (!ContinueTokenization(continuation, context, CancellationToken.None));
+        EndTokenization(continuation, context);
     }
 
     /// <summary>

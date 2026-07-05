@@ -164,7 +164,7 @@ internal class TokenizationEngine : ITokenizationEngine
             // Check for repeated current token
             if (ShouldProcessRepeatedToken(context))
             {
-                if (!HandleRepeatedTokenMatching(continuation, context))
+                if (!ProcessRepeatedTokens(continuation, context))
                 {
                     continue;
                 }
@@ -472,14 +472,6 @@ internal class TokenizationEngine : ITokenizationEngine
         return context.Candidates.HasCandidates &&
                context.Enumerator.TryMatch(context.Candidates.Preamble) &&
                context.Candidates.Preamble.Length > 0;
-    }
-
-    /// <summary>
-    /// Handles matching of repeated tokens.
-    /// </summary>
-    private bool HandleRepeatedTokenMatching(TokenizationContinuation continuation, TokenizationContext context)
-    {
-        return ProcessRepeatedTokens(continuation, context);
     }
 
     /// <summary>

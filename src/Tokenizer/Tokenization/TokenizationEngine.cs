@@ -474,14 +474,13 @@ internal class TokenizationEngine : ITokenizationEngine
     /// <returns>True if the token was the last matched token</returns>
     private bool WasLastMatchedToken(TokenizeResultBase result, Token token)
     {
-        var lastMatch = result.Tokens.Matches.LastOrDefault();
-
-        if (lastMatch != null)
+        var matches = result.Tokens.Matches;
+        if (matches.Count == 0)
         {
-            return lastMatch.Token.Id == token.Id;
+            return false;
         }
 
-        return false;
+        return matches[matches.Count - 1].Token.Id == token.Id;
     }
 
 

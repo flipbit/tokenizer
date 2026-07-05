@@ -60,6 +60,32 @@ public class TokenizerOptionsRegistrationTests
     }
 
     [Fact]
+    public void GivenNewOptions_WhenRegisteringValidator_ThenReturnsNewInstance()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = options.WithValidator<IsNumericValidator>();
+
+        // Assert — WithValidator returns a new instance (immutability)
+        Assert.NotSame(options, result);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenRegisteringValidator_ThenOriginalIsUnchanged()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        options.WithValidator<IsNumericValidator>();
+
+        // Assert — original options are not mutated
+        Assert.DoesNotContain(typeof(IsNumericValidator), options.Validators);
+    }
+
+    [Fact]
     public void GivenNewOptions_WhenCheckingDefaults_ThenCompilationCacheMaxSizeIs500()
     {
         // Arrange / Act

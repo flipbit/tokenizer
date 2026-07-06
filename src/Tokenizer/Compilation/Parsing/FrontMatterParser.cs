@@ -304,15 +304,8 @@ internal sealed class FrontMatterParser
                 continue;
             }
 
-            // Non-whitespace
-            if (t.Kind == LexerTokenKind.QuotedString)
-            {
-                sb.Append(t.Value); // include quoted content exactly
-            }
-            else
-            {
-                sb.Append(t.Value);
-            }
+            // Non-whitespace: append value exactly regardless of token kind
+            sb.Append(t.Value);
             lastWasSpace = false;
         }
         return sb.ToString();

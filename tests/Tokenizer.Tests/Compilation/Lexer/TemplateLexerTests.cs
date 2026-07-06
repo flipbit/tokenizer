@@ -64,7 +64,7 @@ public class TemplateLexerTests
         }, structural);
 
         // EndOfInput should be the final token kind
-        Assert.Equal(LexerTokenKind.EndOfInput, kinds.Last());
+        Assert.Equal(LexerTokenKind.EndOfInput, kinds[^1]);
     }
 
     [Theory]
@@ -359,7 +359,7 @@ public class TemplateLexerTests
 
             // Assert
             Assert.NotEmpty(tokens);
-            Assert.Equal(LexerTokenKind.EndOfInput, tokens.Last().Kind);
+            Assert.Equal(LexerTokenKind.EndOfInput, tokens[^1].Kind);
         }
     }
 

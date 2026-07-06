@@ -143,5 +143,8 @@ dotnet_diagnostic.MA0037.severity = warning
 # Both if and else branch have identical code
 dotnet_diagnostic.MA0140.severity = warning
 
+# Redundant else clause
+dotnet_diagnostic.MA0071.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

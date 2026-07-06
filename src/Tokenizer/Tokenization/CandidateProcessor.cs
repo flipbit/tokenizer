@@ -64,18 +64,16 @@ internal sealed class CandidateProcessor
 
                 return true;
             }
-            else
-            {
-                if (_collector.IsEnabled)
-                {
-                    _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
-                        tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
-                        location: location,
-                        value: context.Replacement.ToString());
-                }
 
-                return false;
+            if (_collector.IsEnabled)
+            {
+                _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                    tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
+                    location: location,
+                    value: context.Replacement.ToString());
             }
+
+            return false;
         }
         catch (Exception e)
         {

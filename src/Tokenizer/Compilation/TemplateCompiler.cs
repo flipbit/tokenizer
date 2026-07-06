@@ -9,136 +9,28 @@ using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 using Tokens.Transformers;
-using Tokens.Validators;
 
 namespace Tokens.Compilation;
 
 /// <summary>
-/// Parser that converts a string into a <see cref="Template"/> that can be
-/// used to extract objects from input strings.
+/// Compiles template pattern strings into <see cref="Template"/> objects
+/// that can be used to extract structured data from input text.
 /// </summary>
 internal class TemplateCompiler
 {
-    private readonly List<Type> transformers;
-    private readonly List<Type> validators;
+    private readonly DecoratorRegistry registry;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
     private readonly ILogger<TemplateCompiler> log;
 
     public TokenizerOptions Options { get; }
 
-    public TemplateCompiler() : this(new TokenizerOptions())
-    {
-    }
-
-    public TemplateCompiler(TokenizerOptions options) : this(options, null)
-    {
-    }
-
-    public TemplateCompiler(TokenizerOptions options, ILogger<TemplateCompiler>? logger)
+    public TemplateCompiler(TokenizerOptions options, ILogger<TemplateCompiler>? logger = null)
     {
         log = logger ?? NullLogger<TemplateCompiler>.Instance;
 
         Options = options;
-
-        transformers = new List<Type>();
-        validators = new List<Type>();
-
-        // Add default transformers/validators
-        RegisterTransformer<ToDateTimeTransformer>();
-        RegisterTransformer<ToDateTimeUtcTransformer>();
-        RegisterTransformer<ToLowerTransformer>();
-        RegisterTransformer<ToUpperTransformer>();
-        RegisterTransformer<TrimTransformer>();
-        RegisterTransformer<SubstringAfterTransformer>();
-        RegisterTransformer<SubstringBeforeTransformer>();
-        RegisterTransformer<SetTransformer>();
-        RegisterTransformer<ReplaceTransformer>();
-        RegisterTransformer<RemoveTransformer>();
-        RegisterTransformer<SubstringAfterLastTransformer>();
-        RegisterTransformer<SubstringBeforeLastTransformer>();
-        RegisterTransformer<RemoveEndTransformer>();
-        RegisterTransformer<RemoveStartTransformer>();
-        RegisterTransformer<SplitTransformer>();
-        RegisterTransformer<ToIntTransformer>();
-        RegisterTransformer<ToDecimalTransformer>();
-        RegisterTransformer<ToBooleanTransformer>();
-        RegisterTransformer<ToGuidTransformer>();
-        RegisterTransformer<TruncateTransformer>();
-        RegisterTransformer<DefaultValueTransformer>();
-        RegisterTransformer<RegexReplaceTransformer>();
-        RegisterTransformer<TitleCaseTransformer>();
-
-        RegisterValidator<IsNumericValidator>();
-        RegisterValidator<MaxLengthValidator>();
-        RegisterValidator<MinLengthValidator>();
-        RegisterValidator<IsDomainNameValidator>();
-        RegisterValidator<IsPhoneNumberValidator>();
-        RegisterValidator<IsEmailValidator>();
-        RegisterValidator<IsUrlValidator>();
-        RegisterValidator<IsLooseUrlValidator>();
-        RegisterValidator<IsLooseAbsoluteUrlValidator>();
-        RegisterValidator<IsDateTimeValidator>();
-        RegisterValidator<IsNotEmptyValidator>();
-        RegisterValidator<IsNotValidator>();
-        RegisterValidator<StartsWithValidator>();
-        RegisterValidator<EndsWithValidator>();
-        RegisterValidator<ContainsValidator>();
-        RegisterValidator<IsAlphanumericValidator>();
-        RegisterValidator<IsIntegerValidator>();
-        RegisterValidator<IsGuidValidator>();
-        RegisterValidator<IsIpAddressValidator>();
-        RegisterValidator<IsInRangeValidator>();
-        RegisterValidator<MatchesRegexValidator>();
-
-        // Register custom transformers/validators from options
-        foreach (var transformerType in options.Transformers)
-        {
-            if (!transformers.Contains(transformerType))
-            {
-                transformers.Add(transformerType);
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("Registered custom transformer from options: {TransformerType}", transformerType.Name);
-                }
-            }
-        }
-
-        foreach (var validatorType in options.Validators)
-        {
-            if (!validators.Contains(validatorType))
-            {
-                validators.Add(validatorType);
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("Registered custom validator from options: {ValidatorType}", validatorType.Name);
-                }
-            }
-        }
-    }
-
-    public TemplateCompiler RegisterTransformer<T>() where T : ITokenTransformer
-    {
-        transformers.Add(typeof(T));
-
-        if (log.IsEnabled(LogLevel.Debug))
-        {
-            log.LogDebug("Registered transformer: {TransformerType}", typeof(T).Name);
-        }
-
-        return this;
-    }
-
-    public TemplateCompiler RegisterValidator<T>() where T : ITokenValidator
-    {
-        validators.Add(typeof(T));
-
-        if (log.IsEnabled(LogLevel.Debug))
-        {
-            log.LogDebug("Registered validator: {ValidatorType}", typeof(T).Name);
-        }
-
-        return this;
+        registry = new DecoratorRegistry(options);
     }
 
     public Template Parse(TextReader reader)
@@ -382,7 +274,7 @@ internal class TemplateCompiler
 
             TokenDecoratorContext? context = null;
 
-            foreach (var operatorType in transformers)
+            foreach (var operatorType in registry.Transformers)
             {
                 if (string.Equals(decorator.Name, operatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
                     string.Equals($"{decorator.Name}Transformer", operatorType.Name, StringComparison.InvariantCultureIgnoreCase))
@@ -415,7 +307,7 @@ internal class TemplateCompiler
 
             if (context != null) continue;
 
-            foreach (var validatorType in validators)
+            foreach (var validatorType in registry.Validators)
             {
                 if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
                     string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))

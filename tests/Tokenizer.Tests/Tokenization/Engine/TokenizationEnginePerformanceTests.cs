@@ -17,7 +17,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenVeryLargeInput100KChars_WhenTokenizing_ThenCompletesSuccessfully()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Name: {Name}");
 
         var largeInput = new StringBuilder();
@@ -43,7 +43,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenInputWith1MChars_WhenTokenizing_ThenHandlesWithoutError()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("{Content}");
 
         var largeInput = new string('x', 1000000);
@@ -102,7 +102,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenInputWith10KLines_WhenTokenizing_ThenCompletesSuccessfully()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Item: {Item}");
 
         var inputBuilder = new StringBuilder();
@@ -130,7 +130,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenRepeatingTokenWith1000Occurrences_WhenTokenizing_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Item: {Item*}");
 
         var inputBuilder = new StringBuilder();
@@ -168,7 +168,7 @@ public class TokenizationEnginePerformanceTests
             inputBuilder.Append($"Level{i}: Value{i}\n");
         }
 
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse(templateBuilder.ToString());
 
         var input = inputBuilder.ToString();
@@ -200,7 +200,7 @@ public class TokenizationEnginePerformanceTests
             inputBuilder.Append($"{letter}");
         }
 
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse(templateBuilder.ToString());
 
         var input = inputBuilder.ToString();
@@ -221,7 +221,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenVeryLongTokenValue_WhenTokenizing_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Content: {Content}End");
 
         var longValue = new string('x', 50000);
@@ -245,7 +245,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenInputWithManyWhitespaceCharacters_WhenTokenizing_ThenHandlesEfficiently()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Name: {Name}");
 
         var inputBuilder = new StringBuilder();
@@ -271,7 +271,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenMultipleTokenizationRuns_WhenTokenizing_ThenMaintainsConsistency()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Name: {Name}Age: {Age}");
         var input = "Name: JohnAge: 25";
 
@@ -299,7 +299,7 @@ public class TokenizationEnginePerformanceTests
     public void GivenConcurrentTokenizations_WhenTokenizing_ThenHandlesIndependently()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Name: {Name}");
         var input = "Name: Test";
 

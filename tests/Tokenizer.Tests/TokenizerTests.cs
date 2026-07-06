@@ -522,7 +522,7 @@ public class TokenizerTests : TokenizerTestBase
         // Arrange
         const string pattern = @"First Name: {Student.FirstName}, Last Name: {Student.LastName}";
         const string input = @"First Name: Alice, Last Name: Smith";
-        var template = new TemplateCompiler().Parse(pattern);
+        var template = new TemplateCompiler(new TokenizerOptions()).Parse(pattern);
 
         // Act
         var one = tokenizer.Tokenize<Student>(template, input).Value;

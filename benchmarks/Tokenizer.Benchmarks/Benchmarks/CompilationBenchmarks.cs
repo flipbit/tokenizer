@@ -23,7 +23,7 @@ public class CompilationBenchmarks
         smallTemplate = WorkloadGenerator.SmallTemplate();
         mediumTemplate = WorkloadGenerator.MediumTemplate();
         largeTemplate = WorkloadGenerator.LargeTemplate();
-        parser = new TemplateCompiler();
+        parser = new TemplateCompiler(new TokenizerOptions());
     }
 
     [Benchmark(Description = "Compile small template (3 tokens)")]

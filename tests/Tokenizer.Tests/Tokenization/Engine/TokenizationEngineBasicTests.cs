@@ -21,7 +21,7 @@ public class TokenizationEngineBasicTests
     public void GivenValidInput_WhenProcessingTokenization_ThenProcessesSuccessfully()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("First Name: {FirstName}");
 
         var context = new TokenizationContext();
@@ -45,7 +45,7 @@ public class TokenizationEngineBasicTests
     public void GivenTemplateWithNoTokens_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Parse("Hello World"); // Template with no tokens
 
         var context = new TokenizationContext();

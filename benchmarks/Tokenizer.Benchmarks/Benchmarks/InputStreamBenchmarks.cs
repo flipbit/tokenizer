@@ -29,7 +29,7 @@ public class InputStreamBenchmarks
     public void Setup()
     {
         tokenizer = new Tokenizer();
-        var parser = new TemplateCompiler();
+        var parser = new TemplateCompiler(new TokenizerOptions());
         smallTemplate = parser.Parse(WorkloadGenerator.SmallTemplate(), "small");
         mediumTemplate = parser.Parse(WorkloadGenerator.MediumTemplate(), "medium");
         largeTemplate = parser.Parse(WorkloadGenerator.LargeTemplate(), "large");

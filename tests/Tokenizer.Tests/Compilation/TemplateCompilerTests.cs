@@ -6,7 +6,7 @@ namespace Tokens.Compilation;
 
 public class TemplateCompilerTests
 {
-    private readonly TemplateCompiler parser = new();
+    private readonly TemplateCompiler parser = new(new TokenizerOptions());
 
     [Fact]
     public void GivenTemplateWithDecorator_WhenParsing_ThenTokenHasDecorator()

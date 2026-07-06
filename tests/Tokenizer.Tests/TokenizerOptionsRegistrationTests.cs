@@ -86,26 +86,6 @@ public class TokenizerOptionsRegistrationTests
     }
 
     [Fact]
-    public void GivenNewOptions_WhenCheckingDefaults_ThenCompilationCacheMaxSizeIs500()
-    {
-        // Arrange / Act
-        var options = new TokenizerOptions();
-
-        // Assert
-        Assert.Equal(500, options.CompilationCacheMaxSize);
-    }
-
-    [Fact]
-    public void GivenNewOptions_WhenSettingCacheMaxSizeToZero_ThenCachingIsDisabled()
-    {
-        // Arrange / Act
-        var options = new TokenizerOptions { CompilationCacheMaxSize = 0 };
-
-        // Assert
-        Assert.Equal(0, options.CompilationCacheMaxSize);
-    }
-
-    [Fact]
     public void GivenOptionsWithBuiltInTransformer_WhenRegisteringSameType_ThenTemplateCompilerDoesNotDuplicate()
     {
         // Arrange

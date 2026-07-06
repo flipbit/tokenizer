@@ -23,7 +23,6 @@ public sealed class Tokenizer : ITokenizer
     private readonly ILogger<Tokenizer> log;
     private readonly ITokenizationEngine tokenizationEngine;
     private readonly IResultBuilder resultBuilder;
-    private readonly TemplateCache compilationCache;
 
     /// <summary>Gets the options.</summary>
     public TokenizerOptions Options { get; }
@@ -54,7 +53,6 @@ public sealed class Tokenizer : ITokenizer
         parser = new TemplateCompiler(Options, loggerFactory.CreateLogger<TemplateCompiler>());
         tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
-        compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
 
     /// <summary>
@@ -72,7 +70,6 @@ public sealed class Tokenizer : ITokenizer
         this.parser = parser;
         this.tokenizationEngine = tokenizationEngine;
         this.resultBuilder = resultBuilder;
-        compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
     }
 
     /// <summary>
@@ -268,13 +265,10 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <inheritdoc />
-    public Template Compile(string pattern) => compilationCache.GetOrAdd(pattern, p => parser.Parse(p));
+    public Template Compile(string pattern) => parser.Parse(pattern);
 
     /// <inheritdoc />
-    public Template Compile(string pattern, string name) => compilationCache.GetOrAdd(pattern, p => parser.Parse(p, name));
-
-    /// <inheritdoc />
-    public void ClearCompilationCache() => compilationCache.Clear();
+    public Template Compile(string pattern, string name) => parser.Parse(pattern, name);
 
     /// <inheritdoc />
     public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)

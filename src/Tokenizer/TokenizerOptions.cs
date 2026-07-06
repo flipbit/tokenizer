@@ -32,7 +32,6 @@ public record class TokenizerOptions
         MaxTokenCount = original.MaxTokenCount;
         MaxIterations = original.MaxIterations;
         AllowStreamBuffering = original.AllowStreamBuffering;
-        CompilationCacheMaxSize = original.CompilationCacheMaxSize;
         transformers = new List<Type>(original.transformers);
         validators = new List<Type>(original.validators);
     }
@@ -114,12 +113,6 @@ public record class TokenizerOptions
     public bool AllowStreamBuffering { get; init; }
 
     /// <summary>
-    /// Maximum number of compiled templates to hold in the compilation cache.
-    /// Default: 500. Set to 0 to disable caching.
-    /// </summary>
-    public int CompilationCacheMaxSize { get; init; } = 500;
-
-    /// <summary>
     /// Custom transformer types registered on this options instance.
     /// These are added after the default transformers when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
@@ -174,8 +167,7 @@ public record class TokenizerOptions
             && MaxTemplateLength == other.MaxTemplateLength
             && MaxTokenCount == other.MaxTokenCount
             && MaxIterations == other.MaxIterations
-            && AllowStreamBuffering == other.AllowStreamBuffering
-            && CompilationCacheMaxSize == other.CompilationCacheMaxSize;
+            && AllowStreamBuffering == other.AllowStreamBuffering;
     }
 
     /// <inheritdoc />
@@ -197,7 +189,6 @@ public record class TokenizerOptions
             hash = hash * 31 + MaxTokenCount.GetHashCode();
             hash = hash * 31 + MaxIterations.GetHashCode();
             hash = hash * 31 + AllowStreamBuffering.GetHashCode();
-            hash = hash * 31 + CompilationCacheMaxSize.GetHashCode();
             return hash;
         }
     }

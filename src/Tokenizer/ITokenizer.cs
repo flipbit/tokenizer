@@ -15,13 +15,11 @@ public interface ITokenizer
 
     /// <summary>
     /// Compiles a template pattern string into a reusable <see cref="Template"/>.
-    /// Results are cached by pattern content.
     /// </summary>
     Template Compile(string pattern);
 
     /// <summary>
     /// Compiles a template pattern string with an explicit name.
-    /// Results are cached by pattern content.
     /// </summary>
     Template Compile(string pattern, string name);
 
@@ -44,11 +42,6 @@ public interface ITokenizer
     /// Tokenizes the input using a pre-compiled template, mapping values onto a new <typeparamref name="T"/>.
     /// </summary>
     TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new();
-
-    /// <summary>
-    /// Clears the compilation cache, forcing subsequent calls to recompile patterns.
-    /// </summary>
-    void ClearCompilationCache();
 
     /// <summary>
     /// Asynchronously compiles a template from a <see cref="TextReader"/>.

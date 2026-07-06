@@ -285,7 +285,11 @@ public sealed class TokenMatcher : ITokenMatcher
             ct.ThrowIfCancellationRequested();
             await writer.WriteAsync(charBuf, 0, read).ConfigureAwait(false);
         }
+#if NETSTANDARD2_0
         await writer.FlushAsync().ConfigureAwait(false);
+#else
+        await writer.FlushAsync(ct).ConfigureAwait(false);
+#endif
         buffer.Position = 0;
         return buffer;
     }

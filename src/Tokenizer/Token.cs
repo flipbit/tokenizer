@@ -54,25 +54,25 @@ public sealed class Token
     }
 
     /// <summary>
-    /// If <c>true</c> then this <see cref="Token"/> is optional and can be skipped
+    /// If <see langword="true"/> then this <see cref="Token"/> is optional and can be skipped
     /// during processing.
     /// </summary>
     public bool IsOptional { get; internal set; }
 
     /// <summary>
-    /// If <c>true</c> then this <see cref="Token"/> can map multiple instances onto
+    /// If <see langword="true"/> then this <see cref="Token"/> can map multiple instances onto
     /// an <see cref="IList{T}"/>.
     /// </summary>
     public bool IsRepeating { get; internal set; }
 
     /// <summary>
-    /// If <c>true</c> then this <see cref="Token"/> will map a value up to the next
+    /// If <see langword="true"/> then this <see cref="Token"/> will map a value up to the next
     /// newline.
     /// </summary>
     public bool TerminateOnNewLine { get; internal set; }
 
     /// <summary>
-    /// If <c>true</c> then this <see cref="Token"/> must be present in the input for
+    /// If <see langword="true"/> then this <see cref="Token"/> must be present in the input for
     /// the processing to be successful.
     /// </summary>
     public bool IsRequired { get; internal set; }

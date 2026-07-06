@@ -50,7 +50,7 @@ public sealed class HintResult
     }
 
     /// <summary>
-    /// <c>true</c> when at least one required hint was not found in the input.
+    /// <see langword="true"/> when at least one required hint was not found in the input.
     /// </summary>
     public bool HasMissingRequiredHints => Misses.Any(m => !m.Optional);
 

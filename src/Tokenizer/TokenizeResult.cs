@@ -57,10 +57,10 @@ public sealed class TokenizeResult : TokenizeResultBase
 
     /// <summary>
     /// Returns the value of the first matched token with the given <paramref name="key"/>,
-    /// or <c>null</c> if no match was found.
+    /// or <see langword="null"/> if no match was found.
     /// </summary>
     /// <param name="key">The token name to look up.</param>
-    /// <returns>The matched value, or <c>null</c>.</returns>
+    /// <returns>The matched value, or <see langword="null"/>.</returns>
     public object? FirstOrDefault(string key)
     {
         if (Matches.Any(m => m.Token?.Name == key))
@@ -77,7 +77,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// </summary>
     /// <typeparam name="T">The type to cast the matched value to.</typeparam>
     /// <param name="key">The token name to look up.</param>
-    /// <returns>The matched value cast to <typeparamref name="T"/>, or <c>default</c>.</returns>
+    /// <returns>The matched value cast to <typeparamref name="T"/>, or <see langword="default"/>.</returns>
     public T? FirstOrDefault<T>(string key)
     {
         if (Matches.Any(m => m.Token?.Name == key))
@@ -105,7 +105,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// Determines whether a token with the given <paramref name="key"/> was matched in the input.
     /// </summary>
     /// <param name="key">The token name to look up.</param>
-    /// <returns><c>true</c> if at least one match exists for the key; otherwise <c>false</c>.</returns>
+    /// <returns><see langword="true"/> if at least one match exists for the key; otherwise <see langword="false"/>.</returns>
     public bool Contains(string key)
     {
         return Matches.Any(m => m.Token.Name == key);

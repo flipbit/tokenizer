@@ -188,10 +188,10 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Returns <c>true</c> when the string is non-empty and consists entirely of space characters.
+    /// Returns <see langword="true"/> when the string is non-empty and consists entirely of space characters.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns><c>true</c> if the string contains only spaces; otherwise <c>false</c>.</returns>
+    /// <returns><see langword="true"/> if the string contains only spaces; otherwise <see langword="false"/>.</returns>
     public static bool IsOnlySpaces(this string value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -289,10 +289,10 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Returns <c>true</c> when the string ends with a Unix (<c>\n</c>) or Windows (<c>\r\n</c>) newline.
+    /// Returns <see langword="true"/> when the string ends with a Unix (<c>\n</c>) or Windows (<c>\r\n</c>) newline.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns><c>true</c> if the string ends with a newline sequence; otherwise <c>false</c>.</returns>
+    /// <returns><see langword="true"/> if the string ends with a newline sequence; otherwise <see langword="false"/>.</returns>
     public static bool EndsWithNewLine(this string value)
     {
         return !string.IsNullOrEmpty(value) && value[value.Length - 1] == '\n';

@@ -59,12 +59,12 @@ public sealed class TokenResult
     }
 
     /// <summary>
-    /// <c>true</c> when at least one required token was not matched in the input.
+    /// <see langword="true"/> when at least one required token was not matched in the input.
     /// </summary>
     public bool HasMissingRequiredTokens => _misses.Exists(m => m.IsRequired);
 
     /// <summary>
-    /// <c>true</c> when at least one token was matched in the input.
+    /// <see langword="true"/> when at least one token was matched in the input.
     /// </summary>
     public bool HasMatches => _matches.Count > 0;
 

@@ -120,5 +120,8 @@ dotnet_diagnostic.MA0073.severity = warning
 # Add trailing comma in multi-line initializers
 dotnet_diagnostic.MA0007.severity = warning
 
+# Use <see langword="keyword"/> instead of <c>keyword</c> for C# keywords in XML docs
+dotnet_diagnostic.MA0154.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

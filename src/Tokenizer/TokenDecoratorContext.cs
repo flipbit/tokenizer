@@ -63,13 +63,13 @@ public sealed class TokenDecoratorContext
     }
 
     /// <summary>
-    /// Returns <c>true</c> if the decorator is a <see cref="ITokenTransformer"/> used to transform
+    /// Returns <see langword="true"/> if the decorator is a <see cref="ITokenTransformer"/> used to transform
     /// the token value.
     /// </summary>
     public bool IsTransformer => typeof(ITokenTransformer).IsAssignableFrom(DecoratorType);
 
     /// <summary>
-    /// Returns <c>true</c> if the decorator is a <see cref="ITokenValidator"/> used to validate
+    /// Returns <see langword="true"/> if the decorator is a <see cref="ITokenValidator"/> used to validate
     /// the token value.
     /// </summary>
     public bool IsValidator => typeof(ITokenValidator).IsAssignableFrom(DecoratorType);

@@ -57,9 +57,7 @@ public static class TokenizerServiceCollectionExtensions
         services.TryAddSingleton<Compilation.TemplateCompiler>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
-            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger<Compilation.TemplateCompiler>();
-            return new Compilation.TemplateCompiler(opts.Value, logger);
+            return new Compilation.TemplateCompiler(opts.Value);
         });
 
         services.TryAddSingleton<ITokenizationEngine>(sp =>

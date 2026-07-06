@@ -50,7 +50,7 @@ public sealed class Tokenizer : ITokenizer
 
         Options = options with { };
         log = loggerFactory.CreateLogger<Tokenizer>();
-        parser = new TemplateCompiler(Options, loggerFactory.CreateLogger<TemplateCompiler>());
+        parser = new TemplateCompiler(Options);
         tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
     }

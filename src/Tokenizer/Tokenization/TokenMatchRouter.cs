@@ -28,10 +28,8 @@ internal sealed class TokenMatchRouter
 
     /// <summary>
     /// Examines the next character in the input and routes to the appropriate handler.
-    /// Returns false if the repeated-token path cleared candidates (caller should continue the loop).
-    /// Returns true for all other paths.
     /// </summary>
-    public bool RouteNext(TokenizationContext context)
+    public void RouteNext(TokenizationContext context)
     {
         var next = context.Enumerator.Peek();
 
@@ -42,7 +40,7 @@ internal sealed class TokenMatchRouter
         {
             if (!candidateProcessor.HandleRepeat(context))
             {
-                return false;
+                return;
             }
         }
 
@@ -50,7 +48,7 @@ internal sealed class TokenMatchRouter
         if (context.Candidates.HasCandidates && context.Candidates.TerminateOnNewLine && next == '\n')
         {
             candidateProcessor.HandleNewline(context);
-            return true;
+            return;
         }
 
         // Check for next token
@@ -81,7 +79,7 @@ internal sealed class TokenMatchRouter
                 context.Candidates.AddRange(context.MatchBuffer);
                 context.ClearReplacement();
                 context.Enumerator.Advance(context.Candidates.Preamble.Length);
-                return true;
+                return;
             }
 
             // Switch if we've accumulated a value — otherwise consume a character first
@@ -106,7 +104,5 @@ internal sealed class TokenMatchRouter
             context.Replacement.Append(next);
             context.Enumerator.Next();
         }
-
-        return true;
     }
 }

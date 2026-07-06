@@ -1,3 +1,4 @@
+using Tokens.Builders;
 using Xunit;
 
 namespace Tokens;
@@ -8,7 +9,7 @@ public class TokenizeResultTests
     public void GivenTokenizeResult_WhenToString_ThenReturnsCompactFormat()
     {
         // Arrange
-        var template = new Template("test-template");
+        var template = new TemplateBuilder().WithName("test-template").Build();
         var result = new TokenizeResult(template);
 
         // Act

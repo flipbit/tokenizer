@@ -59,7 +59,9 @@ internal class TemplateCompiler
                 ? $"Template_{Interlocked.Increment(ref templateCounter)}"
                 : preTemplate.Name;
 
-            var template = new Template(content, name, preTemplate.Options);
+            var id = content.ComputeHash();
+            var template = new Template(id, preTemplate.Options);
+            template.Name = name;
 
             if (log.IsEnabled(LogLevel.Debug))
             {

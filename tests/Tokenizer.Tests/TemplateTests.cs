@@ -1,3 +1,4 @@
+using Tokens.Builders;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrue()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
 
         Assert.True(template.HasTag("One"));
@@ -21,7 +22,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrueWhenDifferentCase()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
 
         Assert.True(template.HasTag("one"));
@@ -30,7 +31,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagWhenTrueWhenMultipleTags()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -41,7 +42,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagWhenMissing()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -52,7 +53,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagWhenNullInput()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -63,7 +64,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenTrue()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -74,7 +75,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenTrueAndDifferentCase()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -85,7 +86,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasMissingSomeTags()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -103,7 +104,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasNoTags()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
 
         IList<string> missing;
         var hasTags = template.HasTags(["One", "three"], out missing);
@@ -118,7 +119,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasNullInput()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -134,7 +135,7 @@ public class TemplateTests : TokenizerTestBase
     [Fact]
     public void TestHasTagsWhenHasEmptyInput()
     {
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
         template.AddTag("One");
         template.AddTag("Two");
         template.AddTag("Three");
@@ -151,7 +152,7 @@ public class TemplateTests : TokenizerTestBase
     public void GivenNamedTemplate_WhenToString_ThenReturnsName()
     {
         // Arrange
-        var template = new Template("invoice");
+        var template = new TemplateBuilder().WithName("invoice").Build();
 
         // Act
         var result = template.ToString();
@@ -164,7 +165,7 @@ public class TemplateTests : TokenizerTestBase
     public void GivenUnnamedTemplate_WhenToString_ThenReturnsTokenCount()
     {
         // Arrange
-        var template = new Template(string.Empty);
+        var template = new TemplateBuilder().Build();
 
         // Act
         var result = template.ToString();
@@ -180,7 +181,7 @@ public class TemplateTests : TokenizerTestBase
         var options = new TokenizerOptions { TrimTrailingWhiteSpace = false };
 
         // Act
-        var template = new Template("test", options);
+        var template = new TemplateBuilder().WithName("test").WithOptions(options).Build();
 
         // Assert
         Assert.False(template.Options.TrimTrailingWhiteSpace);

@@ -1,5 +1,3 @@
-using Tokens.Extensions;
-
 namespace Tokens;
 
 /// <summary>
@@ -13,45 +11,16 @@ public sealed class Template
     private readonly List<string> tags;
 
     /// <summary>
-    /// Creates a new unnamed template.
+    /// Creates a new template with a content-based Id and options.
     /// </summary>
-    public Template() : this(string.Empty)
-    {
-    }
-
-    /// <summary>
-    /// Creates a new template with the given name.
-    /// </summary>
-    /// <param name="name">A name that identifies this template.</param>
-    public Template(string name) : this(name, new TokenizerOptions())
-    {
-    }
-
-    /// <summary>
-    /// Creates a new template with the given name and options.
-    /// </summary>
-    /// <param name="name">A name that identifies this template.</param>
-    /// <param name="options">The options to use when parsing this template.</param>
-    public Template(string name, TokenizerOptions options)
+    internal Template(ulong id, TokenizerOptions options)
     {
         tokens = new List<Token>();
         hints = new List<Hint>();
         tags = new List<string>();
         Options = options;
-        Name = name;
-    }
-
-    /// <summary>
-    /// Creates a new template with a content-based Id, name, and options.
-    /// </summary>
-    internal Template(string pattern, string name, TokenizerOptions options)
-    {
-        tokens = new List<Token>();
-        hints = new List<Hint>();
-        tags = new List<string>();
-        Options = options;
-        Name = name;
-        Id = pattern.ComputeHash();
+        Id = id;
+        Name = string.Empty;
     }
 
     /// <summary>

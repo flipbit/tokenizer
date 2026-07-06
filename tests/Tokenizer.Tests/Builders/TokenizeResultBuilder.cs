@@ -7,7 +7,7 @@ namespace Tokens.Builders;
 /// </summary>
 public class TokenizeResultBuilder
 {
-    private TokenizeResult _result = new(new Template(string.Empty));
+    private TokenizeResult _result = new(new TemplateBuilder().Build());
 
     public TokenizeResultBuilder WithTemplate(Template template)
     {
@@ -71,7 +71,7 @@ public class TokenizeResultBuilder
 /// </summary>
 public class TokenizeResultBuilder<T> where T : class, new()
 {
-    private Template _template = new(string.Empty);
+    private Template _template = new TemplateBuilder().Build();
     private T? _value;
     private readonly System.Collections.Generic.List<TokenMatch> _matches = new();
     private readonly System.Collections.Generic.List<Token> _misses = new();

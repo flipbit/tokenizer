@@ -1,3 +1,4 @@
+using Tokens.Builders;
 using Xunit;
 
 namespace Tokens;
@@ -9,7 +10,7 @@ public class StringComparisonTests
     [InlineData("Test", "test")]
     public void GivenTemplate_WhenCheckingTagCaseInsensitive_ThenFindsTag(string tagToAdd, string tagToFind)
     {
-        var template = new Template("content");
+        var template = new TemplateBuilder().WithName("content").Build();
         template.AddTag(tagToAdd);
         Assert.True(template.HasTag(tagToFind));
     }
@@ -17,7 +18,7 @@ public class StringComparisonTests
     [Fact]
     public void GivenTemplate_WhenCheckingNonexistentTag_ThenReturnsFalse()
     {
-        var template = new Template("content");
+        var template = new TemplateBuilder().WithName("content").Build();
         template.AddTag("existing");
         Assert.False(template.HasTag("nonexistent"));
     }

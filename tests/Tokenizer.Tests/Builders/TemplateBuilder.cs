@@ -1,19 +1,23 @@
 namespace Tokens.Builders;
 
-/// <summary>
-/// Builder for creating Template instances for testing
-/// </summary>
 public class TemplateBuilder
 {
     private readonly List<Token> _tokens = new();
     private readonly List<Hint> _hints = new();
     private readonly List<string> _tags = new();
     private string _name = string.Empty;
-    private TokenizerOptions? _options;
+    private ulong _id;
+    private TokenizerOptions _options = new();
 
     public TemplateBuilder WithName(string name)
     {
         _name = name;
+        return this;
+    }
+
+    public TemplateBuilder WithId(ulong id)
+    {
+        _id = id;
         return this;
     }
 
@@ -49,9 +53,8 @@ public class TemplateBuilder
 
     public Template Build()
     {
-        var template = _options != null
-            ? new Template(_name, _options)
-            : new Template(_name);
+        var template = new Template(_id, _options);
+        template.Name = _name;
         foreach (var token in _tokens) template.AddToken(token);
         foreach (var hint in _hints) template.AddHint(hint);
         foreach (var tag in _tags) template.AddTag(tag);

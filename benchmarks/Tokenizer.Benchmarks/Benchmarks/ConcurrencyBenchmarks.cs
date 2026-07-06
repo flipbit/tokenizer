@@ -31,7 +31,7 @@ public class ConcurrencyBenchmarks
     public void Setup()
     {
         sharedTokenizer = new Tokenizer();
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
 
         mediumTemplateString = WorkloadGenerator.MediumTemplate();
         mediumTemplate = parser.Parse(mediumTemplateString, "medium");

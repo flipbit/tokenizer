@@ -106,13 +106,13 @@ public class TokenizerOptionsRegistrationTests
     }
 
     [Fact]
-    public void GivenOptionsWithBuiltInTransformer_WhenRegisteringSameType_ThenTokenParserDoesNotDuplicate()
+    public void GivenOptionsWithBuiltInTransformer_WhenRegisteringSameType_ThenTemplateCompilerDoesNotDuplicate()
     {
         // Arrange
         var options = new TokenizerOptions().WithTransformer<ToUpperTransformer>(); // ToUpper is a built-in
 
-        // Act — no exception expected; TokenParser deduplicates built-ins vs. custom registrations
-        var parser = new TokenParser(options);
+        // Act — no exception expected; TemplateCompiler deduplicates built-ins vs. custom registrations
+        var parser = new TemplateCompiler(options);
 
         // Assert — template that uses ToUpper compiles and runs without error
         var template = parser.Parse("{Value:ToUpper}");

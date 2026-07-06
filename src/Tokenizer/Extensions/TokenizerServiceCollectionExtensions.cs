@@ -54,12 +54,12 @@ public static class TokenizerServiceCollectionExtensions
 
     private static void RegisterCoreServices(IServiceCollection services)
     {
-        services.TryAddSingleton<Compilation.TokenParser>(sp =>
+        services.TryAddSingleton<Compilation.TemplateCompiler>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger<Compilation.TokenParser>();
-            return new Compilation.TokenParser(opts.Value, logger);
+            var logger = loggerFactory.CreateLogger<Compilation.TemplateCompiler>();
+            return new Compilation.TemplateCompiler(opts.Value, logger);
         });
 
         services.TryAddSingleton<ITokenizationEngine>(sp =>
@@ -81,7 +81,7 @@ public static class TokenizerServiceCollectionExtensions
             var opts = sp.GetRequiredService<IOptions<TokenizerOptions>>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<Tokenizer>();
-            var parser = sp.GetRequiredService<Compilation.TokenParser>();
+            var parser = sp.GetRequiredService<Compilation.TemplateCompiler>();
             var tokenizationEngine = sp.GetRequiredService<ITokenizationEngine>();
             var resultBuilder = sp.GetRequiredService<IResultBuilder>();
 

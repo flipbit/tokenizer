@@ -12,7 +12,7 @@ public class TemplateBinderIdAssignmentTests
     public void GivenMultipleTokens_WhenParsing_ThenAssignsSequentialIdsStartingAtOne()
     {
         // Arrange & Act
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{first}{second}{third}");
 
         // Assert
@@ -28,7 +28,7 @@ public class TemplateBinderIdAssignmentTests
     public void GivenRepeatingTokenWithMultilinePreambleTail_WhenParsing_ThenAssignsUniqueIdsToSplitTokens()
     {
         // Arrange & Act
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Start line\n    {item*}");
 
         // Assert: token is expanded into two definitions with sequential non-zero Ids

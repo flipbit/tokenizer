@@ -121,13 +121,13 @@ public record class TokenizerOptions
 
     /// <summary>
     /// Custom transformer types registered on this options instance.
-    /// These are added after the default transformers when building a <see cref="Compilation.TokenParser"/>.
+    /// These are added after the default transformers when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
     public IReadOnlyList<Type> Transformers => transformers.AsReadOnly();
 
     /// <summary>
     /// Custom validator types registered on this options instance.
-    /// These are added after the default validators when building a <see cref="Compilation.TokenParser"/>.
+    /// These are added after the default validators when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
     public IReadOnlyList<Type> Validators => validators.AsReadOnly();
 

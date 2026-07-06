@@ -36,7 +36,7 @@ Template patterns (strings) are compiled through a multi-stage pipeline:
 2. **TemplateParser** (`Compilation/Parsing/`) - Converts lexer tokens into an AST (`TemplateDocument` with `TemplateNode`s)
 3. **AstTemplateDefinitionParser** (`Compilation/Definitions/`) - Transforms AST into `Template` definition objects
 4. **FrontMatterBinder** (`Compilation/Binders/`) - Extracts YAML front matter configuration from between `---` markers
-5. **TokenParser** (`Compilation/TokenParser.cs`) - Orchestrates the full compilation pipeline
+5. **TemplateCompiler** (`Compilation/TemplateCompiler.cs`) - Orchestrates the full compilation pipeline
 
 ### Tokenization Engine
 

@@ -16,7 +16,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenMultipleTokensWithSamePreamble_WhenTokenizing_ThenMatchesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {FirstName}\nName: {LastName}");
 
         var context = new TokenizationContext();
@@ -74,7 +74,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokenAtStartOfInput_WhenTokenizing_ThenMatchesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{Name} is here");
 
         var context = new TokenizationContext();
@@ -97,7 +97,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokenAtEndOfInput_WhenTokenizing_ThenMatchesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name is {Name}");
 
         var context = new TokenizationContext();
@@ -120,7 +120,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenRepeatingToken_WhenMultipleOccurrences_ThenMatchesAll()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Item: {Item*}");
 
         var context = new TokenizationContext();
@@ -143,7 +143,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenRepeatingTokenWithGap_WhenTokenizing_ThenStopsAtGap()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Item: {Item*#}");
 
         var context = new TokenizationContext();
@@ -165,7 +165,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenPartialMatch_WhenTokenPreambleMatchesButNoValue_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {Name}Age: {Age}");
 
         var context = new TokenizationContext();
@@ -220,7 +220,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenConsecutiveTokensWithoutSeparator_WhenTokenizing_ThenMatchesBoth()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{FirstName}{LastName}");
 
         var context = new TokenizationContext();
@@ -247,7 +247,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokenWithEmptyPreamble_WhenTokenizing_ThenMatchesRemaining()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {FirstName}{Remaining}");
 
         var context = new TokenizationContext();
@@ -299,7 +299,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokensInDifferentOrder_WhenOutOfOrderEnabled_ThenMatchesAll()
     {
         // Arrange
-        var parser = new TokenParser(new TokenizerOptions { OutOfOrderTokens = true });
+        var parser = new TemplateCompiler(new TokenizerOptions { OutOfOrderTokens = true });
         var template = parser.Parse("Age: {Age}\nName: {Name}");
 
         var context = new TokenizationContext();
@@ -320,7 +320,7 @@ public class TokenizationEngineTokenMatchingTests
     public void GivenTokensInDifferentOrder_WhenOutOfOrderDisabled_ThenMatchesInOrder()
     {
         // Arrange
-        var parser = new TokenParser(new TokenizerOptions { OutOfOrderTokens = false });
+        var parser = new TemplateCompiler(new TokenizerOptions { OutOfOrderTokens = false });
         var template = parser.Parse("Age: {Age}\nName: {Name}");
 
         var context = new TokenizationContext();

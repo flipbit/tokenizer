@@ -14,7 +14,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
     {
         // Arrange — only override TrimPreambleBeforeNewLine, leave everything else at defaults
         const string content = "---\nTrimPreambleBeforeNewLine: true\n---\nHello { Name }";
-        var parser = new TokenParser(new TokenizerOptions { TrimTrailingWhiteSpace = false });
+        var parser = new TemplateCompiler(new TokenizerOptions { TrimTrailingWhiteSpace = false });
 
         // Act
         var template = parser.Parse(content);
@@ -31,7 +31,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         // Arrange
         var originalOptions = new TokenizerOptions();
         const string content = "---\nOutOfOrder: true\nTerminateOnNewLine: true\n---\nHello { Name }";
-        var parser = new TokenParser(originalOptions);
+        var parser = new TemplateCompiler(originalOptions);
 
         // Act
         var template = parser.Parse(content);
@@ -50,7 +50,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         // Arrange — parser defaults have TrimLeadingWhitespace=true,
         // but front matter overrides it to false
         const string content = "---\nTrimLeadingWhitespace: false\n---\n   Preamble: { Name }";
-        var parser = new TokenParser(new TokenizerOptions { TrimLeadingWhitespaceInTokenPreamble = true });
+        var parser = new TemplateCompiler(new TokenizerOptions { TrimLeadingWhitespaceInTokenPreamble = true });
 
         // Act
         var template = parser.Parse(content);

@@ -69,7 +69,7 @@ public class TokenizationEngineStateTests
     public void GivenRepeatingToken_WhenTokenized_ThenMatchIdsTrackCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Item: {Item*}");
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -91,7 +91,7 @@ public class TokenizationEngineStateTests
     public void GivenContext_WhenProcessingMultipleTokens_ThenTransitionsStateCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("First: {First}Second: {Second}");
 
         var context = new TokenizationContext();
@@ -129,7 +129,7 @@ public class TokenizationEngineStateTests
     public void GivenContext_WhenBacktracking_ThenRestoresPreviousState()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Test{Name}");
 
         var context = new TokenizationContext();
@@ -150,7 +150,7 @@ public class TokenizationEngineStateTests
     public void GivenMatchIds_WhenAddingMatchedTokenIds_ThenUpdatesSet()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {Name}");
         var matchIds = new HashSet<int>();
         var matchedToken = template.Tokens.First();
@@ -166,7 +166,7 @@ public class TokenizationEngineStateTests
     public void GivenRepeatingToken_WhenDisabled_ThenNoLongerMatches()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{Item*}");
         var disabledRepeatingTokens = new HashSet<int>();
         var token = template.Tokens.First();

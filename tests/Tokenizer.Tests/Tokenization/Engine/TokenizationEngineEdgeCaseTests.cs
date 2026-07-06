@@ -16,7 +16,7 @@ public class TokenizationEngineEdgeCaseTests
     public void GivenVeryLongInput_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();
@@ -39,7 +39,7 @@ public class TokenizationEngineEdgeCaseTests
     public void GivenSpecialCharacters_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();
@@ -62,7 +62,7 @@ public class TokenizationEngineEdgeCaseTests
     public void GivenUnicodeInput_WhenProcessingTokenization_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Hello {Name}");
 
         var context = new TokenizationContext();

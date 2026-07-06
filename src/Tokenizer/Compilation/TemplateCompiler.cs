@@ -17,27 +17,27 @@ namespace Tokens.Compilation;
 /// Parser that converts a string into a <see cref="Template"/> that can be
 /// used to extract objects from input strings.
 /// </summary>
-internal class TokenParser
+internal class TemplateCompiler
 {
     private readonly List<Type> transformers;
     private readonly List<Type> validators;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
-    private readonly ILogger<TokenParser> log;
+    private readonly ILogger<TemplateCompiler> log;
 
     public TokenizerOptions Options { get; }
 
-    public TokenParser() : this(new TokenizerOptions())
+    public TemplateCompiler() : this(new TokenizerOptions())
     {
     }
 
-    public TokenParser(TokenizerOptions options) : this(options, null)
+    public TemplateCompiler(TokenizerOptions options) : this(options, null)
     {
     }
 
-    public TokenParser(TokenizerOptions options, ILogger<TokenParser>? logger)
+    public TemplateCompiler(TokenizerOptions options, ILogger<TemplateCompiler>? logger)
     {
-        log = logger ?? NullLogger<TokenParser>.Instance;
+        log = logger ?? NullLogger<TemplateCompiler>.Instance;
 
         Options = options;
 
@@ -117,7 +117,7 @@ internal class TokenParser
         }
     }
 
-    public TokenParser RegisterTransformer<T>() where T : ITokenTransformer
+    public TemplateCompiler RegisterTransformer<T>() where T : ITokenTransformer
     {
         transformers.Add(typeof(T));
 
@@ -129,7 +129,7 @@ internal class TokenParser
         return this;
     }
 
-    public TokenParser RegisterValidator<T>() where T : ITokenValidator
+    public TemplateCompiler RegisterValidator<T>() where T : ITokenValidator
     {
         validators.Add(typeof(T));
 

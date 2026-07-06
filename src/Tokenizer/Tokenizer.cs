@@ -19,7 +19,7 @@ namespace Tokens;
 /// </summary>
 public sealed class Tokenizer : ITokenizer
 {
-    private readonly TokenParser parser;
+    private readonly TemplateCompiler parser;
     private readonly ILogger<Tokenizer> log;
     private readonly ITokenizationEngine tokenizationEngine;
     private readonly IResultBuilder resultBuilder;
@@ -51,7 +51,7 @@ public sealed class Tokenizer : ITokenizer
 
         Options = options with { };
         log = loggerFactory.CreateLogger<Tokenizer>();
-        parser = new TokenParser(Options, loggerFactory.CreateLogger<TokenParser>());
+        parser = new TemplateCompiler(Options, loggerFactory.CreateLogger<TemplateCompiler>());
         tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
         compilationCache = new TemplateCache(Options.CompilationCacheMaxSize);
@@ -63,7 +63,7 @@ public sealed class Tokenizer : ITokenizer
     internal Tokenizer(
         IOptions<TokenizerOptions> options,
         ILogger<Tokenizer> logger,
-        TokenParser parser,
+        TemplateCompiler parser,
         ITokenizationEngine tokenizationEngine,
         IResultBuilder resultBuilder)
     {

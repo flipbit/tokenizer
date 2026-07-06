@@ -4,9 +4,9 @@ using Xunit;
 
 namespace Tokens.Compilation;
 
-public class TokenParserTests
+public class TemplateCompilerTests
 {
-    private readonly TokenParser parser = new();
+    private readonly TemplateCompiler parser = new();
 
     [Fact]
     public void GivenTemplateWithDecorator_WhenParsing_ThenTokenHasDecorator()

@@ -16,7 +16,7 @@ public class TokenizationEngineIntegrationTests
     public void GivenComplexTemplateWith10Tokens_WhenTokenizing_ThenMatchesAll()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse(@"
 Name: {Name}
 Age: {Age}
@@ -91,7 +91,7 @@ Notes: Test notes
     public void GivenTemplateWithRepeatingAndNonRepeatingTokens_WhenTokenizing_ThenHandlesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Title: {Title}\nItem: {Item*}");
 
         var context = new TokenizationContext();
@@ -113,7 +113,7 @@ Notes: Test notes
     public void GivenTemplateWithFrontMatterAndBodyTokens_WhenTokenizing_ThenProcessesBoth()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse(@"---
 Name: MyTemplate
 ---
@@ -138,7 +138,7 @@ Content: {Content}");
     public void GivenMultilineInput_WhenTokenizing_ThenHandlesNewlinesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Line1: {Line1}\nLine2: {Line2}\nLine3: {Line3}");
 
         var context = new TokenizationContext();
@@ -160,7 +160,7 @@ Content: {Content}");
     public void GivenWindowsLineEndings_WhenTokenizing_ThenNormalizesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Line1: {Line1}\r\nLine2: {Line2}");
 
         var context = new TokenizationContext();
@@ -182,7 +182,7 @@ Content: {Content}");
     public void GivenTemplateWithDecorators_WhenTokenizing_ThenAppliesTransformations()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {Name:ToUpper}");
 
         var context = new TokenizationContext();
@@ -205,7 +205,7 @@ Content: {Content}");
     public void GivenTemplateWithMultipleDecorators_WhenTokenizing_ThenAppliesAllInOrder()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Name: {Name:Trim:ToUpper}");
 
         var context = new TokenizationContext();
@@ -227,7 +227,7 @@ Content: {Content}");
     public void GivenTemplateWithValidators_WhenTokenizing_ThenValidatesValues()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Age: {Age:IsNumeric}");
 
         var context = new TokenizationContext();
@@ -249,7 +249,7 @@ Content: {Content}");
     public void GivenTemplateWithHintsAndTokens_WhenTokenizing_ThenProcessesBoth()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("---\nhint: Expected\n---\nName: {Name}");
 
         var context = new TokenizationContext();
@@ -272,7 +272,7 @@ Content: {Content}");
     public void GivenNestedTokenStructure_WhenTokenizing_ThenHandlesComplexity()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Section1: {Section1}\n  Item: {Item1}\nSection2: {Section2}\n  Item: {Item2}");
 
         var context = new TokenizationContext();
@@ -294,7 +294,7 @@ Content: {Content}");
     public void GivenTemplateWithNewlineTerminatedTokens_WhenTokenizing_ThenStopsAtNewline()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("Line: {Content#}");
 
         var context = new TokenizationContext();

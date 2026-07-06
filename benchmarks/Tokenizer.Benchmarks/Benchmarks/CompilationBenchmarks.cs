@@ -6,7 +6,7 @@ using Tokens.Data;
 namespace Tokens.Benchmarks;
 
 /// <summary>
-/// Measures template compilation cost: TokenParser.Parse() pipeline
+/// Measures template compilation cost: TemplateCompiler.Parse() pipeline
 /// (lexer -> parser -> AST -> definition -> front matter binding).
 /// </summary>
 [Config(typeof(BenchmarkConfig))]
@@ -15,7 +15,7 @@ public class CompilationBenchmarks
     private string smallTemplate = null!;
     private string mediumTemplate = null!;
     private string largeTemplate = null!;
-    private TokenParser parser = null!;
+    private TemplateCompiler parser = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -23,7 +23,7 @@ public class CompilationBenchmarks
         smallTemplate = WorkloadGenerator.SmallTemplate();
         mediumTemplate = WorkloadGenerator.MediumTemplate();
         largeTemplate = WorkloadGenerator.LargeTemplate();
-        parser = new TokenParser();
+        parser = new TemplateCompiler();
     }
 
     [Benchmark(Description = "Compile small template (3 tokens)")]

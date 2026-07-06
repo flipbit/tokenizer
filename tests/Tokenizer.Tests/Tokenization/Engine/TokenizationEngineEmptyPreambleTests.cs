@@ -13,7 +13,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenConsecutiveTokensWithNoPreambles_WhenTokenizing_ThenAssignsOneCharEach()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "abc";
@@ -34,7 +34,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenConsecutiveTokensWithNoPreambles_WhenInputLongerThanTokens_ThenLastTokenGetsRemainder()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "abcdef";
@@ -55,7 +55,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenConsecutiveTokensWithNoPreambles_WhenInputShorterThanTokens_ThenUnmatchedTokensAreMisses()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "ab";
@@ -75,7 +75,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenSingleTokenWithNoPreamble_WhenTokenizing_ThenGetsEntireInput()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{a}");
         var context = new TokenizationContext();
         var input = "hello";
@@ -94,7 +94,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenMixedPreambleAndNoPreambleTokens_WhenTokenizing_ThenMatchesCorrectly()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("X{a}{b}Y{c}");
         var context = new TokenizationContext();
         var input = "XabYc";
@@ -115,7 +115,7 @@ public class TokenizationEngineEmptyPreambleTests
     public void GivenTwoConsecutiveTokens_WhenSingleCharInput_ThenFirstTokenMatchesSecondMisses()
     {
         // Arrange
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse("{a}{b}");
         var context = new TokenizationContext();
         var input = "x";
@@ -175,7 +175,7 @@ public class TokenizationEngineEmptyPreambleTests
             templateBuilder.Append($"{{t{i}}}");
         }
 
-        var parser = new TokenParser();
+        var parser = new TemplateCompiler();
         var template = parser.Parse(templateBuilder.ToString());
         var context = new TokenizationContext();
         var input = new string('x', 100);

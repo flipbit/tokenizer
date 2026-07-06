@@ -234,7 +234,7 @@ internal class TokenizationEngine : ITokenizationEngine
         }
 
         // Process front matter tokens
-        ProcessFrontMatterTokens(continuation, context.Enumerator.Location);
+        FrontMatterProcessor.Process(continuation.Template, continuation.TargetObject, continuation.Result, continuation.Collector, context.Enumerator.Location);
 
         continuation.Collector.Record(DiagnosticEventType.TokenizationCompleted,
             detail: $"Matches: {continuation.Result.Tokens.Matches.Count}, Misses: {continuation.Result.Tokens.Misses.Count}");
@@ -301,37 +301,6 @@ internal class TokenizationEngine : ITokenizationEngine
             }
             continuation.Result.AddException(e);
             return false;
-        }
-    }
-
-    /// <summary>
-    /// Processes front matter tokens that don't require input text matching.
-    /// </summary>
-    /// <param name="continuation">The continuation state from BeginTokenization.</param>
-    /// <param name="location">The current file location.</param>
-    private void ProcessFrontMatterTokens(
-        TokenizationContinuation continuation,
-        FileLocation location)
-    {
-        foreach (var token in continuation.Template.Tokens)
-        {
-            if (!token.IsFrontMatterToken) continue;
-
-            if (token.Assign(continuation.TargetObject, string.Empty, continuation.Template.Options, location, out var assignedValue, continuation.Collector))
-            {
-                continuation.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
-                    tokenName: token.Name, tokenId: token.Id,
-                    value: assignedValue?.ToString());
-                if (assignedValue != null)
-                {
-                    continuation.Result.Tokens.AddMatch(token, assignedValue, token.Location);
-                }
-            }
-            else
-            {
-                continuation.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
-                    tokenName: token.Name, tokenId: token.Id);
-            }
         }
     }
 

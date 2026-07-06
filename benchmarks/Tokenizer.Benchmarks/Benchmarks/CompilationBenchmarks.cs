@@ -27,11 +27,11 @@ public class CompilationBenchmarks
     }
 
     [Benchmark(Description = "Compile small template (3 tokens)")]
-    public Template CompileSmall() => parser.Parse(smallTemplate, "small");
+    public Template CompileSmall() => parser.Compile(smallTemplate).Template;
 
     [Benchmark(Description = "Compile medium template (12 tokens)")]
-    public Template CompileMedium() => parser.Parse(mediumTemplate, "medium");
+    public Template CompileMedium() => parser.Compile(mediumTemplate).Template;
 
     [Benchmark(Description = "Compile large template (39 tokens, front matter)")]
-    public Template CompileLarge() => parser.Parse(largeTemplate, "large");
+    public Template CompileLarge() => parser.Compile(largeTemplate).Template;
 }

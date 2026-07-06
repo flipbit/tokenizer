@@ -24,7 +24,7 @@ public class AsyncTokenizationBenchmarks
         tokenizer = new Tokenizer();
         var parser = new TemplateCompiler(new TokenizerOptions());
         mediumTemplateString = WorkloadGenerator.MediumTemplate();
-        mediumTemplate = parser.Parse(mediumTemplateString, "medium");
+        mediumTemplate = parser.Compile(mediumTemplateString).Template;
         mediumInput = WorkloadGenerator.MediumInput();
     }
 
@@ -41,12 +41,12 @@ public class AsyncTokenizationBenchmarks
 
     [Benchmark(Description = "Compile sync (string)")]
     public Template Compile_Sync()
-        => new TemplateCompiler(new TokenizerOptions()).Parse(mediumTemplateString, "medium");
+        => new TemplateCompiler(new TokenizerOptions()).Compile(mediumTemplateString).Template;
 
     [Benchmark(Description = "CompileAsync (StringReader)")]
     public async Task<Template> CompileAsync_StringReader()
     {
         using var reader = new StringReader(mediumTemplateString);
-        return await tokenizer.CompileAsync(reader, "medium");
+        return (await tokenizer.CompileAsync(reader)).Template;
     }
 }

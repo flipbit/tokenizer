@@ -30,9 +30,9 @@ public class InputStreamBenchmarks
     {
         tokenizer = new Tokenizer();
         var parser = new TemplateCompiler(new TokenizerOptions());
-        smallTemplate = parser.Parse(WorkloadGenerator.SmallTemplate(), "small");
-        mediumTemplate = parser.Parse(WorkloadGenerator.MediumTemplate(), "medium");
-        largeTemplate = parser.Parse(WorkloadGenerator.LargeTemplate(), "large");
+        smallTemplate = parser.Compile(WorkloadGenerator.SmallTemplate()).Template;
+        mediumTemplate = parser.Compile(WorkloadGenerator.MediumTemplate()).Template;
+        largeTemplate = parser.Compile(WorkloadGenerator.LargeTemplate()).Template;
         smallInput = WorkloadGenerator.SmallInput();
         mediumInput = WorkloadGenerator.MediumInput();
         largeInput = WorkloadGenerator.LargeInput();

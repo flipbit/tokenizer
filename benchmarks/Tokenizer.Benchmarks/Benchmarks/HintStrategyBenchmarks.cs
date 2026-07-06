@@ -24,7 +24,7 @@ public class HintStrategyBenchmarks
         nonMatchingInput = "This input does not contain the hint text and should be rejected quickly.";
 
         tokenizer = new Tokenizer();
-        largeTemplate = tokenizer.Compile(WorkloadGenerator.LargeTemplate(), "large");
+        largeTemplate = tokenizer.Compile(WorkloadGenerator.LargeTemplate()).Template;
     }
 
     [Benchmark(Baseline = true, Description = "Hints present — full tokenization")]

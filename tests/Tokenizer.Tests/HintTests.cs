@@ -23,12 +23,7 @@ public class HintTests : TokenizerTestBase
     public void GivenPatternWithHint_WhenHintFoundInInput_ThenExtractsValueAndRecordsHintMatch()
     {
         // Arrange
-        const string pattern = """
-                               ---
-                               Hint: First Name
-                               ---
-                               First Name: {FirstName}
-                               """;
+        const string pattern = "---\nHint: First Name\n---\nFirst Name: {FirstName}\n";
         const string input = "First Name: Alice";
 
         // Act
@@ -47,12 +42,7 @@ public class HintTests : TokenizerTestBase
     public void GivenPatternWithHint_WhenHintNotFoundInInput_ThenRecordsHintMiss()
     {
         // Arrange
-        const string pattern = """
-                               ---
-                               Hint: Last Name
-                               ---
-                               First Name: {FirstName}
-                               """;
+        const string pattern = "---\nHint: Last Name\n---\nFirst Name: {FirstName}\n";
         const string input = "First Name: Alice";
 
         // Act
@@ -71,13 +61,7 @@ public class HintTests : TokenizerTestBase
     public void GivenPatternWithTwoHints_WhenBothHintsFoundInInput_ThenExtractsValuesAndRecordsBothMatches()
     {
         // Arrange
-        const string pattern = """
-                               ---
-                               Hint: First Name
-                               Hint?: Last Name
-                               ---
-                               First Name: {FirstName:Trim} Last Name: {LastName}
-                               """;
+        const string pattern = "---\nHint: First Name\nHint?: Last Name\n---\nFirst Name: {FirstName:Trim} Last Name: {LastName}\n";
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act
@@ -99,13 +83,7 @@ public class HintTests : TokenizerTestBase
     public void GivenPatternWithTwoHints_WhenOnlyOneHintFoundInInput_ThenRecordsOneMatchAndOneMiss()
     {
         // Arrange
-        const string pattern = """
-                               ---
-                               Hint: First Name
-                               Hint?: Middle Name
-                               ---
-                               First Name: {FirstName:Trim} Last Name: {LastName}
-                               """;
+        const string pattern = "---\nHint: First Name\nHint?: Middle Name\n---\nFirst Name: {FirstName:Trim} Last Name: {LastName}\n";
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act

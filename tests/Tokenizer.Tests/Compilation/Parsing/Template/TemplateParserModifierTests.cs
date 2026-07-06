@@ -139,10 +139,7 @@ public class TemplateParserModifierTests
     public void GivenRepeatingTokenWithNewLine_WhenParsing_ThenExpandsNewLine()
     {
         // Arrange & Act
-        var template = _parser.Parse("""
-                                    Repeating Token:
-                                        { TokenName * }
-                                    """);
+        var template = _parser.Parse("Repeating Token:\n    { TokenName * }\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);

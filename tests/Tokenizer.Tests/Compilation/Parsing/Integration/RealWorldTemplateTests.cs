@@ -13,15 +13,7 @@ public class RealWorldTemplateTests
     public void GivenWhoisTemplate_WhenParsing_ThenParsesCorrectly()
     {
         // Arrange - Real WHOIS response template
-        var template = """
-                       Domain Name: {domain_name$}
-                       Registry Domain ID: {registry_domain_id$}
-                       Registrar WHOIS Server: {registrar_whois_server$}
-                       Registrar URL: {registrar_url$}
-                       Updated Date: {updated_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}
-                       Creation Date: {creation_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}
-                       Registrar Registration Expiration Date: {expiration_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}
-                       """;
+        var template = "Domain Name: {domain_name$}\nRegistry Domain ID: {registry_domain_id$}\nRegistrar WHOIS Server: {registrar_whois_server$}\nRegistrar URL: {registrar_url$}\nUpdated Date: {updated_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}\nCreation Date: {creation_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}\nRegistrar Registration Expiration Date: {expiration_date$:ToDateTime(yyyy-MM-ddTHH:mm:ssZ)}\n";
 
         // Act
         var definition = _parser.Parse(template);
@@ -73,13 +65,7 @@ public class RealWorldTemplateTests
     public void GivenEmailTemplate_WhenParsing_ThenParsesCorrectly()
     {
         // Arrange - Email format
-        var template = """
-                       From: {from_name} <{from_email:IsEmail}>
-                       To: {to_name} <{to_email:IsEmail}>
-                       Subject: {subject$}
-
-                       {body*}
-                       """;
+        var template = "From: {from_name} <{from_email:IsEmail}>\nTo: {to_name} <{to_email:IsEmail}>\nSubject: {subject$}\n\n{body*}\n";
 
         // Act
         var definition = _parser.Parse(template);
@@ -100,23 +86,7 @@ public class RealWorldTemplateTests
     public void GivenComplexMultiLineTemplate_WhenParsing_ThenPreservesStructure()
     {
         // Arrange
-        var template = """
-                       ---
-                       name: Multi-line Template
-                       tag: complex
-                       set: Type = Record
-                       ---
-
-                       Record Start
-                       ============
-
-                       Field 1: {field1!}
-                       Field 2: {field2?}
-                       Field 3: {field3*}
-
-                       Nested Section:
-                           {nested_field$}
-                       """;
+        var template = "---\nname: Multi-line Template\ntag: complex\nset: Type = Record\n---\n\nRecord Start\n============\n\nField 1: {field1!}\nField 2: {field2?}\nField 3: {field3*}\n\nNested Section:\n    {nested_field$}\n";
 
         // Act
         var definition = _parser.Parse(template);
@@ -163,13 +133,7 @@ public class RealWorldTemplateTests
     public void GivenJsonLikeTemplate_WhenParsing_ThenParsesCorrectly()
     {
         // Arrange - JSON-like structure
-        var template = """
-                       {{
-                         "id": {id:IsInt},
-                         "name": "{name}",
-                         "active": {active:IsBool}
-                       }}
-                       """;
+        var template = "{{\n  \"id\": {id:IsInt},\n  \"name\": \"{name}\",\n  \"active\": {active:IsBool}\n}}\n";
 
         // Act
         var definition = _parser.Parse(template);

@@ -16,20 +16,8 @@ public class ListTests : TokenizerTestBase
     public void GivenPatternWithRepeatingToken_WhenTokenizingMultipleValues_ThenExtractsAllValuesInList()
     {
         // Arrange
-        const string pattern = """
-                               Domains:
-                               { DomainName : Repeating, IsDomainName }
-
-                               { SecondaryDomain }
-                               """;
-        const string input = """
-                             Domains:
-                             one.com
-                             two.com
-                             three.com
-
-                             secondary.com
-                             """;
+        const string pattern = "Domains:\n{ DomainName : Repeating, IsDomainName }\n\n{ SecondaryDomain }\n";
+        const string input = "Domains:\none.com\ntwo.com\nthree.com\n\nsecondary.com\n";
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;

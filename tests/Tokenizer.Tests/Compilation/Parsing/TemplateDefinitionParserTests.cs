@@ -523,10 +523,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
     public void GivenRepeatingTokenWithNewLine_WhenParsing_ThenExpandsNewLine()
     {
         // Arrange & Act
-        var template = Parser.Parse("""
-                                    Repeating Token:
-                                        { TokenName * }
-                                    """);
+        var template = Parser.Parse("Repeating Token:\n    { TokenName * }\n");
 
         // Assert
         Assert.Equal(2, template.Tokens.Count);
@@ -905,21 +902,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
     public void GivenFrontMatterWithMultipleComments_WhenParsing_ThenParsesCorrectly()
     {
         // Arrange
-        var content = """
-                      ---
-                      #
-                      # .capetown Parsing Template
-                      #
-
-                      # Use this template for queries to capetown-whois.registry.net.za:
-                      tag: capetown-whois.registry.net.za
-                      tag: capetown
-
-                      # Set query response type:
-                      set: Response = NotFound
-                      ---
-
-                      """;
+        var content = "---\n#\n# .capetown Parsing Template\n#\n\n# Use this template for queries to capetown-whois.registry.net.za:\ntag: capetown-whois.registry.net.za\ntag: capetown\n\n# Set query response type:\nset: Response = NotFound\n---\n\n";
 
         // Act
         var template = Parser.Parse(content);
@@ -969,16 +952,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
     public void GivenTemplateWithMultipleTokens_WhenParsing_ThenSetsCorrectLocations()
     {
         // Arrange
-        var content = """
-                      { First : Decorator('One'), Two , Three (" Four ") }
-                      {Second} {Third}
-
-                      {Fourth}
-                      {Fifth}
-
-
-                      {Sixth}
-                      """;
+        var content = "{ First : Decorator('One'), Two , Three (\" Four \") }\n{Second} {Third}\n\n{Fourth}\n{Fifth}\n\n\n{Sixth}\n";
 
         // Act
         var template = Parser.Parse(content);

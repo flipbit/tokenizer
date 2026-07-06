@@ -1,3 +1,5 @@
+using Tokens.Extensions;
+
 namespace Tokens;
 
 /// <summary>
@@ -41,6 +43,25 @@ public sealed class Template
         Options = options;
         this.name = name;
     }
+
+    /// <summary>
+    /// Creates a new template with a content-based Id, name, and options.
+    /// </summary>
+    internal Template(string pattern, string name, TokenizerOptions options)
+    {
+        tokens = new List<Token>();
+        hints = new List<Hint>();
+        tags = new List<string>();
+        Options = options;
+        this.name = name;
+        Id = pattern.ComputeHash();
+    }
+
+    /// <summary>
+    /// Content-based identity derived from the raw pattern string hash.
+    /// Two templates compiled from the same pattern string have the same Id.
+    /// </summary>
+    public ulong Id { get; }
 
     /// <summary>
     /// The name of the template. If no name is specified, a unique name is auto-generated.

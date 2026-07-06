@@ -186,4 +186,46 @@ public class TemplateTests : TokenizerTestBase
         Assert.False(template.Options.TrimTrailingWhiteSpace);
     }
 
+    [Fact]
+    public void GivenTemplate_WhenCompiled_ThenHasContentBasedId()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+
+        // Act
+        var template = tokenizer.Compile("Name: {Name}");
+
+        // Assert
+        Assert.NotEqual(0UL, template.Id);
+    }
+
+    [Fact]
+    public void GivenSamePattern_WhenCompiledTwice_ThenIdIsIdentical()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        const string pattern = "Name: {Name}";
+
+        // Act
+        var t1 = tokenizer.Compile(pattern);
+        var t2 = tokenizer.Compile(pattern);
+
+        // Assert
+        Assert.Equal(t1.Id, t2.Id);
+    }
+
+    [Fact]
+    public void GivenDifferentPatterns_WhenCompiled_ThenIdsAreDifferent()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+
+        // Act
+        var t1 = tokenizer.Compile("Name: {Name}");
+        var t2 = tokenizer.Compile("Age: {Age}");
+
+        // Assert
+        Assert.NotEqual(t1.Id, t2.Id);
+    }
+
 }

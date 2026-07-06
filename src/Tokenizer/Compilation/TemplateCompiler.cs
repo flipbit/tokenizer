@@ -85,7 +85,7 @@ internal class TemplateCompiler
         {
             var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
 
-            var template = new Template(name, preTemplate.Options);
+            var template = new Template(content, name, preTemplate.Options);
 
             if (log.IsEnabled(LogLevel.Debug))
             {

@@ -150,9 +150,6 @@ public sealed class Tokenizer : ITokenizer
             if (log.IsEnabled(LogLevel.Debug))
             {
                 log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
-            }
-            if (log.IsEnabled(LogLevel.Debug))
-            {
                 if (rawInput != null)
                 {
                     log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
@@ -329,9 +326,6 @@ public sealed class Tokenizer : ITokenizer
             if (log.IsEnabled(LogLevel.Debug))
             {
                 log.LogDebug("Starting async tokenization for template {TemplateName}", template.Name);
-            }
-            if (log.IsEnabled(LogLevel.Debug))
-            {
                 log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
             }
 

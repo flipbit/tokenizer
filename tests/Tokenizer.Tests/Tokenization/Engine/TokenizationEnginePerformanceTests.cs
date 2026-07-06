@@ -296,7 +296,7 @@ public class TokenizationEnginePerformanceTests
                 .Build();
 
             var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
-        session.Run(context);
+            session.Run(context);
             results.Add(result);
         }
 

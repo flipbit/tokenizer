@@ -7,11 +7,11 @@ namespace Tokens;
 /// </summary>
 internal class AssertWriter
 {
-    private static readonly StringBuilder sb = new StringBuilder();
+    private static readonly StringBuilder Sb = new StringBuilder();
 
     public static void Write(TokenizeResult result)
     {
-        sb.Clear();
+        Sb.Clear();
 
         var listNames = new List<string>();
 
@@ -26,7 +26,7 @@ internal class AssertWriter
                 var listMatches = result.All(name);
                 var listCount = 0;
 
-                sb.AppendLine();
+                Sb.AppendLine();
                 WriteValue($"""result.All("{name}").Count""", listMatches.Count);
                 foreach (var listMatch in listMatches)
                 {
@@ -34,7 +34,7 @@ internal class AssertWriter
 
                     listCount++;
                 }
-                sb.AppendLine();
+                Sb.AppendLine();
 
                 listNames.Add(name);
             }
@@ -44,8 +44,8 @@ internal class AssertWriter
             }
         }
 
-        Console.Write(sb.ToString());
-        WindowsClipboard.SetText(sb.ToString());
+        Console.Write(Sb.ToString());
+        WindowsClipboard.SetText(Sb.ToString());
     }
 
     private static void WriteValue(string name, object value)
@@ -53,17 +53,17 @@ internal class AssertWriter
 
         if (value is string)
         {
-            sb.AppendLine($"""            Assert.Equal("{value}", {name});""");
+            Sb.AppendLine($"""            Assert.Equal("{value}", {name});""");
         }
 
         if (value is int)
         {
-            sb.AppendLine($@"            Assert.Equal({value}, {name});");
+            Sb.AppendLine($@"            Assert.Equal({value}, {name});");
         }
 
         if (value is DateTime dateTime)
         {
-            sb.AppendLine($@"            Assert.Equal(new DateTime({dateTime.Year}, {dateTime.Month:00}, {dateTime.Day:00}, {dateTime.Hour:00}, {dateTime.Minute:00}, {dateTime.Second:00}, {dateTime.Millisecond:000}, DateTimeKind.Utc), {name});");
+            Sb.AppendLine($@"            Assert.Equal(new DateTime({dateTime.Year}, {dateTime.Month:00}, {dateTime.Day:00}, {dateTime.Hour:00}, {dateTime.Minute:00}, {dateTime.Second:00}, {dateTime.Millisecond:000}, DateTimeKind.Utc), {name});");
 
         }
     }

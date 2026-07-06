@@ -37,7 +37,7 @@ static class WindowsClipboard
                 GlobalUnlock(target);
             }
 
-            if (SetClipboardData(cfUnicodeText, hGlobal) == default)
+            if (SetClipboardData(CfUnicodeText, hGlobal) == default)
             {
                 ThrowWin32();
             }
@@ -74,7 +74,7 @@ static class WindowsClipboard
         }
     }
 
-    const uint cfUnicodeText = 13;
+    const uint CfUnicodeText = 13;
 
     static void ThrowWin32()
     {

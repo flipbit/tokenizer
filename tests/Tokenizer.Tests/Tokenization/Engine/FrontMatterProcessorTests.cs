@@ -59,4 +59,30 @@ public class FrontMatterProcessorTests
         Assert.DoesNotContain(diagnosticResult.Events,
             e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
     }
+
+    [Fact]
+    public void GivenFrontMatterTokenThatFailsAssignment_WhenProcessing_ThenRecordsFailedEvent()
+    {
+        // Arrange — a front matter token with an empty name causes Assign to return false
+        var token = new TokenBuilder()
+            .WithName(" ")
+            .WithIsFrontMatterToken()
+            .Build();
+        var template = new TemplateBuilder()
+            .WithName("Test")
+            .WithTokens(token)
+            .WithDefaultOptions()
+            .Build();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+        var collector = new DiagnosticCollector(null, null);
+        var location = new FileLocation();
+
+        // Act
+        FrontMatterProcessor.Process(template, null, result, collector, location);
+
+        // Assert
+        Assert.Contains(collector.GetResult()!.Events,
+            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
+        Assert.Empty(result.Tokens.Matches);
+    }
 }

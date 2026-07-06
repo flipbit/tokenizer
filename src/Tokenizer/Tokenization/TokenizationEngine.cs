@@ -234,7 +234,12 @@ internal class TokenizationEngine : ITokenizationEngine
         }
 
         // Process front matter tokens
-        FrontMatterProcessor.Process(continuation.Template, continuation.TargetObject, continuation.Result, continuation.Collector, context.Enumerator.Location);
+        FrontMatterProcessor.Process(
+            continuation.Template,
+            continuation.TargetObject,
+            continuation.Result,
+            continuation.Collector,
+            context.Enumerator.Location);
 
         continuation.Collector.Record(DiagnosticEventType.TokenizationCompleted,
             detail: $"Matches: {continuation.Result.Tokens.Matches.Count}, Misses: {continuation.Result.Tokens.Misses.Count}");

@@ -167,5 +167,8 @@ dotnet_diagnostic.MA0089.severity = warning
 # Use Order() instead of OrderBy(x => x)
 dotnet_diagnostic.MA0159.severity = warning
 
+# Optimize Enumerable.Count() usage
+dotnet_diagnostic.MA0031.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

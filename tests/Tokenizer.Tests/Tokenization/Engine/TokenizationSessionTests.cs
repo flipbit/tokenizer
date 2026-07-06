@@ -120,6 +120,28 @@ public class TokenizationSessionTests
             session.RunAsync(context, cts.Token));
     }
 
+    [Fact]
+    public void GivenMaxInputLengthExceeded_WhenRunCalledWithReader_ThenThrowsTokenizerException()
+    {
+        // Arrange
+        var options = new TokenizerOptions { MaxInputLength = 10 };
+        var parser = new TemplateCompiler(options);
+        var template = parser.Compile("Name: {Name}").Template;
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
+        var engine = new TokenizationEngine();
+
+        // Input exceeds MaxInputLength of 10
+        var input = "Name: This is a very long input string that exceeds the limit";
+        context.Initialize(new System.IO.StringReader(input));
+
+        var session = engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+
+        // Act & Assert
+        var ex = Assert.Throws<TokenizerException>(() => session.Run(context));
+        Assert.Contains("exceeds maximum allowed length", ex.Message);
+    }
+
     private static TokenizationSession CreateSession(
         Template template, object? target, TokenizeResultBase result,
         IDiagnosticCollector? collector = null)

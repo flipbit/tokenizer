@@ -65,7 +65,7 @@ Once compiled, templates are used to extract data from input text:
 - **Naming**: Transformers as `[Action]Transformer`, Validators as `[Action]Validator`, Exceptions as `[Action]Exception`
 - **Conditional compilation**: Required when using .NET 6.0+ features (Span<T>, pattern matching) — must provide .NET Standard 2.0 fallback
 - **No regions**: Never use `#region` in source or tests
-- **No async**: This is a synchronous library
+- **Async**: The core compilation and tokenization logic is synchronous. `Tokenizer` and `TokenMatcher` expose async overloads (`CompileAsync`, `TokenizeAsync`, `MatchAsync`) for stream/reader-based I/O. The async path uses cooperative buffer refills via `TokenEnumerator.FillBufferAsync`
 - **Logging**: Uses `Microsoft.Extensions.Logging`
 
 ## Testing Conventions

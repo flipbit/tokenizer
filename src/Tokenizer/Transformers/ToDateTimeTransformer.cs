@@ -11,7 +11,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
 {
     private static readonly Dictionary<string, string[]> MonthAbbreviations;
     private static readonly object LockHandle;
-    private static readonly Regex OrdinalSuffixRegex = new(@"\b(\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+    private static readonly Regex OrdinalSuffixRegex = new(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(-1));
 
     static ToDateTimeTransformer()
     {
@@ -94,7 +94,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
                         format.StartsWith("d ") ||
                         format.StartsWith("dd "))
                     {
-                        valueToFormat = OrdinalSuffixRegex.Replace(valueToFormat, "$1");
+                        valueToFormat = OrdinalSuffixRegex.Replace(valueToFormat, "${digits}");
                     }
 
                     if (DateTime.TryParseExact(valueToFormat, format, culture, dateTimeStyles, out result))

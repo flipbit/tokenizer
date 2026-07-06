@@ -146,5 +146,8 @@ dotnet_diagnostic.MA0140.severity = warning
 # Redundant else clause
 dotnet_diagnostic.MA0071.severity = warning
 
+# Add RegexOptions.ExplicitCapture to Regex with unnamed capture groups
+dotnet_diagnostic.MA0023.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

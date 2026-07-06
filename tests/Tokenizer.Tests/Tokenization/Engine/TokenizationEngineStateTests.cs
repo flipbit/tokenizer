@@ -79,7 +79,8 @@ public class TokenizationEngineStateTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert — the repeating token should have matched multiple times
         Assert.True(result.Tokens.Matches.Count >= 2,
@@ -102,7 +103,8 @@ public class TokenizationEngineStateTests
         // Act
         var input = "First: ValueASecond: ValueB";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert - Both tokens should be processed
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -140,7 +142,8 @@ public class TokenizationEngineStateTests
             .Build();
 
         // Act - Exercise the engine through the public interface
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.NotNull(result);

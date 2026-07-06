@@ -37,53 +37,30 @@ public class TokenizationEngineErrorTests
     }
 
     [Fact]
-    public void GivenNullTemplate_WhenProcessingTokenization_ThenThrowsException()
+    public void GivenNullTemplate_WhenCreatingSession_ThenThrowsException()
     {
         // Arrange
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-
         var result = new TokenizeResultBuilder().Build();
         var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(null!, value, context, result, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(null!, value, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
-    public void GivenNullContext_WhenProcessingTokenization_ThenThrowsException()
+    public void GivenNullResult_WhenCreatingSession_ThenThrowsException()
     {
         // Arrange
         var template = new TemplateBuilder()
             .WithName("TestTemplate")
             .Build();
 
-        var result = new TokenizeResultBuilder()
-            .WithTemplate(template)
-            .Build();
         var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, value, null!, result, NullDiagnosticCollector.Instance));
-    }
-
-    [Fact]
-    public void GivenNullResult_WhenProcessingTokenization_ThenThrowsException()
-    {
-        // Arrange
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .Build();
-
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-        var value = new { Name = "" };
-
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() =>
-            _engine.ProcessTokenization(template, value, context, null!, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(template, value, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -99,15 +76,13 @@ public class TokenizationEngineErrorTests
             .WithDefaultOptions()
             .Build();
 
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         var readOnlyTarget = new ReadOnlyTarget("test");
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
-            _engine.ProcessTokenization(template, readOnlyTarget, context, result, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(template, readOnlyTarget, result, NullDiagnosticCollector.Instance));
 
         Assert.Contains("no settable properties", ex.Message);
     }
@@ -131,7 +106,8 @@ public class TokenizationEngineErrorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Empty(result.Exceptions);

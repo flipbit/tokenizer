@@ -51,7 +51,8 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 8); // At least most tokens matched
@@ -80,7 +81,8 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -103,7 +105,8 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2); // Title + at least some items
@@ -128,7 +131,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -150,7 +154,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -172,7 +177,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -194,7 +200,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -217,7 +224,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -239,7 +247,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -261,7 +270,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -284,7 +294,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 2);
@@ -306,7 +317,8 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);

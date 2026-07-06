@@ -21,7 +21,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -42,7 +43,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -63,7 +65,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -83,7 +86,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -102,7 +106,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(3, result.Tokens.Matches.Count);
@@ -123,7 +128,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -152,15 +158,13 @@ public class TokenizationEngineEmptyPreambleTests
             .WithDefaultOptions()
             .Build();
 
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("some input text"));
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         var target = new ReadOnlyTarget("value");
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
-            _engine.ProcessTokenization(template, target, context, result, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(template, target, result, NullDiagnosticCollector.Instance));
 
         Assert.Contains("no settable properties", ex.Message);
     }
@@ -183,7 +187,8 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert — the key thing is that this completes (does not hang)
         Assert.Equal(100, result.Tokens.Matches.Count);

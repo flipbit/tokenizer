@@ -28,7 +28,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Equal(2, result.Tokens.Matches.Count);
@@ -63,7 +64,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -86,7 +88,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -109,7 +112,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -132,7 +136,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert — 3 items in input, all should match the repeating token
         Assert.True(result.Tokens.Matches.Count >= 3,
@@ -155,7 +160,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -177,7 +183,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count > 0 || result.Tokens.Misses.Count > 0);
@@ -210,7 +217,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
@@ -232,7 +240,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert — without a separator, the first token captures all input and the second gets nothing
         Assert.True(result.Tokens.Matches.Count >= 1,
@@ -259,7 +268,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -289,7 +299,8 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.Empty(result.Tokens.Matches);
@@ -310,7 +321,8 @@ public class TokenizationEngineTokenMatchingTests
         // Act - Provide input in reverse order
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert
         Assert.True(result.Tokens.Matches.Count >= 1);
@@ -331,7 +343,8 @@ public class TokenizationEngineTokenMatchingTests
         // Act - Provide input in reverse order
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        _engine.ProcessTokenization(template, null, context, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
         // Assert - Behavior depends on strict ordering
         Assert.NotNull(result);

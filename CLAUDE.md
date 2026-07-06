@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tokenizer is a C# library that extracts structured information from blocks of text using pattern matching and reflects them onto .NET objects. Published as a NuGet package.
 
-- **Targets**: .NET Standard 2.0 and .NET 6.0 (dual-targeting)
+- **Targets**: .NET Standard 2.0, .NET 8.0, and .NET 10.0
 - **Root namespace**: `Tokens` (not `Tokenizer`)
 - **Language**: C# with `LangVersion=latest`, nullable reference types enabled
 
@@ -64,10 +64,50 @@ Once compiled, templates are used to extract data from input text:
 
 - **Braces**: Allman style
 - **Naming**: Transformers as `[Action]Transformer`, Validators as `[Action]Validator`, Exceptions as `[Action]Exception`
+- **Private fields**: `_camelCase` (underscore prefix)
+- **Constants and static readonly**: `PascalCase`
+- **Interfaces**: `IPascalCase`
 - **Conditional compilation**: Required when using .NET 6.0+ features (Span<T>, pattern matching) — must provide .NET Standard 2.0 fallback
 - **No regions**: Never use `#region` in source or tests
 - **Async**: The core compilation and tokenization logic is synchronous. `Tokenizer` and `TokenMatcher` expose async overloads (`CompileAsync`, `TokenizeAsync`, `MatchAsync`) for stream/reader-based I/O. The async path uses cooperative buffer refills via `TokenEnumerator.FillBufferAsync`
 - **Logging**: Uses `Microsoft.Extensions.Logging`
+
+## Code Style Enforcement
+
+Style and quality rules are enforced via `.editorconfig` and Roslyn analyzers. `TreatWarningsAsErrors` + `EnforceCodeStyleInBuild` means violations break the build locally and in CI.
+
+**Analyzer packages:**
+- Built-in .NET SDK analyzers (`AnalysisLevel=latest-None` — only explicitly enabled rules fire)
+- `Meziantou.Analyzer` (shared via `Directory.Build.props`, all rules silent by default)
+
+**Enforced rules:**
+- `IDE0005` — No unused usings
+- `IDE0040` — Explicit accessibility modifiers required
+- `IDE0055` — Formatting
+- `IDE0060` — No unused parameters
+- `IDE0161` — File-scoped namespace declarations
+- `IDE1006` — Naming conventions enforced
+- `CA1507` — Use `nameof` over string literals
+- `CA1508` — Avoid dead conditional code
+- `CA1825` — Use `Array.Empty<T>()` over zero-length allocations
+- `CA2016` — Forward CancellationToken
+- `CA2200` — Rethrow to preserve stack traces
+- `CA2213` — Disposable fields should be disposed
+
+**Per-rule commands (useful for targeted fixes):**
+
+```bash
+# Check one rule (dry run)
+dotnet format style ./Tokenizer.sln --verify-no-changes --diagnostics IDE0005
+
+# Auto-fix one rule
+dotnet format style ./Tokenizer.sln --diagnostics IDE0005
+
+# See violations for one rule from build output
+dotnet build ./Tokenizer.sln 2>&1 | grep "CA1507"
+```
+
+**Source of truth:** `.editorconfig` — all rules and severities are defined there.
 
 ## Testing Conventions
 

@@ -18,7 +18,7 @@ public class ResultBuilder_Unmatched_Tests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Hello {Name} and {Age}");
+        var template = parser.Compile("Hello {Name} and {Age}");
 
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
@@ -36,7 +36,7 @@ public class ResultBuilder_Unmatched_Tests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Hello {Name} and {Age}");
+        var template = parser.Compile("Hello {Name} and {Age}");
 
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)

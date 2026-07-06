@@ -13,7 +13,7 @@ public class TemplateBinderIdAssignmentTests
     {
         // Arrange & Act
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{first}{second}{third}");
+        var template = parser.Compile("{first}{second}{third}");
 
         // Assert
         var tokens = template.Tokens.ToList();
@@ -29,7 +29,7 @@ public class TemplateBinderIdAssignmentTests
     {
         // Arrange & Act
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Start line\n    {item*}");
+        var template = parser.Compile("Start line\n    {item*}");
 
         // Assert: token is expanded into two definitions with sequential non-zero Ids
         var tokens = template.Tokens.ToList();

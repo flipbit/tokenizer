@@ -17,7 +17,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = true });
 
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -53,7 +53,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Should not be trimmed\nPreamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -67,7 +67,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -82,7 +82,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -96,7 +96,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);

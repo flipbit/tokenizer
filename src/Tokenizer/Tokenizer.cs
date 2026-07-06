@@ -237,13 +237,13 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <inheritdoc />
-    public Template Compile(string pattern) => parser.Parse(pattern);
+    public Template Compile(string pattern) => parser.Compile(pattern);
 
     /// <inheritdoc />
     public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
         var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
-        return parser.Parse(content);
+        return parser.Compile(content);
     }
 
     /// <inheritdoc />

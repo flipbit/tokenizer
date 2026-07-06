@@ -95,7 +95,7 @@ public class TokenizerOptionsRegistrationTests
         var parser = new TemplateCompiler(options);
 
         // Assert — template that uses ToUpper compiles and runs without error
-        var template = parser.Parse("{Value:ToUpper}");
+        var template = parser.Compile("{Value:ToUpper}");
         Assert.NotNull(template);
     }
 }

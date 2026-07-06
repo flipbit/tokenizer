@@ -17,7 +17,7 @@ public class TokenizationEngineEdgeCaseTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Hello {Name}");
+        var template = parser.Compile("Hello {Name}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -40,7 +40,7 @@ public class TokenizationEngineEdgeCaseTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Hello {Name}");
+        var template = parser.Compile("Hello {Name}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -63,7 +63,7 @@ public class TokenizationEngineEdgeCaseTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Hello {Name}");
+        var template = parser.Compile("Hello {Name}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()

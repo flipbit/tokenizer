@@ -14,7 +14,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{a}{b}{c}");
+        var template = parser.Compile("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "abc";
         context.Initialize(new System.IO.StringReader(input));
@@ -35,7 +35,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{a}{b}{c}");
+        var template = parser.Compile("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "abcdef";
         context.Initialize(new System.IO.StringReader(input));
@@ -56,7 +56,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{a}{b}{c}");
+        var template = parser.Compile("{a}{b}{c}");
         var context = new TokenizationContext();
         var input = "ab";
         context.Initialize(new System.IO.StringReader(input));
@@ -76,7 +76,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{a}");
+        var template = parser.Compile("{a}");
         var context = new TokenizationContext();
         var input = "hello";
         context.Initialize(new System.IO.StringReader(input));
@@ -95,7 +95,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("X{a}{b}Y{c}");
+        var template = parser.Compile("X{a}{b}Y{c}");
         var context = new TokenizationContext();
         var input = "XabYc";
         context.Initialize(new System.IO.StringReader(input));
@@ -116,7 +116,7 @@ public class TokenizationEngineEmptyPreambleTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{a}{b}");
+        var template = parser.Compile("{a}{b}");
         var context = new TokenizationContext();
         var input = "x";
         context.Initialize(new System.IO.StringReader(input));
@@ -176,7 +176,7 @@ public class TokenizationEngineEmptyPreambleTests
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse(templateBuilder.ToString());
+        var template = parser.Compile(templateBuilder.ToString());
         var context = new TokenizationContext();
         var input = new string('x', 100);
         context.Initialize(new System.IO.StringReader(input));

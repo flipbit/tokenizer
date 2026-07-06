@@ -17,7 +17,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var parser = new TemplateCompiler(new TokenizerOptions { TrimTrailingWhiteSpace = false });
 
         // Act
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         // Assert — TrimPreambleBeforeNewLine is overridden by front matter
         Assert.True(template.Options.TrimPreambleBeforeNewLine);
@@ -34,7 +34,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var parser = new TemplateCompiler(originalOptions);
 
         // Act
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         // Assert — template has overridden values
         Assert.True(template.Options.OutOfOrderTokens);
@@ -53,7 +53,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var parser = new TemplateCompiler(new TokenizerOptions { TrimLeadingWhitespaceInTokenPreamble = true });
 
         // Act
-        var template = parser.Parse(content);
+        var template = parser.Compile(content);
 
         // Assert — front matter said false, so leading whitespace should be preserved
         Assert.False(template.Options.TrimLeadingWhitespaceInTokenPreamble);

@@ -8,12 +8,9 @@ namespace Tokens;
 /// </summary>
 public sealed class Template
 {
-    private static int templateCounter;
-
     private readonly List<Token> tokens;
     private readonly List<Hint> hints;
     private readonly List<string> tags;
-    private string name;
 
     /// <summary>
     /// Creates a new unnamed template.
@@ -41,7 +38,7 @@ public sealed class Template
         hints = new List<Hint>();
         tags = new List<string>();
         Options = options;
-        this.name = name;
+        Name = name;
     }
 
     /// <summary>
@@ -53,7 +50,7 @@ public sealed class Template
         hints = new List<Hint>();
         tags = new List<string>();
         Options = options;
-        this.name = name;
+        Name = name;
         Id = pattern.ComputeHash();
     }
 
@@ -64,21 +61,9 @@ public sealed class Template
     public ulong Id { get; }
 
     /// <summary>
-    /// The name of the template. If no name is specified, a unique name is auto-generated.
+    /// The name of the template.
     /// </summary>
-    public string Name
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                name = $"Template_{Interlocked.Increment(ref templateCounter)}";
-            }
-
-            return name;
-        }
-        set => name = value;
-    }
+    public string Name { get; set; }
 
     /// <summary>
     /// Contains the hints associated with this <see cref="Template"/>.
@@ -107,7 +92,7 @@ public sealed class Template
     /// <inheritdoc />
     public override string ToString()
     {
-        return !string.IsNullOrEmpty(name) ? $"Template('{name}')" : $"Template({Tokens.Count} tokens)";
+        return !string.IsNullOrEmpty(Name) ? $"Template('{Name}')" : $"Template({Tokens.Count} tokens)";
     }
 
     internal void AddHint(Hint hint)

@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation.Definitions;
@@ -18,6 +16,8 @@ namespace Tokens.Compilation;
 /// </summary>
 internal class TemplateCompiler
 {
+    private static int templateCounter;
+
     private readonly DecoratorRegistry registry;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
@@ -33,27 +33,7 @@ internal class TemplateCompiler
         registry = new DecoratorRegistry(options);
     }
 
-    public Template Parse(TextReader reader)
-    {
-        var content = reader.ReadToEnd();
-        var name = GenerateTemplateName(content);
-        return Parse(content, name);
-    }
-
-    public Template Parse(TextReader reader, string name)
-    {
-        var content = reader.ReadToEnd();
-        return Parse(content, name);
-    }
-
-    public Template Parse(string content)
-    {
-        var name = GenerateTemplateName(content);
-
-        return Parse(content, name);
-    }
-
-    public Template Parse(string content, string name)
+    public Template Compile(string content)
     {
         Stopwatch? stopwatch = null;
 
@@ -61,11 +41,6 @@ internal class TemplateCompiler
         {
             stopwatch = new Stopwatch();
             stopwatch.Start();
-        }
-
-        if (log.IsEnabled(LogLevel.Debug))
-        {
-            log.LogDebug("Starting template parsing: {TemplateName}, ContentLength: {ContentLength}", name, content.Length);
         }
 
         if (Options.MaxTemplateLength > 0 && content.Length > Options.MaxTemplateLength)
@@ -76,30 +51,30 @@ internal class TemplateCompiler
                 new Tokens.Enumerators.FileLocation());
         }
 
-        if (log.IsEnabled(LogLevel.Trace))
-        {
-            log.LogTrace("Start: Parsing Template: {TemplateName}", name);
-        }
-
         try
         {
             var preTemplate = new AstTemplateDefinitionParser().Parse(content, Options);
+
+            var name = string.IsNullOrWhiteSpace(preTemplate.Name)
+                ? $"Template_{Interlocked.Increment(ref templateCounter)}"
+                : preTemplate.Name;
 
             var template = new Template(content, name, preTemplate.Options);
 
             if (log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
-                    preTemplate.Tokens.Count, template.Name);
+                log.LogDebug("Starting template compilation: {TemplateName}, ContentLength: {ContentLength}", template.Name, content.Length);
             }
 
-            if (string.IsNullOrWhiteSpace(preTemplate.Name) == false)
+            if (log.IsEnabled(LogLevel.Trace))
             {
-                template.Name = preTemplate.Name;
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("Template name set from front matter: {TemplateName}", template.Name);
-                }
+                log.LogTrace("Start: Compiling Template: {TemplateName}", template.Name);
+            }
+
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("AST parsing complete: {TokenCount} tokens found in template {TemplateName}",
+                    preTemplate.Tokens.Count, template.Name);
             }
 
             foreach (var hint in preTemplate.Hints)
@@ -222,14 +197,14 @@ internal class TemplateCompiler
         }
         catch (TokenizerException ex)
         {
-            log.LogError(ex, "Template parsing failed for {TemplateName}: {ErrorMessage}, Pattern: {Pattern}",
-                name, ex.Message, content.Length > 200 ? content.Substring(0, 200) + "..." : content);
+            log.LogError(ex, "Template compilation failed: {ErrorMessage}, Pattern: {Pattern}",
+                ex.Message, content.Length > 200 ? content.Substring(0, 200) + "..." : content);
             throw;
         }
         catch (Exception ex)
         {
-            log.LogError(ex, "Unexpected error during template parsing: {TemplateName}, Pattern: {Pattern}",
-                name, content.Length > 200 ? content.Substring(0, 200) + "..." : content);
+            log.LogError(ex, "Unexpected error during template compilation: Pattern: {Pattern}",
+                content.Length > 200 ? content.Substring(0, 200) + "..." : content);
             throw;
         }
     }
@@ -445,53 +420,5 @@ internal class TemplateCompiler
         }
 
         return preamble;
-    }
-
-    private string GenerateTemplateName(string content)
-    {
-        if (string.IsNullOrWhiteSpace(content)) return "(empty)";
-
-        var name = new StringBuilder();
-
-        var words = 0;
-        var lastCharWasANewLine = false;
-
-        var startIndex = 0;
-        var hasFrontmatter = content.StartsWith("---\n") || content.StartsWith("---\r\n");
-
-        if (hasFrontmatter)
-        {
-            var frontmatterEndIndex = content.IndexOf("\n---", 5);
-
-            if (frontmatterEndIndex > -1) startIndex = frontmatterEndIndex + 4;
-        }
-
-        for (var i = startIndex; i < content.Length; i++)
-        {
-            var c = content[i];
-
-            if (char.IsWhiteSpace(c))
-            {
-                if (lastCharWasANewLine) continue;
-                if (name.Length == 0) continue;
-
-                lastCharWasANewLine = true;
-
-                words++;
-                if (words <= 2)
-                {
-                    name.Append(' ');
-                    continue;
-                }
-
-                name.Append("...");
-                break;
-            }
-
-            name.Append(c);
-            lastCharWasANewLine = false;
-        }
-
-        return name.ToString();
     }
 }

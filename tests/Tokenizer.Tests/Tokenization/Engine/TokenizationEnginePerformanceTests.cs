@@ -18,7 +18,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name}");
+        var template = parser.Compile("Name: {Name}");
 
         var largeInput = new StringBuilder();
         largeInput.Append(new string('a', 100000));
@@ -44,7 +44,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("{Content}");
+        var template = parser.Compile("{Content}");
 
         var largeInput = new string('x', 1000000);
 
@@ -103,7 +103,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Item: {Item}");
+        var template = parser.Compile("Item: {Item}");
 
         var inputBuilder = new StringBuilder();
         for (int i = 0; i < 10000; i++)
@@ -131,7 +131,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Item: {Item*}");
+        var template = parser.Compile("Item: {Item*}");
 
         var inputBuilder = new StringBuilder();
         for (int i = 0; i < 1000; i++)
@@ -169,7 +169,7 @@ public class TokenizationEnginePerformanceTests
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse(templateBuilder.ToString());
+        var template = parser.Compile(templateBuilder.ToString());
 
         var input = inputBuilder.ToString();
         var context = new TokenizationContext();
@@ -201,7 +201,7 @@ public class TokenizationEnginePerformanceTests
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse(templateBuilder.ToString());
+        var template = parser.Compile(templateBuilder.ToString());
 
         var input = inputBuilder.ToString();
         var context = new TokenizationContext();
@@ -222,7 +222,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Content: {Content}End");
+        var template = parser.Compile("Content: {Content}End");
 
         var longValue = new string('x', 50000);
         var input = $"Content: {longValue}End";
@@ -246,7 +246,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name}");
+        var template = parser.Compile("Name: {Name}");
 
         var inputBuilder = new StringBuilder();
         inputBuilder.Append(new string(' ', 10000));
@@ -272,7 +272,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name}Age: {Age}");
+        var template = parser.Compile("Name: {Name}Age: {Age}");
         var input = "Name: JohnAge: 25";
 
         var results = new List<TokenizeResult>();
@@ -300,7 +300,7 @@ public class TokenizationEnginePerformanceTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name}");
+        var template = parser.Compile("Name: {Name}");
         var input = "Name: Test";
 
         // Act - Create multiple contexts

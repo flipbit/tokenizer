@@ -17,7 +17,7 @@ public class TokenizationEngineIntegrationTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse(@"
+        var template = parser.Compile(@"
 Name: {Name}
 Age: {Age}
 Email: {Email}
@@ -92,7 +92,7 @@ Notes: Test notes
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Title: {Title}\nItem: {Item*}");
+        var template = parser.Compile("Title: {Title}\nItem: {Item*}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -114,7 +114,7 @@ Notes: Test notes
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse(@"---
+        var template = parser.Compile(@"---
 Name: MyTemplate
 ---
 Content: {Content}");
@@ -139,7 +139,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Line1: {Line1}\nLine2: {Line2}\nLine3: {Line3}");
+        var template = parser.Compile("Line1: {Line1}\nLine2: {Line2}\nLine3: {Line3}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -161,7 +161,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Line1: {Line1}\r\nLine2: {Line2}");
+        var template = parser.Compile("Line1: {Line1}\r\nLine2: {Line2}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -183,7 +183,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name:ToUpper}");
+        var template = parser.Compile("Name: {Name:ToUpper}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -206,7 +206,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Name: {Name:Trim:ToUpper}");
+        var template = parser.Compile("Name: {Name:Trim:ToUpper}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -228,7 +228,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Age: {Age:IsNumeric}");
+        var template = parser.Compile("Age: {Age:IsNumeric}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -250,7 +250,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("---\nhint: Expected\n---\nName: {Name}");
+        var template = parser.Compile("---\nhint: Expected\n---\nName: {Name}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -273,7 +273,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Section1: {Section1}\n  Item: {Item1}\nSection2: {Section2}\n  Item: {Item2}");
+        var template = parser.Compile("Section1: {Section1}\n  Item: {Item1}\nSection2: {Section2}\n  Item: {Item2}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -295,7 +295,7 @@ Content: {Content}");
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Parse("Line: {Content#}");
+        var template = parser.Compile("Line: {Content#}");
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()

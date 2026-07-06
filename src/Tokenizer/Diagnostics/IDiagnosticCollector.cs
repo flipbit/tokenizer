@@ -27,5 +27,5 @@ internal interface IDiagnosticCollector
     /// <summary>
     /// Returns the collected diagnostics, or null if collection is disabled.
     /// </summary>
-    TokenizationDiagnostics? GetResult();
+    DiagnosticResult? GetResult();
 }

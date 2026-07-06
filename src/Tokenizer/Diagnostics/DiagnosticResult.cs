@@ -4,7 +4,7 @@ namespace Tokens.Diagnostics;
 /// Contains all diagnostic events collected during a single tokenization call,
 /// together with derived views and rendered output for debugging.
 /// </summary>
-public class TokenizationDiagnostics
+public class DiagnosticResult
 {
     private static readonly DiagnosticEventType[] FailureTypes =
     {
@@ -23,7 +23,7 @@ public class TokenizationDiagnostics
     private DiagnosticSummary? summary;
     private string? alignment;
 
-    internal TokenizationDiagnostics(string? templateContent, string? inputContent)
+    internal DiagnosticResult(string? templateContent, string? inputContent)
     {
         this.templateContent = templateContent;
         this.inputContent = inputContent;

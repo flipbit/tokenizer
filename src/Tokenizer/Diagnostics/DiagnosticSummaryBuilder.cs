@@ -15,7 +15,7 @@ internal static class DiagnosticSummaryBuilder
     };
 
     private static string? GenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                        TokenizationDiagnostics diagnostics)
+                                        DiagnosticResult diagnostics)
     {
         foreach (var generator in HintGenerators)
         {
@@ -26,7 +26,7 @@ internal static class DiagnosticSummaryBuilder
         return null;
     }
 
-    public static DiagnosticSummary Build(TokenizationDiagnostics diagnostics)
+    public static DiagnosticSummary Build(DiagnosticResult diagnostics)
     {
         var events = diagnostics.Events;
 
@@ -53,7 +53,7 @@ internal static class DiagnosticSummaryBuilder
     }
 
     private static IReadOnlyList<DiagnosticIssue> BuildIssues(List<DiagnosticEvent> events,
-                                                               TokenizationDiagnostics diagnostics)
+                                                               DiagnosticResult diagnostics)
     {
         var issues = new List<DiagnosticIssue>();
 

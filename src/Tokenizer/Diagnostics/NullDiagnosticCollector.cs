@@ -28,7 +28,7 @@ internal sealed class NullDiagnosticCollector : IDiagnosticCollector
     }
 
     /// <inheritdoc />
-    public TokenizationDiagnostics? GetResult()
+    public DiagnosticResult? GetResult()
     {
         return null;
     }

@@ -8,7 +8,7 @@ internal sealed class UnmatchedInputHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   TokenizationDiagnostics trace)
+                                   DiagnosticResult trace)
     {
         return null;
     }

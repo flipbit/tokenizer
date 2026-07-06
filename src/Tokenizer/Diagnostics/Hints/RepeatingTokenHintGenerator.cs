@@ -8,7 +8,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   TokenizationDiagnostics trace)
+                                   DiagnosticResult trace)
     {
         if (issue.Type != DiagnosticIssueType.RepeatingTokenCutShort)
             return null;

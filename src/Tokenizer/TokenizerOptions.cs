@@ -42,7 +42,7 @@ public record class TokenizerOptions
     public bool IgnoreMissingProperties { get; init; }
 
     /// <summary>
-    /// When true, tokenization results include a <see cref="Diagnostics.TokenizationDiagnostics"/>
+    /// When true, tokenization results include a <see cref="Diagnostics.DiagnosticResult"/>
     /// property with a structured trace of every matching decision, a mismatch summary
     /// with adaptive hints, and a visual alignment diff.
     /// Default: false. Has no performance impact when disabled.

@@ -105,9 +105,9 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         var matcher = new TokenMatcher();
         using var reader = new StringReader("Name: {Name}");
 
-        await matcher.RegisterTemplateAsync(reader, "my-template");
+        await matcher.RegisterTemplateAsync(reader);
 
-        Assert.True(matcher.Templates.TryGet("my-template", out _));
+        Assert.Single(matcher.Templates);
     }
 
     [Fact]
@@ -164,21 +164,6 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
 
         // Assert
         Assert.Single(matcher.Templates);
-    }
-
-    [Fact]
-    public async Task GivenStream_WhenRegisterTemplateAsyncWithName_ThenTemplateHasName()
-    {
-        // Arrange
-        var matcher = new TokenMatcher();
-        var bytes = Encoding.UTF8.GetBytes("Name: {Name}");
-        using var stream = new MemoryStream(bytes);
-
-        // Act
-        await matcher.RegisterTemplateAsync(stream, Encoding.UTF8, "stream-template");
-
-        // Assert
-        Assert.True(matcher.Templates.TryGet("stream-template", out _));
     }
 
     [Fact]

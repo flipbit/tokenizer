@@ -56,19 +56,9 @@ public interface ITokenMatcher
     Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default);
 
     /// <summary>
-    /// Compiles and registers a template read from a <see cref="TextReader"/> with an explicit name.
-    /// </summary>
-    Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, string name, CancellationToken ct = default);
-
-    /// <summary>
     /// Compiles and registers a template read from a <see cref="Stream"/>.
     /// </summary>
     Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default);
-
-    /// <summary>
-    /// Compiles and registers a template read from a <see cref="Stream"/> with an explicit name.
-    /// </summary>
-    Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default);
 
     /// <summary>
     /// Matches input from a <see cref="TextReader"/> against all registered templates.

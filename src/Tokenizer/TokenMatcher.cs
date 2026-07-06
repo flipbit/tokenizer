@@ -208,27 +208,9 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     /// <inheritdoc />
-    public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, string name, CancellationToken ct = default)
-    {
-        var template = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
-        template.Name = name;
-        Templates.Add(template);
-        return this;
-    }
-
-    /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
     {
         var template = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
-        Templates.Add(template);
-        return this;
-    }
-
-    /// <inheritdoc />
-    public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default)
-    {
-        var template = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
-        template.Name = name;
         Templates.Add(template);
         return this;
     }

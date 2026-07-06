@@ -11,46 +11,46 @@ namespace Tokens.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public class CompilationCacheBenchmarks
 {
-    private Tokenizer tokenizer = null!;
-    private Template precompiledSmall = null!;
-    private Template precompiledMedium = null!;
-    private Template precompiledLarge = null!;
-    private string smallInput = null!;
-    private string mediumInput = null!;
-    private string largeInput = null!;
+    private Tokenizer _tokenizer = null!;
+    private Template _precompiledSmall = null!;
+    private Template _precompiledMedium = null!;
+    private Template _precompiledLarge = null!;
+    private string _smallInput = null!;
+    private string _mediumInput = null!;
+    private string _largeInput = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        tokenizer = new Tokenizer();
+        _tokenizer = new Tokenizer();
 
-        precompiledSmall = tokenizer.Compile(WorkloadGenerator.SmallTemplate()).Template;
-        precompiledMedium = tokenizer.Compile(WorkloadGenerator.MediumTemplate()).Template;
-        precompiledLarge = tokenizer.Compile(WorkloadGenerator.LargeTemplate()).Template;
+        _precompiledSmall = _tokenizer.Compile(WorkloadGenerator.SmallTemplate()).Template;
+        _precompiledMedium = _tokenizer.Compile(WorkloadGenerator.MediumTemplate()).Template;
+        _precompiledLarge = _tokenizer.Compile(WorkloadGenerator.LargeTemplate()).Template;
 
-        smallInput = WorkloadGenerator.SmallInput();
-        mediumInput = WorkloadGenerator.MediumInput();
-        largeInput = WorkloadGenerator.LargeInput();
+        _smallInput = WorkloadGenerator.SmallInput();
+        _mediumInput = WorkloadGenerator.MediumInput();
+        _largeInput = WorkloadGenerator.LargeInput();
     }
 
     [Benchmark(Description = "Pre-compiled: small (3 tokens)", Baseline = true)]
     public TokenizeResult<SmallRecord> PreCompiled_Small()
-        => tokenizer.Tokenize<SmallRecord>(precompiledSmall, smallInput);
+        => _tokenizer.Tokenize<SmallRecord>(_precompiledSmall, _smallInput);
 
     [Benchmark(Description = "Pre-compiled: medium (12 tokens)")]
     public TokenizeResult<MediumRecord> PreCompiled_Medium()
-        => tokenizer.Tokenize<MediumRecord>(precompiledMedium, mediumInput);
+        => _tokenizer.Tokenize<MediumRecord>(_precompiledMedium, _mediumInput);
 
     [Benchmark(Description = "Pre-compiled: large (39 tokens)")]
     public TokenizeResult<LargeRecord> PreCompiled_Large()
-        => tokenizer.Tokenize<LargeRecord>(precompiledLarge, largeInput);
+        => _tokenizer.Tokenize<LargeRecord>(_precompiledLarge, _largeInput);
 
     [Benchmark(Description = "Concurrent tokenize: 8 threads, large")]
     public void ConcurrentTokenize()
     {
         Parallel.For(0, 8, _ =>
         {
-            tokenizer.Tokenize<LargeRecord>(precompiledLarge, largeInput);
+            _tokenizer.Tokenize<LargeRecord>(_precompiledLarge, _largeInput);
         });
     }
 }

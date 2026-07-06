@@ -12,26 +12,26 @@ namespace Tokens.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public class CompilationBenchmarks
 {
-    private string smallTemplate = null!;
-    private string mediumTemplate = null!;
-    private string largeTemplate = null!;
-    private TemplateCompiler parser = null!;
+    private string _smallTemplate = null!;
+    private string _mediumTemplate = null!;
+    private string _largeTemplate = null!;
+    private TemplateCompiler _parser = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        smallTemplate = WorkloadGenerator.SmallTemplate();
-        mediumTemplate = WorkloadGenerator.MediumTemplate();
-        largeTemplate = WorkloadGenerator.LargeTemplate();
-        parser = new TemplateCompiler(new TokenizerOptions());
+        _smallTemplate = WorkloadGenerator.SmallTemplate();
+        _mediumTemplate = WorkloadGenerator.MediumTemplate();
+        _largeTemplate = WorkloadGenerator.LargeTemplate();
+        _parser = new TemplateCompiler(new TokenizerOptions());
     }
 
     [Benchmark(Description = "Compile small template (3 tokens)")]
-    public Template CompileSmall() => parser.Compile(smallTemplate).Template;
+    public Template CompileSmall() => _parser.Compile(_smallTemplate).Template;
 
     [Benchmark(Description = "Compile medium template (12 tokens)")]
-    public Template CompileMedium() => parser.Compile(mediumTemplate).Template;
+    public Template CompileMedium() => _parser.Compile(_mediumTemplate).Template;
 
     [Benchmark(Description = "Compile large template (39 tokens, front matter)")]
-    public Template CompileLarge() => parser.Compile(largeTemplate).Template;
+    public Template CompileLarge() => _parser.Compile(_largeTemplate).Template;
 }

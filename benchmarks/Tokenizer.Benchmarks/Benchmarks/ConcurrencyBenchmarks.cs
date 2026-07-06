@@ -18,29 +18,29 @@ public class ConcurrencyBenchmarks
     public int ThreadCount { get; set; }
 
     // Shared instances
-    private Tokenizer sharedTokenizer = null!;
-    private TokenMatcher sharedMatcher = null!;
+    private Tokenizer _sharedTokenizer = null!;
+    private TokenMatcher _sharedMatcher = null!;
 
     // Pre-compiled template and input
-    private Template mediumTemplate = null!;
-    private string mediumInput = null!;
-    private string mediumTemplateString = null!;
+    private Template _mediumTemplate = null!;
+    private string _mediumInput = null!;
+    private string _mediumTemplateString = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        sharedTokenizer = new Tokenizer();
+        _sharedTokenizer = new Tokenizer();
         var parser = new TemplateCompiler(new TokenizerOptions());
 
-        mediumTemplateString = WorkloadGenerator.MediumTemplate();
-        mediumTemplate = parser.Compile(mediumTemplateString).Template;
-        mediumInput = WorkloadGenerator.MediumInput();
+        _mediumTemplateString = WorkloadGenerator.MediumTemplate();
+        _mediumTemplate = parser.Compile(_mediumTemplateString).Template;
+        _mediumInput = WorkloadGenerator.MediumInput();
 
-        sharedMatcher = new TokenMatcher();
-        sharedMatcher.RegisterTemplate(mediumTemplateString, "matching");
+        _sharedMatcher = new TokenMatcher();
+        _sharedMatcher.RegisterTemplate(_mediumTemplateString, "matching");
         for (var i = 1; i <= 10; i++)
         {
-            sharedMatcher.RegisterTemplate(
+            _sharedMatcher.RegisterTemplate(
                 WorkloadGenerator.NonMatchingTemplate(i),
                 $"non-matching-{i}");
         }
@@ -51,7 +51,7 @@ public class ConcurrencyBenchmarks
     {
         Parallel.For(0, ThreadCount * OperationsPerThread,
             new ParallelOptions { MaxDegreeOfParallelism = ThreadCount },
-            _ => sharedTokenizer.Tokenize<MediumRecord>(mediumTemplate, mediumInput));
+            _ => _sharedTokenizer.Tokenize<MediumRecord>(_mediumTemplate, _mediumInput));
     }
 
     [Benchmark(Description = "Parallel tokenize - instance per thread")]
@@ -62,7 +62,7 @@ public class ConcurrencyBenchmarks
             _ =>
             {
                 var tokenizer = new Tokenizer();
-                tokenizer.Tokenize<MediumRecord>(mediumTemplate, mediumInput);
+                tokenizer.Tokenize<MediumRecord>(_mediumTemplate, _mediumInput);
             });
     }
 
@@ -71,7 +71,7 @@ public class ConcurrencyBenchmarks
     {
         Parallel.For(0, ThreadCount * OperationsPerThread,
             new ParallelOptions { MaxDegreeOfParallelism = ThreadCount },
-            _ => sharedMatcher.Match<MediumRecord>(mediumInput));
+            _ => _sharedMatcher.Match<MediumRecord>(_mediumInput));
     }
 
     [Benchmark(Description = "Parallel match - instance per thread")]
@@ -82,14 +82,14 @@ public class ConcurrencyBenchmarks
             _ =>
             {
                 var matcher = new TokenMatcher();
-                matcher.RegisterTemplate(mediumTemplateString, "matching");
+                matcher.RegisterTemplate(_mediumTemplateString, "matching");
                 for (var i = 1; i <= 10; i++)
                 {
                     matcher.RegisterTemplate(
                         WorkloadGenerator.NonMatchingTemplate(i),
                         $"non-matching-{i}");
                 }
-                matcher.Match<MediumRecord>(mediumInput);
+                matcher.Match<MediumRecord>(_mediumInput);
             });
     }
 
@@ -99,8 +99,8 @@ public class ConcurrencyBenchmarks
         var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
             .Select(_ =>
             {
-                var reader = new StringReader(mediumInput);
-                return sharedTokenizer.TokenizeAsync<MediumRecord>(mediumTemplate, reader);
+                var reader = new StringReader(_mediumInput);
+                return _sharedTokenizer.TokenizeAsync<MediumRecord>(_mediumTemplate, reader);
             });
         await Task.WhenAll(tasks);
     }
@@ -111,8 +111,8 @@ public class ConcurrencyBenchmarks
         var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
             .Select(_ =>
             {
-                var reader = new StringReader(mediumInput);
-                return sharedMatcher.MatchAsync<MediumRecord>(reader);
+                var reader = new StringReader(_mediumInput);
+                return _sharedMatcher.MatchAsync<MediumRecord>(reader);
             });
         await Task.WhenAll(tasks);
     }

@@ -13,38 +13,38 @@ namespace Tokens.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public class TokenizationBenchmarks
 {
-    private Tokenizer tokenizer = null!;
-    private Template smallTemplate = null!;
-    private Template mediumTemplate = null!;
-    private Template largeTemplate = null!;
-    private string smallInput = null!;
-    private string mediumInput = null!;
-    private string largeInput = null!;
+    private Tokenizer _tokenizer = null!;
+    private Template _smallTemplate = null!;
+    private Template _mediumTemplate = null!;
+    private Template _largeTemplate = null!;
+    private string _smallInput = null!;
+    private string _mediumInput = null!;
+    private string _largeInput = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        tokenizer = new Tokenizer();
+        _tokenizer = new Tokenizer();
         var parser = new TemplateCompiler(new TokenizerOptions());
 
-        smallTemplate = parser.Compile(WorkloadGenerator.SmallTemplate()).Template;
-        mediumTemplate = parser.Compile(WorkloadGenerator.MediumTemplate()).Template;
-        largeTemplate = parser.Compile(WorkloadGenerator.LargeTemplate()).Template;
+        _smallTemplate = parser.Compile(WorkloadGenerator.SmallTemplate()).Template;
+        _mediumTemplate = parser.Compile(WorkloadGenerator.MediumTemplate()).Template;
+        _largeTemplate = parser.Compile(WorkloadGenerator.LargeTemplate()).Template;
 
-        smallInput = WorkloadGenerator.SmallInput();
-        mediumInput = WorkloadGenerator.MediumInput();
-        largeInput = WorkloadGenerator.LargeInput();
+        _smallInput = WorkloadGenerator.SmallInput();
+        _mediumInput = WorkloadGenerator.MediumInput();
+        _largeInput = WorkloadGenerator.LargeInput();
     }
 
     [Benchmark(Description = "Tokenize small (3 tokens)")]
     public TokenizeResult<SmallRecord> TokenizeSmall()
-        => tokenizer.Tokenize<SmallRecord>(smallTemplate, smallInput);
+        => _tokenizer.Tokenize<SmallRecord>(_smallTemplate, _smallInput);
 
     [Benchmark(Description = "Tokenize medium (12 tokens)")]
     public TokenizeResult<MediumRecord> TokenizeMedium()
-        => tokenizer.Tokenize<MediumRecord>(mediumTemplate, mediumInput);
+        => _tokenizer.Tokenize<MediumRecord>(_mediumTemplate, _mediumInput);
 
     [Benchmark(Description = "Tokenize large (39 tokens, front matter)")]
     public TokenizeResult<LargeRecord> TokenizeLarge()
-        => tokenizer.Tokenize<LargeRecord>(largeTemplate, largeInput);
+        => _tokenizer.Tokenize<LargeRecord>(_largeTemplate, _largeInput);
 }

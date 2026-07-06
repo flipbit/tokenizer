@@ -12,24 +12,24 @@ namespace Tokens.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public class HintStrategyBenchmarks
 {
-    private string largeInput = null!;
-    private string nonMatchingInput = null!;
-    private Template largeTemplate = null!;
-    private Tokenizer tokenizer = null!;
+    private string _largeInput = null!;
+    private string _nonMatchingInput = null!;
+    private Template _largeTemplate = null!;
+    private Tokenizer _tokenizer = null!;
 
     [GlobalSetup]
     public void Setup()
     {
-        largeInput = WorkloadGenerator.LargeInput();
-        nonMatchingInput = "This input does not contain the hint text and should be rejected quickly.";
+        _largeInput = WorkloadGenerator.LargeInput();
+        _nonMatchingInput = "This input does not contain the hint text and should be rejected quickly.";
 
-        tokenizer = new Tokenizer();
-        largeTemplate = tokenizer.Compile(WorkloadGenerator.LargeTemplate()).Template;
+        _tokenizer = new Tokenizer();
+        _largeTemplate = _tokenizer.Compile(WorkloadGenerator.LargeTemplate()).Template;
     }
 
     [Benchmark(Baseline = true, Description = "Hints present — full tokenization")]
-    public TokenizeResult HintsPresent() => tokenizer.Tokenize(largeTemplate, largeInput);
+    public TokenizeResult HintsPresent() => _tokenizer.Tokenize(_largeTemplate, _largeInput);
 
     [Benchmark(Description = "Hints missing — early rejection")]
-    public TokenizeResult HintsMissing() => tokenizer.Tokenize(largeTemplate, nonMatchingInput);
+    public TokenizeResult HintsMissing() => _tokenizer.Tokenize(_largeTemplate, _nonMatchingInput);
 }

@@ -32,7 +32,16 @@ public class EndToEndParsingTests
     public void GivenTemplateWithAllFeatures_WhenParsed_ThenHandlesCorrectly()
     {
         // Arrange
-        var template = "---\nname: Complete Template\ncasesensitive: false\nhint: Test hint\ntag: test\nset: Response = Success\n---\nStart {id!:trim:format(00)} middle {name?=\"default\":upper} end\n";
+        var template = """
+                       ---
+                       name: Complete Template
+                       casesensitive: false
+                       hint: Test hint
+                       tag: test
+                       set: Response = Success
+                       ---
+                       Start {id!:trim:format(00)} middle {name?="default":upper} end
+                       """;
 
         // Act
         var definition = _parser.Parse(template);
@@ -58,7 +67,12 @@ public class EndToEndParsingTests
     public void GivenComplexRealWorldTemplate_WhenParsed_ThenSucceeds()
     {
         // Arrange
-        var template = "Registered: {registered_date$:ToDateTime(dd-MMM-yyyy)}\nUpdated:    {updated_date$:ToDateTime(dd-MMM-yyyy)}\nExpiry:     {expiry_date$:ToDateTime(dd-MMM-yyyy)}\nStatus:     {status$}\n";
+        var template = """
+                       Registered: {registered_date$:ToDateTime(dd-MMM-yyyy)}
+                       Updated:    {updated_date$:ToDateTime(dd-MMM-yyyy)}
+                       Expiry:     {expiry_date$:ToDateTime(dd-MMM-yyyy)}
+                       Status:     {status$}
+                       """;
 
         // Act
         var definition = _parser.Parse(template);
@@ -99,7 +113,13 @@ public class EndToEndParsingTests
     public void GivenTemplateWithFrontMatter_WhenParsed_ThenOptionsApplied()
     {
         // Arrange
-        var template = "---\ncasesensitive: true\ntrimleadingwhitespace: true\n---\n{name}\n";
+        var template = """
+                       ---
+                       casesensitive: true
+                       trimleadingwhitespace: true
+                       ---
+                       {name}
+                       """;
 
         // Act
         var definition = _parser.Parse(template);

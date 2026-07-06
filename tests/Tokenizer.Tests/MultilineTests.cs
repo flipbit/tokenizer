@@ -25,8 +25,30 @@ public class MultilineTests : TokenizerTestBase
     public void GivenMultilinePatternWithRepeatingToken_WhenTokenizingMultilineInput_ThenExtractsAllValues()
     {
         // Arrange
-        const string pattern = "First Name:\n  {FirstName $ }\n\nClasses:\n  {Classes $ * }\n\nLast Name:\n  {LastName $ }\n\n";
-        const string input = "First Name:\n  Alice\n\nClasses:\n  French\n  History\n  Maths\n\nLast Name:\n  Smith\n\n";
+        const string pattern = """
+                               First Name:
+                                 {FirstName $ }
+
+                               Classes:
+                                 {Classes $ * }
+
+                               Last Name:
+                                 {LastName $ }
+
+                               """;
+        const string input = """
+                             First Name:
+                               Alice
+
+                             Classes:
+                               French
+                               History
+                               Maths
+
+                             Last Name:
+                               Smith
+
+                             """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -45,8 +67,31 @@ public class MultilineTests : TokenizerTestBase
     public void GivenIndentedMultilinePatternWithRepeatingToken_WhenTokenizingIndentedInput_ThenExtractsAllValues()
     {
         // Arrange
-        const string pattern = "    Relevant dates:\n        Registered on: {FirstName}\n        Expiry date:  {LastName}\n\n    Registration status:\n        Registered until expiry date.\n\n    Name servers:\n        { Classes $ *}\n\n";
-        const string input = "    Relevant dates:\n        Registered on: Alice\n        Expiry date:  Smith\n\n    Registration status:\n        Registered until expiry date.\n\n    Name servers:\n        ns1.rbsov.bbc.co.uk       212.58.241.67\n        ns1.tcams.bbc.co.uk       212.72.49.3\n        ns1.thdow.bbc.co.uk       212.58.240.163\n";
+        const string pattern = """
+                                   Relevant dates:
+                                       Registered on: {FirstName}
+                                       Expiry date:  {LastName}
+
+                                   Registration status:
+                                       Registered until expiry date.
+
+                                   Name servers:
+                                       { Classes $ *}
+
+                               """;
+        const string input = """
+                                 Relevant dates:
+                                     Registered on: Alice
+                                     Expiry date:  Smith
+
+                                 Registration status:
+                                     Registered until expiry date.
+
+                                 Name servers:
+                                     ns1.rbsov.bbc.co.uk       212.58.241.67
+                                     ns1.tcams.bbc.co.uk       212.72.49.3
+                                     ns1.thdow.bbc.co.uk       212.58.240.163
+                             """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;

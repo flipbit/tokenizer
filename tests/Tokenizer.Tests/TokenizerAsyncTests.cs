@@ -116,7 +116,12 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenTemplateWithHints_WhenConcurrentSyncAndAsync_ThenBothProduceCorrectResults()
     {
         // Arrange — template with a hint; sync path uses string.Contains, async uses fallback
-        const string pattern = "---\nHint: Name\n---\nName: {Name}\n";
+        const string pattern = """
+                               ---
+                               Hint: Name
+                               ---
+                               Name: {Name}
+                               """;
         var template = _tokenizer.Compile(pattern).Template;
         var syncInput = "Name: SyncAlice";
         var asyncInput = "Name: AsyncBob";

@@ -114,7 +114,17 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
     public void GivenMultipleTokensWithDifferentFormats_WhenTokenizing_ThenUsesFirstMatchingFormat()
     {
         // Arrange
-        var pattern = "---\n# End tokens on new lines\noutOfOrder: true\n\n# End tokens on new lines\nterminateOnNewLine: true\n---\nDate: { Date : ToDateTimeUtc('yyyy-MM-dd') }\nDate: { Date : ToDateTimeUtc('yyyy-M-d') }\n";
+        var pattern = """
+                      ---
+                      # End tokens on new lines
+                      outOfOrder: true
+
+                      # End tokens on new lines
+                      terminateOnNewLine: true
+                      ---
+                      Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }
+                      Date: { Date : ToDateTimeUtc('yyyy-M-d') }
+                      """;
         var input = "Date: 2000-1-1 (UTC)";
 
         // Act

@@ -99,9 +99,21 @@ public class TokenizerTests : TokenizerTestBase
     {
         // Arrange
         const string pattern =
-            "---\n# Tokens must appear in defined order\nOutOfOrder: false\n---\nFirst Name: {FirstName}\nMiddle Name: {MiddleName}\nLast Name: {LastName}\n";
+            """
+            ---
+            # Tokens must appear in defined order
+            OutOfOrder: false
+            ---
+            First Name: {FirstName}
+            Middle Name: {MiddleName}
+            Last Name: {LastName}
+            """;
         const string input =
-            "First Name: Alice\nMiddle Name: Roberta\nLast Name: Smith\n";
+            """
+            First Name: Alice
+            Middle Name: Roberta
+            Last Name: Smith
+            """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -118,9 +130,22 @@ public class TokenizerTests : TokenizerTestBase
     {
         // Arrange
         const string pattern =
-            "Comments:\n{FirstName}\n\nName:\n{LastName}\n";
+            """
+            Comments:
+            {FirstName}
+
+            Name:
+            {LastName}
+            """;
         const string input =
-            "Comments:\nEverything went well,\nwe had a nice time.\n\nName:\nBob\n";
+            """
+            Comments:
+            Everything went well,
+            we had a nice time.
+
+            Name:
+            Bob
+            """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -312,7 +337,12 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithRequiredToken_WhenTokenIsNotPresent_ThenFailsWithMissRecorded()
     {
         // Arrange
-        const string pattern = "---\nOutOfOrder: true\n---\nFirst Name: {Student.FirstName}, Middle Name: {Student.MiddleName!}, Last Name: {Student.LastName}\n";
+        const string pattern = """
+                               ---
+                               OutOfOrder: true
+                               ---
+                               First Name: {Student.FirstName}, Middle Name: {Student.MiddleName!}, Last Name: {Student.LastName}
+                               """;
         const string input = @"First Name: Bob, Last Name: Smith";
 
         // Act
@@ -376,9 +406,19 @@ public class TokenizerTests : TokenizerTestBase
     {
         // Arrange
         var pattern =
-            "Name: {FirstName}\n            Student: {Class*}\n            Number: {Number}\n";
+            """
+            Name: {FirstName}
+                        Student: {Class*}
+                        Number: {Number}
+            """;
         var input =
-            "Name: Sue\n            Student: Alice\n            Student: Bob\n            Student: Charles\n            Number: 1234\n";
+            """
+            Name: Sue
+                        Student: Alice
+                        Student: Bob
+                        Student: Charles
+                        Number: 1234
+            """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -431,8 +471,23 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithMultipleListTokens_WhenInputHasEmptyLine_ThenStopsExtractingAtEmptyLine()
     {
         // Arrange
-        const string pattern = "\nName servers:\n        {TestClass.List*}\n        {TestClass.List*}\n\n    WHOIS lookup made at 10:35:59 22-Oct-2014\n";
-        const string input = "\nName servers:\n        ns1.rbsov.bbc.co.uk       212.58.241.67\n        ns1.tcams.bbc.co.uk       212.72.49.3\n        ns1.thdow.bbc.co.uk       212.58.240.163\n\n    WHOIS lookup made at 10:35:59 22-Oct-2014\n";
+        const string pattern = """
+
+                               Name servers:
+                                       {TestClass.List*}
+                                       {TestClass.List*}
+
+                                   WHOIS lookup made at 10:35:59 22-Oct-2014
+                               """;
+        const string input = """
+
+                             Name servers:
+                                     ns1.rbsov.bbc.co.uk       212.58.241.67
+                                     ns1.tcams.bbc.co.uk       212.72.49.3
+                                     ns1.thdow.bbc.co.uk       212.58.240.163
+
+                                 WHOIS lookup made at 10:35:59 22-Oct-2014
+                             """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -461,8 +516,19 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithOutOfOrderOption_WhenInputHasDifferentOrder_ThenExtractsValuesCorrectly()
     {
         // Arrange
-        const string pattern = "---\nOutOfOrder: true\n---\nFirst Name: {Student.FirstName}\nMiddle Name: {Student.MiddleName}\nLast Name: {Student.LastName}\n";
-        const string input = "Last Name: Smith\nFirst Name: Bob\nMiddle Name: Charles\n";
+        const string pattern = """
+                               ---
+                               OutOfOrder: true
+                               ---
+                               First Name: {Student.FirstName}
+                               Middle Name: {Student.MiddleName}
+                               Last Name: {Student.LastName}
+                               """;
+        const string input = """
+                             Last Name: Smith
+                             First Name: Bob
+                             Middle Name: Charles
+                             """;
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
@@ -497,7 +563,15 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithTrimTrailingWhitespaceOption_WhenTokenizingInputWithTrailingSpaces_ThenTrimsWhitespace()
     {
         // Arrange
-        const string pattern = "---\n# Trim Whitespace\nTrimTrailingWhitespace: true\n---\nFirst Name: {FirstName}\nLast Name: {LastName}\n...\n";
+        const string pattern = """
+                               ---
+                               # Trim Whitespace
+                               TrimTrailingWhitespace: true
+                               ---
+                               First Name: {FirstName}
+                               Last Name: {LastName}
+                               ...
+                               """;
         const string input = "First Name: John    ";
 
         // Create _tokenizer with TrimTrailingWhiteSpace = false
@@ -533,7 +607,14 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithSetToken_WhenTokenizing_ThenSetsDefaultValueForProperty()
     {
         // Arrange
-        const string pattern = "---\n# Trim Whitespace\nset: LastName = Smith\n---\nFirst Name: {FirstName}\n...\n";
+        const string pattern = """
+                               ---
+                               # Trim Whitespace
+                               set: LastName = Smith
+                               ---
+                               First Name: {FirstName}
+                               ...
+                               """;
         const string input = "First Name: John    ";
 
         // Act
@@ -549,7 +630,14 @@ public class TokenizerTests : TokenizerTestBase
     public void GivenPatternWithIgnoreMissingPropertiesOption_WhenPropertyDoesNotExist_ThenIgnoresMissingProperty()
     {
         // Arrange
-        const string pattern = "---\nIgnoreMissingProperties: true\n---\nFirst Name: {FirstName}\nLast Name: {Foo}\n...\n";
+        const string pattern = """
+                               ---
+                               IgnoreMissingProperties: true
+                               ---
+                               First Name: {FirstName}
+                               Last Name: {Foo}
+                               ...
+                               """;
         const string input = "First Name: John\nLast Name: Smith";
 
         // Act

@@ -118,7 +118,21 @@ public class FrontMatterOptionsTests
     public void GivenFrontMatterWithMultipleComments_WhenParsing_ThenParsesCorrectly()
     {
         // Arrange
-        var content = "---\n#\n# .capetown Parsing Template\n#\n\n# Use this template for queries to capetown-whois.registry.net.za:\ntag: capetown-whois.registry.net.za\ntag: capetown\n\n# Set query response type:\nset: Response = NotFound\n---\n\n";
+        var content = """
+                      ---
+                      #
+                      # .capetown Parsing Template
+                      #
+
+                      # Use this template for queries to capetown-whois.registry.net.za:
+                      tag: capetown-whois.registry.net.za
+                      tag: capetown
+
+                      # Set query response type:
+                      set: Response = NotFound
+                      ---
+
+                      """;
 
         // Act
         var template = _parser.Parse(content);

@@ -56,7 +56,16 @@ public class TemplateParserTokenTests
     public void GivenTemplateWithMultipleTokens_WhenParsing_ThenSetsCorrectLocations()
     {
         // Arrange
-        var content = "{ First : Decorator('One'), Two , Three (\" Four \") }\n{Second} {Third}\n\n{Fourth}\n{Fifth}\n\n\n{Sixth}\n";
+        var content = """
+                      { First : Decorator('One'), Two , Three (" Four ") }
+                      {Second} {Third}
+
+                      {Fourth}
+                      {Fifth}
+
+
+                      {Sixth}
+                      """;
 
         // Act
         var template = _parser.Parse(content);

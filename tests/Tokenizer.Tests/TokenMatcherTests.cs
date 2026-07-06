@@ -224,14 +224,37 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestDocumentationTags1()
     {
-        var template1 = "---\nname: template1\ntag: standard\noutOfOrder: true\nterminateOnNewLine: true\n---\nName: {Name}\nAge: {Age}\n";
+        var template1 = """
+                        ---
+                        name: template1
+                        tag: standard
+                        outOfOrder: true
+                        terminateOnNewLine: true
+                        ---
+                        Name: {Name}
+                        Age: {Age}
+                        """;
 
-        var template2 = "---\nname: template2\ntag: extended\noutOfOrder: true\nterminateOnNewLine: true\n---\nName: {Name}\nAge: {Age}\nAddress: {Address}\n";
+        var template2 = """
+                        ---
+                        name: template2
+                        tag: extended
+                        outOfOrder: true
+                        terminateOnNewLine: true
+                        ---
+                        Name: {Name}
+                        Age: {Age}
+                        Address: {Address}
+                        """;
 
         _matcher.RegisterTemplate(template1);
         _matcher.RegisterTemplate(template2);
 
-        var input = "Name: Alice\nAge: 30\nAddress: London\n";
+        var input = """
+                    Name: Alice
+                    Age: 30
+                    Address: London
+                    """;
 
 
         var result = _matcher.Match(input, ["standard"]);
@@ -247,7 +270,14 @@ public class TokenMatcherTests : TokenizerTestBase
     public void GivenTemplateWithFrontMatterSet_WhenInputMatchesNoTokens_ThenResultIsNotSuccessful()
     {
         // Arrange
-        var template = "---\nname: found-template\nset: Status = Found\n---\nName: {Name}\nAge: {Age}\n";
+        var template = """
+                       ---
+                       name: found-template
+                       set: Status = Found
+                       ---
+                       Name: {Name}
+                       Age: {Age}
+                       """;
 
         _matcher.RegisterTemplate(template);
 
@@ -263,7 +293,14 @@ public class TokenMatcherTests : TokenizerTestBase
     public void GivenFrontMatterOnlyTemplate_WhenHintMatches_ThenResultIsSuccessful()
     {
         // Arrange - template with set: and hint but no extractable tokens
-        var template = "---\nname: not-found-template\nset: Status = NotFound\nhint: not found\n---\nnot found\n";
+        var template = """
+                       ---
+                       name: not-found-template
+                       set: Status = NotFound
+                       hint: not found
+                       ---
+                       not found
+                       """;
 
         _matcher.RegisterTemplate(template);
 

@@ -533,8 +533,16 @@ public class SampleTests : TokenizerTestBase
     //[Fact(Skip = "Ignore until debug process is finished")]
     public void TestWhoisVeDates()
     {
-        var template = "   Fecha de Vencimiento: { Expiration ? : ToDateTimeUtc(\"yyyy-MM-dd HH:mm:ss\"), EOL }\n   Ultima Actualizacion: { Updated ? : ToDateTimeUtc(\"yyyy-MM-dd HH:mm:ss\"), EOL }\n   Fecha de Creacion: { Registered ? : ToDateTimeUtc(\"yyyy-MM-dd HH:mm:ss\"), EOL }\n";
-        var input = "   Fecha de Vencimiento: 2010-11-21 15:21:32\n   Ultima Actualizacion: 2006-06-08 21:54:41\n   Fecha de Creacion: 2005-11-21 15:21:32\n";
+        var template = """
+                          Fecha de Vencimiento: { Expiration ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                          Ultima Actualizacion: { Updated ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                          Fecha de Creacion: { Registered ? : ToDateTimeUtc("yyyy-MM-dd HH:mm:ss"), EOL }
+                       """;
+        var input = """
+                       Fecha de Vencimiento: 2010-11-21 15:21:32
+                       Ultima Actualizacion: 2006-06-08 21:54:41
+                       Fecha de Creacion: 2005-11-21 15:21:32
+                    """;
 
         ReadData("aloespa.com.ve");
 

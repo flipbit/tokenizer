@@ -9,7 +9,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsLooseUrlValidator validator = new();
+    private readonly IsLooseUrlValidator _validator = new();
 
     [Fact]
     public void GivenHttpUrl_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = "http://github.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = "https://github.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = "github.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = "/foo/bar.html";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -70,7 +70,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -83,7 +83,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -96,7 +96,7 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

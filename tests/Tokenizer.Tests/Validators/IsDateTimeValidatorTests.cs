@@ -9,7 +9,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsDateTimeValidator validator = new();
+    private readonly IsDateTimeValidator _validator = new();
 
     [Fact]
     public void GivenValidDateString_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var input = "1 May 2019";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var input = "2019-05-01";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var input = "2019-05-01 14:00:00";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -83,7 +83,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

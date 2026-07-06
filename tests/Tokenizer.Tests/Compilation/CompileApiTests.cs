@@ -5,11 +5,11 @@ namespace Tokens;
 
 public class CompileApiTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     public CompileApiTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class CompileApiTests : TokenizerTestBase
         const string pattern = "Name: {Name}";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
+        var template = _tokenizer.Compile(pattern).Template;
 
         // Assert
         Assert.NotNull(template);

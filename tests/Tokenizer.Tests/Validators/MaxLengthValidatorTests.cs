@@ -9,7 +9,7 @@ public class MaxLengthValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly MaxLengthValidator validator = new();
+    private readonly MaxLengthValidator _validator = new();
 
     [Fact]
     public void GivenStringWithinMaximumLength_WhenValidating_ThenReturnsTrue()
@@ -19,7 +19,7 @@ public class MaxLengthValidatorTests : TokenizerTestBase
         var maxLength = "100";
 
         // Act
-        var result = validator.IsValid(input, maxLength);
+        var result = _validator.IsValid(input, maxLength);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class MaxLengthValidatorTests : TokenizerTestBase
         var maxLength = "5";
 
         // Act
-        var result = validator.IsValid(input, maxLength);
+        var result = _validator.IsValid(input, maxLength);
 
         // Assert
         Assert.False(result);
@@ -46,7 +46,7 @@ public class MaxLengthValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input));
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class MaxLengthValidatorTests : TokenizerTestBase
         var invalidParameter = "hello";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input, invalidParameter));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input, invalidParameter));
     }
 
     [Fact]

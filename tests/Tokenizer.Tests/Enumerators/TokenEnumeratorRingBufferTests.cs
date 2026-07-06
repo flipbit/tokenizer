@@ -9,22 +9,22 @@ namespace Tokens.Enumerators;
 /// </summary>
 internal class NonBufferedTextReader : TextReader
 {
-    private readonly string data;
-    private int position;
-    private readonly int chunkSize;
+    private readonly string _data;
+    private int _position;
+    private readonly int _chunkSize;
 
     public NonBufferedTextReader(string data, int chunkSize = 5)
     {
-        this.data = data;
-        this.chunkSize = chunkSize;
+        _data = data;
+        _chunkSize = chunkSize;
     }
 
     public override int Read(char[] buffer, int index, int count)
     {
-        if (position >= data.Length) return 0;
-        var available = Math.Min(Math.Min(count, chunkSize), data.Length - position);
-        data.CopyTo(position, buffer, index, available);
-        position += available;
+        if (_position >= _data.Length) return 0;
+        var available = Math.Min(Math.Min(count, _chunkSize), _data.Length - _position);
+        _data.CopyTo(_position, buffer, index, available);
+        _position += available;
         return available;
     }
 
@@ -221,7 +221,7 @@ public class TokenEnumeratorRingBufferTests
 
         // Act / Assert — TryMatch must grow buffer to hold 1500 chars
         Assert.True(enumerator.TryMatch(longValue));
-        Assert.False(enumerator.TryMatch(" tail")); // at start, not at tail position
+        Assert.False(enumerator.TryMatch(" tail")); // at start, not at tail _position
     }
 
     [Fact]

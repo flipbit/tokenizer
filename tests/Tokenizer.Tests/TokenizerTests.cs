@@ -8,7 +8,7 @@ namespace Tokens;
 
 public class TokenizerTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class TestClass
     {
@@ -43,7 +43,7 @@ public class TokenizerTests : TokenizerTestBase
 
     public TokenizerTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Alice";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var student = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var student = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", student.FirstName);
@@ -69,8 +69,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Alice, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -85,8 +85,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Alice, Middle Name: Roberta, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -116,8 +116,8 @@ public class TokenizerTests : TokenizerTestBase
             """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -148,8 +148,8 @@ public class TokenizerTests : TokenizerTestBase
             """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Everything went well,\nwe had a nice time.", employee.FirstName);
@@ -164,8 +164,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Alice, Role: Programmer";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -179,8 +179,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Number: 12345";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", employee.FirstName);
@@ -195,8 +195,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Alice, Last Name: Smith, Enrolled: 16 Jan 2018";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -212,8 +212,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Number: 12345";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", employee.FirstName);
@@ -228,8 +228,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Number: Not a number";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", employee.FirstName);
@@ -244,8 +244,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Number: (not a number), Number: 67890";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", employee.FirstName);
@@ -260,8 +260,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
         var student = result.Value;
 
         // Assert
@@ -280,8 +280,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Enrolled: N/A, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
         var student = result.Value;
 
         // Assert
@@ -324,8 +324,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Middle Name: Charles, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", employee.FirstName);
@@ -346,8 +346,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = @"First Name: Bob, Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
         var student = result.Value;
 
         // Assert
@@ -366,7 +366,7 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Hello ... World";
 
         // Act & Assert
-        Assert.Throws<TokenizerException>(() => tokenizer.Tokenize<Student>(tokenizer.Compile(pattern).Template, input));
+        Assert.Throws<TokenizerException>(() => _tokenizer.Tokenize<Student>(_tokenizer.Compile(pattern).Template, input));
     }
 
     [Fact]
@@ -377,8 +377,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "David";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Null(result.FirstName);
@@ -392,8 +392,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Student: Alice\r\nStudent: Bob";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Teacher>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Teacher>(template, input).Value;
 
         // Assert
         Assert.Equal(2, result.Class.Count);
@@ -421,8 +421,8 @@ public class TokenizerTests : TokenizerTestBase
             """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Teacher>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Teacher>(template, input).Value;
 
         // Assert
         Assert.Equal("Sue", result.FirstName);
@@ -441,8 +441,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Name: Alice, Student: Bob, Student: Sue, Number: 1234";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Teacher>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Teacher>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", result.FirstName);
@@ -460,8 +460,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Hello World";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<TestClass>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<TestClass>(template, input);
 
         // Assert
         Assert.NotNull(result);
@@ -490,8 +490,8 @@ public class TokenizerTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<TestClass>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<TestClass>(template, input).Value;
 
         // Assert
         Assert.Equal(3, result.List.Count);
@@ -505,8 +505,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "First Name:\r\nAlice";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var employee = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var employee = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", employee.FirstName);
@@ -531,8 +531,8 @@ public class TokenizerTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var student = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var student = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Bob", student.FirstName);
@@ -549,8 +549,8 @@ public class TokenizerTests : TokenizerTestBase
         var template = new TemplateCompiler(new TokenizerOptions()).Compile(pattern).Template;
 
         // Act
-        var one = tokenizer.Tokenize<Student>(template, input).Value;
-        var two = tokenizer.Tokenize<Student>(template, input).Value;
+        var one = _tokenizer.Tokenize<Student>(template, input).Value;
+        var two = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("Alice", one.FirstName);
@@ -574,7 +574,7 @@ public class TokenizerTests : TokenizerTestBase
                                """;
         const string input = "First Name: John    ";
 
-        // Create tokenizer with TrimTrailingWhiteSpace = false
+        // Create _tokenizer with TrimTrailingWhiteSpace = false
         // Should get overridden by embedded pattern declaration
         var options = new TokenizerOptions { TrimTrailingWhiteSpace = false };
         var testTokenizer = CreateTokenizer(options);
@@ -618,8 +618,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "First Name: John    ";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var student = tokenizer.Tokenize<Student>(template, input).Value;
+        var template = _tokenizer.Compile(pattern).Template;
+        var student = _tokenizer.Tokenize<Student>(template, input).Value;
 
         // Assert
         Assert.Equal("John", student.FirstName);
@@ -641,8 +641,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "First Name: John\nLast Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
         var student = result.Value;
 
         // Assert
@@ -658,8 +658,8 @@ public class TokenizerTests : TokenizerTestBase
         const string input = "Date: 2001-01-01";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize(template, input);
         var date = result.First<DateTime>("Date");
 
         // Assert

@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class ToDecimalTransformerTests
 {
-    private readonly ToDecimalTransformer transformer = new();
+    private readonly ToDecimalTransformer _transformer = new();
 
     [Fact]
     public void GivenValidDecimalString_WhenTransforming_ThenReturnsDecimal()
     {
         // Act
-        var result = transformer.TryTransform("123.45", [], out var transformed);
+        var result = _transformer.TryTransform("123.45", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -22,7 +22,7 @@ public class ToDecimalTransformerTests
     public void GivenIntegerString_WhenTransforming_ThenReturnsDecimal()
     {
         // Act
-        var result = transformer.TryTransform("42", [], out var transformed);
+        var result = _transformer.TryTransform("42", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -34,7 +34,7 @@ public class ToDecimalTransformerTests
     public void GivenNegativeDecimalString_WhenTransforming_ThenReturnsNegativeDecimal()
     {
         // Act
-        var result = transformer.TryTransform("-99.9", [], out var transformed);
+        var result = _transformer.TryTransform("-99.9", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -45,7 +45,7 @@ public class ToDecimalTransformerTests
     public void GivenNonNumericString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform("hello", [], out var transformed);
+        var result = _transformer.TryTransform("hello", [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -56,7 +56,7 @@ public class ToDecimalTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(null!, [], out var transformed);
+        var result = _transformer.TryTransform(null!, [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -67,7 +67,7 @@ public class ToDecimalTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, [], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, [], out var transformed);
 
         // Assert
         Assert.False(result);

@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class ReplaceTransformerTests
 {
-    private readonly ReplaceTransformer transformer = new();
+    private readonly ReplaceTransformer _transformer = new();
 
     [Fact]
     public void GivenStringWithReplacement_WhenTransforming_ThenReplacesSubstring()
@@ -15,7 +15,7 @@ public class ReplaceTransformerTests
         var newValue = "four";
 
         // Act
-        var result = transformer.TryTransform(input, [oldValue, newValue], out var transformed);
+        var result = _transformer.TryTransform(input, [oldValue, newValue], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -29,7 +29,7 @@ public class ReplaceTransformerTests
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class ReplaceTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -53,7 +53,7 @@ public class ReplaceTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class ToIntTransformerTests
 {
-    private readonly ToIntTransformer transformer = new();
+    private readonly ToIntTransformer _transformer = new();
 
     [Fact]
     public void GivenValidIntegerString_WhenTransforming_ThenReturnsInt()
     {
         // Act
-        var result = transformer.TryTransform("42", [], out var transformed);
+        var result = _transformer.TryTransform("42", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -22,7 +22,7 @@ public class ToIntTransformerTests
     public void GivenNegativeIntegerString_WhenTransforming_ThenReturnsNegativeInt()
     {
         // Act
-        var result = transformer.TryTransform("-100", [], out var transformed);
+        var result = _transformer.TryTransform("-100", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class ToIntTransformerTests
     public void GivenZeroString_WhenTransforming_ThenReturnsZero()
     {
         // Act
-        var result = transformer.TryTransform("0", [], out var transformed);
+        var result = _transformer.TryTransform("0", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class ToIntTransformerTests
     public void GivenFloatString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform("10.5", [], out var transformed);
+        var result = _transformer.TryTransform("10.5", [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -55,7 +55,7 @@ public class ToIntTransformerTests
     public void GivenNonNumericString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform("hello", [], out var transformed);
+        var result = _transformer.TryTransform("hello", [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -66,7 +66,7 @@ public class ToIntTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(null!, [], out var transformed);
+        var result = _transformer.TryTransform(null!, [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -77,7 +77,7 @@ public class ToIntTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, [], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -91,7 +91,7 @@ public class ToIntTransformerTests
         var input = "99999999999999999999";
 
         // Act
-        var result = transformer.TryTransform(input, [], out var transformed);
+        var result = _transformer.TryTransform(input, [], out var transformed);
 
         // Assert
         Assert.False(result);

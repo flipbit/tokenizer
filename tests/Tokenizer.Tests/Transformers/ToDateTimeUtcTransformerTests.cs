@@ -9,7 +9,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
     {
     }
 
-    private readonly ToDateTimeUtcTransformer transformer = new();
+    private readonly ToDateTimeUtcTransformer _transformer = new();
 
     [Fact]
     public void GivenValidDateString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
@@ -19,7 +19,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var format = "yyyy-MM-dd";
 
         // Act
-        var result = transformer.TryTransform(input, [format], out var t);
+        var result = _transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -36,7 +36,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var format = "yyyy-MM-dd hh:mm:ss";
 
         // Act
-        var result = transformer.TryTransform(input, [format], out var t);
+        var result = _transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert
@@ -53,7 +53,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var format = "yyyy-MM-ddThh:mm:ssZ";
 
         // Act
-        var result = transformer.TryTransform(input, [format], out var t);
+        var result = _transformer.TryTransform(input, [format], out var t);
         var dateTime = (DateTime)t;
 
         // Assert

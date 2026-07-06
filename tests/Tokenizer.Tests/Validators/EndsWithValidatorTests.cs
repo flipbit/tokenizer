@@ -9,7 +9,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly EndsWithValidator validator = new();
+    private readonly EndsWithValidator _validator = new();
 
     [Fact]
     public void GivenStringThatEndsWithSuffix_WhenValidating_ThenReturnsTrue()
@@ -19,7 +19,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         var suffix = "world";
 
         // Act
-        var result = validator.IsValid(input, suffix);
+        var result = _validator.IsValid(input, suffix);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         var suffix = "hello";
 
         // Act
-        var result = validator.IsValid(input, suffix);
+        var result = _validator.IsValid(input, suffix);
 
         // Assert
         Assert.False(result);
@@ -46,7 +46,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -69,7 +69,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

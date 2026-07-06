@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class MultilineTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class Student
     {
@@ -18,7 +18,7 @@ public class MultilineTests : TokenizerTestBase
 
     public MultilineTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class MultilineTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Equal("Alice", result.Value.FirstName);
@@ -94,8 +94,8 @@ public class MultilineTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Equal("Alice", result.Value.FirstName);

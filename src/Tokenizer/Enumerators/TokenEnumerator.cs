@@ -9,17 +9,17 @@ public class TokenEnumerator
     private const int DefaultBufferSize = 1024;
     private const int RefillWatermark = 256;
 
-    private TextReader reader;
-    private readonly string? originalString;
+    private TextReader _reader;
+    private readonly string? _originalString;
 
-    private char[] buffer;
-    private char[] stagingBuffer;
-    private int readPos;
-    private int writePos;
-    private int bufferedCount;
+    private char[] _buffer;
+    private char[] _stagingBuffer;
+    private int _readPos;
+    private int _writePos;
+    private int _bufferedCount;
 
-    private bool readerExhausted;
-    private bool resetNextLine;
+    private bool _readerExhausted;
+    private bool _resetNextLine;
 
     /// <summary>
     /// Initializes a new instance of <see cref="TokenEnumerator"/> over the specified <see cref="TextReader"/>.
@@ -41,33 +41,33 @@ public class TokenEnumerator
 
     private TokenEnumerator(TextReader reader, string? originalString)
     {
-        this.reader = reader;
-        this.originalString = originalString;
-        buffer = new char[DefaultBufferSize];
-        stagingBuffer = new char[DefaultBufferSize];
-        readPos = 0;
-        writePos = 0;
-        bufferedCount = 0;
-        readerExhausted = false;
+        _reader = reader;
+        _originalString = originalString;
+        _buffer = new char[DefaultBufferSize];
+        _stagingBuffer = new char[DefaultBufferSize];
+        _readPos = 0;
+        _writePos = 0;
+        _bufferedCount = 0;
+        _readerExhausted = false;
         Location = new FileLocation();
         FillBuffer();
     }
 
     /// <summary>
     /// Gets a value indicating whether all characters have been consumed.
-    /// When the buffer is empty and the reader has not been marked exhausted,
+    /// When the _buffer is empty and the reader has not been marked exhausted,
     /// this property attempts a fill to discover exhaustion.
     /// </summary>
     public bool IsEmpty
     {
         get
         {
-            if (bufferedCount == 0 && !readerExhausted)
+            if (_bufferedCount == 0 && !_readerExhausted)
             {
                 FillBuffer();
             }
 
-            return bufferedCount == 0 && readerExhausted;
+            return _bufferedCount == 0 && _readerExhausted;
         }
     }
 
@@ -75,7 +75,7 @@ public class TokenEnumerator
     /// Gets a value indicating whether <see cref="Reset"/> is supported.
     /// Only string-backed enumerators support reset.
     /// </summary>
-    public bool CanReset => originalString != null;
+    public bool CanReset => _originalString != null;
 
     /// <summary>
     /// Gets the current position in the source as a line/column <see cref="FileLocation"/>.
@@ -90,30 +90,30 @@ public class TokenEnumerator
     /// <summary>
     /// Gets the total number of characters seen so far (consumed + still buffered).
     /// </summary>
-    public long TotalCharactersSeen => CharactersConsumed + bufferedCount;
+    public long TotalCharactersSeen => CharactersConsumed + _bufferedCount;
 
     /// <summary>
-    /// Gets a value indicating whether the buffer is below the refill watermark
+    /// Gets a value indicating whether the _buffer is below the refill watermark
     /// and the reader has more data available.
     /// </summary>
-    public bool NeedsRefill => bufferedCount < RefillWatermark && !readerExhausted;
+    public bool NeedsRefill => _bufferedCount < RefillWatermark && !_readerExhausted;
 
     /// <summary>
-    /// Reads a bulk chunk from the underlying reader into the ring buffer (synchronous path).
+    /// Reads a bulk chunk from the underlying reader into the ring _buffer (synchronous path).
     /// </summary>
     public void FillBuffer()
     {
-        if (readerExhausted) return;
+        if (_readerExhausted) return;
 
-        // Read into the reusable staging buffer, then copy with CRLF normalization
-        var available = buffer.Length - bufferedCount;
+        // Read into the reusable staging _buffer, then copy with CRLF normalization
+        var available = _buffer.Length - _bufferedCount;
         if (available <= 0) return;
 
-        var staging = stagingBuffer;
-        var read = reader.Read(staging, 0, available);
+        var staging = _stagingBuffer;
+        var read = _reader.Read(staging, 0, available);
         if (read == 0)
         {
-            readerExhausted = true;
+            _readerExhausted = true;
             return;
         }
 
@@ -121,27 +121,27 @@ public class TokenEnumerator
     }
 
     /// <summary>
-    /// Reads a bulk chunk from the underlying reader into the ring buffer (asynchronous path).
+    /// Reads a bulk chunk from the underlying reader into the ring _buffer (asynchronous path).
     /// </summary>
     /// <param name="ct">A cancellation token to observe.</param>
     public async ValueTask FillBufferAsync(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        if (readerExhausted) return;
+        if (_readerExhausted) return;
 
-        var available = buffer.Length - bufferedCount;
+        var available = _buffer.Length - _bufferedCount;
         if (available <= 0) return;
 
-        var staging = stagingBuffer;
+        var staging = _stagingBuffer;
 #if NET8_0_OR_GREATER
-        var read = await reader.ReadAsync(staging.AsMemory(0, available), ct).ConfigureAwait(false);
+        var read = await _reader.ReadAsync(staging.AsMemory(0, available), ct).ConfigureAwait(false);
 #else
-        var read = await reader.ReadAsync(staging, 0, available).ConfigureAwait(false);
+        var read = await _reader.ReadAsync(staging, 0, available).ConfigureAwait(false);
 #endif
         if (read == 0)
         {
-            readerExhausted = true;
+            _readerExhausted = true;
             return;
         }
 
@@ -160,10 +160,10 @@ public class TokenEnumerator
 
         CharactersConsumed++;
 
-        if (resetNextLine)
+        if (_resetNextLine)
         {
             Location.NewLine();
-            resetNextLine = false;
+            _resetNextLine = false;
         }
         else
         {
@@ -172,7 +172,7 @@ public class TokenEnumerator
 
         if (next == '\n')
         {
-            resetNextLine = true;
+            _resetNextLine = true;
         }
 
         return next;
@@ -185,14 +185,14 @@ public class TokenEnumerator
     /// <returns>The next character, or <c>'\0'</c> if <see cref="IsEmpty"/> is <see langword="true"/>.</returns>
     public char Peek()
     {
-        if (bufferedCount == 0)
+        if (_bufferedCount == 0)
         {
-            if (readerExhausted) return '\0';
+            if (_readerExhausted) return '\0';
             FillBuffer();
-            if (bufferedCount == 0) return '\0';
+            if (_bufferedCount == 0) return '\0';
         }
 
-        return buffer[readPos];
+        return _buffer[_readPos];
     }
 
     /// <summary>
@@ -210,14 +210,14 @@ public class TokenEnumerator
 
         EnsureBuffered(value.Length);
 
-        if (bufferedCount < value.Length) return false;
+        if (_bufferedCount < value.Length) return false;
 
-        var pos = readPos;
+        var pos = _readPos;
         for (var i = 0; i < value.Length; i++)
         {
-            if (buffer[pos] != value[i]) return false;
+            if (_buffer[pos] != value[i]) return false;
             pos++;
-            if (pos >= buffer.Length) pos = 0;
+            if (pos >= _buffer.Length) pos = 0;
         }
 
         return true;
@@ -277,53 +277,53 @@ public class TokenEnumerator
     /// </summary>
     public void Reset()
     {
-        if (originalString == null)
+        if (_originalString == null)
         {
             throw new System.NotSupportedException(
                 "Reset is not supported on TextReader-based enumerators. " +
                 "Use a hint strategy that does not require enumerator reset.");
         }
 
-        reader = new StringReader(originalString);
-        readPos = 0;
-        writePos = 0;
-        bufferedCount = 0;
-        readerExhausted = false;
-        resetNextLine = false;
+        _reader = new StringReader(_originalString);
+        _readPos = 0;
+        _writePos = 0;
+        _bufferedCount = 0;
+        _readerExhausted = false;
+        _resetNextLine = false;
         Location.Reset();
         CharactersConsumed = 0;
         FillBuffer();
     }
 
     /// <summary>
-    /// Reads one character from the ring buffer, transparently refilling from the reader if needed.
+    /// Reads one character from the ring _buffer, transparently refilling from the reader if needed.
     /// Returns <c>'\0'</c> if no more characters are available.
     /// </summary>
     private char DequeueChar()
     {
-        if (bufferedCount == 0)
+        if (_bufferedCount == 0)
         {
-            if (readerExhausted) return '\0';
+            if (_readerExhausted) return '\0';
             FillBuffer();
-            if (bufferedCount == 0) return '\0';
+            if (_bufferedCount == 0) return '\0';
         }
 
-        var c = buffer[readPos];
-        readPos++;
-        if (readPos >= buffer.Length) readPos = 0;
-        bufferedCount--;
+        var c = _buffer[_readPos];
+        _readPos++;
+        if (_readPos >= _buffer.Length) _readPos = 0;
+        _bufferedCount--;
 
         return c;
     }
 
     /// <summary>
-    /// Ensures at least <paramref name="count"/> characters are buffered, growing the buffer if necessary.
+    /// Ensures at least <paramref name="count"/> characters are buffered, growing the _buffer if necessary.
     /// </summary>
     private void EnsureBuffered(int count)
     {
-        while (bufferedCount < count && !readerExhausted)
+        while (_bufferedCount < count && !_readerExhausted)
         {
-            if (bufferedCount >= buffer.Length)
+            if (_bufferedCount >= _buffer.Length)
             {
                 GrowBuffer();
             }
@@ -332,42 +332,42 @@ public class TokenEnumerator
     }
 
     /// <summary>
-    /// Doubles the ring buffer capacity, linearizing existing data into the new buffer.
+    /// Doubles the ring _buffer capacity, linearizing existing data into the new _buffer.
     /// </summary>
     private void GrowBuffer()
     {
         // Buffer growth is bounded by TokenizerOptions.MaxInputLength, which is validated
         // by both sync and async tokenization paths before processing continues.
-        var newSize = buffer.Length * 2;
+        var newSize = _buffer.Length * 2;
         var newBuffer = new char[newSize];
 
-        // Linearize existing data into the new buffer
-        if (bufferedCount > 0)
+        // Linearize existing data into the new _buffer
+        if (_bufferedCount > 0)
         {
-            if (readPos + bufferedCount <= buffer.Length)
+            if (_readPos + _bufferedCount <= _buffer.Length)
             {
-                Array.Copy(buffer, readPos, newBuffer, 0, bufferedCount);
+                Array.Copy(_buffer, _readPos, newBuffer, 0, _bufferedCount);
             }
             else
             {
-                var firstChunk = buffer.Length - readPos;
-                Array.Copy(buffer, readPos, newBuffer, 0, firstChunk);
-                Array.Copy(buffer, 0, newBuffer, firstChunk, bufferedCount - firstChunk);
+                var firstChunk = _buffer.Length - _readPos;
+                Array.Copy(_buffer, _readPos, newBuffer, 0, firstChunk);
+                Array.Copy(_buffer, 0, newBuffer, firstChunk, _bufferedCount - firstChunk);
             }
         }
 
-        buffer = newBuffer;
-        readPos = 0;
-        writePos = bufferedCount;
+        _buffer = newBuffer;
+        _readPos = 0;
+        _writePos = _bufferedCount;
 
-        if (newSize > stagingBuffer.Length)
+        if (newSize > _stagingBuffer.Length)
         {
-            stagingBuffer = new char[newSize];
+            _stagingBuffer = new char[newSize];
         }
     }
 
     /// <summary>
-    /// Copies characters from a staging buffer into the ring buffer,
+    /// Copies characters from a staging _buffer into the ring _buffer,
     /// normalizing all line endings (<c>\r\n</c>, lone <c>\r</c>) to <c>\n</c>.
     /// </summary>
     private void CopyToRingBuffer(char[] staging, int count)
@@ -388,11 +388,11 @@ public class TokenEnumerator
                 if (i + 1 >= count)
                 {
                     // \r is at the end of our staging read — peek at reader to check for \n
-                    var peek = reader.Peek();
+                    var peek = _reader.Peek();
                     if (peek == '\n')
                     {
                         // \r\n split across reads — skip the \r, write \n, consume the \n from reader
-                        reader.Read();
+                        _reader.Read();
                     }
                 }
 
@@ -400,15 +400,15 @@ public class TokenEnumerator
                 c = '\n';
             }
 
-            if (bufferedCount >= buffer.Length)
+            if (_bufferedCount >= _buffer.Length)
             {
                 GrowBuffer();
             }
 
-            buffer[writePos] = c;
-            writePos++;
-            if (writePos >= buffer.Length) writePos = 0;
-            bufferedCount++;
+            _buffer[_writePos] = c;
+            _writePos++;
+            if (_writePos >= _buffer.Length) _writePos = 0;
+            _bufferedCount++;
         }
     }
 }

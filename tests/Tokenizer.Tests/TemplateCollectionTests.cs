@@ -10,7 +10,7 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
     }
 
-    private readonly TemplateCollection collection = new();
+    private readonly TemplateCollection _collection = new();
 
     [Fact]
     public void TestCollectionContainsTagWhenTrue()
@@ -18,9 +18,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         var template = new TemplateBuilder().WithId(1).Build();
         template.AddTag("One");
 
-        collection.Add(template);
+        _collection.Add(template);
 
-        Assert.True(collection.ContainsTag("One"));
+        Assert.True(_collection.ContainsTag("One"));
     }
 
     [Fact]
@@ -29,9 +29,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         var template = new TemplateBuilder().WithId(2).Build();
         template.AddTag("One");
 
-        collection.Add(template);
+        _collection.Add(template);
 
-        Assert.True(collection.ContainsTag("one"));
+        Assert.True(_collection.ContainsTag("one"));
     }
 
     [Fact]
@@ -40,9 +40,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         var template = new TemplateBuilder().WithId(3).Build();
         template.AddTag("One");
 
-        collection.Add(template);
+        _collection.Add(template);
 
-        Assert.False(collection.ContainsTag("two"));
+        Assert.False(_collection.ContainsTag("two"));
     }
 
     [Fact]
@@ -52,9 +52,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         template.AddTag("One");
         template.AddTag("Two");
 
-        collection.Add(template);
+        _collection.Add(template);
 
-        Assert.True(collection.ContainsAllTags("One", "Two"));
+        Assert.True(_collection.ContainsAllTags("One", "Two"));
     }
 
     [Fact]
@@ -64,9 +64,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         template.AddTag("One");
         template.AddTag("Two");
 
-        collection.Add(template);
+        _collection.Add(template);
 
-        Assert.False(collection.ContainsAllTags("One", "Two", "Three"));
+        Assert.False(_collection.ContainsAllTags("One", "Two", "Three"));
     }
 
     [Fact]
@@ -76,16 +76,16 @@ public class TemplateCollectionTests : TokenizerTestBase
         var tokenizer = CreateTokenizer();
 
         // Act
-        collection.Add(tokenizer.Compile("One: {One}").Template);
-        collection.Add(tokenizer.Compile("Two: {Two}").Template);
-        collection.Add(tokenizer.Compile("Three: {Three}").Template);
+        _collection.Add(tokenizer.Compile("One: {One}").Template);
+        _collection.Add(tokenizer.Compile("Two: {Two}").Template);
+        _collection.Add(tokenizer.Compile("Three: {Three}").Template);
 
         // Assert
-        Assert.Equal(3, collection.Count);
+        Assert.Equal(3, _collection.Count);
 
-        collection.Clear();
+        _collection.Clear();
 
-        Assert.Empty(collection);
+        Assert.Empty(_collection);
     }
 
     [Fact]

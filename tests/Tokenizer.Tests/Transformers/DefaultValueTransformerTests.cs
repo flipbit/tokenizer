@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class DefaultValueTransformerTests
 {
-    private readonly DefaultValueTransformer transformer = new();
+    private readonly DefaultValueTransformer _transformer = new();
 
     [Fact]
     public void GivenNonEmptyValue_WhenTransforming_ThenReturnsOriginalValue()
     {
         // Act
-        var result = transformer.TryTransform("hello", ["fallback"], out var transformed);
+        var result = _transformer.TryTransform("hello", ["fallback"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -21,7 +21,7 @@ public class DefaultValueTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsFallback()
     {
         // Act
-        var result = transformer.TryTransform(null!, ["N/A"], out var transformed);
+        var result = _transformer.TryTransform(null!, ["N/A"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -32,7 +32,7 @@ public class DefaultValueTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsFallback()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, ["default"], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, ["default"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -43,7 +43,7 @@ public class DefaultValueTransformerTests
     public void GivenWhitespaceOnlyString_WhenTransforming_ThenReturnsWhitespace()
     {
         // Act
-        var result = transformer.TryTransform("   ", ["fallback"], out var transformed);
+        var result = _transformer.TryTransform("   ", ["fallback"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -54,13 +54,13 @@ public class DefaultValueTransformerTests
     public void GivenMissingArgs_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(null!, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(null!, null!, out var t));
     }
 
     [Fact]
     public void GivenEmptyArgs_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(null!, [], out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(null!, [], out var t));
     }
 }

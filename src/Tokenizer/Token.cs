@@ -10,7 +10,7 @@ namespace Tokens;
 /// </summary>
 public sealed class Token
 {
-    private string content;
+    private string _content;
 
     /// <summary>
     /// Creates a new instance of the <see cref="Token"/> class.
@@ -26,7 +26,7 @@ public sealed class Token
     /// <param name="location">The location of this token within the template pattern.</param>
     public Token(string content, string name, string preamble, FileLocation location)
     {
-        this.content = content;
+        this._content = content;
         Name = name;
         Preamble = preamble;
         Location = location;
@@ -125,7 +125,7 @@ public sealed class Token
     /// </summary>
     public override string ToString()
     {
-        return content;
+        return _content;
     }
 
     internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue, IDiagnosticCollector collector)

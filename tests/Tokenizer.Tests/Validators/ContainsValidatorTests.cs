@@ -9,7 +9,7 @@ public class ContainsValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly ContainsValidator validator = new();
+    private readonly ContainsValidator _validator = new();
 
     [Fact]
     public void GivenStringThatContainsSubstring_WhenValidating_ThenReturnsTrue()
@@ -19,7 +19,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         var substring = "o wor";
 
         // Act
-        var result = validator.IsValid(input, substring);
+        var result = _validator.IsValid(input, substring);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         var substring = "spoon";
 
         // Act
-        var result = validator.IsValid(input, substring);
+        var result = _validator.IsValid(input, substring);
 
         // Assert
         Assert.False(result);
@@ -46,7 +46,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -69,7 +69,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

@@ -7,14 +7,14 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class TemplateFactory
 {
-    private static int templateCounter;
+    private static int _templateCounter;
 
     public static Template Create(ulong id, TemplateDefinition definition)
     {
         var template = new Template(id, definition.Options);
 
         template.Name = string.IsNullOrWhiteSpace(definition.Name)
-            ? $"Template_{Interlocked.Increment(ref templateCounter)}"
+            ? $"Template_{Interlocked.Increment(ref _templateCounter)}"
             : definition.Name;
 
         return template;

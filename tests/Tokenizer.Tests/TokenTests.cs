@@ -13,7 +13,7 @@ public class TokenTests : TokenizerTestBase
     {
     }
 
-    private readonly Token token = new("Test", string.Empty, string.Empty, new FileLocation());
+    private readonly Token _token = new("Test", string.Empty, string.Empty, new FileLocation());
 
     public class Person
     {
@@ -29,10 +29,10 @@ public class TokenTests : TokenizerTestBase
     {
         // Arrange
         var person = new Person();
-        token.Name = "Person.Name";
+        _token.Name = "Person.Name";
 
         // Act
-        var assigned = token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = _token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);
@@ -44,11 +44,11 @@ public class TokenTests : TokenizerTestBase
     {
         // Arrange
         var person = new Person();
-        token.Name = "Person.Age";
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
+        _token.Name = "Person.Age";
+        _token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
-        var assigned = token.Assign(person, "20", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = _token.Assign(person, "20", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);
@@ -60,11 +60,11 @@ public class TokenTests : TokenizerTestBase
     {
         // Arrange
         var person = new Person();
-        token.Name = "Person.Age";
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
+        _token.Name = "Person.Age";
+        _token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
-        var assigned = token.Assign(person, "Twenty", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = _token.Assign(person, "Twenty", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(assigned);
@@ -76,10 +76,10 @@ public class TokenTests : TokenizerTestBase
     {
         // Arrange
         var person = new Person();
-        token.Name = "Person.Name";
+        _token.Name = "Person.Name";
 
         // Act
-        var assigned = token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
+        var assigned = _token.Assign(person, "Sue", new TokenizerOptions(), new FileLocation(), out var value, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(assigned);

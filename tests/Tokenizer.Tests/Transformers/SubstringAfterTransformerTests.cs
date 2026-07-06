@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class SubstringAfterTransformerTests
 {
-    private readonly SubstringAfterTransformer transformer = new();
+    private readonly SubstringAfterTransformer _transformer = new();
 
     [Fact]
     public void GivenStringWithSubstring_WhenTransforming_ThenReturnsTextAfterSubstring()
@@ -14,7 +14,7 @@ public class SubstringAfterTransformerTests
         var substring = "two";
 
         // Act
-        var result = transformer.TryTransform(input, [substring], out var transformed);
+        var result = _transformer.TryTransform(input, [substring], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -28,7 +28,7 @@ public class SubstringAfterTransformerTests
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class SubstringAfterTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -52,7 +52,7 @@ public class SubstringAfterTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

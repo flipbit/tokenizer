@@ -10,15 +10,15 @@ namespace Tokens.Tokenization.Strategies;
 /// </summary>
 internal sealed class IntegratedHintStrategy : IHintStrategy
 {
-    private Template? currentTemplate;
-    private readonly HashSet<string> matchedPreambles = new();
+    private Template? _currentTemplate;
+    private readonly HashSet<string> _matchedPreambles = new();
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
                            string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector)
     {
-        currentTemplate = template;
-        matchedPreambles.Clear();
+        _currentTemplate = template;
+        _matchedPreambles.Clear();
 
         return false;
     }
@@ -28,26 +28,26 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
     {
         if (string.IsNullOrEmpty(token.Preamble) == false)
         {
-            matchedPreambles.Add(token.Preamble);
+            _matchedPreambles.Add(token.Preamble);
         }
     }
 
     /// <inheritdoc />
     public bool PostProcess(TokenizeResultBase result)
     {
-        if (currentTemplate == null || currentTemplate.Hints.Count == 0)
+        if (_currentTemplate == null || _currentTemplate.Hints.Count == 0)
         {
             return false;
         }
 
-        foreach (var hint in currentTemplate.Hints)
+        foreach (var hint in _currentTemplate.Hints)
         {
             if (string.IsNullOrEmpty(hint.Text))
             {
                 continue;
             }
 
-            var satisfied = matchedPreambles.Any(p => p.Contains(hint.Text));
+            var satisfied = _matchedPreambles.Any(p => p.Contains(hint.Text));
 
             if (satisfied)
             {
@@ -55,7 +55,7 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
             }
         }
 
-        foreach (var hint in currentTemplate.Hints)
+        foreach (var hint in _currentTemplate.Hints)
         {
             result.Hints.TryAddMiss(hint);
         }

@@ -9,9 +9,9 @@ namespace Tokens.Compilation.Definitions;
 /// </summary>
 public class TokenDefinition
 {
-    private readonly StringBuilder preamble;
-    private readonly StringBuilder name;
-    private readonly StringBuilder value;
+    private readonly StringBuilder _preamble;
+    private readonly StringBuilder _name;
+    private readonly StringBuilder _value;
 
     /// <summary>
     /// Initializes a new empty <see cref="TokenDefinition"/>.
@@ -19,9 +19,9 @@ public class TokenDefinition
     public TokenDefinition()
     {
         Decorators = new List<DecoratorDefinition>();
-        preamble = new StringBuilder();
-        name = new StringBuilder();
-        value = new StringBuilder();
+        _preamble = new StringBuilder();
+        _name = new StringBuilder();
+        _value = new StringBuilder();
     }
 
     /// <summary>
@@ -37,17 +37,17 @@ public class TokenDefinition
     /// <summary>
     /// Gets the static text that must appear before this token in the input.
     /// </summary>
-    public string Preamble => preamble.ToString();
+    public string Preamble => _preamble.ToString();
 
     /// <summary>
     /// Gets the token name used to map the extracted value onto the target object.
     /// </summary>
-    public string Name => name.ToString();
+    public string Name => _name.ToString();
 
     /// <summary>
     /// Gets the hard-coded value assigned to this token, or an empty string if the token captures from input.
     /// </summary>
-    public string Value => value.ToString();
+    public string Value => _value.ToString();
 
     /// <summary>
     /// Gets or sets a value indicating whether this token is optional (may not match).
@@ -102,7 +102,7 @@ public class TokenDefinition
     {
         if (value == "\r") return;
 
-        preamble.Append(value);
+        _preamble.Append(value);
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public class TokenDefinition
     /// <param name="value">The text to append.</param>
     public void AppendName(string value)
     {
-        name.Append(value);
+        _name.Append(value);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class TokenDefinition
     /// <param name="value">The text to append.</param>
     public void AppendValue(string value)
     {
-        this.value.Append(value);
+        _value.Append(value);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public class TokenDefinition
     /// <summary>
     /// Gets a value indicating whether a hard-coded value has been set on this token.
     /// </summary>
-    public bool HasValue => value.Length > 0;
+    public bool HasValue => _value.Length > 0;
 
     /// <summary>
     /// Gets or sets a value indicating whether this token originated in the front matter block.
@@ -155,14 +155,14 @@ public class TokenDefinition
 
     internal void TrimPreambleBeforeNewLine()
     {
-        var preambleContent = preamble.ToString();
+        var preambleContent = _preamble.ToString();
 
         if (preambleContent.Contains("\n"))
         {
             var trimmed = preambleContent.Substring(preambleContent.LastIndexOf("\n") + 1);
 
-            preamble.Clear();
-            preamble.Append(trimmed);
+            _preamble.Clear();
+            _preamble.Append(trimmed);
         }
     }
 }

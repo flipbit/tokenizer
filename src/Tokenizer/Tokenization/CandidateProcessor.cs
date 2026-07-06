@@ -10,11 +10,11 @@ namespace Tokens.Tokenization;
 /// </summary>
 internal sealed class CandidateProcessor
 {
-    private readonly object? targetObject;
-    private readonly TokenizeResultBase result;
-    private readonly Template template;
-    private readonly IDiagnosticCollector collector;
-    private readonly ILogger logger;
+    private readonly object? _targetObject;
+    private readonly TokenizeResultBase _result;
+    private readonly Template _template;
+    private readonly IDiagnosticCollector _collector;
+    private readonly ILogger _logger;
 
     public CandidateProcessor(
         object? targetObject,
@@ -23,11 +23,11 @@ internal sealed class CandidateProcessor
         IDiagnosticCollector collector,
         ILogger logger)
     {
-        this.targetObject = targetObject;
-        this.result = result;
-        this.template = template;
-        this.collector = collector;
-        this.logger = logger;
+        _targetObject = targetObject;
+        _result = result;
+        _template = template;
+        _collector = collector;
+        _logger = logger;
     }
 
     /// <summary>
@@ -36,9 +36,9 @@ internal sealed class CandidateProcessor
     /// </summary>
     public bool TryAssign(TokenizationContext context, FileLocation location)
     {
-        if (collector.IsEnabled)
+        if (_collector.IsEnabled)
         {
-            collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
+            _collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
                 tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                 location: location,
                 value: context.Replacement.ToString());
@@ -46,11 +46,11 @@ internal sealed class CandidateProcessor
 
         try
         {
-            if (context.Candidates.TryAssign(targetObject, context.Replacement, template.Options, location, out var assigned, out var assignedValue, collector))
+            if (context.Candidates.TryAssign(_targetObject, context.Replacement, _template.Options, location, out var assigned, out var assignedValue, _collector))
             {
-                if (collector.IsEnabled)
+                if (_collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.TokenAssigned,
+                    _collector.Record(DiagnosticEventType.TokenAssigned,
                         tokenName: assigned.Name, tokenId: assigned.Id,
                         location: location,
                         value: assignedValue?.ToString());
@@ -58,7 +58,7 @@ internal sealed class CandidateProcessor
 
                 if (assignedValue != null)
                 {
-                    result.Tokens.AddMatch(assigned, assignedValue, location);
+                    _result.Tokens.AddMatch(assigned, assignedValue, location);
                     AddMatchedTokenIds(assigned, context.MatchIds);
                 }
 
@@ -66,9 +66,9 @@ internal sealed class CandidateProcessor
             }
             else
             {
-                if (collector.IsEnabled)
+                if (_collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                    _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
                         tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                         location: location,
                         value: context.Replacement.ToString());
@@ -79,11 +79,11 @@ internal sealed class CandidateProcessor
         }
         catch (Exception e)
         {
-            if (logger.IsEnabled(LogLevel.Warning))
+            if (_logger.IsEnabled(LogLevel.Warning))
             {
-                logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
+                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
             }
-            result.AddException(e);
+            _result.AddException(e);
             return false;
         }
     }
@@ -98,9 +98,9 @@ internal sealed class CandidateProcessor
 
         if (context.Candidates.CanAnyAssign(replacementValue) == false)
         {
-            if (collector.IsEnabled)
+            if (_collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.BacktrackStarted,
+                _collector.Record(DiagnosticEventType.BacktrackStarted,
                     tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                     location: context.Enumerator.Location,
                     value: replacementValue);
@@ -110,7 +110,7 @@ internal sealed class CandidateProcessor
             if (advanceLength == 0 && context.Candidates.Tokens.Count > 0)
             {
                 var tokenNames = string.Join(", ", context.Candidates.Tokens.Select(t => t.Name));
-                logger.LogError(
+                _logger.LogError(
                     "Infinite loop detected: Cannot backtrack with empty preamble for tokens [{TokenNames}]. " +
                     "This occurs when consecutive tokens have no separator and assignment fails. " +
                     "Current position: Line {Line}, Column {Column}",
@@ -127,9 +127,9 @@ internal sealed class CandidateProcessor
                 var token = context.Candidates.Tokens[i];
                 if (WasLastMatchedToken(token) && string.IsNullOrWhiteSpace(token.Preamble) && string.IsNullOrWhiteSpace(replacementValue))
                 {
-                    if (collector.IsEnabled)
+                    if (_collector.IsEnabled)
                     {
-                        collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
+                        _collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
                             tokenName: token.Name, tokenId: token.Id,
                             location: context.Enumerator.Location);
                     }
@@ -139,14 +139,14 @@ internal sealed class CandidateProcessor
                 }
                 else if (token.IsSingleUse)
                 {
-                    if (collector.IsEnabled)
+                    if (_collector.IsEnabled)
                     {
-                        collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
+                        _collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
                             tokenName: token.Name, tokenId: token.Id,
                             location: context.Enumerator.Location);
                     }
                     context.Candidates.Remove(token);
-                    result.Tokens.AddMiss(token);
+                    _result.Tokens.AddMiss(token);
                     context.MatchIds.Add(token.Id);
                 }
             }
@@ -170,9 +170,9 @@ internal sealed class CandidateProcessor
         var location = context.Enumerator.Location;
         var firstToken = context.Candidates.Tokens[0];
 
-        if (collector.IsEnabled)
+        if (_collector.IsEnabled)
         {
-            collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
+            _collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
                 tokenName: firstToken.Name,
                 tokenId: firstToken.Id,
                 value: context.Replacement.ToString(),
@@ -181,9 +181,9 @@ internal sealed class CandidateProcessor
 
         if (firstToken.IsRepeating &&
             string.IsNullOrWhiteSpace(context.Candidates.Preamble) &&
-            result.Tokens.HasMatches)
+            _result.Tokens.HasMatches)
         {
-            var matches = result.Tokens.Matches;
+            var matches = _result.Tokens.Matches;
             var lastMatch = matches[matches.Count - 1];
             if (lastMatch.Token.Id == firstToken.Id)
             {
@@ -215,12 +215,12 @@ internal sealed class CandidateProcessor
 
     private void AddMatchedTokenIds(Token matchedToken, HashSet<int> matchIds)
     {
-        template.GetTokenIdsUpTo(matchedToken, matchIds);
+        _template.GetTokenIdsUpTo(matchedToken, matchIds);
     }
 
     private bool WasLastMatchedToken(Token token)
     {
-        var matches = result.Tokens.Matches;
+        var matches = _result.Tokens.Matches;
         if (matches.Count == 0)
         {
             return false;

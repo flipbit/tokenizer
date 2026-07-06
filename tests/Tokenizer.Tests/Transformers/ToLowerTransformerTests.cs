@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class ToLowerTransformerTests
 {
-    private readonly ToLowerTransformer transformer = new();
+    private readonly ToLowerTransformer _transformer = new();
 
     [Fact]
     public void GivenUpperCaseString_WhenTransforming_ThenConvertsToLowerCase()
@@ -13,7 +13,7 @@ public class ToLowerTransformerTests
         var input = "TEST";
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var t);
+        var result = _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);
@@ -27,7 +27,7 @@ public class ToLowerTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var t);
+        var result = _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);
@@ -41,7 +41,7 @@ public class ToLowerTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var t);
+        var result = _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.True(result);

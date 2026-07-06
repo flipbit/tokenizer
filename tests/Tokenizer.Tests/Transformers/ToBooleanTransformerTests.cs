@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class ToBooleanTransformerTests
 {
-    private readonly ToBooleanTransformer transformer = new();
+    private readonly ToBooleanTransformer _transformer = new();
 
     [Theory]
     [InlineData("true")]
@@ -17,7 +17,7 @@ public class ToBooleanTransformerTests
     public void GivenTruthyString_WhenTransforming_ThenReturnsTrueBoolean(string input)
     {
         // Act
-        var result = transformer.TryTransform(input, [], out var transformed);
+        var result = _transformer.TryTransform(input, [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -36,7 +36,7 @@ public class ToBooleanTransformerTests
     public void GivenFalsyString_WhenTransforming_ThenReturnsFalseBoolean(string input)
     {
         // Act
-        var result = transformer.TryTransform(input, [], out var transformed);
+        var result = _transformer.TryTransform(input, [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -48,7 +48,7 @@ public class ToBooleanTransformerTests
     public void GivenUnrecognizedString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform("maybe", [], out var transformed);
+        var result = _transformer.TryTransform("maybe", [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -59,7 +59,7 @@ public class ToBooleanTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(null!, [], out var transformed);
+        var result = _transformer.TryTransform(null!, [], out var transformed);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class ToBooleanTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsFalse()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, [], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, [], out var transformed);
 
         // Assert
         Assert.False(result);

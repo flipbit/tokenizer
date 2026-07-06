@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class SplitTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class Foo
     {
@@ -14,7 +14,7 @@ public class SplitTests : TokenizerTestBase
 
     public SplitTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -25,8 +25,8 @@ public class SplitTests : TokenizerTestBase
         const string input = @"Names: Alice,Bob,Charles";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var results = tokenizer.Tokenize<Foo>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var results = _tokenizer.Tokenize<Foo>(template, input);
         var foo = results.Value;
 
         // Assert

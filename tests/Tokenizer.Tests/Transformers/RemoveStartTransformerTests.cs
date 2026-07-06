@@ -9,7 +9,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
     {
     }
 
-    private readonly RemoveStartTransformer transformer = new();
+    private readonly RemoveStartTransformer _transformer = new();
 
     [Fact]
     public void GivenStringStartingWithSubstring_WhenTransforming_ThenRemovesStartingSubstring()
@@ -19,7 +19,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         var prefixToRemove = "one";
 
         // Act
-        var result = transformer.TryTransform(input, [prefixToRemove], out var transformed);
+        var result = _transformer.TryTransform(input, [prefixToRemove], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -34,7 +34,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         var prefixToRemove = "two";
 
         // Act
-        var result = transformer.TryTransform(input, [prefixToRemove], out var transformed);
+        var result = _transformer.TryTransform(input, [prefixToRemove], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -48,7 +48,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -72,7 +72,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

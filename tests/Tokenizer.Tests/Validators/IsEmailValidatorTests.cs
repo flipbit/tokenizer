@@ -9,7 +9,7 @@ public class IsEmailValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsEmailValidator validator = new();
+    private readonly IsEmailValidator _validator = new();
 
     [Fact]
     public void GivenValidEmailAddress_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsEmailValidatorTests : TokenizerTestBase
         var input = "hello@example.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsEmailValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -44,7 +44,7 @@ public class IsEmailValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -57,7 +57,7 @@ public class IsEmailValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

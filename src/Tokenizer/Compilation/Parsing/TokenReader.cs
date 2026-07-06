@@ -10,21 +10,21 @@ namespace Tokens.Compilation.Parsing;
 /// </summary>
 internal sealed class TokenReader
 {
-    private readonly IEnumerator<LexerToken> enumerator;
-    private readonly Queue<LexerToken> buffer = new Queue<LexerToken>(4);
+    private readonly IEnumerator<LexerToken> _enumerator;
+    private readonly Queue<LexerToken> _buffer = new Queue<LexerToken>(4);
 
     public TokenReader(IEnumerable<LexerToken> tokens)
     {
         if (tokens == null) throw new ArgumentNullException(nameof(tokens));
-        enumerator = tokens.GetEnumerator();
+        _enumerator = tokens.GetEnumerator();
     }
 
     public LexerToken Peek(int lookahead = 0)
     {
         EnsureBuffered(lookahead + 1);
-        if (buffer.Count <= lookahead) return EndToken();
+        if (_buffer.Count <= lookahead) return EndToken();
         var i = 0;
-        foreach (var t in buffer)
+        foreach (var t in _buffer)
         {
             if (i == lookahead) return t;
             i++;
@@ -35,8 +35,8 @@ internal sealed class TokenReader
     public LexerToken Consume()
     {
         EnsureBuffered(1);
-        if (buffer.Count == 0) return EndToken();
-        return buffer.Dequeue();
+        if (_buffer.Count == 0) return EndToken();
+        return _buffer.Dequeue();
     }
 
     public bool TryConsume(LexerTokenKind kind, out LexerToken? token)
@@ -87,7 +87,7 @@ internal sealed class TokenReader
         EnsureBuffered(after + 1);
         var result = new System.Text.StringBuilder();
         var i = 0;
-        foreach (var t in buffer)
+        foreach (var t in _buffer)
         {
             if (i > after) break;
             if (i > 0) result.Append(' ');
@@ -105,10 +105,10 @@ internal sealed class TokenReader
 
     private void EnsureBuffered(int count)
     {
-        while (buffer.Count < count)
+        while (_buffer.Count < count)
         {
-            if (enumerator.MoveNext() == false) break;
-            buffer.Enqueue(enumerator.Current);
+            if (_enumerator.MoveNext() == false) break;
+            _buffer.Enqueue(_enumerator.Current);
         }
     }
 

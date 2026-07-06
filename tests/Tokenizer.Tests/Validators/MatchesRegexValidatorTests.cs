@@ -9,7 +9,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly MatchesRegexValidator validator = new();
+    private readonly MatchesRegexValidator _validator = new();
 
     [Fact]
     public void GivenMatchingPattern_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
         var input = "123-4567";
 
         // Act
-        var result = validator.IsValid(input, @"^\d{3}-\d{4}$");
+        var result = _validator.IsValid(input, @"^\d{3}-\d{4}$");
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
         var input = "abc";
 
         // Act
-        var result = validator.IsValid(input, @"^\d+$");
+        var result = _validator.IsValid(input, @"^\d+$");
 
         // Assert
         Assert.False(result);
@@ -44,7 +44,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
         var input = "HELLO";
 
         // Act
-        var result = validator.IsValid(input, @"(?i)^hello$");
+        var result = _validator.IsValid(input, @"(?i)^hello$");
 
         // Assert
         Assert.True(result);
@@ -54,7 +54,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(null!, @"\d+");
+        var result = _validator.IsValid(null!, @"\d+");
 
         // Assert
         Assert.False(result);
@@ -64,7 +64,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(string.Empty, @"\d+");
+        var result = _validator.IsValid(string.Empty, @"\d+");
 
         // Assert
         Assert.False(result);
@@ -74,7 +74,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     public void GivenMissingArgs_WhenValidating_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid("test"));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid("test"));
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
 
         // Act & Assert
         Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(
-            () => validator.IsValid(input, @"(a+)+$"));
+            () => _validator.IsValid(input, @"(a+)+$"));
     }
 
     [Fact]

@@ -8,8 +8,8 @@ namespace Tokens;
 /// </summary>
 public record class TokenizerOptions
 {
-    private readonly List<Type> transformers = new List<Type>();
-    private readonly List<Type> validators = new List<Type>();
+    private readonly List<Type> _transformers = new List<Type>();
+    private readonly List<Type> _validators = new List<Type>();
 
     /// <summary>
     /// Copy constructor used by the record's <c>with</c> expression. Deep-copies the
@@ -30,8 +30,8 @@ public record class TokenizerOptions
         MaxTokenCount = original.MaxTokenCount;
         MaxIterations = original.MaxIterations;
         AllowStreamBuffering = original.AllowStreamBuffering;
-        transformers = new List<Type>(original.transformers);
-        validators = new List<Type>(original.validators);
+        _transformers = new List<Type>(original._transformers);
+        _validators = new List<Type>(original._validators);
     }
 
     /// <summary>
@@ -114,13 +114,13 @@ public record class TokenizerOptions
     /// Custom transformer types registered on this options instance.
     /// These are added after the default transformers when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
-    public IReadOnlyList<Type> Transformers => transformers.AsReadOnly();
+    public IReadOnlyList<Type> Transformers => _transformers.AsReadOnly();
 
     /// <summary>
     /// Custom validator types registered on this options instance.
     /// These are added after the default validators when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
-    public IReadOnlyList<Type> Validators => validators.AsReadOnly();
+    public IReadOnlyList<Type> Validators => _validators.AsReadOnly();
 
     /// <summary>
     /// Returns a new <see cref="TokenizerOptions"/> instance with the given transformer type appended.
@@ -128,7 +128,7 @@ public record class TokenizerOptions
     public TokenizerOptions WithTransformer<T>() where T : ITokenTransformer
     {
         var copy = this with { };
-        copy.transformers.Add(typeof(T));
+        copy._transformers.Add(typeof(T));
         return copy;
     }
 
@@ -138,7 +138,7 @@ public record class TokenizerOptions
     public TokenizerOptions WithValidator<T>() where T : ITokenValidator
     {
         var copy = this with { };
-        copy.validators.Add(typeof(T));
+        copy._validators.Add(typeof(T));
         return copy;
     }
 

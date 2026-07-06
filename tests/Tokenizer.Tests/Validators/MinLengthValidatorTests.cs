@@ -9,7 +9,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly MinLengthValidator validator = new();
+    private readonly MinLengthValidator _validator = new();
 
     [Fact]
     public void GivenStringMeetingMinimumLength_WhenValidating_ThenReturnsTrue()
@@ -19,7 +19,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var minLength = "3";
 
         // Act
-        var result = validator.IsValid(input, minLength);
+        var result = _validator.IsValid(input, minLength);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var minLength = "255";
 
         // Act
-        var result = validator.IsValid(input, minLength);
+        var result = _validator.IsValid(input, minLength);
 
         // Assert
         Assert.False(result);
@@ -46,7 +46,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input));
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var invalidParameter = "hello";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input, invalidParameter));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input, invalidParameter));
     }
 
     [Fact]

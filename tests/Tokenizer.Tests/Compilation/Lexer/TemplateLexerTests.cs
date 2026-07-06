@@ -508,28 +508,28 @@ public class TemplateLexerTests
 
     private sealed class CountingTextReader : TextReader
     {
-        private readonly TextReader inner;
+        private readonly TextReader _inner;
         public int ReadCount { get; private set; }
 
         public CountingTextReader(TextReader inner)
         {
-            this.inner = inner;
+            _inner = inner;
         }
 
         public override int Read()
         {
             ReadCount++;
-            return inner.Read();
+            return _inner.Read();
         }
 
         public override int Peek()
         {
-            return inner.Peek();
+            return _inner.Peek();
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) inner.Dispose();
+            if (disposing) _inner.Dispose();
             base.Dispose(disposing);
         }
     }

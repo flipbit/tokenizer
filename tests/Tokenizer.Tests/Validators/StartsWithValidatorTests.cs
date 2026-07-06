@@ -9,7 +9,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly StartsWithValidator validator = new();
+    private readonly StartsWithValidator _validator = new();
 
     [Fact]
     public void GivenStringThatStartsWithPrefix_WhenValidating_ThenReturnsTrue()
@@ -19,7 +19,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var prefix = "hello";
 
         // Act
-        var result = validator.IsValid(input, prefix);
+        var result = _validator.IsValid(input, prefix);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var prefix = "world";
 
         // Act
-        var result = validator.IsValid(input, prefix);
+        var result = _validator.IsValid(input, prefix);
 
         // Assert
         Assert.False(result);
@@ -46,7 +46,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => validator.IsValid(input));
+        Assert.Throws<ArgumentException>(() => _validator.IsValid(input));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -69,7 +69,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

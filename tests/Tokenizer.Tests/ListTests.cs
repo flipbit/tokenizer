@@ -5,11 +5,11 @@ namespace Tokens;
 
 public class ListTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     public ListTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class ListTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var results = tokenizer.Tokenize(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var results = _tokenizer.Tokenize(template, input);
         var domains = results.Matches.Where(m => m.Token.Name == "DomainName").ToList();
 
         // Assert

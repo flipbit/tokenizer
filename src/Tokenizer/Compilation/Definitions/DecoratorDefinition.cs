@@ -7,21 +7,21 @@ namespace Tokens.Compilation.Definitions;
 /// </summary>
 public class DecoratorDefinition
 {
-    private readonly StringBuilder name;
+    private readonly StringBuilder _name;
 
     /// <summary>
     /// Initializes a new empty <see cref="DecoratorDefinition"/>.
     /// </summary>
     public DecoratorDefinition()
     {
-        name = new StringBuilder();
+        _name = new StringBuilder();
         Args = new List<string>();
     }
 
     /// <summary>
     /// Gets the decorator name identifying the validator or transformer to invoke.
     /// </summary>
-    public string Name => name.ToString();
+    public string Name => _name.ToString();
 
     /// <summary>
     /// Gets the arguments to pass to the decorator when it is invoked.
@@ -39,6 +39,6 @@ public class DecoratorDefinition
     /// <param name="value">The text to append.</param>
     public void AppendName(string value)
     {
-        name.Append(value);
+        _name.Append(value);
     }
 }

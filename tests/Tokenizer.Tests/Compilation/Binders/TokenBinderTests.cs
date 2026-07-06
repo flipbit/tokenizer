@@ -8,8 +8,8 @@ namespace Tokens.Compilation.Binders;
 
 public class TokenBinderTests
 {
-    private readonly DecoratorRegistry registry = new(new TokenizerOptions());
-    private readonly ConcurrentDictionary<Type, ITokenDecorator> decoratorCache = new();
+    private readonly DecoratorRegistry _registry = new(new TokenizerOptions());
+    private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
     [Fact]
     public void GivenDefinitionWithTokens_WhenBinding_ThenTemplateHasTokens()
@@ -21,7 +21,7 @@ public class TokenBinderTests
         definition.Tokens.Add(tokenDef);
         var template = new TemplateBuilder().Build();
 
-        TokenBinder.Bind(definition, template, registry, decoratorCache, NullDiagnosticCollector.Instance);
+        TokenBinder.Bind(definition, template, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
         Assert.Single(template.Tokens);
         Assert.Equal("Name", template.Tokens.First().Name);
@@ -42,7 +42,7 @@ public class TokenBinderTests
         definition.Tokens.Add(td2);
         var template = new TemplateBuilder().Build();
 
-        TokenBinder.Bind(definition, template, registry, decoratorCache, NullDiagnosticCollector.Instance);
+        TokenBinder.Bind(definition, template, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
         Assert.Equal(2, template.Tokens.Count);
     }
@@ -61,7 +61,7 @@ public class TokenBinderTests
             .WithOptions(new TokenizerOptions { OutOfOrderTokens = true })
             .Build();
 
-        TokenBinder.Bind(definition, template, registry, decoratorCache, NullDiagnosticCollector.Instance);
+        TokenBinder.Bind(definition, template, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
         Assert.True(template.Tokens.First().IsOptional);
     }
@@ -72,7 +72,7 @@ public class TokenBinderTests
         var definition = new TemplateDefinition();
         var template = new TemplateBuilder().Build();
 
-        TokenBinder.Bind(definition, template, registry, decoratorCache, NullDiagnosticCollector.Instance);
+        TokenBinder.Bind(definition, template, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
         Assert.Empty(template.Tokens);
     }

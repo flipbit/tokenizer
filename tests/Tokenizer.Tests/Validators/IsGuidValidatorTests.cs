@@ -9,7 +9,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsGuidValidator validator = new();
+    private readonly IsGuidValidator _validator = new();
 
     [Fact]
     public void GivenValidGuidWithHyphens_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
         var input = "d3b07384-d9a0-4e9b-8a0d-1e6b2a3c4d5e";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
         var input = "d3b07384d9a04e9b8a0d1e6b2a3c4d5e";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
         var input = "{d3b07384-d9a0-4e9b-8a0d-1e6b2a3c4d5e}";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
         var input = "not-a-guid";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -67,7 +67,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(null!);
+        var result = _validator.IsValid(null!);
 
         // Assert
         Assert.False(result);
@@ -77,7 +77,7 @@ public class IsGuidValidatorTests : TokenizerTestBase
     public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(string.Empty);
+        var result = _validator.IsValid(string.Empty);
 
         // Assert
         Assert.False(result);

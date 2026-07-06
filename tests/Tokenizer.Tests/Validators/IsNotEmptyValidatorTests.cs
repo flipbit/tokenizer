@@ -9,7 +9,7 @@ public class IsNotEmptyValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsNotEmptyValidator validator = new();
+    private readonly IsNotEmptyValidator _validator = new();
 
     [Fact]
     public void GivenNonEmptyString_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsNotEmptyValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsNotEmptyValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -44,7 +44,7 @@ public class IsNotEmptyValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

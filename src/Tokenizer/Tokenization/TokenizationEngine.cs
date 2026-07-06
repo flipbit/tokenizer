@@ -10,7 +10,7 @@ namespace Tokens.Tokenization;
 /// </summary>
 internal class TokenizationEngine : ITokenizationEngine
 {
-    private readonly ILogger<TokenizationEngine> log;
+    private readonly ILogger<TokenizationEngine> _log;
 
     public TokenizationEngine() : this(null)
     {
@@ -18,7 +18,7 @@ internal class TokenizationEngine : ITokenizationEngine
 
     public TokenizationEngine(ILogger<TokenizationEngine>? logger)
     {
-        log = logger ?? NullLogger<TokenizationEngine>.Instance;
+        _log = logger ?? NullLogger<TokenizationEngine>.Instance;
     }
 
     public TokenizationSession CreateSession(
@@ -31,9 +31,9 @@ internal class TokenizationEngine : ITokenizationEngine
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
 
-        InputValidator.ValidateTargetObject(targetObject, log);
+        InputValidator.ValidateTargetObject(targetObject, _log);
 
         return new TokenizationSession(
-            template, targetObject, result, collector, hintStrategy, log);
+            template, targetObject, result, collector, hintStrategy, _log);
     }
 }

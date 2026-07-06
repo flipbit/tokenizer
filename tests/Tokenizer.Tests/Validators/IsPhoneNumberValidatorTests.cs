@@ -9,7 +9,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsPhoneNumberValidator validator = new();
+    private readonly IsPhoneNumberValidator _validator = new();
 
     [Fact]
     public void GivenValidUkPhoneNumber_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "01603 123123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "+44 (0) 1603 123123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "+44.1603.123123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "+44-1603-123123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -69,7 +69,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "123123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -82,7 +82,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -95,7 +95,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "hello world 0123456789";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -108,7 +108,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = "12345";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -121,7 +121,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -134,7 +134,7 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

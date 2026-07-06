@@ -6,7 +6,7 @@ namespace Tokens;
 
 public class TokenMatcherTests : TokenizerTestBase
 {
-    private readonly ITokenMatcher matcher;
+    private readonly ITokenMatcher _matcher;
 
     private class Person
     {
@@ -16,15 +16,15 @@ public class TokenMatcherTests : TokenizerTestBase
 
     public TokenMatcherTests(ITestOutputHelper output) : base(output)
     {
-        matcher = new TokenMatcher();
+        _matcher = new TokenMatcher();
     }
 
     [Fact]
     public void TestParseOnePattern()
     {
-        matcher.RegisterTemplate("Name: {Person.Name}", "Person");
+        _matcher.RegisterTemplate("Name: {Person.Name}", "Person");
 
-        var result = matcher.Match<Person>("Name: Alice");
+        var result = _matcher.Match<Person>("Name: Alice");
 
         var person = result.BestMatch!.Value;
 
@@ -34,10 +34,10 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatterns()
     {
-        matcher.RegisterTemplate("Name: {Person.Name}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
 
@@ -57,10 +57,10 @@ public class TokenMatcherTests : TokenizerTestBase
         template2.Name = "with-age";
         template1.AddHint(new Hint(Text: "Name"));
 
-        matcher.RegisterTemplate(template1);
-        matcher.RegisterTemplate(template2);
+        _matcher.RegisterTemplate(template1);
+        _matcher.RegisterTemplate(template2);
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
 
@@ -82,10 +82,10 @@ public class TokenMatcherTests : TokenizerTestBase
         template2.AddHint(new Hint(Text: "Name"));
         template2.AddHint(new Hint(Text: "Age"));
 
-        matcher.RegisterTemplate(template1);
-        matcher.RegisterTemplate(template2);
+        _matcher.RegisterTemplate(template1);
+        _matcher.RegisterTemplate(template2);
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
 
@@ -115,10 +115,10 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsNeedsAllRequiredTokens()
     {
-        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}, Location: {Location!}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}, Location: {Location!}", "with-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
 
         Assert.True(result.Success);
 
@@ -132,12 +132,12 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsWithTags()
     {
-        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.AddTag("no-age");
+        _matcher.Templates.Get("no-age")!.AddTag("no-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30", ["no-age"]);
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["no-age"]);
 
         Assert.True(result.Success);
 
@@ -151,13 +151,13 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsWithNoMatchingTags()
     {
-        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.AddTag("no-age");
-        matcher.Templates.Get("with-age")!.AddTag("with-age");
+        _matcher.Templates.Get("no-age")!.AddTag("no-age");
+        _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30", ["Foo"]);
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["Foo"]);
 
         Assert.False(result.Success);
         Assert.Null(result.BestMatch);
@@ -165,13 +165,13 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsWithNoTagInput()
     {
-        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.AddTag("no-age");
-        matcher.Templates.Get("with-age")!.AddTag("with-age");
+        _matcher.Templates.Get("no-age")!.AddTag("no-age");
+        _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
 
@@ -184,15 +184,15 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsWithTagsSelectsBestMatch()
     {
-        matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
-        matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
+        _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
+        _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        matcher.Templates.Get("no-age")!.AddTag("no-age");
-        matcher.Templates.Get("no-age")!.AddTag("person");
-        matcher.Templates.Get("with-age")!.AddTag("with-age");
-        matcher.Templates.Get("with-age")!.AddTag("person");
+        _matcher.Templates.Get("no-age")!.AddTag("no-age");
+        _matcher.Templates.Get("no-age")!.AddTag("person");
+        _matcher.Templates.Get("with-age")!.AddTag("with-age");
+        _matcher.Templates.Get("with-age")!.AddTag("person");
 
-        var result = matcher.Match<Person>("Name: Alice, Age: 30", ["person"]);
+        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["person"]);
 
         Assert.True(result.Success);
 
@@ -206,11 +206,11 @@ public class TokenMatcherTests : TokenizerTestBase
     [Fact]
     public void TestParseTwoPatternsWithTagsSelectsBestMatchWithNoTags()
     {
-        matcher.RegisterTemplate("Name: { Name $ }", "with-name");
-        matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }", "with-age");
-        matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }Location { Location $ }", "with-location");
+        _matcher.RegisterTemplate("Name: { Name $ }", "with-name");
+        _matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }", "with-age");
+        _matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }Location { Location $ }", "with-location");
 
-        var result = matcher.Match("Name: Alice\nAge: 30");
+        var result = _matcher.Match("Name: Alice\nAge: 30");
 
         Assert.True(result.Success);
 
@@ -247,8 +247,8 @@ public class TokenMatcherTests : TokenizerTestBase
                         Address: {Address}
                         """;
 
-        matcher.RegisterTemplate(template1);
-        matcher.RegisterTemplate(template2);
+        _matcher.RegisterTemplate(template1);
+        _matcher.RegisterTemplate(template2);
 
         var input = """
                     Name: Alice
@@ -257,7 +257,7 @@ public class TokenMatcherTests : TokenizerTestBase
                     """;
 
 
-        var result = matcher.Match(input, ["standard"]);
+        var result = _matcher.Match(input, ["standard"]);
 
         var match = result.BestMatch!;
 
@@ -279,10 +279,10 @@ public class TokenMatcherTests : TokenizerTestBase
                        Age: {Age}
                        """;
 
-        matcher.RegisterTemplate(template);
+        _matcher.RegisterTemplate(template);
 
         // Act
-        var result = matcher.Match("This input matches nothing in the template");
+        var result = _matcher.Match("This input matches nothing in the template");
 
         // Assert
         Assert.False(result.Success);
@@ -302,10 +302,10 @@ public class TokenMatcherTests : TokenizerTestBase
                        not found
                        """;
 
-        matcher.RegisterTemplate(template);
+        _matcher.RegisterTemplate(template);
 
         // Act
-        var result = matcher.Match("not found...");
+        var result = _matcher.Match("not found...");
 
         // Assert
         Assert.True(result.Success);

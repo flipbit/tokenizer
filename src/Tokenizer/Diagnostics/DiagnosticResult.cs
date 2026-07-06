@@ -18,22 +18,22 @@ public class DiagnosticResult
         DiagnosticEventType.SingleUseTokenRemoved,
     };
 
-    private readonly string? templateContent;
-    private readonly string? inputContent;
-    private DiagnosticSummary? summary;
-    private string? alignment;
+    private readonly string? _templateContent;
+    private readonly string? _inputContent;
+    private DiagnosticSummary? _summary;
+    private string? _alignment;
 
     internal DiagnosticResult(string? templateContent, string? inputContent)
     {
-        this.templateContent = templateContent;
-        this.inputContent = inputContent;
+        _templateContent = templateContent;
+        _inputContent = inputContent;
         Events = new List<DiagnosticEvent>();
     }
 
     /// <summary>
     /// The input text that was tokenized. Used by hint generators for near-miss analysis.
     /// </summary>
-    internal string? InputContent => inputContent;
+    internal string? InputContent => _inputContent;
 
     /// <summary>
     /// All events recorded during this tokenization call, in the order they occurred.
@@ -47,8 +47,8 @@ public class DiagnosticResult
     {
         get
         {
-            summary ??= DiagnosticSummaryBuilder.Build(this);
-            return summary;
+            _summary ??= DiagnosticSummaryBuilder.Build(this);
+            return _summary;
         }
     }
 
@@ -77,7 +77,7 @@ public class DiagnosticResult
     /// </summary>
     public string RenderAlignment()
     {
-        alignment ??= AlignmentRenderer.Render(this, templateContent, inputContent);
-        return alignment;
+        _alignment ??= AlignmentRenderer.Render(this, _templateContent, _inputContent);
+        return _alignment;
     }
 }

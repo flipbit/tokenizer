@@ -9,7 +9,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsUrlValidator validator = new();
+    private readonly IsUrlValidator _validator = new();
 
     [Fact]
     public void GivenHttpUrl_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
         var input = "http://github.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
         var input = "https://github.com";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -57,7 +57,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class IsUrlValidatorTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

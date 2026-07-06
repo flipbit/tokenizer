@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class SubstringBeforeLastTransformerTests
 {
-    private readonly SubstringBeforeLastTransformer transformer = new();
+    private readonly SubstringBeforeLastTransformer _transformer = new();
 
     [Fact]
     public void GivenStringWithRepeatedSubstring_WhenTransforming_ThenReturnsTextBeforeLastOccurrence()
@@ -14,7 +14,7 @@ public class SubstringBeforeLastTransformerTests
         var substring = "two";
 
         // Act
-        var result = transformer.TryTransform(input, [substring], out var transformed);
+        var result = _transformer.TryTransform(input, [substring], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -28,7 +28,7 @@ public class SubstringBeforeLastTransformerTests
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class SubstringBeforeLastTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -52,7 +52,7 @@ public class SubstringBeforeLastTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

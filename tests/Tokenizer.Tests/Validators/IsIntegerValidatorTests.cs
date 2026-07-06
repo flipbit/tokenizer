@@ -9,7 +9,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsIntegerValidator validator = new();
+    private readonly IsIntegerValidator _validator = new();
 
     [Fact]
     public void GivenIntegerString_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var input = "42";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var input = "-100";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var input = "9223372036854775807"; // long.MaxValue
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var input = "10.5";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var input = "hello";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -80,7 +80,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(null!);
+        var result = _validator.IsValid(null!);
 
         // Assert
         Assert.False(result);
@@ -90,7 +90,7 @@ public class IsIntegerValidatorTests : TokenizerTestBase
     public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(string.Empty);
+        var result = _validator.IsValid(string.Empty);
 
         // Assert
         Assert.False(result);

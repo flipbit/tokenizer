@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class RemoveTransformerTests
 {
-    private readonly RemoveTransformer transformer = new();
+    private readonly RemoveTransformer _transformer = new();
 
     [Fact]
     public void GivenStringWithSubstring_WhenTransforming_ThenRemovesSubstring()
@@ -14,7 +14,7 @@ public class RemoveTransformerTests
         var substringToRemove = "two";
 
         // Act
-        var result = transformer.TryTransform(input, [substringToRemove], out var transformed);
+        var result = _transformer.TryTransform(input, [substringToRemove], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -28,7 +28,7 @@ public class RemoveTransformerTests
         var input = "one two three";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class RemoveTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -52,7 +52,7 @@ public class RemoveTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

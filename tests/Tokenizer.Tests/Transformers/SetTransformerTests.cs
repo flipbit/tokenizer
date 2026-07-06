@@ -9,7 +9,7 @@ public class SetTransformerTests : TokenizerTestBase
     {
     }
 
-    private readonly SetTransformer transformer = new();
+    private readonly SetTransformer _transformer = new();
 
     [Fact]
     public void GivenInputWithSetValue_WhenTransforming_ThenReturnsSetValue()
@@ -19,7 +19,7 @@ public class SetTransformerTests : TokenizerTestBase
         var setValue = "output";
 
         // Act
-        var result = transformer.TryTransform(input, [setValue], out var transformed);
+        var result = _transformer.TryTransform(input, [setValue], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -33,7 +33,7 @@ public class SetTransformerTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t)); ;
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t)); ;
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class SetTransformerTests : TokenizerTestBase
         string[] tooManyArgs = ["1", "2"];
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, tooManyArgs, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, tooManyArgs, out var t));
     }
 
     [Fact]

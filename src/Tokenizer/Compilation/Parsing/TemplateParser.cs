@@ -9,12 +9,12 @@ namespace Tokens.Compilation.Parsing;
 /// </summary>
 internal sealed class TemplateParser
 {
-    private readonly TemplateLexer lexer = new TemplateLexer();
+    private readonly TemplateLexer _lexer = new TemplateLexer();
 
     public TemplateDocument Parse(string input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
-        return Parse(lexer.Tokenize(input));
+        return Parse(_lexer.Tokenize(input));
     }
 
     public TemplateDocument Parse(IEnumerable<LexerToken> tokens)

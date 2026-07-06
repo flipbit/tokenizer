@@ -9,7 +9,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsNumericValidator validator = new();
+    private readonly IsNumericValidator _validator = new();
 
     [Fact]
     public void GivenNumericIntegerString_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var input = "100";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var input = "10.0";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -57,7 +57,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
         string input = null!;
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);

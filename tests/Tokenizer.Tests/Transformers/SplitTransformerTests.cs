@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class SplitTransformerTests
 {
-    private readonly SplitTransformer transformer = new();
+    private readonly SplitTransformer _transformer = new();
 
     [Fact]
     public void GivenCommaSeparatedString_WhenTransforming_ThenSplitsIntoArray()
@@ -14,7 +14,7 @@ public class SplitTransformerTests
         var separator = ",";
 
         // Act
-        var result = transformer.TryTransform(input, [separator], out var transformed);
+        var result = _transformer.TryTransform(input, [separator], out var transformed);
         var list = transformed as string[];
 
         // Assert
@@ -35,7 +35,7 @@ public class SplitTransformerTests
         var separator = ",";
 
         // Act
-        var result = transformer.TryTransform(input, [separator], out var transformed);
+        var result = _transformer.TryTransform(input, [separator], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -49,7 +49,7 @@ public class SplitTransformerTests
         var input = "1,2,3,4";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform(input, null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class SplitTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);
@@ -73,7 +73,7 @@ public class SplitTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var transformed);
+        var result = _transformer.TryTransform(input, null!, out var transformed);
 
         // Assert
         Assert.True(result);

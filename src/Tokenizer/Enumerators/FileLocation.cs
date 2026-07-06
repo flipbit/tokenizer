@@ -5,7 +5,7 @@ namespace Tokens.Enumerators;
 /// </summary>
 public class FileLocation : IEquatable<FileLocation>
 {
-    private int newLineCounter = 0;
+    private int _newLineCounter = 0;
 
     /// <summary>
     /// The column number
@@ -42,7 +42,7 @@ public class FileLocation : IEquatable<FileLocation>
 
         if (char.IsWhiteSpace(value) == false)
         {
-            newLineCounter = 0;
+            _newLineCounter = 0;
         }
 
         Column++;
@@ -55,7 +55,7 @@ public class FileLocation : IEquatable<FileLocation>
     {
         if (Column == 1)
         {
-            if (newLineCounter == 1)
+            if (_newLineCounter == 1)
             {
                 Paragraph++;
             }
@@ -63,7 +63,7 @@ public class FileLocation : IEquatable<FileLocation>
 
         Column = 1;
         Line++;
-        newLineCounter++;
+        _newLineCounter++;
     }
 
     /// <summary>

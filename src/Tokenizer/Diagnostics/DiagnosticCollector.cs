@@ -8,7 +8,7 @@ namespace Tokens.Diagnostics;
 /// </summary>
 internal sealed class DiagnosticCollector : IDiagnosticCollector
 {
-    private readonly DiagnosticResult diagnostics;
+    private readonly DiagnosticResult _diagnostics;
 
     /// <summary>
     /// Initialises a new collector for a single tokenization call.
@@ -17,7 +17,7 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
     /// <param name="inputContent">The input text being tokenized.</param>
     public DiagnosticCollector(string? templateContent, string? inputContent)
     {
-        diagnostics = new DiagnosticResult(templateContent, inputContent);
+        _diagnostics = new DiagnosticResult(templateContent, inputContent);
     }
 
     /// <inheritdoc />
@@ -40,12 +40,12 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
             DecoratorArgs = decoratorArgs,
         };
 
-        diagnostics.Events.Add(evt);
+        _diagnostics.Events.Add(evt);
     }
 
     /// <inheritdoc />
     public DiagnosticResult? GetResult()
     {
-        return diagnostics;
+        return _diagnostics;
     }
 }

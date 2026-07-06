@@ -4,7 +4,7 @@ namespace Tokens.Transformers;
 
 public class TrimTransformerTests
 {
-    private readonly TrimTransformer transformer = new();
+    private readonly TrimTransformer _transformer = new();
 
     [Fact]
     public void GivenStringWithLeadingAndTrailingWhitespace_WhenTransforming_ThenTrimsWhitespace()
@@ -13,7 +13,7 @@ public class TrimTransformerTests
         var input = "  TEST  ";
 
         // Act
-        transformer.TryTransform(input, null!, out var t);
+        _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal("TEST", t);
@@ -26,7 +26,7 @@ public class TrimTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var t);
+        var result = _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);
@@ -39,7 +39,7 @@ public class TrimTransformerTests
         string input = null!;
 
         // Act
-        var result = transformer.TryTransform(input, null!, out var t);
+        var result = _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);

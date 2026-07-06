@@ -16,10 +16,10 @@ namespace Tokens;
 /// </summary>
 public sealed class Tokenizer : ITokenizer
 {
-    private readonly TemplateCompiler parser;
-    private readonly ILogger<Tokenizer> log;
-    private readonly ITokenizationEngine tokenizationEngine;
-    private readonly IResultBuilder resultBuilder;
+    private readonly TemplateCompiler _parser;
+    private readonly ILogger<Tokenizer> _log;
+    private readonly ITokenizationEngine _tokenizationEngine;
+    private readonly IResultBuilder _resultBuilder;
 
     /// <summary>Gets the options.</summary>
     public TokenizerOptions Options { get; }
@@ -46,10 +46,10 @@ public sealed class Tokenizer : ITokenizer
         loggerFactory ??= NullLoggerFactory.Instance;
 
         Options = options with { };
-        log = loggerFactory.CreateLogger<Tokenizer>();
-        parser = new TemplateCompiler(Options);
-        tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
-        resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
+        _log = loggerFactory.CreateLogger<Tokenizer>();
+        _parser = new TemplateCompiler(Options);
+        _tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
+        _resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
     }
 
     /// <summary>
@@ -63,10 +63,10 @@ public sealed class Tokenizer : ITokenizer
         IResultBuilder resultBuilder)
     {
         Options = options.Value with { };
-        log = logger;
-        this.parser = parser;
-        this.tokenizationEngine = tokenizationEngine;
-        this.resultBuilder = resultBuilder;
+        _log = logger;
+        _parser = parser;
+        _tokenizationEngine = tokenizationEngine;
+        _resultBuilder = resultBuilder;
     }
 
     /// <summary>
@@ -142,19 +142,19 @@ public sealed class Tokenizer : ITokenizer
             scopeProperties["InputLength"] = rawInput.Length;
         }
 
-        using (log.BeginScope(scopeProperties))
+        using (_log.BeginScope(scopeProperties))
         {
-            if (log.IsEnabled(LogLevel.Debug))
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
+                _log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
                 if (rawInput != null)
                 {
-                    log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
+                    _log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
                         template.Tokens.Count, rawInput.Length);
                 }
                 else
                 {
-                    log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                    _log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
                 }
             }
 
@@ -171,24 +171,24 @@ public sealed class Tokenizer : ITokenizer
 
             if (hintsMissing)
             {
-                log.LogWarning("Required hints are missing, skipping tokenization");
+                _log.LogWarning("Required hints are missing, skipping tokenization");
             }
             else
             {
-                var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
                 session.Run(context);
 
                 if (hintStrategy.PostProcess(result))
                 {
-                    log.LogWarning("Post-tokenization hint check failed");
+                    _log.LogWarning("Post-tokenization hint check failed");
                 }
             }
 
             FinalizeTokenization(result, template, collector, rawInput);
 
-            if (log.IsEnabled(LogLevel.Debug))
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Tokenization {Result} for template {TemplateName}",
+                _log.LogDebug("Tokenization {Result} for template {TemplateName}",
                     result.Success ? "succeeded" : "failed", template.Name);
             }
         }
@@ -198,51 +198,51 @@ public sealed class Tokenizer : ITokenizer
         TokenizeResultBase result, Template template,
         IDiagnosticCollector collector, string? rawInput)
     {
-        resultBuilder.BuildUnmatchedTokens(template, result, collector);
+        _resultBuilder.BuildUnmatchedTokens(template, result, collector);
 
         var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-        if (log.IsEnabled(LogLevel.Debug))
+        if (_log.IsEnabled(LogLevel.Debug))
         {
-            log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+            _log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
                 result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
         }
 
         if (requiredMissingCount > 0)
         {
-            log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
+            _log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
         }
 
         result.Diagnostics = collector.GetResult();
 
         if (result.Diagnostics != null)
         {
-            if (log.IsEnabled(LogLevel.Debug))
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
+                _log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
             }
             foreach (var issue in result.Diagnostics.Summary.Issues)
             {
-                log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                _log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
                 if (issue.Hint != null)
                 {
-                    log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                    _log.LogWarning("  → Hint: {Hint}", issue.Hint);
                 }
             }
-            if (rawInput != null && log.IsEnabled(LogLevel.Debug))
+            if (rawInput != null && _log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                _log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
             }
         }
     }
 
     /// <inheritdoc />
-    public CompilationResult Compile(string pattern) => parser.Compile(pattern);
+    public CompilationResult Compile(string pattern) => _parser.Compile(pattern);
 
     /// <inheritdoc />
     public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
         var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
-        return parser.Compile(content);
+        return _parser.Compile(content);
     }
 
     /// <inheritdoc />
@@ -318,12 +318,12 @@ public sealed class Tokenizer : ITokenizer
             ["Operation"] = "TokenizeAsync"
         };
 
-        using (log.BeginScope(scopeProperties))
+        using (_log.BeginScope(scopeProperties))
         {
-            if (log.IsEnabled(LogLevel.Debug))
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Starting async tokenization for template {TemplateName}", template.Name);
-                log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                _log.LogDebug("Starting async tokenization for template {TemplateName}", template.Name);
+                _log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
             }
 
             var context = new TokenizationContext();
@@ -342,35 +342,35 @@ public sealed class Tokenizer : ITokenizer
 
                 if (hintsMissing)
                 {
-                    log.LogWarning("Required hints are missing, skipping tokenization");
+                    _log.LogWarning("Required hints are missing, skipping tokenization");
                 }
                 else
                 {
-                    var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
                     await session.RunAsync(context, ct).ConfigureAwait(false);
 
                     if (hintStrategy.PostProcess(result))
                     {
-                        log.LogWarning("Post-tokenization hint check failed");
+                        _log.LogWarning("Post-tokenization hint check failed");
                     }
                 }
             }
             catch (OperationCanceledException)
             {
-                log.LogWarning("Async tokenization cancelled for template {TemplateName}", template.Name);
+                _log.LogWarning("Async tokenization cancelled for template {TemplateName}", template.Name);
                 throw;
             }
             catch (TokenizerException ex)
             {
-                log.LogError(ex, "Async tokenization failed for template {TemplateName}: {Message}", template.Name, ex.Message);
+                _log.LogError(ex, "Async tokenization failed for template {TemplateName}: {Message}", template.Name, ex.Message);
                 throw;
             }
 
             FinalizeTokenization(result, template, collector, null);
 
-            if (log.IsEnabled(LogLevel.Debug))
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                log.LogDebug("Async tokenization {Result} for template {TemplateName}",
+                _log.LogDebug("Async tokenization {Result} for template {TemplateName}",
                     result.Success ? "succeeded" : "failed", template.Name);
             }
         }

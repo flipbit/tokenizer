@@ -5,7 +5,7 @@ namespace Tokens.Types;
 
 public class BoolTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class Student
     {
@@ -16,7 +16,7 @@ public class BoolTests : TokenizerTestBase
 
     public BoolTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -25,8 +25,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: true";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.True(result.Value.Enrolled);
@@ -38,8 +38,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: TRUE";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.True(result.Value.Enrolled);
@@ -51,8 +51,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: False";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.False(result.Value.Enrolled);

@@ -9,7 +9,7 @@ namespace Tokens;
 /// </summary>
 internal class CandidateTokenList
 {
-    private readonly List<Token> tokens = new List<Token>();
+    private readonly List<Token> _tokens = new List<Token>();
 
     /// <summary>
     /// Adds a token to the candidate list. If this is the first token added, its preamble and
@@ -18,16 +18,16 @@ internal class CandidateTokenList
     /// <param name="token">The token to add.</param>
     public void Add(Token token)
     {
-        if (tokens.Count == 0)
+        if (_tokens.Count == 0)
         {
             Preamble = token.Preamble;
             TerminateOnNewLine = token.TerminateOnNewLine;
             IsNullToken = string.IsNullOrWhiteSpace(token.Name);
-            tokens.Add(token);
+            _tokens.Add(token);
         }
         else
         {
-            tokens.Add(token);
+            _tokens.Add(token);
         }
     }
 
@@ -51,7 +51,7 @@ internal class CandidateTokenList
         Preamble = string.Empty;
         TerminateOnNewLine = false;
         IsNullToken = false;
-        tokens.Clear();
+        _tokens.Clear();
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ internal class CandidateTokenList
 
         var valueString = value.ToString();
 
-        foreach (var token in tokens)
+        foreach (var token in _tokens)
         {
             if (token.Assign(target, valueString, options, location, out assignedValue, collector))
             {
@@ -90,11 +90,11 @@ internal class CandidateTokenList
     /// Returns <see langword="true"/> if at least one candidate token could accept the given value
     /// (i.e. its validators would pass), without performing an actual assignment.
     /// </summary>
-    /// <param name="value">The value to test against the candidate tokens.</param>
+    /// <param name="value">The value to test against the candidate _tokens.</param>
     /// <returns><see langword="true"/> if any candidate token can accept the value; otherwise <see langword="false"/>.</returns>
     public bool CanAnyAssign(string value)
     {
-        foreach (var token in tokens)
+        foreach (var token in _tokens)
         {
             if (token.CanAssign(value))
             {
@@ -113,7 +113,7 @@ internal class CandidateTokenList
     /// <summary>
     /// Gets the number of candidate tokens in the list.
     /// </summary>
-    public int Count => tokens.Count;
+    public int Count => _tokens.Count;
 
     /// <summary>
     /// Gets the preamble text that must appear in the input before a value can be extracted.
@@ -133,9 +133,9 @@ internal class CandidateTokenList
     public bool IsNullToken { get; private set; }
 
     /// <summary>
-    /// Gets the underlying list of candidate tokens.
+    /// Gets the underlying list of candidate _tokens.
     /// </summary>
-    public IList<Token> Tokens => tokens;
+    public IList<Token> Tokens => _tokens;
 
     /// <summary>
     /// Removes the specified token from the candidate list.
@@ -143,6 +143,6 @@ internal class CandidateTokenList
     /// <param name="token">The token to remove.</param>
     public void Remove(Token token)
     {
-        tokens.Remove(token);
+        _tokens.Remove(token);
     }
 }

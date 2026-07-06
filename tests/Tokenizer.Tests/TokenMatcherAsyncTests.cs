@@ -230,9 +230,9 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     /// </summary>
     private class NonSeekableStream : Stream
     {
-        private readonly MemoryStream inner;
+        private readonly MemoryStream _inner;
 
-        public NonSeekableStream(byte[] data) { inner = new MemoryStream(data); }
+        public NonSeekableStream(byte[] data) { _inner = new MemoryStream(data); }
 
         public override bool CanRead => true;
         public override bool CanSeek => false;
@@ -244,12 +244,12 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
             set => throw new NotSupportedException();
         }
 
-        public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct) => inner.ReadAsync(buffer, offset, count, ct);
+        public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct) => _inner.ReadAsync(buffer, offset, count, ct);
         public override void Flush() { }
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
         public override void SetLength(long value) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        protected override void Dispose(bool disposing) { if (disposing) inner.Dispose(); base.Dispose(disposing); }
+        protected override void Dispose(bool disposing) { if (disposing) _inner.Dispose(); base.Dispose(disposing); }
     }
 }

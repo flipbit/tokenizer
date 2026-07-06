@@ -8,10 +8,10 @@ namespace Tokens.Tokenization;
 /// </summary>
 internal sealed class TokenMatchRouter
 {
-    private readonly Template template;
-    private readonly CandidateProcessor candidateProcessor;
-    private readonly IDiagnosticCollector collector;
-    private readonly IHintStrategy? hintStrategy;
+    private readonly Template _template;
+    private readonly CandidateProcessor _candidateProcessor;
+    private readonly IDiagnosticCollector _collector;
+    private readonly IHintStrategy? _hintStrategy;
 
     public TokenMatchRouter(
         Template template,
@@ -19,10 +19,10 @@ internal sealed class TokenMatchRouter
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy)
     {
-        this.template = template;
-        this.candidateProcessor = candidateProcessor;
-        this.collector = collector;
-        this.hintStrategy = hintStrategy;
+        _template = template;
+        _candidateProcessor = candidateProcessor;
+        _collector = collector;
+        _hintStrategy = hintStrategy;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ internal sealed class TokenMatchRouter
             context.Enumerator.TryMatch(context.Candidates.Preamble) &&
             context.Candidates.Preamble.Length > 0)
         {
-            if (!candidateProcessor.HandleRepeat(context))
+            if (!_candidateProcessor.HandleRepeat(context))
             {
                 return;
             }
@@ -46,29 +46,29 @@ internal sealed class TokenMatchRouter
         // Assign newline terminated token
         if (context.Candidates.HasCandidates && context.Candidates.TerminateOnNewLine && next == '\n')
         {
-            candidateProcessor.HandleNewline(context);
+            _candidateProcessor.HandleNewline(context);
             return;
         }
 
         // Check for next token
         if (context.Enumerator.TryMatch(
-            template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds),
-            template.Options.OutOfOrderTokens,
+            _template.TokensExcluding(context.MatchIds, context.Candidates, context.DisabledRepeatingTokens, context.ExclusionBuffer, context.TokenFilterBuffer, context.TokenFilterIds),
+            _template.Options.OutOfOrderTokens,
             context.MatchBuffer))
         {
-            if (collector.IsEnabled)
+            if (_collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.PreambleMatched,
+                _collector.Record(DiagnosticEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
             }
 
             // Notify hint strategy of matched tokens
-            if (hintStrategy != null)
+            if (_hintStrategy != null)
             {
                 foreach (var match in context.MatchBuffer)
                 {
-                    hintStrategy.OnTokenMatched(match);
+                    _hintStrategy.OnTokenMatched(match);
                 }
             }
 
@@ -84,7 +84,7 @@ internal sealed class TokenMatchRouter
             // Switch if we've accumulated a value — otherwise consume a character first
             if (context.Replacement.Length > 0)
             {
-                candidateProcessor.TryAssign(context, context.ReplacementLocation);
+                _candidateProcessor.TryAssign(context, context.ReplacementLocation);
 
                 context.ClearCandidates();
                 context.Candidates.AddRange(context.MatchBuffer);

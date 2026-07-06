@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class TitleCaseTransformerTests
 {
-    private readonly TitleCaseTransformer transformer = new();
+    private readonly TitleCaseTransformer _transformer = new();
 
     [Fact]
     public void GivenLowercaseString_WhenTransforming_ThenReturnsTitleCase()
     {
         // Act
-        var result = transformer.TryTransform("hello world", [], out var transformed);
+        var result = _transformer.TryTransform("hello world", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -21,7 +21,7 @@ public class TitleCaseTransformerTests
     public void GivenUppercaseString_WhenTransforming_ThenReturnsTitleCase()
     {
         // Act
-        var result = transformer.TryTransform("HELLO WORLD", [], out var transformed);
+        var result = _transformer.TryTransform("HELLO WORLD", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -32,7 +32,7 @@ public class TitleCaseTransformerTests
     public void GivenMixedCaseString_WhenTransforming_ThenReturnsTitleCase()
     {
         // Act
-        var result = transformer.TryTransform("hELLO wORLD", [], out var transformed);
+        var result = _transformer.TryTransform("hELLO wORLD", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -43,7 +43,7 @@ public class TitleCaseTransformerTests
     public void GivenSingleWord_WhenTransforming_ThenCapitalizesFirstLetter()
     {
         // Act
-        var result = transformer.TryTransform("hello", [], out var transformed);
+        var result = _transformer.TryTransform("hello", [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -54,7 +54,7 @@ public class TitleCaseTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(null!, [], out var transformed);
+        var result = _transformer.TryTransform(null!, [], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -65,7 +65,7 @@ public class TitleCaseTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, [], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, [], out var transformed);
 
         // Assert
         Assert.True(result);

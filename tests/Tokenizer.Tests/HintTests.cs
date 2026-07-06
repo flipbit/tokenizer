@@ -5,7 +5,7 @@ namespace Tokens;
 
 public class HintTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class Student
     {
@@ -16,7 +16,7 @@ public class HintTests : TokenizerTestBase
 
     public HintTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Equal("Alice", result.Value.FirstName);
@@ -56,8 +56,8 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Null(result.Value.FirstName);
@@ -81,8 +81,8 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Equal("Alice", result.Value.FirstName);
@@ -109,8 +109,8 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.Equal("Alice", result.Value.FirstName);
@@ -131,8 +131,8 @@ public class HintTests : TokenizerTestBase
         const string input = "Domain name: example.com\nDomain status:         available\n";
 
         // Act
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         // Assert
         Assert.True(result.Success);

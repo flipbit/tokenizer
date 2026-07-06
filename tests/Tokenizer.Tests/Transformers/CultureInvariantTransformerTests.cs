@@ -8,10 +8,10 @@ public class CultureInvariantTransformerTests
     public void GivenToLowerTransformer_WhenTransforming_ThenUsesInvariantCulture()
     {
         // Arrange
-        var transformer = new ToLowerTransformer();
+        var _transformer = new ToLowerTransformer();
 
         // Act
-        transformer.TryTransform("TITLE", Array.Empty<string>(), out var result);
+        _transformer.TryTransform("TITLE", Array.Empty<string>(), out var result);
 
         // Assert
         Assert.Equal("title", result);
@@ -21,10 +21,10 @@ public class CultureInvariantTransformerTests
     public void GivenToUpperTransformer_WhenTransforming_ThenUsesInvariantCulture()
     {
         // Arrange
-        var transformer = new ToUpperTransformer();
+        var _transformer = new ToUpperTransformer();
 
         // Act
-        transformer.TryTransform("title", Array.Empty<string>(), out var result);
+        _transformer.TryTransform("title", Array.Empty<string>(), out var result);
 
         // Assert
         Assert.Equal("TITLE", result);

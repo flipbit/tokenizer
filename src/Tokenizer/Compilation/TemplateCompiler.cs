@@ -13,7 +13,7 @@ namespace Tokens.Compilation;
 /// </summary>
 internal class TemplateCompiler
 {
-    private readonly DecoratorRegistry registry;
+    private readonly DecoratorRegistry _registry;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
 
     public TokenizerOptions Options { get; }
@@ -21,7 +21,7 @@ internal class TemplateCompiler
     public TemplateCompiler(TokenizerOptions options)
     {
         Options = options;
-        registry = new DecoratorRegistry(options);
+        _registry = new DecoratorRegistry(options);
     }
 
     public CompilationResult Compile(string content)
@@ -40,7 +40,7 @@ internal class TemplateCompiler
 
             HintBinder.Bind(definition, template, collector);
             TagBinder.Bind(definition, template, collector);
-            TokenBinder.Bind(definition, template, registry, _decoratorCache, collector);
+            TokenBinder.Bind(definition, template, _registry, _decoratorCache, collector);
             TokenCountValidator.Validate(template, Options);
 
             if (collector.IsEnabled)

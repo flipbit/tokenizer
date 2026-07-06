@@ -5,30 +5,30 @@ namespace Tokens.Compilation.Parsing;
 
 internal class TemplateDefinitionEnumerator
 {
-    private readonly string pattern;
-    private readonly int patternLength;
+    private readonly string _pattern;
+    private readonly int _patternLength;
 
-    private int currentLocation;
-    private bool resetNextLine;
+    private int _currentLocation;
+    private bool _resetNextLine;
 
     public TemplateDefinitionEnumerator(string pattern)
     {
-        this.pattern = pattern;
+        _pattern = pattern;
 
         if (string.IsNullOrEmpty(pattern))
         {
-            patternLength = 0;
+            _patternLength = 0;
         }
         else
         {
-            patternLength = pattern.Length;
+            _patternLength = pattern.Length;
         }
 
-        currentLocation = 0;
+        _currentLocation = 0;
         Location = new FileLocation();
     }
 
-    public bool IsEmpty => currentLocation >= patternLength;
+    public bool IsEmpty => _currentLocation >= _patternLength;
 
     public FileLocation Location { get; }
 
@@ -36,13 +36,13 @@ internal class TemplateDefinitionEnumerator
     {
         if (IsEmpty) return string.Empty;
 
-        var nextChar = pattern[currentLocation];
-        currentLocation++;
+        var nextChar = _pattern[_currentLocation];
+        _currentLocation++;
 
-        if (resetNextLine)
+        if (_resetNextLine)
         {
             Location.NewLine();
-            resetNextLine = false;
+            _resetNextLine = false;
         }
         else
         {
@@ -51,7 +51,7 @@ internal class TemplateDefinitionEnumerator
 
         if (nextChar == '\n')
         {
-            resetNextLine = true;
+            _resetNextLine = true;
         }
 
         return nextChar.ToString();
@@ -73,18 +73,18 @@ internal class TemplateDefinitionEnumerator
     {
         if (IsEmpty) return string.Empty;
 
-        return pattern.Substring(currentLocation, 1);
+        return _pattern.Substring(_currentLocation, 1);
     }
 
     public string Peek(int length)
     {
         if (IsEmpty) return string.Empty;
 
-        var different = (currentLocation + length) - patternLength;
+        var different = (_currentLocation + length) - _patternLength;
         if (different > 0) length -= different;
 
         if (length < 1) return string.Empty;
 
-        return pattern.Substring(currentLocation, length);
+        return _pattern.Substring(_currentLocation, length);
     }
 }

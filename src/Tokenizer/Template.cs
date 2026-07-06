@@ -6,18 +6,18 @@ namespace Tokens;
 /// </summary>
 public sealed class Template
 {
-    private readonly List<Token> tokens;
-    private readonly List<Hint> hints;
-    private readonly List<string> tags;
+    private readonly List<Token> _tokens;
+    private readonly List<Hint> _hints;
+    private readonly List<string> _tags;
 
     /// <summary>
     /// Creates a new template with a content-based Id and options.
     /// </summary>
     internal Template(ulong id, TokenizerOptions options)
     {
-        tokens = new List<Token>();
-        hints = new List<Hint>();
-        tags = new List<string>();
+        _tokens = new List<Token>();
+        _hints = new List<Hint>();
+        _tags = new List<string>();
         Options = options;
         Id = id;
         Name = string.Empty;
@@ -39,19 +39,19 @@ public sealed class Template
     /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
     /// on text found within the input string.
     /// </summary>
-    public IReadOnlyList<Hint> Hints => hints;
+    public IReadOnlyList<Hint> Hints => _hints;
 
     /// <summary>
     /// Contains the tags associated with this <see cref="Template"/>.
     /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
     /// in with the input string.
     /// </summary>
-    public IReadOnlyList<string> Tags => tags;
+    public IReadOnlyList<string> Tags => _tags;
 
     /// <summary>
     /// The tokens contained within the template
     /// </summary>
-    public IReadOnlyCollection<Token> Tokens => tokens.AsReadOnly();
+    public IReadOnlyCollection<Token> Tokens => _tokens.AsReadOnly();
 
     /// <summary>
     /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
@@ -66,12 +66,12 @@ public sealed class Template
 
     internal void AddHint(Hint hint)
     {
-        hints.Add(hint);
+        _hints.Add(hint);
     }
 
     internal void AddTag(string tag)
     {
-        tags.Add(tag);
+        _tags.Add(tag);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public sealed class Template
     {
         if (string.IsNullOrEmpty(tag)) return false;
 
-        foreach (var candidate in tags)
+        foreach (var candidate in _tags)
         {
             if (string.Equals(candidate, tag, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -130,7 +130,7 @@ public sealed class Template
         return missing.Count == 0;
     }
 
-    internal bool HasOnlyFrontMatterTokens => tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
+    internal bool HasOnlyFrontMatterTokens => _tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
 
     internal void GetTokenIdsUpTo(Token token, HashSet<int> matchIds)
     {
@@ -141,7 +141,7 @@ public sealed class Template
             return;
         }
 
-        foreach (var candidate in tokens)
+        foreach (var candidate in _tokens)
         {
             if (candidate == token)
             {
@@ -158,8 +158,8 @@ public sealed class Template
 
     internal void AddToken(Token token)
     {
-        token.Id = tokens.Count + 1;
-        tokens.Add(token);
+        token.Id = _tokens.Count + 1;
+        _tokens.Add(token);
     }
 
     internal IEnumerable<Token> TokensExcluding(HashSet<int> excludedIds, List<Token> buffer, HashSet<int> idBuffer)
@@ -167,7 +167,7 @@ public sealed class Template
         buffer.Clear();
         idBuffer.Clear();
 
-        foreach (var token in tokens)
+        foreach (var token in _tokens)
         {
             if (token.IsFrontMatterToken) continue;
             if (excludedIds.Contains(token.Id)) continue;

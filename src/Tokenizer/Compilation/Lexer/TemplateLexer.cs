@@ -34,7 +34,7 @@ namespace Tokens.Compilation.Lexer;
 /// </example>
 public class TemplateLexer
 {
-    private readonly ILogger<TemplateLexer> log;
+    private readonly ILogger<TemplateLexer> _log;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TemplateLexer"/> class.
@@ -42,7 +42,7 @@ public class TemplateLexer
     /// <param name="logger">Optional logger for diagnostic output.</param>
     public TemplateLexer(ILogger<TemplateLexer>? logger = null)
     {
-        log = logger ?? NullLogger<TemplateLexer>.Instance;
+        _log = logger ?? NullLogger<TemplateLexer>.Instance;
     }
 
     /// <summary>
@@ -50,22 +50,22 @@ public class TemplateLexer
     /// </summary>
     private sealed class LookaheadReader
     {
-        private readonly TextReader inner;
+        private readonly TextReader _inner;
 #if NET8_0_OR_GREATER
-        private char[] buffer;
-        private int startIndex;
-        private int length;
+        private char[] _buffer;
+        private int _startIndex;
+        private int _length;
 #else
-        private readonly System.Collections.Generic.Queue<int> buffer = new System.Collections.Generic.Queue<int>(8);
+        private readonly System.Collections.Generic.Queue<int> _buffer = new System.Collections.Generic.Queue<int>(8);
 #endif
 
         public LookaheadReader(TextReader inner)
         {
-            this.inner = inner;
+            _inner = inner;
 #if NET8_0_OR_GREATER
-            buffer = new char[1024];
-            startIndex = 0;
-            length = 0;
+            _buffer = new char[1024];
+            _startIndex = 0;
+            _length = 0;
 #endif
         }
 
@@ -74,10 +74,10 @@ public class TemplateLexer
             get
             {
 #if NET8_0_OR_GREATER
-                if (length > 0) return false;
-                return inner.Peek() == -1;
+                if (_length > 0) return false;
+                return _inner.Peek() == -1;
 #else
-                return buffer.Count == 0 && inner.Peek() == -1;
+                return _buffer.Count == 0 && _inner.Peek() == -1;
 #endif
             }
         }
@@ -86,10 +86,10 @@ public class TemplateLexer
         {
 #if NET8_0_OR_GREATER
             EnsureBuffered(1);
-            return length > 0 ? buffer[startIndex] : -1;
+            return _length > 0 ? _buffer[_startIndex] : -1;
 #else
             EnsureBuffered(1);
-            return buffer.Count > 0 ? buffer.Peek() : -1;
+            return _buffer.Count > 0 ? _buffer.Peek() : -1;
 #endif
         }
 
@@ -98,13 +98,13 @@ public class TemplateLexer
             if (count <= 0) return string.Empty;
 #if NET8_0_OR_GREATER
             EnsureBuffered(count);
-            if (length == 0) return string.Empty;
-            var len = System.Math.Min(count, length);
-            return new string(buffer, startIndex, len);
+            if (_length == 0) return string.Empty;
+            var len = System.Math.Min(count, _length);
+            return new string(_buffer, _startIndex, len);
 #else
             EnsureBuffered(count);
-            if (buffer.Count == 0) return string.Empty;
-            var arr = buffer.ToArray();
+            if (_buffer.Count == 0) return string.Empty;
+            var arr = _buffer.ToArray();
             var len = System.Math.Min(count, arr.Length);
             return new string(System.Array.ConvertAll(arr, c => (char)c), 0, len);
 #endif
@@ -114,17 +114,17 @@ public class TemplateLexer
         {
 #if NET8_0_OR_GREATER
             EnsureBuffered(1);
-            if (length == 0) return -1;
-            var c = buffer[startIndex];
-            startIndex++;
-            length--;
+            if (_length == 0) return -1;
+            var c = _buffer[_startIndex];
+            _startIndex++;
+            _length--;
             return c;
 #else
-            if (buffer.Count > 0)
+            if (_buffer.Count > 0)
             {
-                return buffer.Dequeue();
+                return _buffer.Dequeue();
             }
-            return inner.Read();
+            return _inner.Read();
 #endif
         }
 
@@ -132,37 +132,37 @@ public class TemplateLexer
         private void EnsureBuffered(int count)
         {
             if (count <= 0) return;
-            while (length < count)
+            while (_length < count)
             {
                 // if there is space at the end, read into it
-                if (startIndex + length < buffer.Length)
+                if (_startIndex + _length < _buffer.Length)
                 {
-                    var read = inner.Read(buffer, startIndex + length, buffer.Length - (startIndex + length));
+                    var read = _inner.Read(_buffer, _startIndex + _length, _buffer.Length - (_startIndex + _length));
                     if (read <= 0) break;
-                    length += read;
+                    _length += read;
                 }
                 else
                 {
                     // compact existing data to the start
-                    if (length > 0)
+                    if (_length > 0)
                     {
-                        System.Array.Copy(buffer, startIndex, buffer, 0, length);
+                        System.Array.Copy(_buffer, _startIndex, _buffer, 0, _length);
                     }
-                    startIndex = 0;
-                    var read = inner.Read(buffer, length, buffer.Length - length);
+                    _startIndex = 0;
+                    var read = _inner.Read(_buffer, _length, _buffer.Length - _length);
                     if (read <= 0) break;
-                    length += read;
+                    _length += read;
                 }
             }
         }
 #else
         private void EnsureBuffered(int count)
         {
-            while (buffer.Count < count)
+            while (_buffer.Count < count)
             {
-                var next = inner.Read();
+                var next = _inner.Read();
                 if (next == -1) break;
-                buffer.Enqueue(next);
+                _buffer.Enqueue(next);
             }
         }
 #endif
@@ -181,9 +181,9 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(string input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
-        if (log.IsEnabled(LogLevel.Debug))
+        if (_log.IsEnabled(LogLevel.Debug))
         {
-            log.LogDebug("Lexing template pattern start: PatternLength={PatternLength}", input.Length);
+            _log.LogDebug("Lexing template pattern start: PatternLength={PatternLength}", input.Length);
         }
         using (var reader = new StringReader(input))
         {
@@ -192,9 +192,9 @@ public class TemplateLexer
                 yield return token;
             }
         }
-        if (log.IsEnabled(LogLevel.Debug))
+        if (_log.IsEnabled(LogLevel.Debug))
         {
-            log.LogDebug("Lexing template pattern complete: PatternLength={PatternLength}", input.Length);
+            _log.LogDebug("Lexing template pattern complete: PatternLength={PatternLength}", input.Length);
         }
     }
 
@@ -239,9 +239,9 @@ public class TemplateLexer
         var braceDepth = 0;
         var inFrontMatter = false;
 
-        if (log.IsEnabled(LogLevel.Trace))
+        if (_log.IsEnabled(LogLevel.Trace))
         {
-            log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+            _log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
                 absolutePosition, location.Line, location.Column);
         }
 
@@ -252,9 +252,9 @@ public class TemplateLexer
             var peek = reader.PeekChar();
             if (peek != -1)
             {
-                if (log.IsEnabled(LogLevel.Trace))
+                if (_log.IsEnabled(LogLevel.Trace))
                 {
-                    log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
+                    _log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
                         (char)peek, absolutePosition, location.Line, location.Column);
                 }
             }
@@ -353,11 +353,11 @@ public class TemplateLexer
 
     private void LogTokenProduced(LexerToken token, int absolutePosition, FileLocation location)
     {
-        if (log.IsEnabled(LogLevel.Trace))
+        if (_log.IsEnabled(LogLevel.Trace))
         {
-            log.LogTrace("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
+            _log.LogTrace("Lexer token produced: Type={TokenType}, Value={Value}, RawText={RawText}, Position={Position}, Length={Length}",
                 token.Kind, token.Value, token.RawText, token.Start, token.Length);
-            log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
+            _log.LogTrace("Token boundary: scanning for next token at Position={Position}, Line={Line}, Column={Column}",
                 absolutePosition, location.Line, location.Column);
         }
     }
@@ -573,7 +573,7 @@ public class TemplateLexer
             if (p == -1)
             {
                 // EOF before closing quote
-                log.LogError("Lexing failure: Unclosed quoted string at Position={Position}, Line={Line}, Column={Column}, ExpectedQuote={Quote}",
+                _log.LogError("Lexing failure: Unclosed quoted string at Position={Position}, Line={Line}, Column={Column}, ExpectedQuote={Quote}",
                     absolutePosition, location.Line, location.Column, quote);
                 throw new LexerException($"Unclosed quoted string. Expected closing '{quote}'.", location.Clone());
             }
@@ -624,7 +624,7 @@ public class TemplateLexer
                 var next = reader.PeekChar();
                 if (next == -1)
                 {
-                    log.LogError("Lexing failure: Unclosed quoted string after escape at Position={Position}, Line={Line}, Column={Column}",
+                    _log.LogError("Lexing failure: Unclosed quoted string after escape at Position={Position}, Line={Line}, Column={Column}",
                         absolutePosition, location.Line, location.Column);
                     throw new LexerException("Unclosed quoted string after escape.", location.Clone());
                 }
@@ -642,7 +642,7 @@ public class TemplateLexer
                 }
 
                 // Unknown escape sequence — treat as literal character
-                log.LogWarning("Unknown escape sequence '\\{EscapeChar}' at Position={Position}, Line={Line}, Column={Column} — treating as literal '{LiteralChar}'",
+                _log.LogWarning("Unknown escape sequence '\\{EscapeChar}' at Position={Position}, Line={Line}, Column={Column} — treating as literal '{LiteralChar}'",
                     nextChar, absolutePosition, location.Line, location.Column, nextChar);
                 reader.ReadChar();
                 raw.Append(nextChar);

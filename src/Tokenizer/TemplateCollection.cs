@@ -8,19 +8,19 @@ namespace Tokens;
 /// </summary>
 public class TemplateCollection : IReadOnlyCollection<Template>
 {
-    private readonly ConcurrentDictionary<ulong, Template> templates;
+    private readonly ConcurrentDictionary<ulong, Template> _templates;
 
     /// <summary>
-    /// Returns the number of templates in this collection
+    /// Returns the number of _templates in this collection
     /// </summary>
-    public int Count => templates.Count;
+    public int Count => _templates.Count;
 
     /// <summary>
     /// Creates a new instance of the <see cref="TemplateCollection"/> class.
     /// </summary>
     public TemplateCollection()
     {
-        templates = new ConcurrentDictionary<ulong, Template>();
+        _templates = new ConcurrentDictionary<ulong, Template>();
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public void Add(Template template)
     {
-        templates.AddOrUpdate(template.Id, template, (key, existing) => template);
+        _templates.AddOrUpdate(template.Id, template, (key, existing) => template);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool TryGet(ulong id, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
     {
-        return templates.TryGetValue(id, out template);
+        return _templates.TryGetValue(id, out template);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool TryGet(string name, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
     {
-        foreach (var candidate in templates.Values)
+        foreach (var candidate in _templates.Values)
         {
             if (string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase))
             {
@@ -67,15 +67,15 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     }
 
     /// <summary>
-    /// Clears all templates from this collection
+    /// Clears all _templates from this collection
     /// </summary>
     public void Clear()
     {
-        templates.Clear();
+        _templates.Clear();
     }
 
     /// <summary>
-    /// Determines if any templates are in this collection that contain the given
+    /// Determines if any _templates are in this collection that contain the given
     /// tag.
     /// </summary>
     public bool ContainsTag(string tag)
@@ -92,7 +92,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     }
 
     /// <summary>
-    /// Determines if any templates in this collection contain all the given tags.
+    /// Determines if any _templates in this collection contain all the given tags.
     /// </summary>
     public bool ContainsAllTags(params string[] tags)
     {
@@ -108,11 +108,11 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     }
 
     /// <summary>
-    /// Returns an enumerator that iterates through the templates in this collection.
+    /// Returns an enumerator that iterates through the _templates in this collection.
     /// </summary>
     public IEnumerator<Template> GetEnumerator()
     {
-        return templates.Values.GetEnumerator();
+        return _templates.Values.GetEnumerator();
     }
 
     /// <inheritdoc />

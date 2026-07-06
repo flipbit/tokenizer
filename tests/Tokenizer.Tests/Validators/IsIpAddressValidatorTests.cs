@@ -9,7 +9,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsIpAddressValidator validator = new();
+    private readonly IsIpAddressValidator _validator = new();
 
     [Fact]
     public void GivenValidIpv4Address_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "192.168.1.1";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "::1";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "999.999.999.999";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "hello world";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -80,7 +80,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(null!);
+        var result = _validator.IsValid(null!);
 
         // Assert
         Assert.False(result);
@@ -90,7 +90,7 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
     public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(string.Empty);
+        var result = _validator.IsValid(string.Empty);
 
         // Assert
         Assert.False(result);

@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class RegexReplaceTransformerTests
 {
-    private readonly RegexReplaceTransformer transformer = new();
+    private readonly RegexReplaceTransformer _transformer = new();
 
     [Fact]
     public void GivenMatchingPattern_WhenTransforming_ThenReplacesMatches()
     {
         // Act
-        var result = transformer.TryTransform("abc123def456", [@"\d+", "#"], out var transformed);
+        var result = _transformer.TryTransform("abc123def456", [@"\d+", "#"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -21,7 +21,7 @@ public class RegexReplaceTransformerTests
     public void GivenNonMatchingPattern_WhenTransforming_ThenReturnsOriginal()
     {
         // Act
-        var result = transformer.TryTransform("hello", [@"\d+", "#"], out var transformed);
+        var result = _transformer.TryTransform("hello", [@"\d+", "#"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -32,7 +32,7 @@ public class RegexReplaceTransformerTests
     public void GivenPatternWithCaptureGroup_WhenTransforming_ThenUsesGroupInReplacement()
     {
         // Act
-        var result = transformer.TryTransform("2026-07-02", [@"(\d{4})-(\d{2})-(\d{2})", "$2/$3/$1"], out var transformed);
+        var result = _transformer.TryTransform("2026-07-02", [@"(\d{4})-(\d{2})-(\d{2})", "$2/$3/$1"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -43,7 +43,7 @@ public class RegexReplaceTransformerTests
     public void GivenPatternWithInlineCaseFlag_WhenTransforming_ThenRespectsCaseFlag()
     {
         // Act
-        var result = transformer.TryTransform("Hello HELLO hello", ["(?i)hello", "hi"], out var transformed);
+        var result = _transformer.TryTransform("Hello HELLO hello", ["(?i)hello", "hi"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -54,7 +54,7 @@ public class RegexReplaceTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(null!, [@"\d+", "#"], out var transformed);
+        var result = _transformer.TryTransform(null!, [@"\d+", "#"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -65,7 +65,7 @@ public class RegexReplaceTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, [@"\d+", "#"], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, [@"\d+", "#"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -80,20 +80,20 @@ public class RegexReplaceTransformerTests
 
         // Act & Assert
         Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(
-            () => transformer.TryTransform(input, [@"(a+)+$", ""], out var _));
+            () => _transformer.TryTransform(input, [@"(a+)+$", ""], out var _));
     }
 
     [Fact]
     public void GivenMissingArgs_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform("hello", null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform("hello", null!, out var t));
     }
 
     [Fact]
     public void GivenOnlyOneArg_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform("hello", [@"\d+"], out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform("hello", [@"\d+"], out var t));
     }
 }

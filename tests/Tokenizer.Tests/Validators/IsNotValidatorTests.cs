@@ -9,7 +9,7 @@ public class IsNotValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsNotValidator validator = new();
+    private readonly IsNotValidator _validator = new();
 
     [Fact]
     public void GivenStringThatMatchesExcludedValue_WhenValidating_ThenReturnsFalse()
@@ -19,7 +19,7 @@ public class IsNotValidatorTests : TokenizerTestBase
         var excludedValue = "hello world";
 
         // Act
-        var result = validator.IsValid(input, excludedValue);
+        var result = _validator.IsValid(input, excludedValue);
 
         // Assert
         Assert.False(result);
@@ -33,7 +33,7 @@ public class IsNotValidatorTests : TokenizerTestBase
         var excludedValue = "hello";
 
         // Act
-        var result = validator.IsValid(input, excludedValue);
+        var result = _validator.IsValid(input, excludedValue);
 
         // Assert
         Assert.True(result);
@@ -47,7 +47,7 @@ public class IsNotValidatorTests : TokenizerTestBase
         var excludedValue = "hello";
 
         // Act
-        var result = validator.IsValid(input, excludedValue);
+        var result = _validator.IsValid(input, excludedValue);
 
         // Assert
         Assert.True(result);
@@ -61,7 +61,7 @@ public class IsNotValidatorTests : TokenizerTestBase
         var excludedValue = "hello";
 
         // Act
-        var result = validator.IsValid(input, excludedValue);
+        var result = _validator.IsValid(input, excludedValue);
 
         // Assert
         Assert.True(result);

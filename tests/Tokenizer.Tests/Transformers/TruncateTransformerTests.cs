@@ -4,13 +4,13 @@ namespace Tokens.Transformers;
 
 public class TruncateTransformerTests
 {
-    private readonly TruncateTransformer transformer = new();
+    private readonly TruncateTransformer _transformer = new();
 
     [Fact]
     public void GivenStringLongerThanMaxLength_WhenTransforming_ThenTruncates()
     {
         // Act
-        var result = transformer.TryTransform("hello world", ["5"], out var transformed);
+        var result = _transformer.TryTransform("hello world", ["5"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -21,7 +21,7 @@ public class TruncateTransformerTests
     public void GivenStringShorterThanMaxLength_WhenTransforming_ThenReturnsUnchanged()
     {
         // Act
-        var result = transformer.TryTransform("hi", ["10"], out var transformed);
+        var result = _transformer.TryTransform("hi", ["10"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -32,7 +32,7 @@ public class TruncateTransformerTests
     public void GivenStringEqualToMaxLength_WhenTransforming_ThenReturnsUnchanged()
     {
         // Act
-        var result = transformer.TryTransform("hello", ["5"], out var transformed);
+        var result = _transformer.TryTransform("hello", ["5"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -43,7 +43,7 @@ public class TruncateTransformerTests
     public void GivenNullValue_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(null!, ["5"], out var transformed);
+        var result = _transformer.TryTransform(null!, ["5"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -54,7 +54,7 @@ public class TruncateTransformerTests
     public void GivenEmptyString_WhenTransforming_ThenReturnsEmptyString()
     {
         // Act
-        var result = transformer.TryTransform(string.Empty, ["5"], out var transformed);
+        var result = _transformer.TryTransform(string.Empty, ["5"], out var transformed);
 
         // Assert
         Assert.True(result);
@@ -65,13 +65,13 @@ public class TruncateTransformerTests
     public void GivenMissingArgs_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform("hello", null!, out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform("hello", null!, out var t));
     }
 
     [Fact]
     public void GivenNonIntegerArg_WhenTransforming_ThenThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => transformer.TryTransform("hello", ["abc"], out var t));
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform("hello", ["abc"], out var t));
     }
 }

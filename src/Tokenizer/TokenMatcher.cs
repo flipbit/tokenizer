@@ -11,8 +11,8 @@ namespace Tokens;
 /// </summary>
 public sealed class TokenMatcher : ITokenMatcher
 {
-    private readonly ITokenizer tokenizer;
-    private readonly ILogger<TokenMatcher> log;
+    private readonly ITokenizer _tokenizer;
+    private readonly ILogger<TokenMatcher> _log;
 
     /// <summary>
     /// Initializes a new instance of <see cref="TokenMatcher"/> with default options.
@@ -40,7 +40,7 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified tokenizer.
+    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified _tokenizer.
     /// </summary>
     /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
     public TokenMatcher(ITokenizer tokenizer) : this(tokenizer, null)
@@ -56,8 +56,8 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         loggerFactory ??= NullLoggerFactory.Instance;
 
-        this.tokenizer = tokenizer;
-        log = loggerFactory.CreateLogger<TokenMatcher>();
+        _tokenizer = tokenizer;
+        _log = loggerFactory.CreateLogger<TokenMatcher>();
         Templates = new TemplateCollection();
     }
 
@@ -87,7 +87,7 @@ public sealed class TokenMatcher : ITokenMatcher
         var results = new TokenMatcherResult();
         return MatchCore(
             input, tags, results,
-            template => tokenizer.Tokenize(template, input),
+            template => _tokenizer.Tokenize(template, input),
             (r, result) => r.AddResult((TokenizeResult)result),
             r => r.BestMatch = r.GetBestMatch());
     }
@@ -117,7 +117,7 @@ public sealed class TokenMatcher : ITokenMatcher
         var results = new TokenMatcherResult<T>();
         return MatchCore(
             input, tags, results,
-            template => tokenizer.Tokenize<T>(template, input),
+            template => _tokenizer.Tokenize<T>(template, input),
             (r, result) => r.AddResult((TokenizeResult<T>)result),
             r => r.BestMatch = r.GetBestMatch());
     }
@@ -130,7 +130,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
     public ITokenMatcher RegisterTemplate(string content)
     {
-        var result = tokenizer.Compile(content);
+        var result = _tokenizer.Compile(content);
         Templates.Add(result.Template);
         return this;
     }
@@ -143,7 +143,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
     public ITokenMatcher RegisterTemplate(string content, string name)
     {
-        var result = tokenizer.Compile(content);
+        var result = _tokenizer.Compile(content);
         result.Template.Name = name;
         Templates.Add(result.Template);
         return this;
@@ -183,7 +183,7 @@ public sealed class TokenMatcher : ITokenMatcher
             catch (Exception e)
             {
                 var exception = new TokenMatcherException(e.Message, template, e);
-                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+                _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
                 throw exception;
             }
         }
@@ -195,7 +195,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default)
     {
-        var result = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
+        var result = await _tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
         Templates.Add(result.Template);
         return this;
     }
@@ -203,7 +203,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
     {
-        var result = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
+        var result = await _tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
         Templates.Add(result.Template);
         return this;
     }
@@ -218,7 +218,7 @@ public sealed class TokenMatcher : ITokenMatcher
         using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
             stream, Encoding.UTF8, tags, ct,
-            (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
+            (template, reader, token) => _tokenizer.TokenizeAsync(template, reader, token),
             () => new TokenMatcherResult(),
             (r, result) => r.AddResult(result),
             r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
@@ -234,7 +234,7 @@ public sealed class TokenMatcher : ITokenMatcher
         using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
             stream, Encoding.UTF8, tags, ct,
-            (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
+            (template, reader, token) => _tokenizer.TokenizeAsync<T>(template, reader, token),
             () => new TokenMatcherResult<T>(),
             (r, result) => r.AddResult(result),
             r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
@@ -250,7 +250,7 @@ public sealed class TokenMatcher : ITokenMatcher
         var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
             seekable, encoding, tags, ct,
-            (template, reader, token) => tokenizer.TokenizeAsync(template, reader, token),
+            (template, reader, token) => _tokenizer.TokenizeAsync(template, reader, token),
             () => new TokenMatcherResult(),
             (r, result) => r.AddResult(result),
             r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
@@ -266,7 +266,7 @@ public sealed class TokenMatcher : ITokenMatcher
         var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
             seekable, encoding, tags, ct,
-            (template, reader, token) => tokenizer.TokenizeAsync<T>(template, reader, token),
+            (template, reader, token) => _tokenizer.TokenizeAsync<T>(template, reader, token),
             () => new TokenMatcherResult<T>(),
             (r, result) => r.AddResult(result),
             r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
@@ -295,7 +295,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         if (input.CanSeek) return input;
 
-        if (!tokenizer.Options.AllowStreamBuffering)
+        if (!_tokenizer.Options.AllowStreamBuffering)
         {
             throw new TokenizerException(
                 "Stream is not seekable. Provide a seekable stream or " +
@@ -343,7 +343,7 @@ public sealed class TokenMatcher : ITokenMatcher
             catch (Exception e)
             {
                 var exception = new TokenMatcherException(e.Message, template, e);
-                log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+                _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
                 throw exception;
             }
         }

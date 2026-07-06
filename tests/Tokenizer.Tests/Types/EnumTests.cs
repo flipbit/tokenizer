@@ -5,7 +5,7 @@ namespace Tokens.Types;
 
 public class EnumTests : TokenizerTestBase
 {
-    private readonly ITokenizer tokenizer;
+    private readonly ITokenizer _tokenizer;
 
     private class Student
     {
@@ -23,7 +23,7 @@ public class EnumTests : TokenizerTestBase
 
     public EnumTests(ITestOutputHelper output) : base(output)
     {
-        tokenizer = CreateTokenizer();
+        _tokenizer = CreateTokenizer();
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: GradeB";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeB, result.Value.Grade);
@@ -45,8 +45,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: Gradec";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeC, result.Value.Grade);
@@ -58,8 +58,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: GradeE";
 
-        var template = tokenizer.Compile(pattern).Template;
-        var result = tokenizer.Tokenize<Student>(template, input);
+        var template = _tokenizer.Compile(pattern).Template;
+        var result = _tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeA, result.Value.Grade);

@@ -9,7 +9,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
     {
     }
 
-    private readonly IsAlphanumericValidator validator = new();
+    private readonly IsAlphanumericValidator _validator = new();
 
     [Fact]
     public void GivenAlphanumericString_WhenValidating_ThenReturnsTrue()
@@ -18,7 +18,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var input = "abc123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -31,7 +31,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var input = "abcdef";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -44,7 +44,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var input = "123456";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.True(result);
@@ -57,7 +57,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var input = "abc 123";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -70,7 +70,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var input = "abc-123!";
 
         // Act
-        var result = validator.IsValid(input);
+        var result = _validator.IsValid(input);
 
         // Assert
         Assert.False(result);
@@ -80,7 +80,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
     public void GivenNullValue_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(null!);
+        var result = _validator.IsValid(null!);
 
         // Assert
         Assert.False(result);
@@ -90,7 +90,7 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
     public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
     {
         // Act
-        var result = validator.IsValid(string.Empty);
+        var result = _validator.IsValid(string.Empty);
 
         // Assert
         Assert.False(result);

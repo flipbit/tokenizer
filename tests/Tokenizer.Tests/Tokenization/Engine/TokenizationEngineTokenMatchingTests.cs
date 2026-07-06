@@ -329,9 +329,9 @@ public class TokenizationEngineTokenMatchingTests
     }
 
     [Fact]
-    public void GivenTokensInDifferentOrder_WhenOutOfOrderDisabled_ThenMatchesInOrder()
+    public void GivenTokensInDifferentOrder_WhenOutOfOrderDisabled_ThenMissesOutOfOrderTokens()
     {
-        // Arrange
+        // Arrange — template expects Age then Name, in that order
         var parser = new TemplateCompiler(new TokenizerOptions { OutOfOrderTokens = false });
         var template = parser.Compile("Age: {Age}\nName: {Name}").Template;
 
@@ -340,13 +340,16 @@ public class TokenizationEngineTokenMatchingTests
             .WithTemplate(template)
             .Build();
 
-        // Act - Provide input in reverse order
+        // Act — input has Name first, then Age (reversed from template order)
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
         var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
-        // Assert - Behavior depends on strict ordering
-        Assert.NotNull(result);
+        // Assert — strict ordering means the engine can't find Age (it appears
+        // after Name in input, but the template expects it before Name).
+        Assert.True(result.Tokens.Matches.Count < 2,
+            $"With out-of-order disabled and reversed input, expected fewer than 2 matches " +
+            $"but got {result.Tokens.Matches.Count}");
     }
 }

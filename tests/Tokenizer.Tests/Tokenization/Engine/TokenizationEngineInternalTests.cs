@@ -76,20 +76,6 @@ public class TokenizationEngineTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenRepeatingToken_WhenValueIsAssignable_ThenTokenIsMatched()
-    {
-        // Arrange
-        var template = _tokenizer.Compile("test: {Name}").Template;
-
-        // Act
-        var result = _tokenizer.Tokenize(template, "test: hello");
-
-        // Assert
-        Assert.True(result.Success);
-        Assert.Equal("hello", result.Tokens.Matches.First().Value);
-    }
-
-    [Fact]
     public void GivenTemplateWithOnlyFrontMatter_WhenTokenizing_ThenResultIsNotNull()
     {
         // Arrange

@@ -141,12 +141,14 @@ public class TokenizationEngineStateTests
             .WithTemplate(template)
             .Build();
 
-        // Act - Exercise the engine through the public interface
+        // Act
         var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
-        // Assert
-        Assert.NotNull(result);
+        // Assert — token should capture the value after the preamble "Test"
+        Assert.Single(result.Tokens.Matches);
+        Assert.Equal("Name", result.Tokens.Matches[0].Token.Name);
+        Assert.Equal(" Value", result.Tokens.Matches[0].Value);
     }
 
     [Fact]
@@ -166,19 +168,33 @@ public class TokenizationEngineStateTests
     }
 
     [Fact]
-    public void GivenRepeatingToken_WhenDisabled_ThenNoLongerMatches()
+    public void GivenRepeatingToken_WhenGapInInput_ThenMatchesAllOccurrences()
     {
-        // Arrange
+        // Arrange — the # modifier stops repeating on blank-line gap when used
+        // via the high-level Tokenizer pipeline; through the engine directly all
+        // occurrences that share the same preamble are still matched.
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("{Item*}").Template;
-        var disabledRepeatingTokens = new HashSet<int>();
-        var token = template.Tokens.First();
+        var template = parser.Compile("Item: {Item*#}").Template;
+
+        var context = new TokenizationContext();
+        var result = new TokenizeResultBuilder()
+            .WithTemplate(template)
+            .Build();
+
+        // Two items, then a blank line gap, then a third item
+        var input = "Item: Apple\nItem: Banana\n\nItem: Cherry";
+        context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        disabledRepeatingTokens.Add(token.Id);
+        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        session.Run(context);
 
-        // Assert
-        Assert.Contains(token.Id, disabledRepeatingTokens);
+        // Assert — all three occurrences are matched; each must be named "Item"
+        Assert.Equal(3, result.Tokens.Matches.Count);
+        Assert.All(result.Tokens.Matches, m => Assert.Equal("Item", m.Token.Name));
+        Assert.Equal("Apple", result.Tokens.Matches[0].Value);
+        Assert.Equal("Banana", result.Tokens.Matches[1].Value);
+        Assert.Equal("Cherry", result.Tokens.Matches[2].Value);
     }
 
     [Fact]

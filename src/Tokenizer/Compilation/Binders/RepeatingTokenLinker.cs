@@ -2,6 +2,9 @@ using Tokens.Diagnostics;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Links repeating tokens to their non-repeating counterpart with the same name.
+/// </summary>
 internal static class RepeatingTokenLinker
 {
     public static void Link(Token token, Template template, IDiagnosticCollector collector)

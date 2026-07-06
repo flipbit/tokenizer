@@ -4,6 +4,9 @@ using Tokens.Diagnostics;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Orchestrates per-token compilation by delegating to focused sub-components.
+/// </summary>
 internal static class TokenBinder
 {
     public static void Bind(TemplateDefinition definition, Template template,

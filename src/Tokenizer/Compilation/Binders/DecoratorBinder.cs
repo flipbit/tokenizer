@@ -6,6 +6,9 @@ using Tokens.Transformers;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Resolves decorator definitions against a DecoratorRegistry and creates TokenDecoratorContext instances on the target Token.
+/// </summary>
 internal static class DecoratorBinder
 {
     public static void Bind(TokenDefinition definition, Token token,

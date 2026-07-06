@@ -2,6 +2,9 @@ using Tokens.Compilation.Definitions;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Creates Template instances from parsed TemplateDefinitions. Owns auto-naming via an incrementing counter.
+/// </summary>
 internal static class TemplateFactory
 {
     private static int templateCounter;

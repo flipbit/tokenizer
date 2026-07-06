@@ -1,5 +1,8 @@
 namespace Tokens.Builders;
 
+/// <summary>
+/// Builder for creating Template instances for testing
+/// </summary>
 public class TemplateBuilder
 {
     private readonly List<Token> _tokens = new();

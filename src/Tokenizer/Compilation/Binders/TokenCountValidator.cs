@@ -2,6 +2,9 @@ using Tokens.Exceptions;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Validates that a compiled template does not exceed the configured maximum token count.
+/// </summary>
 internal static class TokenCountValidator
 {
     public static void Validate(Template template, TokenizerOptions options)

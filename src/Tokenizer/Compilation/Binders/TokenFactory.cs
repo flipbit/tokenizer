@@ -4,6 +4,9 @@ using Tokens.Extensions;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Creates Token instances from TokenDefinitions. Owns preamble computation logic.
+/// </summary>
 internal static class TokenFactory
 {
     public static Token Create(TokenDefinition definition, TokenizerOptions options, IDiagnosticCollector collector)

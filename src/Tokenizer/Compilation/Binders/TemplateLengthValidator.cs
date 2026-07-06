@@ -2,6 +2,9 @@ using Tokens.Exceptions;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Validates that template content does not exceed the configured maximum length.
+/// </summary>
 internal static class TemplateLengthValidator
 {
     public static void Validate(string content, TokenizerOptions options)

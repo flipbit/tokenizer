@@ -2,6 +2,9 @@ using Tokens.Diagnostics;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Applies template-level option overrides to individual tokens.
+/// </summary>
 internal static class OptionApplier
 {
     public static void Apply(Token token, TokenizerOptions options, IDiagnosticCollector collector)

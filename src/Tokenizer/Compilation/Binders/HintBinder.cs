@@ -3,6 +3,9 @@ using Tokens.Diagnostics;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Assigns hints from a TemplateDefinition to a Template, skipping duplicates.
+/// </summary>
 internal static class HintBinder
 {
     public static void Bind(TemplateDefinition definition, Template template, IDiagnosticCollector collector)

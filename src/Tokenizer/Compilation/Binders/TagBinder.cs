@@ -3,6 +3,9 @@ using Tokens.Diagnostics;
 
 namespace Tokens.Compilation.Binders;
 
+/// <summary>
+/// Assigns tags from a TemplateDefinition to a Template, skipping duplicates.
+/// </summary>
 internal static class TagBinder
 {
     public static void Bind(TemplateDefinition definition, Template template, IDiagnosticCollector collector)

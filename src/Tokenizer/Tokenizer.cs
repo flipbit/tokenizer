@@ -188,48 +188,54 @@ public sealed class Tokenizer : ITokenizer
                     }
                 }
 
-                // Build unmatched tokens collection
-                resultBuilder.BuildUnmatchedTokens(template, result, collector);
-
-                var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
-                        result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
-                }
-
-                if (requiredMissingCount > 0)
-                {
-                    log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
-                }
-
-                result.Diagnostics = collector.GetResult();
-
-                if (result.Diagnostics != null)
-                {
-                    if (log.IsEnabled(LogLevel.Debug))
-                    {
-                        log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
-                    }
-                    foreach (var issue in result.Diagnostics.Summary.Issues)
-                    {
-                        log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
-                        if (issue.Hint != null)
-                        {
-                            log.LogWarning("  → Hint: {Hint}", issue.Hint);
-                        }
-                    }
-                    if (rawInput != null && log.IsEnabled(LogLevel.Debug))
-                    {
-                        log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
-                    }
-                }
+                FinalizeTokenization(result, template, collector, rawInput);
             }
 
             if (log.IsEnabled(LogLevel.Debug))
             {
                 log.LogDebug("Tokenization {Result} for template {TemplateName}",
                     result.Success ? "succeeded" : "failed", template.Name);
+            }
+        }
+    }
+
+    private void FinalizeTokenization(
+        TokenizeResultBase result, Template template,
+        IDiagnosticCollector collector, string? rawInput)
+    {
+        resultBuilder.BuildUnmatchedTokens(template, result, collector);
+
+        var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
+        if (log.IsEnabled(LogLevel.Debug))
+        {
+            log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
+                result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
+        }
+
+        if (requiredMissingCount > 0)
+        {
+            log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
+        }
+
+        result.Diagnostics = collector.GetResult();
+
+        if (result.Diagnostics != null)
+        {
+            if (log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
+            }
+            foreach (var issue in result.Diagnostics.Summary.Issues)
+            {
+                log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                if (issue.Hint != null)
+                {
+                    log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                }
+            }
+            if (rawInput != null && log.IsEnabled(LogLevel.Debug))
+            {
+                log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
             }
         }
     }
@@ -307,10 +313,6 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
     }
 
-    // TokenizeAsyncCore intentionally diverges from TokenizeCore: async uses session.RunAsync
-    // with cooperative buffer refills, lacks rawInput for diagnostics alignment, and
-    // adds cancellation-aware exception handling. These structural differences make shared
-    // helper extraction awkward without introducing tangled abstractions.
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new IntegratedHintStrategy();
@@ -369,38 +371,7 @@ public sealed class Tokenizer : ITokenizer
                 throw;
             }
 
-            // Build unmatched tokens collection
-            resultBuilder.BuildUnmatchedTokens(template, result, collector);
-
-            var requiredMissingCount = result.Tokens.Misses.Count(t => t.IsRequired);
-            if (log.IsEnabled(LogLevel.Debug))
-            {
-                log.LogDebug("Tokenization complete: {MatchCount} matches, {MissCount} misses, {RequiredMissing} required missing",
-                    result.Tokens.Matches.Count, result.Tokens.Misses.Count, requiredMissingCount);
-            }
-
-            if (requiredMissingCount > 0)
-            {
-                log.LogWarning("{RequiredMissing} required tokens were missing", requiredMissingCount);
-            }
-
-            result.Diagnostics = collector.GetResult();
-
-            if (result.Diagnostics != null)
-            {
-                if (log.IsEnabled(LogLevel.Debug))
-                {
-                    log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
-                }
-                foreach (var issue in result.Diagnostics.Summary.Issues)
-                {
-                    log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
-                    if (issue.Hint != null)
-                    {
-                        log.LogWarning("  → Hint: {Hint}", issue.Hint);
-                    }
-                }
-            }
+            FinalizeTokenization(result, template, collector, null);
 
             if (log.IsEnabled(LogLevel.Debug))
             {

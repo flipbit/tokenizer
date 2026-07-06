@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;

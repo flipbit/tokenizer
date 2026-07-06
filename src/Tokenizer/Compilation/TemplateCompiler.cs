@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Tokens.Compilation.Binders;
-using Tokens.Compilation.Definitions;
 using Tokens.Compilation.Parsing;
 using Tokens.Diagnostics;
 using Tokens.Exceptions;

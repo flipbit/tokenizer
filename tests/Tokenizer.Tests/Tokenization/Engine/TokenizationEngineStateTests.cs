@@ -1,4 +1,3 @@
-using System.Text;
 using Tokens.Builders;
 using Tokens.Compilation;
 using Tokens.Diagnostics;

@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using Tokens.Compilation;

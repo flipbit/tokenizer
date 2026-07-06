@@ -1,4 +1,3 @@
-using System.Linq;
 using Tokens.Diagnostics;
 
 namespace Tokens.Tokenization;

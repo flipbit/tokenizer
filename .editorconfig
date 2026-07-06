@@ -155,5 +155,8 @@ dotnet_diagnostic.MA0017.severity = warning
 # Use semicolon instead of empty braces for types with no body
 dotnet_diagnostic.MA0206.severity = warning
 
+# Avoid closure allocation in ConcurrentDictionary.GetOrAdd
+dotnet_diagnostic.MA0106.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

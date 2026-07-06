@@ -17,6 +17,7 @@ public class TokenizationEngineIntegrationTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
+#pragma warning disable MA0101 // String contains an implicit end of line character
         var template = parser.Compile(@"
 Name: {Name}
 Age: {Age}
@@ -29,12 +30,14 @@ Zip: {Zip}
 Country: {Country}
 Notes: {Notes}
 ").Template;
+#pragma warning restore MA0101
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
             .Build();
 
+#pragma warning disable MA0101 // String contains an implicit end of line character
         var input = @"
 Name: John Doe
 Age: 30
@@ -47,6 +50,7 @@ Zip: 62701
 Country: USA
 Notes: Test notes
 ";
+#pragma warning restore MA0101
 
         context.Initialize(new System.IO.StringReader(input));
 
@@ -117,10 +121,12 @@ Notes: Test notes
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
+#pragma warning disable MA0101 // String contains an implicit end of line character
         var template = parser.Compile(@"---
 Name: MyTemplate
 ---
 Content: {Content}").Template;
+#pragma warning restore MA0101
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()

@@ -15,7 +15,7 @@ public abstract class TokenizeResultBase
     /// Creates a new result bound to the specified <paramref name="template"/>.
     /// </summary>
     /// <param name="template">The template used for the tokenization attempt.</param>
-    public TokenizeResultBase(Template template)
+    protected TokenizeResultBase(Template template)
     {
         _exceptions = new List<Exception>();
 

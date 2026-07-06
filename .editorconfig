@@ -149,5 +149,8 @@ dotnet_diagnostic.MA0071.severity = warning
 # Add RegexOptions.ExplicitCapture to Regex with unnamed capture groups
 dotnet_diagnostic.MA0023.severity = warning
 
+# Abstract types should not have public or internal constructors
+dotnet_diagnostic.MA0017.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

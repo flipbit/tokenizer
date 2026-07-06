@@ -185,7 +185,7 @@ internal static class TemplateBinder
     private static string BuildRawTokenContent(TokenNode node)
     {
         var sb = new System.Text.StringBuilder();
-        sb.Append("{");
+        sb.Append('{');
         // leading space before name to match legacy formatting
         sb.Append(' ');
         // name
@@ -226,7 +226,7 @@ internal static class TemplateBinder
         }
         // trailing space before closing brace to match expected string
         sb.Append(' ');
-        sb.Append("}");
+        sb.Append('}');
         return sb.ToString();
     }
 

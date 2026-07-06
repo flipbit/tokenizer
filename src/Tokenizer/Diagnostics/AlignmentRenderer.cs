@@ -28,7 +28,7 @@ internal static class AlignmentRenderer
 
         // Header
         sb.AppendLine("═══ Tokenization Alignment ═══");
-        sb.AppendLine($"Tokens: {tokenCount} | Input: {inputLineCount} lines | {summary.Verdict}");
+        sb.Append("Tokens: ").Append(tokenCount).Append(" | Input: ").Append(inputLineCount).Append(" lines | ").AppendLine(summary.Verdict);
 
         // Matched tokens
         if (matchedEvents.Count > 0)
@@ -38,7 +38,7 @@ internal static class AlignmentRenderer
             foreach (var evt in matchedEvents)
             {
                 var line = evt.Location != null ? $" (line {evt.Location.Line})" : string.Empty;
-                sb.AppendLine($"  ✓ {evt.TokenName} = \"{evt.Value}\"{line}");
+                sb.Append("  ✓ ").Append(evt.TokenName).Append(" = \"").Append(evt.Value).Append('"').AppendLine(line);
             }
         }
 
@@ -50,13 +50,13 @@ internal static class AlignmentRenderer
             foreach (var evt in failureEvents)
             {
                 var decoratorDesc = BuildDecoratorDescription(evt);
-                sb.AppendLine($"  ✗ {evt.TokenName}: {evt.Type} — {decoratorDesc} failed on '{evt.Value}'");
+                sb.Append("  ✗ ").Append(evt.TokenName).Append(": ").Append(evt.Type).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(evt.Value).AppendLine("'");
 
                 var issue = summary.Issues.FirstOrDefault(i => i.TokenName == evt.TokenName
                     && (i.Type == DiagnosticIssueType.TransformerFailure
                      || i.Type == DiagnosticIssueType.ValidatorRejection));
                 if (issue?.Hint != null)
-                    sb.AppendLine($"      Hint: {issue.Hint}");
+                    sb.Append("      Hint: ").AppendLine(issue.Hint);
             }
         }
 
@@ -67,18 +67,18 @@ internal static class AlignmentRenderer
             sb.AppendLine("── Unmatched Tokens ──");
             foreach (var evt in missedEvents)
             {
-                sb.AppendLine($"  ✗ {evt.TokenName} — preamble never found");
+                sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
 
                 var issue = summary.Issues.FirstOrDefault(i => i.TokenName == evt.TokenName);
                 if (issue?.Hint != null)
-                    sb.AppendLine($"      Hint: {issue.Hint}");
+                    sb.Append("      Hint: ").AppendLine(issue.Hint);
             }
         }
 
         // Summary
         sb.AppendLine();
         sb.AppendLine("═══ Summary ═══");
-        sb.Append($"  Matched: {matchedEvents.Count} | Missed: {missedEvents.Count} | Failures: {failureEvents.Count}");
+        sb.Append("  Matched: ").Append(matchedEvents.Count).Append(" | Missed: ").Append(missedEvents.Count).Append(" | Failures: ").Append(failureEvents.Count);
 
         return sb.ToString();
     }

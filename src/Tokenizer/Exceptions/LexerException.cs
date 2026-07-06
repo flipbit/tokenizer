@@ -86,8 +86,8 @@ public class LexerException : TokenizerException
             if (Line > 0 || Column > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine($"Column: {Column}");
-                sb.AppendLine($"Line: {Line}");
+                sb.Append("Column: ").Append(Column).AppendLine();
+                sb.Append("Line: ").Append(Line).AppendLine();
             }
             return sb.ToString();
         }

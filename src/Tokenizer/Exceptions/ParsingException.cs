@@ -45,8 +45,8 @@ public class ParsingException : TokenizerException
 
             sb.AppendLine(base.Message);
             sb.AppendLine();
-            sb.AppendLine($"Column: {Column}");
-            sb.AppendLine($"Line: {Line}");
+            sb.Append("Column: ").Append(Column).AppendLine();
+            sb.Append("Line: ").Append(Line).AppendLine();
 
             return sb.ToString();
         }

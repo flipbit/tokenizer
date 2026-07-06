@@ -123,5 +123,8 @@ dotnet_diagnostic.MA0007.severity = warning
 # Use <see langword="keyword"/> instead of <c>keyword</c> for C# keywords in XML docs
 dotnet_diagnostic.MA0154.severity = warning
 
+# Optimize StringBuilder usage
+dotnet_diagnostic.MA0028.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

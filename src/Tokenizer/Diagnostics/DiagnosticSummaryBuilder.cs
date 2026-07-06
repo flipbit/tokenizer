@@ -181,42 +181,46 @@ internal static class DiagnosticSummaryBuilder
     private static string BuildTransformerDescription(DiagnosticEvent evt)
     {
         var sb = new StringBuilder();
-        sb.Append($"Transformer '{evt.DecoratorName ?? "unknown"}'");
+        sb.Append("Transformer '").Append(evt.DecoratorName ?? "unknown").Append('\'');
 
         if (evt.DecoratorArgs != null && evt.DecoratorArgs.Length > 0)
-            sb.Append($"({string.Join(", ", evt.DecoratorArgs)})");
+#if NETSTANDARD2_0
+            sb.Append('(').Append(string.Join(", ", evt.DecoratorArgs)).Append(')');
+#else
+            sb.Append('(').AppendJoin(", ", evt.DecoratorArgs).Append(')');
+#endif
 
-        sb.Append($" failed to transform value '{evt.Value ?? "null"}'");
+        sb.Append(" failed to transform value '").Append(evt.Value ?? "null").Append('\'');
 
         if (evt.TokenName != null)
-            sb.Append($" for token '{evt.TokenName}'");
+            sb.Append(" for token '").Append(evt.TokenName).Append('\'');
 
-        sb.Append(".");
+        sb.Append('.');
         return sb.ToString();
     }
 
     private static string BuildValidatorDescription(DiagnosticEvent evt)
     {
         var sb = new StringBuilder();
-        sb.Append($"Validator '{evt.DecoratorName ?? "unknown"}'");
-        sb.Append($" rejected value '{evt.Value ?? "null"}'");
+        sb.Append("Validator '").Append(evt.DecoratorName ?? "unknown").Append('\'');
+        sb.Append(" rejected value '").Append(evt.Value ?? "null").Append('\'');
 
         if (evt.TokenName != null)
-            sb.Append($" for token '{evt.TokenName}'");
+            sb.Append(" for token '").Append(evt.TokenName).Append('\'');
 
-        sb.Append(".");
+        sb.Append('.');
         return sb.ToString();
     }
 
     private static string BuildRepeatingTokenDescription(DiagnosticEvent evt)
     {
         var sb = new StringBuilder();
-        sb.Append($"Repeating token '{evt.TokenName ?? "unknown"}' was cut short");
+        sb.Append("Repeating token '").Append(evt.TokenName ?? "unknown").Append("' was cut short");
 
         if (!string.IsNullOrEmpty(evt.Detail))
-            sb.Append($": {evt.Detail}");
+            sb.Append(": ").Append(evt.Detail);
 
-        sb.Append(".");
+        sb.Append('.');
         return sb.ToString();
     }
 }

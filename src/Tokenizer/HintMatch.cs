@@ -51,7 +51,7 @@ public sealed class HintMatch : IEquatable<HintMatch>
         unchecked
         {
             var hash = 17;
-            hash = hash * 31 + (Text?.GetHashCode() ?? 0);
+            hash = hash * 31 + (Text is not null ? StringComparer.Ordinal.GetHashCode(Text) : 0);
             hash = hash * 31 + Optional.GetHashCode();
             hash = hash * 31 + (Location?.GetHashCode() ?? 0);
             return hash;

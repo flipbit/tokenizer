@@ -135,6 +135,9 @@ dotnet_diagnostic.MA0184.severity = warning
 # Use direct methods instead of LINQ when possible
 dotnet_diagnostic.MA0020.severity = warning
 
+# Use StringComparer.GetHashCode instead of string.GetHashCode
+dotnet_diagnostic.MA0021.severity = warning
+
 dotnet_diagnostic.MA0009.severity = warning
 
 # Remove empty statements

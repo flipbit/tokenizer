@@ -24,9 +24,12 @@ internal static class FrontMatterProcessor
 
             if (token.Assign(targetObject, string.Empty, template.Options, location, out var assignedValue, collector))
             {
-                collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
-                    tokenName: token.Name, tokenId: token.Id,
-                    value: assignedValue?.ToString());
+                if (collector.IsEnabled)
+                {
+                    collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
+                        tokenName: token.Name, tokenId: token.Id,
+                        value: assignedValue?.ToString());
+                }
                 if (assignedValue != null)
                 {
                     result.Tokens.AddMatch(token, assignedValue, token.Location);
@@ -34,8 +37,11 @@ internal static class FrontMatterProcessor
             }
             else
             {
-                collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
-                    tokenName: token.Name, tokenId: token.Id);
+                if (collector.IsEnabled)
+                {
+                    collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
+                        tokenName: token.Name, tokenId: token.Id);
+                }
             }
         }
     }

@@ -161,8 +161,9 @@ internal sealed class CandidateProcessor
     }
 
     /// <summary>
-    /// Handles newline-terminated token processing: assigns the current value and
-    /// optionally disables repeating tokens that span non-adjacent lines.
+    /// Handles newline-terminated token processing: optionally disables repeating tokens
+    /// that span non-adjacent lines, attempts assignment, then clears candidates,
+    /// replacement, and updates the replacement location.
     /// Clears candidates and replacement after processing.
     /// </summary>
     public void HandleNewline(TokenizationContext context)

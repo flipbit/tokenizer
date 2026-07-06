@@ -60,9 +60,9 @@ internal static class DiagnosticSummaryBuilder
         // Collect token names that have transformer or validator failures
         var tokensWithFailures = new HashSet<string>(
             events
-                .Where(e => e.Type == DiagnosticEventType.TransformerFailed
-                         || e.Type == DiagnosticEventType.ValidatorFailed)
-                .Where(e => e.TokenName != null)
+                .Where(e => (e.Type == DiagnosticEventType.TransformerFailed
+                          || e.Type == DiagnosticEventType.ValidatorFailed)
+                         && e.TokenName != null)
                 .Select(e => e.TokenName!));
 
         // 1. Transformer failures

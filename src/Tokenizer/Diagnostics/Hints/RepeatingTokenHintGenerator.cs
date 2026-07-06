@@ -16,9 +16,8 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
         var tokenName = sourceEvent.TokenName;
 
         var priorValidatorFailure = trace.Events
-            .Where(e => e.Type == DiagnosticEventType.ValidatorFailed
-                     && e.TokenName == tokenName)
-            .LastOrDefault();
+            .LastOrDefault(e => e.Type == DiagnosticEventType.ValidatorFailed
+                             && e.TokenName == tokenName);
 
         if (priorValidatorFailure != null)
         {
@@ -29,9 +28,8 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
         }
 
         var priorTransformerFailure = trace.Events
-            .Where(e => e.Type == DiagnosticEventType.TransformerFailed
-                     && e.TokenName == tokenName)
-            .LastOrDefault();
+            .LastOrDefault(e => e.Type == DiagnosticEventType.TransformerFailed
+                             && e.TokenName == tokenName);
 
         if (priorTransformerFailure != null)
         {

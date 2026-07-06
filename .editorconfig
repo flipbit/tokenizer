@@ -126,5 +126,8 @@ dotnet_diagnostic.MA0154.severity = warning
 # Optimize StringBuilder usage
 dotnet_diagnostic.MA0028.severity = warning
 
+# Combine LINQ methods
+dotnet_diagnostic.MA0029.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

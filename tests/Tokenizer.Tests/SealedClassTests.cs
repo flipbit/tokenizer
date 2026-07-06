@@ -27,8 +27,8 @@ public class SealedClassTests
     {
         var transformerTypes = typeof(Tokenizer).Assembly
             .GetTypes()
-            .Where(t => t.IsClass && t.IsPublic && !t.IsAbstract)
-            .Where(t => typeof(Transformers.ITokenTransformer).IsAssignableFrom(t));
+            .Where(t => (t.IsClass && t.IsPublic && !t.IsAbstract)
+                     && typeof(Transformers.ITokenTransformer).IsAssignableFrom(t));
 
         foreach (var type in transformerTypes)
         {
@@ -41,8 +41,8 @@ public class SealedClassTests
     {
         var validatorTypes = typeof(Tokenizer).Assembly
             .GetTypes()
-            .Where(t => t.IsClass && t.IsPublic && !t.IsAbstract)
-            .Where(t => typeof(Validators.ITokenValidator).IsAssignableFrom(t));
+            .Where(t => (t.IsClass && t.IsPublic && !t.IsAbstract)
+                     && typeof(Validators.ITokenValidator).IsAssignableFrom(t));
 
         foreach (var type in validatorTypes)
         {

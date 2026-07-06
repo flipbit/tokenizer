@@ -245,8 +245,8 @@ public class TemplateLexerTests
         var lexer = CreateLexer();
 
         // Act — quotes inside braces
-        var single = lexer.Tokenize("{ x : T('hello') }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
-        var dbl = lexer.Tokenize("{ x : T(\"world\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
+        var single = lexer.Tokenize("{ x : T('hello') }").First(t => t.Kind == LexerTokenKind.QuotedString);
+        var dbl = lexer.Tokenize("{ x : T(\"world\") }").First(t => t.Kind == LexerTokenKind.QuotedString);
 
         // Assert
         Assert.Equal(LexerTokenKind.QuotedString, single.Kind);
@@ -265,8 +265,8 @@ public class TemplateLexerTests
         var lexer = CreateLexer();
 
         // Act
-        var escQuote = lexer.Tokenize("{ x : T(\"Jane \\\"Doe\\\"\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
-        var escBackslash = lexer.Tokenize("{ x : T(\"A \\\\ B\") }").Where(t => t.Kind == LexerTokenKind.QuotedString).First();
+        var escQuote = lexer.Tokenize("{ x : T(\"Jane \\\"Doe\\\"\") }").First(t => t.Kind == LexerTokenKind.QuotedString);
+        var escBackslash = lexer.Tokenize("{ x : T(\"A \\\\ B\") }").First(t => t.Kind == LexerTokenKind.QuotedString);
 
         // Assert
         Assert.Equal(LexerTokenKind.QuotedString, escQuote.Kind);

@@ -137,5 +137,8 @@ dotnet_diagnostic.MA0020.severity = warning
 
 dotnet_diagnostic.MA0009.severity = warning
 
+# Remove empty statements
+dotnet_diagnostic.MA0037.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

@@ -33,7 +33,7 @@ public class SetTransformerTests : TokenizerTestBase
         var input = string.Empty;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t)); ;
+        Assert.Throws<ArgumentException>(() => _transformer.TryTransform(input, null!, out var t));
     }
 
     [Fact]

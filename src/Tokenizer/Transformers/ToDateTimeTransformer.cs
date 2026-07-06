@@ -27,7 +27,6 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
             transformed = result;
             return true;
         }
-        ;
 
         transformed = value;
 

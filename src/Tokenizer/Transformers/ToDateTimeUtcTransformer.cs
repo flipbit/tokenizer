@@ -31,7 +31,6 @@ public sealed class ToDateTimeUtcTransformer : ITokenTransformer
             transformed = DateTime.SpecifyKind(result.ToUniversalTime(), DateTimeKind.Utc);
             return true;
         }
-        ;
 
         transformed = value;
 

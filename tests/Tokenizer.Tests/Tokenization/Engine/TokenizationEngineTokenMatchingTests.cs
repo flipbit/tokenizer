@@ -346,10 +346,11 @@ public class TokenizationEngineTokenMatchingTests
         var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
-        // Assert — strict ordering means the engine can't find Age (it appears
-        // after Name in input, but the template expects it before Name).
-        Assert.True(result.Tokens.Matches.Count < 2,
-            $"With out-of-order disabled and reversed input, expected fewer than 2 matches " +
-            $"but got {result.Tokens.Matches.Count}");
+        // Assert — with strict ordering the engine scans for Age first; it skips
+        // past "Name: John\n" and finds "Age: 25", but Name's preamble has already
+        // been consumed so only Age matches.
+        Assert.Single(result.Tokens.Matches);
+        Assert.Equal("Age", result.Tokens.Matches[0].Token.Name);
+        Assert.Equal("25", result.Tokens.Matches[0].Value);
     }
 }

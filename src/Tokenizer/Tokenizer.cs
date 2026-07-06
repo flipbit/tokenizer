@@ -163,33 +163,31 @@ public sealed class Tokenizer : ITokenizer
 
             // Create and initialize the tokenization context
             var context = new TokenizationContext();
+            context.Initialize(reader);
+
+            IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                ? new DiagnosticCollector(null, rawInput)
+                : NullDiagnosticCollector.Instance;
+
+            // Process hints first — hint pre-filtering requires the full input string
+            var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
+
+            if (hintsMissing)
             {
-                context.Initialize(reader);
-
-                IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new DiagnosticCollector(null, rawInput)
-                    : NullDiagnosticCollector.Instance;
-
-                // Process hints first — hint pre-filtering requires the full input string
-                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
-
-                if (hintsMissing)
-                {
-                    log.LogWarning("Required hints are missing, skipping tokenization");
-                }
-                else
-                {
-                    var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
-                    session.Run(context);
-
-                    if (hintStrategy.PostProcess(result))
-                    {
-                        log.LogWarning("Post-tokenization hint check failed");
-                    }
-                }
-
-                FinalizeTokenization(result, template, collector, rawInput);
+                log.LogWarning("Required hints are missing, skipping tokenization");
             }
+            else
+            {
+                var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                session.Run(context);
+
+                if (hintStrategy.PostProcess(result))
+                {
+                    log.LogWarning("Post-tokenization hint check failed");
+                }
+            }
+
+            FinalizeTokenization(result, template, collector, rawInput);
 
             if (log.IsEnabled(LogLevel.Debug))
             {

@@ -152,5 +152,8 @@ dotnet_diagnostic.MA0023.severity = warning
 # Abstract types should not have public or internal constructors
 dotnet_diagnostic.MA0017.severity = warning
 
+# Use semicolon instead of empty braces for types with no body
+dotnet_diagnostic.MA0206.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

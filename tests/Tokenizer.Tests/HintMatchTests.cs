@@ -61,7 +61,9 @@ public class HintMatchTests
         var match = new HintMatch("test", false, new FileLocation());
 
         // Act & Assert
+#pragma warning disable CA1508 // Avoid dead conditional code — testing Equals(null) behavior
         Assert.False(match.Equals(null));
+#pragma warning restore CA1508
     }
 
     [Fact]

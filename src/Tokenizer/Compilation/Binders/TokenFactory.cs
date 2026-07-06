@@ -61,7 +61,7 @@ internal static class TokenFactory
 
         if (options.TrimPreambleBeforeNewLine)
         {
-            if (string.IsNullOrEmpty(preamble) == false && preamble.IndexOf('\n') > -1)
+            if (!string.IsNullOrEmpty(preamble) && preamble.IndexOf('\n') > -1)
             {
                 var idx = preamble.LastIndexOf('\n');
                 preamble = preamble.Substring(idx + 1);

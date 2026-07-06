@@ -96,7 +96,7 @@ internal sealed class CandidateProcessor
     {
         var replacementValue = context.Replacement.ToString();
 
-        if (context.Candidates.CanAnyAssign(replacementValue) == false)
+        if (!context.Candidates.CanAnyAssign(replacementValue))
         {
             if (_collector.IsEnabled)
             {

@@ -71,7 +71,7 @@ internal static class TemplateBinder
                     var hasArgs = dec.Args != null && dec.Args.Count > 0;
 
                     // Special longhand forms without args
-                    if (hasArgs == false)
+                    if (!hasArgs)
                     {
                         if (lower == "eol" || lower == "$")
                         {
@@ -163,7 +163,7 @@ internal static class TemplateBinder
         // Legacy behavior: emit a terminal empty-name token only when there is
         // trailing preamble containing non-whitespace content after the last token.
         var trailingPreamble = preambleBuilder.ToString();
-        if (string.IsNullOrWhiteSpace(trailingPreamble) == false)
+        if (!string.IsNullOrWhiteSpace(trailingPreamble))
         {
             var tail = new TokenDefinition();
             tail.AppendName(string.Empty);
@@ -232,14 +232,14 @@ internal static class TemplateBinder
 
     private static string? GetRepeatingMultilinePreamble(TokenDefinition token)
     {
-        if (token.IsRepeating == false) return null;
+        if (!token.IsRepeating) return null;
         if (string.IsNullOrEmpty(token.Preamble)) return null;
         if (token.Preamble.IndexOf('\n') == -1) return null;
 
         var pre = token.Preamble.SubstringBeforeLastString("\n");
         var post = token.Preamble.SubstringAfterLastString("\n");
 
-        if (string.IsNullOrWhiteSpace(pre) == false &&
+        if (!string.IsNullOrWhiteSpace(pre) &&
             string.IsNullOrWhiteSpace(post))
         {
             return "\n" + post;

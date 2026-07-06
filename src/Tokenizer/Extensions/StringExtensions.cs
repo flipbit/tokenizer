@@ -194,7 +194,7 @@ public static class StringExtensions
     /// <returns><c>true</c> if the string contains only spaces; otherwise <c>false</c>.</returns>
     public static bool IsOnlySpaces(this string value)
     {
-        if (string.IsNullOrEmpty(value) == false)
+        if (!string.IsNullOrEmpty(value))
         {
             foreach (var character in value.ToCharArray())
             {
@@ -247,12 +247,12 @@ public static class StringExtensions
     {
         var result = new StringBuilder();
 
-        if (string.IsNullOrEmpty(value) == false &&
-            string.IsNullOrEmpty(keepTheseCharacters) == false)
+        if (!string.IsNullOrEmpty(value) &&
+            !string.IsNullOrEmpty(keepTheseCharacters))
         {
             foreach (var character in value)
             {
-                if (keepTheseCharacters.Contains(character) == false) continue;
+                if (!keepTheseCharacters.Contains(character)) continue;
 
                 result.Append(character);
             }
@@ -305,7 +305,7 @@ public static class StringExtensions
     /// <returns>The string with the trailing newline removed, or the original string if none was present.</returns>
     public static string TrimTrailingNewLine(this string value)
     {
-        if (value.EndsWithNewLine() == false) return value;
+        if (!value.EndsWithNewLine()) return value;
 
         // EndsWithNewLine confirmed value ends with '\n'.
         // Check for Windows-style '\r\n' by inspecting the penultimate character.

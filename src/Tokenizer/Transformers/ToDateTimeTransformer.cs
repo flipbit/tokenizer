@@ -160,7 +160,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
                 var list = culture
                     .DateTimeFormat
                     .AbbreviatedMonthNames
-                    .Where(m => string.IsNullOrEmpty(m) == false)
+                    .Where(m => !string.IsNullOrEmpty(m))
                     .ToArray();
 
                 MonthAbbreviations.Add(code, list);

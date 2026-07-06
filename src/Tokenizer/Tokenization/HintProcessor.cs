@@ -57,7 +57,7 @@ internal class HintProcessor : IHintProcessor
             _log.LogDebug("Starting hint processing with {HintCount} hint(s) defined", template.Hints.Count);
         }
 
-        while (enumerator.IsEmpty == false)
+        while (!enumerator.IsEmpty)
         {
             // Check hints
             foreach (var hint in template.Hints)
@@ -120,7 +120,7 @@ internal class HintProcessor : IHintProcessor
             }
         }
 
-        var missingRequiredCount = result.Hints.Misses.Count(h => h.Optional == false);
+        var missingRequiredCount = result.Hints.Misses.Count(h => !h.Optional);
         var missingOptionalCount = result.Hints.Misses.Count(h => h.Optional);
 
         if (_log.IsEnabled(LogLevel.Debug))
@@ -131,7 +131,7 @@ internal class HintProcessor : IHintProcessor
 
         ResetEnumeratorAfterHintProcessing(enumerator);
 
-        return result.Hints.Misses.Any(h => h.Optional == false);
+        return result.Hints.Misses.Any(h => !h.Optional);
     }
 
     /// <summary>

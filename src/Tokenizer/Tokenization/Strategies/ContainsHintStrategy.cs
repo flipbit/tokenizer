@@ -50,7 +50,7 @@ internal class ContainsHintStrategy : IHintStrategy
             }
         }
 
-        return result.Hints.Misses.Any(h => h.Optional == false);
+        return result.Hints.Misses.Any(h => !h.Optional);
     }
 
     /// <inheritdoc />

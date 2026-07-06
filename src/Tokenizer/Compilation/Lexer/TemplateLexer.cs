@@ -246,7 +246,7 @@ public class TemplateLexer
         }
 
         // Core streaming scanning loop; tokens are yielded lazily.
-        while (reader.IsEof == false)
+        while (!reader.IsEof)
         {
             var currentPosition = absolutePosition;
             var peek = reader.PeekChar();
@@ -435,7 +435,7 @@ public class TemplateLexer
         var tokenLocation = location.Clone();
         var start = absolutePosition;
         var sb = new System.Text.StringBuilder();
-        while (reader.IsEof == false)
+        while (!reader.IsEof)
         {
             var p = reader.PeekChar(); if (p != ' ' && p != '\t') break;
             var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
@@ -517,12 +517,12 @@ public class TemplateLexer
     private static bool TryReadIdentifier(LookaheadReader reader, FileLocation location, ref int absolutePosition, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out LexerToken? token)
     {
         token = null;
-        var peek = reader.PeekChar(); if (peek == -1 || IsIdentifierChar((char)peek) == false) return false;
+        var peek = reader.PeekChar(); if (peek == -1 || !IsIdentifierChar((char)peek)) return false;
         var tokenLocation = location.Clone(); var start = absolutePosition;
         var sb = new System.Text.StringBuilder();
-        while (reader.IsEof == false)
+        while (!reader.IsEof)
         {
-            var p = reader.PeekChar(); if (p == -1 || IsIdentifierChar((char)p) == false) break;
+            var p = reader.PeekChar(); if (p == -1 || !IsIdentifierChar((char)p)) break;
             var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
         }
         var text = sb.ToString(); if (text.Length == 0) return false;
@@ -535,7 +535,7 @@ public class TemplateLexer
         token = null;
         var tokenLocation = location.Clone(); var start = absolutePosition;
         var sb = new System.Text.StringBuilder();
-        while (reader.IsEof == false)
+        while (!reader.IsEof)
         {
             var p = reader.PeekChar(); if (p == -1) break; var c = (char)p;
             if (c == '\r' || c == '\n' || c == ' ' || c == '\t') break;

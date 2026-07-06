@@ -40,7 +40,7 @@ public class FileLocation : IEquatable<FileLocation>
         if (value == '\r') return;
         if (value == '\n') return;
 
-        if (char.IsWhiteSpace(value) == false)
+        if (!char.IsWhiteSpace(value))
         {
             _newLineCounter = 0;
         }

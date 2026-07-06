@@ -349,7 +349,7 @@ public class TemplateLexerTests
         // Arrange
         var lexer = CreateLexer();
         var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests/Tokenizer.Tests/Samples/Patterns");
-        if (Directory.Exists(sampleDir) == false) return; // skip if not available in this run context
+        if (!Directory.Exists(sampleDir)) return; // skip if not available in this run context
 
         foreach (var file in Directory.EnumerateFiles(sampleDir, "*.txt"))
         {
@@ -482,7 +482,7 @@ public class TemplateLexerTests
         var xmlPath = FindFileUpwards("src/Tokenizer/bin/Debug/net6.0/Tokenizer.xml");
 
         // If docs are not generated for this configuration, skip validation to avoid false negatives
-        if (File.Exists(xmlPath) == false) return;
+        if (!File.Exists(xmlPath)) return;
 
         var xml = File.ReadAllText(xmlPath);
 

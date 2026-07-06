@@ -21,7 +21,7 @@ internal static class OptionApplier
             }
         }
 
-        if (token.TerminateOnNewLine == false && options.TerminateOnNewLine)
+        if (!token.TerminateOnNewLine && options.TerminateOnNewLine)
         {
             token.TerminateOnNewLine = true;
 

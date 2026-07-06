@@ -265,7 +265,7 @@ public class TokenEnumerator
                 matches.Add(token);
             }
 
-            if (token.IsOptional == false) break;
+            if (!token.IsOptional) break;
         }
 
         return matches.Count > 0;

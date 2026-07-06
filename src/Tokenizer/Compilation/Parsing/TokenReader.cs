@@ -107,7 +107,7 @@ internal sealed class TokenReader
     {
         while (_buffer.Count < count)
         {
-            if (_enumerator.MoveNext() == false) break;
+            if (!_enumerator.MoveNext()) break;
             _buffer.Enqueue(_enumerator.Current);
         }
     }

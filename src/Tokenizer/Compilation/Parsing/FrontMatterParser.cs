@@ -296,7 +296,7 @@ internal sealed class FrontMatterParser
             var t = tokens[k];
             if (t.Kind == LexerTokenKind.Whitespace)
             {
-                if (lastWasSpace == false)
+                if (!lastWasSpace)
                 {
                     sb.Append(' '); // collapse runs to single space between parts
                     lastWasSpace = true;

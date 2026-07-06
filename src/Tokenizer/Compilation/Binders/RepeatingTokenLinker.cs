@@ -14,7 +14,7 @@ internal static class RepeatingTokenLinker
 
         var previous = template.Tokens.Last(t => t.Id != token.Id);
 
-        if (previous.Name == token.Name && previous.IsRepeating == false)
+        if (previous.Name == token.Name && !previous.IsRepeating)
         {
             token.DependsOnId = previous.Id;
 

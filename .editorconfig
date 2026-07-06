@@ -114,5 +114,8 @@ dotnet_diagnostic.CA2213.severity = warning
 # ArgumentException should include paramName
 dotnet_diagnostic.MA0003.severity = warning
 
+# Avoid comparing with boolean constants
+dotnet_diagnostic.MA0073.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

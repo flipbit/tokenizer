@@ -27,7 +27,7 @@ public class TemplateParserPhase1Tests
         // Arrange
         var parser = new TemplateParser();
         var sampleDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "tests/Tokenizer.Tests/Samples/Patterns");
-        if (System.IO.Directory.Exists(sampleDir) == false) return; // skip if not available
+        if (!System.IO.Directory.Exists(sampleDir)) return; // skip if not available
 
         foreach (var file in System.IO.Directory.EnumerateFiles(sampleDir, "*.txt"))
         {

@@ -29,7 +29,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public object First(string key)
     {
-        if (Matches.Any(m => m.Token.Name == key) == false)
+        if (!Matches.Any(m => m.Token.Name == key))
         {
             throw new TokenizerException($"Token '{key}' was not found in the input text.");
         }
@@ -47,7 +47,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public T First<T>(string key)
     {
-        if (Matches.Any(m => m.Token.Name == key) == false)
+        if (!Matches.Any(m => m.Token.Name == key))
         {
             throw new TokenizerException($"Token '{key}' was not found in the input text.");
         }

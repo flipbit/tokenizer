@@ -73,7 +73,7 @@ internal sealed class TokenMatchRouter
             }
 
             // First token found — prepare to read token value
-            if (context.Candidates.HasCandidates == false)
+            if (!context.Candidates.HasCandidates)
             {
                 context.Candidates.AddRange(context.MatchBuffer);
                 context.ClearReplacement();

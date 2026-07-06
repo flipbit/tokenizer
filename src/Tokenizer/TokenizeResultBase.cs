@@ -61,8 +61,8 @@ public abstract class TokenizeResultBase
     /// Determines whether the matching process was successful
     /// </summary>
     public bool Success => Tokens.HasMatches &&
-                           Tokens.HasMissingRequiredTokens == false &&
-                           Hints.HasMissingRequiredHints == false &&
+                           !Tokens.HasMissingRequiredTokens &&
+                           !Hints.HasMissingRequiredHints &&
                            (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
 
     /// <inheritdoc />

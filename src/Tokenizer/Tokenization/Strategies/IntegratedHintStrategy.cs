@@ -26,7 +26,7 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
     /// <inheritdoc />
     public void OnTokenMatched(Token token)
     {
-        if (string.IsNullOrEmpty(token.Preamble) == false)
+        if (!string.IsNullOrEmpty(token.Preamble))
         {
             _matchedPreambles.Add(token.Preamble);
         }
@@ -60,6 +60,6 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
             result.Hints.TryAddMiss(hint);
         }
 
-        return result.Hints.Misses.Any(h => h.Optional == false);
+        return result.Hints.Misses.Any(h => !h.Optional);
     }
 }

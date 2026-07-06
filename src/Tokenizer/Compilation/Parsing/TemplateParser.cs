@@ -226,7 +226,7 @@ internal sealed class TemplateParser
                     }
                     if (next.Kind == LexerTokenKind.Whitespace)
                     {
-                        if (sb.Length > 0 && lastWasSpace == false)
+                        if (sb.Length > 0 && !lastWasSpace)
                         {
                             sb.Append(' ');
                             lastWasSpace = true;

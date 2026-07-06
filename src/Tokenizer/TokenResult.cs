@@ -38,14 +38,14 @@ public sealed class TokenResult
 
     private bool TryConcatMatch(Token token, object value)
     {
-        if (token.CanConcatenate == false) return false;
+        if (!token.CanConcatenate) return false;
 
         var index = _matches.FindIndex(m => m.Token.Name == token.Name);
         if (index < 0) return false;
 
         var match = _matches[index];
 
-        if (token.CanConcatenateValues(match.Value, value) == false) return false;
+        if (!token.CanConcatenateValues(match.Value, value)) return false;
 
         var concatenated = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
         if (concatenated != null) _matches[index] = match with { Value = concatenated };

@@ -140,7 +140,7 @@ public sealed class Token
             prepared = prepared.TrimEnd();
         }
 
-        if (RunDecoratorPipeline(prepared, collector, location, out assignedValue) == false) return false;
+        if (!RunDecoratorPipeline(prepared, collector, location, out assignedValue)) return false;
 
         if (target is IDictionary<string, object> dictionary)
         {
@@ -178,7 +178,7 @@ public sealed class Token
         }
         catch (MissingMemberException)
         {
-            if (options.IgnoreMissingProperties == false)
+            if (!options.IgnoreMissingProperties)
             {
                 throw;
             }
@@ -240,13 +240,13 @@ public sealed class Token
 
     private string? PrepareValue(string value)
     {
-        if (string.IsNullOrEmpty(value) && IsFrontMatterToken == false) return null;
+        if (string.IsNullOrEmpty(value) && !IsFrontMatterToken) return null;
         if (IsNull) return null;
         if (string.IsNullOrWhiteSpace(Name)) return null;
 
         value = value.TrimTrailingNewLine();
 
-        if (string.IsNullOrEmpty(value) == false && TerminateOnNewLine)
+        if (!string.IsNullOrEmpty(value) && TerminateOnNewLine)
         {
             var index = value.IndexOf("\n");
             if (index > 0)
@@ -267,7 +267,7 @@ public sealed class Token
         {
             if (decorator.IsTransformer)
             {
-                if (decorator.TryTransform(assignedValue!, out var output) == false)
+                if (!decorator.TryTransform(assignedValue!, out var output))
                 {
                     collector?.Record(DiagnosticEventType.TransformerFailed,
                         tokenName: Name, tokenId: Id,

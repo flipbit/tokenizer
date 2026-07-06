@@ -145,7 +145,7 @@ internal class ResultBuilder : IResultBuilder
         var unmatchedCount = 0;
         foreach (var token in template.Tokens)
         {
-            if (matchedIds.Contains(token.Id) == false)
+            if (!matchedIds.Contains(token.Id))
             {
                 if (_log.IsEnabled(LogLevel.Debug))
                 {

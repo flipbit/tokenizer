@@ -102,7 +102,7 @@ internal sealed class TokenizationSession
     /// </summary>
     private bool ProcessChunk(TokenizationContext context, CancellationToken ct)
     {
-        while (context.Enumerator.IsEmpty == false)
+        while (!context.Enumerator.IsEmpty)
         {
             if (context.Enumerator.NeedsRefill)
                 return false;

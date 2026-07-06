@@ -121,7 +121,7 @@ public sealed class Template
 
         foreach (var tag in tags)
         {
-            if (HasTag(tag) == false)
+            if (!HasTag(tag))
             {
                 missing.Add(tag);
             }
@@ -137,7 +137,7 @@ public sealed class Template
         // Only remove match if out-of-order token
         if (Options.OutOfOrderTokens)
         {
-            if (token.IsRepeating == false) matchIds.Add(token.Id);
+            if (!token.IsRepeating) matchIds.Add(token.Id);
             return;
         }
 
@@ -145,7 +145,7 @@ public sealed class Template
         {
             if (candidate == token)
             {
-                if (candidate.IsRepeating == false)
+                if (!candidate.IsRepeating)
                 {
                     matchIds.Add(candidate.Id);
                 }

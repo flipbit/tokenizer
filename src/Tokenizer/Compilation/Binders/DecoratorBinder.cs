@@ -15,7 +15,7 @@ internal static class DecoratorBinder
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
         IDiagnosticCollector collector)
     {
-        if (string.IsNullOrEmpty(definition.Value) == false)
+        if (!string.IsNullOrEmpty(definition.Value))
         {
             var setContext = new TokenDecoratorContext(typeof(SetTransformer), decoratorCache);
             setContext.AddParameter(definition.Value);
@@ -149,7 +149,7 @@ internal static class DecoratorBinder
         if (definition.IsFrontMatterToken)
         {
             var hasSetTransformer = token.Decorators.Any(d => d.DecoratorType == typeof(SetTransformer));
-            if (hasSetTransformer == false)
+            if (!hasSetTransformer)
             {
                 throw new TokenizerException($"Front Matter Token '{definition.Name}' must have an assignment operation.");
             }

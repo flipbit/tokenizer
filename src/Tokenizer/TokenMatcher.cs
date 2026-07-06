@@ -363,7 +363,7 @@ public sealed class TokenMatcher : ITokenMatcher
         // Check template has tags
         if (template.Tags.Any())
         {
-            if (template.HasTags(tags, out var missing) == false)
+            if (!template.HasTags(tags, out var missing))
             {
                 return false;
             }

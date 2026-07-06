@@ -161,5 +161,8 @@ dotnet_diagnostic.MA0106.severity = warning
 # Use indexer instead of LINQ methods on indexable collections
 dotnet_diagnostic.MA0098.severity = warning
 
+# Use char overload instead of single-character string
+dotnet_diagnostic.MA0089.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

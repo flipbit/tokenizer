@@ -465,7 +465,7 @@ public class TemplateLexerTests
     {
         // Arrange
         var lexer = CreateLexer();
-        var input = string.Join(" ", Enumerable.Repeat("token", 5000));
+        var input = string.Join(' ', Enumerable.Repeat("token", 5000));
 
         // Act
         var count = 0;

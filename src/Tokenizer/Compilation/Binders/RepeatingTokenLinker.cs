@@ -1,0 +1,27 @@
+using Tokens.Diagnostics;
+
+namespace Tokens.Compilation.Binders;
+
+internal static class RepeatingTokenLinker
+{
+    public static void Link(Token token, Template template, IDiagnosticCollector collector)
+    {
+        if (!token.IsRepeating || token.DependsOnId != -1 || template.Tokens.Count < 2)
+            return;
+
+        var previous = template.Tokens.Last(t => t.Id != token.Id);
+
+        if (previous.Name == token.Name && previous.IsRepeating == false)
+        {
+            token.DependsOnId = previous.Id;
+
+            if (collector.IsEnabled)
+            {
+                collector.Record(DiagnosticEventType.RepeatingTokenLinked,
+                    tokenName: token.Name,
+                    tokenId: token.Id,
+                    detail: $"Linked to token {previous.Id}");
+            }
+        }
+    }
+}

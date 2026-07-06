@@ -67,7 +67,7 @@ public class DiagnosticResult
     /// The first failure event in the event list, or null if there are none.
     /// </summary>
     public DiagnosticEvent? FirstFailure =>
-        Events.FirstOrDefault(e => FailureTypes.Contains(e.Type));
+        Events.Find(e => FailureTypes.Contains(e.Type));
 
     /// <summary>
     /// Renders an alignment view showing how the template tokens mapped onto the input text.

@@ -117,9 +117,9 @@ internal sealed class CandidateProcessor
                     tokenNames, context.Enumerator.Location.Line, context.Enumerator.Location.Column);
 
                 throw new InvalidOperationException(
-                    $"Tokenization cannot proceed: tokens with empty preambles ({tokenNames}) cannot be " +
-                    $"distinguished from each other. Add separators (preambles) between consecutive tokens, " +
-                    $"or ensure the target object has writable properties.");
+                    "Tokenization cannot proceed: tokens with empty preambles (" + tokenNames + ") cannot be " +
+                    "distinguished from each other. Add separators (preambles) between consecutive tokens, " +
+                    "or ensure the target object has writable properties.");
             }
 
             for (var i = 0; i < context.Candidates.Tokens.Count; i++)

@@ -129,5 +129,8 @@ dotnet_diagnostic.MA0028.severity = warning
 # Combine LINQ methods
 dotnet_diagnostic.MA0029.severity = warning
 
+# Interpolated string contains no interpolated expressions
+dotnet_diagnostic.MA0184.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

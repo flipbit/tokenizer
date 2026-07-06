@@ -22,7 +22,8 @@ public class SampleTests : TokenizerTestBase
         var input = ReadData("bbc.co.uk");
 
         var diagTokenizer = CreateDiagnosticTokenizer();
-        var result = diagTokenizer.Tokenize(template, input);
+        var compiled = diagTokenizer.Compile(template);
+        var result = diagTokenizer.Tokenize(compiled, input);
 
         try
         {
@@ -77,7 +78,8 @@ public class SampleTests : TokenizerTestBase
         var pattern = ReadTemplate("whois.iana");
         var input = ReadData("com");
 
-        var result = tokenizer.Tokenize(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize(template, input);
 
         Assert.Equal("com", result.First("Tld"));
         Assert.Equal("VeriSign Global Registry Services", result.First("Organization.Name"));
@@ -138,7 +140,8 @@ public class SampleTests : TokenizerTestBase
         var pattern = ReadTemplate("whois.iana");
         var input = ReadData("abogado");
 
-        var result = tokenizer.Tokenize(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize(template, input);
 
         Assert.Equal("abogado", result.First("Tld"));
         Assert.Equal("Minds + Machines Group Limited", result.First("Organization.Name"));
@@ -193,7 +196,8 @@ public class SampleTests : TokenizerTestBase
         var pattern = ReadTemplate("whois.verisign-grs.com");
         var input = ReadData("facebook.com");
 
-        var result = tokenizer.Tokenize(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize(template, input);
 
         Assert.Equal("facebook.com", result.First("WhoisRedirect.Domain"));
         Assert.Equal("whois.registrarsafe.com", result.First("WhoisRedirect.Url"));
@@ -215,7 +219,8 @@ public class SampleTests : TokenizerTestBase
         var pattern = ReadTemplate("whois.nic.br");
         var input = ReadData("08.pl");
 
-        var result = tokenizer.Tokenize(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize(template, input);
 
         Assert.False(result.Success);
     }
@@ -226,7 +231,8 @@ public class SampleTests : TokenizerTestBase
         var pattern = ReadTemplate("whois.verisign-grs.com");
         var input = ReadData("sil.org");
 
-        var result = tokenizer.Tokenize(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize(template, input);
 
         Assert.Equal("sil.org", result.First("WhoisRedirect.Domain"));
         Assert.Equal("whois.enom.com", result.First("WhoisRedirect.Url"));
@@ -252,7 +258,8 @@ public class SampleTests : TokenizerTestBase
         var input = ReadData("amazon.co.jp");
 
         var diagTokenizer = CreateDiagnosticTokenizer();
-        var result = diagTokenizer.Tokenize(template, input);
+        var compiled = diagTokenizer.Compile(template);
+        var result = diagTokenizer.Tokenize(compiled, input);
 
         try
         {
@@ -297,7 +304,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.vg");
         var input = ReadData("google.vg");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.True(result.Success);
         Assert.Equal(53, result.Matches.Count);
@@ -309,7 +317,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.vg.not.found");
         var input = ReadData("not.found.vg");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.True(result.Success);
         Assert.Single(result.Matches);
@@ -322,7 +331,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.cc");
         var input = ReadData("google.cc");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.True(result.Success);
         Assert.Equal(22, result.Matches.Count);
@@ -342,7 +352,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.generic");
         var input = ReadData("google.co.za");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.True(result.Success);
         Assert.Equal(58, result.Matches.Count);
@@ -364,7 +375,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.generic");
         var input = ReadData("google.biz");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.True(result.Success);
         Assert.Equal(52, result.Matches.Count);
@@ -384,7 +396,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.iana");
         var input = ReadData("com");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.Equal(39, result.Matches.Count);
     }
@@ -411,7 +424,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.eu.org");
         var input = ReadData("google.eu.org");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.Equal(result.First("DomainName"), "google.eu.org");
     }
@@ -422,7 +436,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.tr");
         var input = ReadData("google.tr");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.Equal(new DateTime(2001, 08, 23), result.First("Registered"));
     }
@@ -437,7 +452,8 @@ public class SampleTests : TokenizerTestBase
         var input = ReadData("aloespa.com.ve");
 
         var diagTokenizer = CreateDiagnosticTokenizer();
-        var result = diagTokenizer.Tokenize(template, input);
+        var compiled = diagTokenizer.Compile(template);
+        var result = diagTokenizer.Tokenize(compiled, input);
 
         try
         {
@@ -530,7 +546,8 @@ public class SampleTests : TokenizerTestBase
 
         ReadData("aloespa.com.ve");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
         Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
@@ -543,7 +560,8 @@ public class SampleTests : TokenizerTestBase
         var template = ReadTemplate("whois.coop");
         var input = ReadData("moscowfood.coop");
 
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         Assert.Equal("5662D-COOP", result.First("RegistryDomainId"));
         Assert.Equal("moscowfood.coop", result.First("DomainName"));

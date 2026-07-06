@@ -104,7 +104,9 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var input = "Server: 10.0.0.1";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("10.0.0.1", result.First("Ip"));

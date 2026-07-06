@@ -11,7 +11,8 @@ public class TokenPropertyImmutabilityTests
         var tokenizer = new Tokenizer();
 
         // Act
-        var result = tokenizer.Tokenize<TestClass>("Name: {TestClass.Name}\nAge: {TestClass.Age}", "Name: Alice\nAge: 30");
+        var template = tokenizer.Compile("Name: {TestClass.Name}\nAge: {TestClass.Age}");
+        var result = tokenizer.Tokenize<TestClass>(template, "Name: Alice\nAge: 30");
 
         // Assert
         Assert.True(result.Success);
@@ -25,7 +26,8 @@ public class TokenPropertyImmutabilityTests
         var tokenizer = new Tokenizer();
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name?}", "Name: Alice");
+        var template = tokenizer.Compile("Name: {Name?}");
+        var result = tokenizer.Tokenize(template, "Name: Alice");
 
         // Assert
         var nameToken = Assert.Single(result.Tokens.Matches, m => m.Token.Name == "Name");

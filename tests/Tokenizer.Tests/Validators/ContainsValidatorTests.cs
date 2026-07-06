@@ -83,7 +83,9 @@ public class ContainsValidatorTests : TokenizerTestBase
         var input = "Name: Alice Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("Bob", result.First("Name"));

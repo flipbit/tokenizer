@@ -87,7 +87,8 @@ public class TokenizerOptionsRecordTests : TokenizerTestBase
         var tokenizer = new Tokenizer();
 
         // Act
-        var result = tokenizer.Tokenize("{name}", "John");
+        var template = tokenizer.Compile("{name}");
+        var result = tokenizer.Tokenize(template, "John");
 
         // Assert
         Assert.True(result.Success);

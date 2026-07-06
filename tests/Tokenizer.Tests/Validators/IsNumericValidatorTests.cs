@@ -71,7 +71,9 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var input = "Age: ten";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal("ten", result.First("Age"));
@@ -85,7 +87,9 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var input = "Age: Ten  Age: 10";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("10", result.First("Age"));

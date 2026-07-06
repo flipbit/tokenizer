@@ -96,7 +96,9 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
         var input = "Phone: 555-1234";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("555-1234", result.First("Phone"));

@@ -83,7 +83,9 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var input = "Ip: 80.34.123.45  Ip: 192.168.1.1";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("192.168.1.1", result.First("InternalIpAddress"));

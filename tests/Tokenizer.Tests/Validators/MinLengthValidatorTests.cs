@@ -68,7 +68,9 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var input = "Zip: 123\nZip: 45678";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("45678", result.First("ZipCode"));

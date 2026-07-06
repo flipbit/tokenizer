@@ -18,7 +18,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.NotNull(result.Diagnostics);
@@ -40,7 +41,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.Null(result.Diagnostics);
@@ -55,7 +57,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Email: notanemail";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.NotNull(result.Diagnostics);
@@ -73,7 +76,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: john";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.NotNull(result.Diagnostics);
@@ -91,7 +95,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.NotNull(result.Diagnostics);
@@ -108,7 +113,8 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var result = tokenizer.Tokenize(template, input);
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
         Assert.NotNull(result.Diagnostics);

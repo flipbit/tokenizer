@@ -73,19 +73,6 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <summary>
-    /// Parses the given <paramref name="template"/> pattern and tokenizes the <paramref name="input"/> string against it.
-    /// </summary>
-    /// <param name="template">The template pattern string to parse and match against.</param>
-    /// <param name="input">The input text to extract values from.</param>
-    /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
-    public TokenizeResult Tokenize(string template, string input)
-    {
-        var t = Compile(template);
-
-        return Tokenize(t, input);
-    }
-
-    /// <summary>
     /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>.
     /// </summary>
     /// <param name="template">The compiled template to match against.</param>
@@ -99,21 +86,6 @@ public sealed class Tokenizer : ITokenizer
 
         return result;
 
-    }
-
-    /// <summary>
-    /// Parses the given <paramref name="pattern"/> and tokenizes the <paramref name="input"/> string,
-    /// mapping extracted values onto a new instance of <typeparamref name="T"/>.
-    /// </summary>
-    /// <typeparam name="T">The type to populate with extracted values.</typeparam>
-    /// <param name="pattern">The template pattern string to parse and match against.</param>
-    /// <param name="input">The input text to extract values from.</param>
-    /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
-    public TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new()
-    {
-        var template = Compile(pattern);
-
-        return Tokenize<T>(template, input);
     }
 
     /// <summary>
@@ -268,20 +240,10 @@ public sealed class Tokenizer : ITokenizer
     public Template Compile(string pattern) => parser.Parse(pattern);
 
     /// <inheritdoc />
-    public Template Compile(string pattern, string name) => parser.Parse(pattern, name);
-
-    /// <inheritdoc />
     public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
         var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
         return parser.Parse(content);
-    }
-
-    /// <inheritdoc />
-    public async Task<Template> CompileAsync(TextReader reader, string name, CancellationToken ct = default)
-    {
-        var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
-        return parser.Parse(content, name);
     }
 
     /// <inheritdoc />
@@ -290,14 +252,6 @@ public sealed class Tokenizer : ITokenizer
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
             bufferSize: 1024, leaveOpen: true);
         return await CompileAsync(reader, ct).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    public async Task<Template> CompileAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default)
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return await CompileAsync(reader, name, ct).ConfigureAwait(false);
     }
 
     private static async Task<string> ReadToEndAsync(TextReader reader, CancellationToken ct, int maxLength = 0)

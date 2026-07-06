@@ -171,7 +171,9 @@ public class IsInRangeValidatorTests : TokenizerTestBase
         var input = "Age: 25";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("25", result.First("Age"));

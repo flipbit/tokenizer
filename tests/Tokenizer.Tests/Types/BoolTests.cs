@@ -25,7 +25,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: true";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.True(result.Value.Enrolled);
@@ -37,7 +38,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: TRUE";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.True(result.Value.Enrolled);
@@ -49,7 +51,8 @@ public class BoolTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Enrolled: {Enrolled}";
         const string input = @"Name: Alice, Enrolled: False";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.False(result.Value.Enrolled);

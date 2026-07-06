@@ -91,7 +91,9 @@ public class IsGuidValidatorTests : TokenizerTestBase
         var input = "ID: d3b07384-d9a0-4e9b-8a0d-1e6b2a3c4d5e";
 
         // Act
-        var result = new Tokenizer().Tokenize(template, input);
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template);
+        var result = _tok.Tokenize(compiled, input);
 
         // Assert
         Assert.Equal("d3b07384-d9a0-4e9b-8a0d-1e6b2a3c4d5e", result.First("Id"));

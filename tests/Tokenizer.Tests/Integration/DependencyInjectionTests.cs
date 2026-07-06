@@ -81,7 +81,8 @@ public class DependencyInjectionTests : TokenizerTestBase
         var tokenizer = serviceProvider.GetRequiredService<Tokenizer>();
 
         // Act
-        var result = tokenizer.Tokenize("{name}", "John");
+        var template = tokenizer.Compile("{name}");
+        var result = tokenizer.Tokenize(template, "John");
 
         // Assert
         Assert.True(result.Success);
@@ -103,7 +104,8 @@ public class DependencyInjectionTests : TokenizerTestBase
         var tokenizer = serviceProvider.GetRequiredService<Tokenizer>();
 
         // Act
-        var result = tokenizer.Tokenize("{name}", "John");
+        var template = tokenizer.Compile("{name}");
+        var result = tokenizer.Tokenize(template, "John");
 
         // Assert - just verify it doesn't throw
         Assert.True(result.Success);

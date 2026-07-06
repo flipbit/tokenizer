@@ -19,24 +19,9 @@ public interface ITokenizer
     Template Compile(string pattern);
 
     /// <summary>
-    /// Compiles a template pattern string with an explicit name.
-    /// </summary>
-    Template Compile(string pattern, string name);
-
-    /// <summary>
-    /// Parses the given template pattern and tokenizes the input string against it.
-    /// </summary>
-    TokenizeResult Tokenize(string template, string input);
-
-    /// <summary>
     /// Tokenizes the input string using a pre-compiled template.
     /// </summary>
     TokenizeResult Tokenize(Template template, string input);
-
-    /// <summary>
-    /// Parses the given pattern and tokenizes the input, mapping values onto a new <typeparamref name="T"/>.
-    /// </summary>
-    TokenizeResult<T> Tokenize<T>(string pattern, string input) where T : class, new();
 
     /// <summary>
     /// Tokenizes the input using a pre-compiled template, mapping values onto a new <typeparamref name="T"/>.
@@ -49,19 +34,9 @@ public interface ITokenizer
     Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default);
 
     /// <summary>
-    /// Asynchronously compiles a template from a <see cref="TextReader"/> with an explicit name.
-    /// </summary>
-    Task<Template> CompileAsync(TextReader reader, string name, CancellationToken ct = default);
-
-    /// <summary>
     /// Asynchronously compiles a template from a <see cref="Stream"/>.
     /// </summary>
     Task<Template> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default);
-
-    /// <summary>
-    /// Asynchronously compiles a template from a <see cref="Stream"/> with an explicit name.
-    /// </summary>
-    Task<Template> CompileAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default);
 
     /// <summary>
     /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.

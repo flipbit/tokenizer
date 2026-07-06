@@ -31,19 +31,6 @@ public class CompileAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenTextReaderWithName_WhenCompileAsync_ThenTemplateHasName()
-    {
-        // Arrange
-        using var reader = new StringReader("Name: {Name}");
-
-        // Act
-        var template = await _tokenizer.CompileAsync(reader, "my-template");
-
-        // Assert
-        Assert.Equal("my-template", template.Name);
-    }
-
-    [Fact]
     public async Task GivenStream_WhenCompileAsync_ThenProducesValidTemplate()
     {
         // Arrange
@@ -54,20 +41,6 @@ public class CompileAsyncTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(template);
-        Assert.Single(template.Tokens);
-    }
-
-    [Fact]
-    public async Task GivenStreamWithName_WhenCompileAsync_ThenTemplateHasName()
-    {
-        // Arrange
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: {Name}"));
-
-        // Act
-        var template = await _tokenizer.CompileAsync(stream, Encoding.UTF8, "stream-template");
-
-        // Assert
-        Assert.Equal("stream-template", template.Name);
         Assert.Single(template.Tokens);
     }
 

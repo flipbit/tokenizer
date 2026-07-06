@@ -70,7 +70,9 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var input = "Date: 2000-01-01 UTC";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
@@ -84,7 +86,9 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var input = "Date: 2000-01-01 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
@@ -98,7 +102,9 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var input = "Date: 2000-1-1 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.False(result.Contains("Date"));
@@ -122,7 +128,9 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var input = "Date: 2000-1-1 (UTC)";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));

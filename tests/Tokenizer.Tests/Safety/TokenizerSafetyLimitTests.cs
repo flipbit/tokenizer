@@ -16,8 +16,9 @@ public class TokenizerSafetyLimitTests
         var input = new string('x', 101);
 
         // Act & Assert
+        var template = tokenizer.Compile("Name: {Name}");
         var ex = Assert.Throws<TokenizerException>(() =>
-            tokenizer.Tokenize("Name: {Name}", input));
+            tokenizer.Tokenize(template, input));
         Assert.Contains("101", ex.Message);
         Assert.Contains("100", ex.Message);
         Assert.Contains("MaxInputLength", ex.Message);
@@ -32,7 +33,8 @@ public class TokenizerSafetyLimitTests
         var input = "Name: " + new string('x', 94);
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name}", input);
+        var template = tokenizer.Compile("Name: {Name}");
+        var result = tokenizer.Tokenize(template, input);
 
         // Assert
         Assert.NotNull(result);
@@ -49,7 +51,8 @@ public class TokenizerSafetyLimitTests
         var input = "Name: " + new string('x', 200_000);
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name}", input);
+        var template = tokenizer.Compile("Name: {Name}");
+        var result = tokenizer.Tokenize(template, input);
 
         // Assert
         Assert.NotNull(result);
@@ -67,7 +70,7 @@ public class TokenizerSafetyLimitTests
 
         // Act & Assert
         var ex = Assert.Throws<ParsingException>(() =>
-            tokenizer.Tokenize(longTemplate, "Name: John"));
+            tokenizer.Compile(longTemplate));
         Assert.Contains("MaxTemplateLength", ex.Message);
     }
 
@@ -80,7 +83,8 @@ public class TokenizerSafetyLimitTests
         var template = "Name: {Name}";
 
         // Act
-        var result = tokenizer.Tokenize(template, "Name: John");
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, "Name: John");
 
         // Assert
         Assert.NotNull(result);
@@ -97,7 +101,8 @@ public class TokenizerSafetyLimitTests
         var template = "Name: {Name}" + new string(' ', 100_000);
 
         // Act
-        var result = tokenizer.Tokenize(template, "Name: John");
+        var compiled = tokenizer.Compile(template);
+        var result = tokenizer.Tokenize(compiled, "Name: John");
 
         // Assert
         Assert.NotNull(result);
@@ -120,7 +125,7 @@ public class TokenizerSafetyLimitTests
 
         // Act & Assert
         var ex = Assert.Throws<ParsingException>(() =>
-            tokenizer.Tokenize(templateBuilder.ToString(), "T0: Value"));
+            tokenizer.Compile(templateBuilder.ToString()));
         Assert.Contains("6", ex.Message);
         Assert.Contains("5", ex.Message);
         Assert.Contains("MaxTokenCount", ex.Message);
@@ -140,7 +145,8 @@ public class TokenizerSafetyLimitTests
         }
 
         // Act
-        var result = tokenizer.Tokenize(templateBuilder.ToString(), "T0: Value0\nT1: Value1");
+        var compiled = tokenizer.Compile(templateBuilder.ToString());
+        var result = tokenizer.Tokenize(compiled, "T0: Value0\nT1: Value1");
 
         // Assert
         Assert.NotNull(result);
@@ -155,8 +161,9 @@ public class TokenizerSafetyLimitTests
         var tokenizer = new Tokenizer(options);
 
         // Act & Assert
+        var template = tokenizer.Compile("Name: {Name}");
         var ex = Assert.Throws<TokenizerException>(() =>
-            tokenizer.Tokenize("Name: {Name}", "Name: John Doe"));
+            tokenizer.Tokenize(template, "Name: John Doe"));
         Assert.Contains("MaxIterations", ex.Message);
     }
 
@@ -168,7 +175,8 @@ public class TokenizerSafetyLimitTests
         var tokenizer = new Tokenizer(options);
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
+        var template = tokenizer.Compile("Name: {Name}");
+        var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert
         Assert.NotNull(result);
@@ -183,7 +191,8 @@ public class TokenizerSafetyLimitTests
         var tokenizer = new Tokenizer(options);
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name}", "Name: John");
+        var template = tokenizer.Compile("Name: {Name}");
+        var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert
         Assert.NotNull(result);
@@ -197,7 +206,8 @@ public class TokenizerSafetyLimitTests
         var tokenizer = new Tokenizer();
 
         // Act
-        var result = tokenizer.Tokenize("Name: {Name}\nAge: {Age}", "Name: John\nAge: 30");
+        var template = tokenizer.Compile("Name: {Name}\nAge: {Age}");
+        var result = tokenizer.Tokenize(template, "Name: John\nAge: 30");
 
         // Assert
         Assert.True(result.Success);
@@ -213,9 +223,8 @@ public class TokenizerSafetyLimitTests
         var tokenizer = new Tokenizer();
 
         // Act — complex template with many tokens on a moderately-sized input
-        var result = tokenizer.Tokenize(
-            "A:{A} B:{B} C:{C} D:{D} E:{E} F:{F}",
-            "A:1 B:2 C:3 D:4 E:5 F:6");
+        var template = tokenizer.Compile("A:{A} B:{B} C:{C} D:{D} E:{E} F:{F}");
+        var result = tokenizer.Tokenize(template, "A:1 B:2 C:3 D:4 E:5 F:6");
 
         // Assert — no exception thrown and all tokens matched
         Assert.True(result.Success);

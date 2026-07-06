@@ -32,7 +32,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: GradeB";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeB, result.Value.Grade);
@@ -44,7 +45,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: Gradec";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeC, result.Value.Grade);
@@ -56,7 +58,8 @@ public class EnumTests : TokenizerTestBase
         const string pattern = @"Name: {Name}, Grade: {Grade}";
         const string input = @"Name: Alice, Grade: GradeE";
 
-        var result = tokenizer.Tokenize<Student>(pattern, input);
+        var template = tokenizer.Compile(pattern);
+        var result = tokenizer.Tokenize<Student>(template, input);
 
         Assert.Equal("Alice", result.Value.Name);
         Assert.Equal(Grade.GradeA, result.Value.Grade);

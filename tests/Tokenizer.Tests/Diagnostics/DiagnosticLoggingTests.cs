@@ -16,7 +16,8 @@ public class DiagnosticLoggingTests : TokenizerTestBase
         var tokenizer = CreateDiagnosticTokenizer();
 
         // Act
-        var result = tokenizer.Tokenize("Name: { Name }", "Name: John");
+        var template = tokenizer.Compile("Name: { Name }");
+        var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert
         Assert.NotNull(result.Diagnostics);
@@ -30,7 +31,8 @@ public class DiagnosticLoggingTests : TokenizerTestBase
         var tokenizer = CreateDiagnosticTokenizer();
 
         // Act
-        var result = tokenizer.Tokenize("Name: { Name }\nAge: { Age }", "Name: John");
+        var template = tokenizer.Compile("Name: { Name }\nAge: { Age }");
+        var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert
         Assert.NotNull(result.Diagnostics);

@@ -148,7 +148,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
     public ITokenMatcher RegisterTemplate(string content, string name)
     {
-        var template = tokenizer.Compile(content, name);
+        var template = tokenizer.Compile(content);
+        template.Name = name;
 
         Templates.Add(template);
 
@@ -209,7 +210,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, string name, CancellationToken ct = default)
     {
-        var template = await tokenizer.CompileAsync(reader, name, ct).ConfigureAwait(false);
+        var template = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
+        template.Name = name;
         Templates.Add(template);
         return this;
     }
@@ -225,7 +227,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, string name, CancellationToken ct = default)
     {
-        var template = await tokenizer.CompileAsync(input, encoding, name, ct).ConfigureAwait(false);
+        var template = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
+        template.Name = name;
         Templates.Add(template);
         return this;
     }

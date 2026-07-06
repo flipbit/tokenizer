@@ -55,7 +55,9 @@ public class SetTransformerTests : TokenizerTestBase
         var input = "Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal("Alice", result.First("Name"));
@@ -69,7 +71,9 @@ public class SetTransformerTests : TokenizerTestBase
         var input = "Name: Bob";
 
         // Act
-        var result = new Tokenizer().Tokenize(pattern, input);
+        var _tok = new Tokenizer();
+        var template = _tok.Compile(pattern);
+        var result = _tok.Tokenize(template, input);
 
         // Assert
         Assert.Equal("ALICE", result.First("Name"));

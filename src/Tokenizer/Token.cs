@@ -235,7 +235,7 @@ public sealed class Token
         var prepared = PrepareValue(value);
         if (prepared == null) return false;
 
-        return RunDecoratorPipeline(prepared, null, null, out _);
+        return RunDecoratorPipeline(prepared, collector: null, location: null, out _);
     }
 
     private string? PrepareValue(string value)

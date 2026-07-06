@@ -66,7 +66,7 @@ public static class ObjectExtensions
                    (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IList<>) ||
                     propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
                 {
-                    var list = propertyInfo.GetValue(@object, null);
+                    var list = propertyInfo.GetValue(@object, index: null);
 
                     if (list == null)
                     {
@@ -83,7 +83,7 @@ public static class ObjectExtensions
                         list = Activator.CreateInstance(constructedEnumerableType)
                             ?? throw new InvalidOperationException($"Failed to create instance of {constructedEnumerableType.Name}");
 
-                        propertyInfo.SetValue(@object, list, null);
+                        propertyInfo.SetValue(@object, list, index: null);
                     }
 
                     var addMethod = AddMethodCache.GetOrAdd(list.GetType(), t =>
@@ -118,17 +118,17 @@ public static class ObjectExtensions
                     {
                         if (value == null)
                         {
-                            propertyInfo.SetValue(@object, null, null);
+                            propertyInfo.SetValue(@object, value: null, index: null);
                         }
                         else if (value.GetType() == genericType)
                         {
-                            propertyInfo.SetValue(@object, value, null);
+                            propertyInfo.SetValue(@object, value, index: null);
                         }
                         else
                         {
                             var convertedValue = Convert.ChangeType(value, genericType);
 
-                            propertyInfo.SetValue(@object, convertedValue, null);
+                            propertyInfo.SetValue(@object, convertedValue, index: null);
                         }
                     }
                     catch (FormatException e)
@@ -140,13 +140,13 @@ public static class ObjectExtensions
                 {
                     var convertedValue = ChangeType(value, propertyInfo.PropertyType);
 
-                    propertyInfo.SetValue(@object, convertedValue, null);
+                    propertyInfo.SetValue(@object, convertedValue, index: null);
                 }
 
                 break;
             }
 
-            var currentValue = propertyInfo.GetValue(@object, null);
+            var currentValue = propertyInfo.GetValue(@object, index: null);
 
             if (currentValue == null)
             {
@@ -161,10 +161,10 @@ public static class ObjectExtensions
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("Could not create type: " + propertyInfo.PropertyType, ex);
+                    throw new ArgumentException("Could not create type: " + propertyInfo.PropertyType, nameof(segments), ex);
                 }
 
-                propertyInfo.SetValue(@object, currentValue, null);
+                propertyInfo.SetValue(@object, currentValue, index: null);
             }
 
             if (value != null)
@@ -203,7 +203,7 @@ public static class ObjectExtensions
         var valueString = value.ToString()
             ?? throw new InvalidOperationException($"Cannot convert null string to enum type {targetType.Name}");
 
-        return Enum.Parse(targetType, valueString, true);
+        return Enum.Parse(targetType, valueString, ignoreCase: true);
     }
 
     /// <summary>

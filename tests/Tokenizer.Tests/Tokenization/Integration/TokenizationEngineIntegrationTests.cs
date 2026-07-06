@@ -51,7 +51,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -81,7 +81,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -105,7 +105,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -131,7 +131,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -154,7 +154,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -177,7 +177,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -200,7 +200,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -224,7 +224,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -247,7 +247,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -270,7 +270,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -294,7 +294,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -317,7 +317,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

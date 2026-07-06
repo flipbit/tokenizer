@@ -26,7 +26,7 @@ public class TokenEnumerator
     /// All line endings (<c>\r\n</c>, lone <c>\r</c>) are normalised to <c>\n</c>.
     /// </summary>
     /// <param name="reader">The text reader to enumerate.</param>
-    public TokenEnumerator(TextReader reader) : this(reader, null)
+    public TokenEnumerator(TextReader reader) : this(reader, originalString: null)
     {
     }
 

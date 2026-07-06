@@ -43,7 +43,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified _tokenizer.
     /// </summary>
     /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
-    public TokenMatcher(ITokenizer tokenizer) : this(tokenizer, null)
+    public TokenMatcher(ITokenizer tokenizer) : this(tokenizer, loggerFactory: null)
     {
     }
 
@@ -73,7 +73,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>A <see cref="TokenMatcherResult"/> containing results for each template, including the best match.</returns>
     public TokenMatcherResult Match(string input)
     {
-        return Match(input, null);
+        return Match(input, tags: null);
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>A <see cref="TokenMatcherResult{T}"/> containing typed results for each template, including the best match.</returns>
     public TokenMatcherResult<T> Match<T>(string input) where T : class, new()
     {
-        return Match<T>(input, null);
+        return Match<T>(input, tags: null);
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public sealed class TokenMatcher : ITokenMatcher
 
     /// <inheritdoc />
     public Task<TokenMatcherResult> MatchAsync(TextReader input, CancellationToken ct = default)
-        => MatchAsync(input, null, ct);
+        => MatchAsync(input, tags: null, ct);
 
     /// <inheritdoc />
     public async Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default)
@@ -225,7 +225,7 @@ public sealed class TokenMatcher : ITokenMatcher
 
     /// <inheritdoc />
     public Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, CancellationToken ct = default) where T : class, new()
-        => MatchAsync<T>(input, null, ct);
+        => MatchAsync<T>(input, tags: null, ct);
 
     /// <inheritdoc />
     public async Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
@@ -241,7 +241,7 @@ public sealed class TokenMatcher : ITokenMatcher
 
     /// <inheritdoc />
     public Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, CancellationToken ct = default)
-        => MatchAsync(input, encoding, null, ct);
+        => MatchAsync(input, encoding, tags: null, ct);
 
     /// <inheritdoc />
     public async Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default)
@@ -257,7 +257,7 @@ public sealed class TokenMatcher : ITokenMatcher
 
     /// <inheritdoc />
     public Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
-        => MatchAsync<T>(input, encoding, null, ct);
+        => MatchAsync<T>(input, encoding, tags: null, ct);
 
     /// <inheritdoc />
     public async Task<TokenMatcherResult<T>> MatchAsync<T>(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default) where T : class, new()

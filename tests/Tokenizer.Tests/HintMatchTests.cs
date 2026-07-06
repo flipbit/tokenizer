@@ -10,8 +10,8 @@ public class HintMatchTests
     {
         // Arrange
         var location = new FileLocation();
-        var a = new HintMatch("test", false, location);
-        var b = new HintMatch("test", false, location);
+        var a = new HintMatch("test", optional: false, location);
+        var b = new HintMatch("test", optional: false, location);
 
         // Act & Assert
         Assert.Equal(a, b);
@@ -23,8 +23,8 @@ public class HintMatchTests
     {
         // Arrange
         var location = new FileLocation();
-        var a = new HintMatch("test", false, location);
-        var b = new HintMatch("other", false, location);
+        var a = new HintMatch("test", optional: false, location);
+        var b = new HintMatch("other", optional: false, location);
 
         // Act & Assert
         Assert.NotEqual(a, b);
@@ -35,8 +35,8 @@ public class HintMatchTests
     {
         // Arrange
         var location = new FileLocation();
-        var a = new HintMatch("test", false, location);
-        var b = new HintMatch("test", true, location);
+        var a = new HintMatch("test", optional: false, location);
+        var b = new HintMatch("test", optional: true, location);
 
         // Act & Assert
         Assert.NotEqual(a, b);
@@ -47,8 +47,8 @@ public class HintMatchTests
     {
         // Arrange
         var location = new FileLocation();
-        var a = new HintMatch("test", false, location);
-        var b = new HintMatch("test", false, location);
+        var a = new HintMatch("test", optional: false, location);
+        var b = new HintMatch("test", optional: false, location);
 
         // Act & Assert
         Assert.Equal(a.GetHashCode(), b.GetHashCode());
@@ -58,11 +58,11 @@ public class HintMatchTests
     public void GivenHintMatch_WhenComparedToNull_ThenIsNotEqual()
     {
         // Arrange
-        var match = new HintMatch("test", false, new FileLocation());
+        var match = new HintMatch("test", optional: false, new FileLocation());
 
         // Act & Assert
 #pragma warning disable CA1508 // Avoid dead conditional code — testing Equals(null) behavior
-        Assert.False(match.Equals(null));
+        Assert.False(match.Equals(obj: null));
 #pragma warning restore CA1508
     }
 
@@ -70,7 +70,7 @@ public class HintMatchTests
     public void GivenHintMatch_WhenToString_ThenReturnsCompactFormat()
     {
         // Arrange
-        var match = new HintMatch("Domain Name", false, new FileLocation());
+        var match = new HintMatch("Domain Name", optional: false, new FileLocation());
 
         // Act
         var result = match.ToString();

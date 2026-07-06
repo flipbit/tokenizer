@@ -192,7 +192,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result);
@@ -210,7 +210,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(result);
@@ -228,7 +228,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(result);

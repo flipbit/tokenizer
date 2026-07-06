@@ -12,7 +12,7 @@ public class InputValidatorTests
     public void GivenNullTarget_WhenValidating_ThenDoesNotThrow()
     {
         // Act & Assert
-        InputValidator.ValidateTargetObject(null, _logger);
+        InputValidator.ValidateTargetObject(targetObject: null, _logger);
     }
 
     [Fact]

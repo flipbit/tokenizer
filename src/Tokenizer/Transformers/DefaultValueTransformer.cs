@@ -10,7 +10,7 @@ public sealed class DefaultValueTransformer : ITokenTransformer
     {
         if (args == null || args.Length == 0)
         {
-            throw new ArgumentException("DefaultValue(fallback): missing argument — you must specify a fallback value");
+            throw new ArgumentException("DefaultValue(fallback): missing argument — you must specify a fallback value", nameof(args));
         }
 
         var valueString = value?.ToString();

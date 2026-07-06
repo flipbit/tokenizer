@@ -28,7 +28,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(longInput));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -52,7 +52,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -76,7 +76,7 @@ public class TokenizationEngineEdgeCaseTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

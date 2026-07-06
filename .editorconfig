@@ -111,5 +111,8 @@ dotnet_diagnostic.CA2200.severity = warning
 # Disposable fields should be disposed
 dotnet_diagnostic.CA2213.severity = warning
 
+# ArgumentException should include paramName
+dotnet_diagnostic.MA0003.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

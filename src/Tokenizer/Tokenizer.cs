@@ -34,7 +34,7 @@ public sealed class Tokenizer : ITokenizer
     /// <summary>
     /// Creates a new Tokenizer with the specified options.
     /// </summary>
-    public Tokenizer(TokenizerOptions options) : this(options, null)
+    public Tokenizer(TokenizerOptions options) : this(options, loggerFactory: null)
     {
     }
 
@@ -79,7 +79,7 @@ public sealed class Tokenizer : ITokenizer
     {
         var result = new TokenizeResult(template);
 
-        Tokenize(result, null, template, input);
+        Tokenize(result, value: null, template, input);
 
         return result;
 
@@ -280,7 +280,7 @@ public sealed class Tokenizer : ITokenizer
     public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
         var result = new TokenizeResult(template);
-        await TokenizeAsyncCore(result, null, template, input, ct).ConfigureAwait(false);
+        await TokenizeAsyncCore(result, value: null, template, input, ct).ConfigureAwait(false);
         return result;
     }
 
@@ -330,7 +330,7 @@ public sealed class Tokenizer : ITokenizer
             context.Initialize(reader);
 
             IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new DiagnosticCollector(null)
+                ? new DiagnosticCollector(inputContent: null)
                 : NullDiagnosticCollector.Instance;
 
             try
@@ -338,7 +338,7 @@ public sealed class Tokenizer : ITokenizer
                 // Async path uses IntegratedHintStrategy directly — it tracks hints via
                 // OnTokenMatched callbacks during single-pass tokenization, since the full
                 // input string isn't available during streaming.
-                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, null, result, collector);
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput: null, result, collector);
 
                 if (hintsMissing)
                 {
@@ -366,7 +366,7 @@ public sealed class Tokenizer : ITokenizer
                 throw;
             }
 
-            FinalizeTokenization(result, template, collector, null);
+            FinalizeTokenization(result, template, collector, rawInput: null);
 
             if (_log.IsEnabled(LogLevel.Debug))
             {

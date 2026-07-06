@@ -16,7 +16,7 @@ public sealed class SubstringBeforeTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length == 0) throw new ArgumentException($"SubstringBefore(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"SubstringBefore(): missing argument processing: {value}", nameof(args));
 
         transformed = valueString.SubstringBeforeString(args[0]);
 

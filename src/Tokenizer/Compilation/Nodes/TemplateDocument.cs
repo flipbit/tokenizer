@@ -45,7 +45,7 @@ public sealed class TemplateDocument : SyntaxNode
     /// </summary>
     public static TemplateDocument WithoutFrontMatter(FileLocation location, int start, int length, IReadOnlyList<ContentNode> content)
     {
-        return new TemplateDocument(location, start, length, null, content);
+        return new TemplateDocument(location, start, length, frontMatter: null, content);
     }
 }
 

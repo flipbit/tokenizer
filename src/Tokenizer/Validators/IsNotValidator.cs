@@ -16,7 +16,7 @@ public sealed class IsNotValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return true;
 
-        if (args.Length != 1) throw new ArgumentException("IsNot() - Must supply a string value");
+        if (args.Length != 1) throw new ArgumentException("IsNot() - Must supply a string value", nameof(args));
 
         return valueString != args[0];
     }

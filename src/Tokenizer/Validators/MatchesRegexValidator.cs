@@ -17,7 +17,7 @@ public sealed class MatchesRegexValidator : ITokenValidator
     {
         if (args == null || args.Length == 0)
         {
-            throw new ArgumentException("MatchesRegex(pattern): missing argument — you must specify a regex pattern");
+            throw new ArgumentException("MatchesRegex(pattern): missing argument — you must specify a regex pattern", nameof(args));
         }
 
         if (value == null) return false;

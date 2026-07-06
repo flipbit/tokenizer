@@ -16,7 +16,7 @@ internal class ResultBuilder : IResultBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="ResultBuilder"/> class.
     /// </summary>
-    public ResultBuilder() : this(null)
+    public ResultBuilder() : this(logger: null)
     {
     }
 

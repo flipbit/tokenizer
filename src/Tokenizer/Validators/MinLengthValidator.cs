@@ -12,7 +12,7 @@ public sealed class MinLengthValidator : ITokenValidator
     {
         if (args.Length == 0)
         {
-            throw new ArgumentException("You must specify a MinLength value, e.g. 'MinLength(50)'");
+            throw new ArgumentException("You must specify a MinLength value, e.g. 'MinLength(50)'", nameof(args));
         }
 
         try
@@ -23,7 +23,7 @@ public sealed class MinLengthValidator : ITokenValidator
         }
         catch (FormatException ex)
         {
-            throw new ArgumentException("MinLength parameter must be an integer", ex);
+            throw new ArgumentException("MinLength parameter must be an integer", nameof(args), ex);
         }
 
     }

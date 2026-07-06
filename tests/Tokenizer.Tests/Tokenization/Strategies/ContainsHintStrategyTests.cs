@@ -138,7 +138,7 @@ public class ContainsHintStrategyTests
 
         // Act & Assert — sync path always provides rawInput; null is a programming error
         Assert.Throws<ArgumentNullException>(() =>
-            _strategy.PreProcess(template, enumerator, null, result, NullDiagnosticCollector.Instance));
+            _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]

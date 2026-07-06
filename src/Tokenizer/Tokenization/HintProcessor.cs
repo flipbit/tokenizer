@@ -16,7 +16,7 @@ internal class HintProcessor : IHintProcessor
     /// <summary>
     /// Initializes a new instance of the <see cref="HintProcessor"/> class.
     /// </summary>
-    public HintProcessor() : this(null)
+    public HintProcessor() : this(logger: null)
     {
     }
 

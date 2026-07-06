@@ -11,8 +11,8 @@ public class HintBinderTests
     public void GivenDefinitionWithHints_WhenBinding_ThenTemplateHasHints()
     {
         var definition = new TemplateDefinition();
-        definition.Hints.Add(new Hint("invoice", false));
-        definition.Hints.Add(new Hint("receipt", false));
+        definition.Hints.Add(new Hint("invoice", Optional: false));
+        definition.Hints.Add(new Hint("receipt", Optional: false));
         var template = new TemplateBuilder().Build();
 
         HintBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
@@ -26,8 +26,8 @@ public class HintBinderTests
     public void GivenDefinitionWithDuplicateHints_WhenBinding_ThenDuplicatesAreSkipped()
     {
         var definition = new TemplateDefinition();
-        definition.Hints.Add(new Hint("invoice", false));
-        definition.Hints.Add(new Hint("invoice", false));
+        definition.Hints.Add(new Hint("invoice", Optional: false));
+        definition.Hints.Add(new Hint("invoice", Optional: false));
         var template = new TemplateBuilder().Build();
 
         HintBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
@@ -50,9 +50,9 @@ public class HintBinderTests
     public void GivenDiagnosticsEnabled_WhenBinding_ThenRecordsHintAddedEvents()
     {
         var definition = new TemplateDefinition();
-        definition.Hints.Add(new Hint("invoice", false));
+        definition.Hints.Add(new Hint("invoice", Optional: false));
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector(null);
+        var collector = new DiagnosticCollector(inputContent: null);
 
         HintBinder.Bind(definition, template, collector);
 

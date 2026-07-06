@@ -16,7 +16,7 @@ public sealed class ContainsValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        if (args == null || args.Length == 0) throw new ArgumentException($"Contains(): missing argument processing: {value}");
+        if (args == null || args.Length == 0) throw new ArgumentException($"Contains(): missing argument processing: {value}", nameof(args));
 
         return valueString.Contains(args[0]);
     }

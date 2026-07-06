@@ -16,11 +16,11 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            null, result, template,
+            targetObject: null, result, template,
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, null);
+            NullDiagnosticCollector.Instance, hintStrategy: null);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("x"));
@@ -41,11 +41,11 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            null, result, template,
+            targetObject: null, result, template,
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, null);
+            NullDiagnosticCollector.Instance, hintStrategy: null);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -66,11 +66,11 @@ public class TokenMatchRouterTests
         var template = parser.Compile("A:{First}B:{Second}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            null, result, template,
+            targetObject: null, result, template,
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, null);
+            NullDiagnosticCollector.Instance, hintStrategy: null);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("A:helloB:world"));
@@ -94,11 +94,11 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name$}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            null, result, template,
+            targetObject: null, result, template,
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, null);
+            NullDiagnosticCollector.Instance, hintStrategy: null);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice\nOther: stuff"));

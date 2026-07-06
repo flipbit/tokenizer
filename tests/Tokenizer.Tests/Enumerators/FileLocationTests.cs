@@ -60,7 +60,7 @@ public class FileLocationTests
 
         // Act & Assert
 #pragma warning disable CA1508 // Avoid dead conditional code — testing Equals(null) behavior
-        Assert.False(location.Equals(null));
+        Assert.False(location.Equals(obj: null));
 #pragma warning restore CA1508
     }
 

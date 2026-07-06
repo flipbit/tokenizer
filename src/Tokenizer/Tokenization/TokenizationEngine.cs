@@ -12,7 +12,7 @@ internal class TokenizationEngine : ITokenizationEngine
 {
     private readonly ILogger<TokenizationEngine> _log;
 
-    public TokenizationEngine() : this(null)
+    public TokenizationEngine() : this(logger: null)
     {
     }
 

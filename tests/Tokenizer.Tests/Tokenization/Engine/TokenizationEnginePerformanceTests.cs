@@ -32,7 +32,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -56,7 +56,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -94,7 +94,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -122,7 +122,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -151,7 +151,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -184,7 +184,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -217,7 +217,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -241,7 +241,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -269,7 +269,7 @@ public class TokenizationEnginePerformanceTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -295,7 +295,7 @@ public class TokenizationEnginePerformanceTests
                 .WithTemplate(template)
                 .Build();
 
-            var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+            var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
             session.Run(context);
             results.Add(result);
         }
@@ -328,7 +328,7 @@ public class TokenizationEnginePerformanceTests
             var result = new TokenizeResultBuilder()
                 .WithTemplate(template)
                 .Build();
-            var session = _engine.CreateSession(template, null, result, NullDiagnosticCollector.Instance);
+            var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
             session.Run(c);
             return result;
         }).ToList();

@@ -16,7 +16,7 @@ public sealed class RemoveEndTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 1) throw new ArgumentException($"RemoveEnd(value): missing arguments processing: {value}");
+        if (args == null || args.Length != 1) throw new ArgumentException($"RemoveEnd(value): missing arguments processing: {value}", nameof(args));
 
         if (valueString.EndsWith(args[0]))
         {

@@ -24,10 +24,10 @@ public class AllocationOptimizationTests : TokenizerTestBase
         var buffer = new List<Token>();
 
         // Act - call match twice with same buffer
-        enumerator.TryMatch(tokensToMatch, false, buffer);
+        enumerator.TryMatch(tokensToMatch, outOfOrderTokens: false, buffer);
         var firstCallMatched = buffer.Count > 0;
 
-        enumerator.TryMatch(tokensToMatch, false, buffer);
+        enumerator.TryMatch(tokensToMatch, outOfOrderTokens: false, buffer);
 
         // Assert - buffer was cleared on second call (not accumulated)
         Assert.True(firstCallMatched);

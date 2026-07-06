@@ -14,17 +14,17 @@ public sealed class IsInRangeValidator : ITokenValidator
     {
         if (args == null || args.Length < 2)
         {
-            throw new ArgumentException("IsInRange(min, max): you must specify both min and max values");
+            throw new ArgumentException("IsInRange(min, max): you must specify both min and max values", nameof(args));
         }
 
         if (!decimal.TryParse(args[0], NumberStyles.Number, CultureInfo.InvariantCulture, out var min))
         {
-            throw new ArgumentException($"IsInRange(min, max): min value '{args[0]}' is not a valid number");
+            throw new ArgumentException($"IsInRange(min, max): min value '{args[0]}' is not a valid number", nameof(args));
         }
 
         if (!decimal.TryParse(args[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var max))
         {
-            throw new ArgumentException($"IsInRange(min, max): max value '{args[1]}' is not a valid number");
+            throw new ArgumentException($"IsInRange(min, max): max value '{args[1]}' is not a valid number", nameof(args));
         }
 
         if (value == null) return false;

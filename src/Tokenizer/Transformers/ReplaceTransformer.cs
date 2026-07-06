@@ -14,7 +14,7 @@ public sealed class ReplaceTransformer : ITokenTransformer
             return true;
         }
 
-        if (args == null || args.Length != 2) throw new ArgumentException($"Replace(from, to): missing arguments processing: {value}");
+        if (args == null || args.Length != 2) throw new ArgumentException($"Replace(from, to): missing arguments processing: {value}", nameof(args));
 
         transformed = valueString.Replace(args[0], args[1]);
 

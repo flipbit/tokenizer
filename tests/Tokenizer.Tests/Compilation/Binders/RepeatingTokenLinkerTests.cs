@@ -90,7 +90,7 @@ public class RepeatingTokenLinkerTests
         var template = new TemplateBuilder()
             .WithTokens(nonRepeating, repeating)
             .Build();
-        var collector = new DiagnosticCollector(null);
+        var collector = new DiagnosticCollector(inputContent: null);
 
         RepeatingTokenLinker.Link(repeating, template, collector);
 

@@ -16,7 +16,7 @@ public sealed class TruncateTransformer : ITokenTransformer
 
         if (args == null || args.Length == 0)
         {
-            throw new ArgumentException($"Truncate(maxLength): missing argument processing: {value}");
+            throw new ArgumentException($"Truncate(maxLength): missing argument processing: {value}", nameof(args));
         }
 
         try
@@ -31,7 +31,7 @@ public sealed class TruncateTransformer : ITokenTransformer
         }
         catch (FormatException ex)
         {
-            throw new ArgumentException("Truncate parameter must be an integer", ex);
+            throw new ArgumentException("Truncate parameter must be an integer", nameof(args), ex);
         }
     }
 }

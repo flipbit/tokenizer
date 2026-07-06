@@ -21,11 +21,11 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null);
+        var collector = new DiagnosticCollector(inputContent: null);
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, null, result, collector, location);
+        FrontMatterProcessor.Process(template, targetObject: null, result, collector, location);
 
         // Assert
         Assert.Contains(collector.GetResult()!.Events,
@@ -46,11 +46,11 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null);
+        var collector = new DiagnosticCollector(inputContent: null);
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, null, result, collector, location);
+        FrontMatterProcessor.Process(template, targetObject: null, result, collector, location);
 
         // Assert
         var diagnosticResult = collector.GetResult();
@@ -74,11 +74,11 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null);
+        var collector = new DiagnosticCollector(inputContent: null);
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, null, result, collector, location);
+        FrontMatterProcessor.Process(template, targetObject: null, result, collector, location);
 
         // Assert
         Assert.Contains(collector.GetResult()!.Events,

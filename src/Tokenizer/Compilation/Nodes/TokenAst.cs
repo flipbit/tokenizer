@@ -21,7 +21,7 @@ public sealed class TokenNode : ContentNode
         : base(location, start, length)
     {
         Name = name;
-        Modifiers = modifiers ?? new ModifierSet(false, false, false, false);
+        Modifiers = modifiers ?? new ModifierSet(IsOptional: false, IsRepeating: false, IsRequired: false, IsTerminate: false);
         Value = value;
         Decorators = decorators ?? System.Array.Empty<DecoratorNode>();
     }

@@ -18,7 +18,7 @@ public sealed class RegexReplaceTransformer : ITokenTransformer
 
         if (args == null || args.Length < 2)
         {
-            throw new ArgumentException($"RegexReplace(pattern, replacement): missing arguments processing: {value}");
+            throw new ArgumentException($"RegexReplace(pattern, replacement): missing arguments processing: {value}", nameof(args));
         }
 
         transformed = Regex.Replace(valueString, args[0], args[1], RegexOptions.None, TimeSpan.FromSeconds(1));

@@ -36,21 +36,6 @@ public class TokenizationContextTests
     }
 
     [Fact]
-    public void GivenInitializedContext_WhenCleanup_ThenDisposesResources()
-    {
-        // Arrange
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-
-        // Act
-        context.Dispose();
-
-        // Assert
-        // Dispose should not throw and should handle disposal gracefully
-        Assert.True(true); // If we get here, dispose succeeded
-    }
-
-    [Fact]
     public void GivenContext_WhenSetReplacementLocation_ThenUpdatesLocation()
     {
         // Arrange
@@ -173,29 +158,6 @@ public class TokenizationContextTests
     }
 
     [Fact]
-    public void GivenContext_WhenDispose_ThenDisposesCorrectly()
-    {
-        // Arrange
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-
-        // Act & Assert
-        context.Dispose(); // Should not throw
-    }
-
-    [Fact]
-    public void GivenContext_WhenDisposeMultipleTimes_ThenHandlesGracefully()
-    {
-        // Arrange
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-
-        // Act & Assert
-        context.Dispose();
-        context.Dispose(); // Should not throw
-    }
-
-    [Fact]
     public void GivenContext_WhenInitializeWithNullReader_ThenThrowsException()
     {
         // Arrange
@@ -217,37 +179,6 @@ public class TokenizationContextTests
 
         // Assert
         Assert.NotNull(context.Enumerator);
-    }
-
-    [Fact]
-    public void GivenContext_WhenUsingStatement_ThenDisposesAutomatically()
-    {
-        // Arrange & Act
-        using (var context = new TokenizationContext())
-        {
-            context.Initialize(new System.IO.StringReader("test"));
-            // Context should be usable here
-            Assert.NotNull(context.Enumerator);
-        }
-
-        // Assert - Context should be disposed and not throw
-        Assert.True(true);
-    }
-
-    [Fact]
-    public void GivenContext_WhenFinalizerCalled_ThenHandlesGracefully()
-    {
-        // Arrange
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("test"));
-
-        // Act - Force garbage collection to trigger finalizer
-        context = null;
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-        // Assert - Should not throw
-        Assert.True(true);
     }
 
     [Fact]

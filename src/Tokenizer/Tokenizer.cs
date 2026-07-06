@@ -165,7 +165,7 @@ public sealed class Tokenizer : ITokenizer
             }
 
             // Create and initialize the tokenization context
-            using (var context = new TokenizationContext())
+            var context = new TokenizationContext();
             {
                 context.Initialize(reader);
 
@@ -335,7 +335,7 @@ public sealed class Tokenizer : ITokenizer
                 log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
             }
 
-            using var context = new TokenizationContext();
+            var context = new TokenizationContext();
             context.Initialize(reader);
 
             IDiagnosticCollector collector = template.Options.EnableDiagnostics

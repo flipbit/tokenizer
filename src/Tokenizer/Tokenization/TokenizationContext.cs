@@ -9,10 +9,8 @@ namespace Tokens.Tokenization;
 /// This context manages the state that needs to be shared between different tokenization services,
 /// including candidate tokens, enumerator, replacement state, and tracking collections.
 /// </summary>
-internal sealed class TokenizationContext : IDisposable
+internal sealed class TokenizationContext
 {
-    private bool _disposed = false;
-
     /// <summary>
     /// Gets the candidate token list containing tokens that are currently being considered for matching.
     /// </summary>
@@ -130,12 +128,4 @@ internal sealed class TokenizationContext : IDisposable
         }
     }
 
-    /// <summary>
-    /// Disposes of the context and any resources it holds.
-    /// </summary>
-    public void Dispose()
-    {
-        if (_disposed) return;
-        _disposed = true;
-    }
 }

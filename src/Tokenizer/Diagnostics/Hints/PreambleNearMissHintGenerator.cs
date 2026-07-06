@@ -9,7 +9,7 @@ namespace Tokens.Diagnostics.Hints;
 /// </summary>
 internal sealed class PreambleNearMissHintGenerator : IHintGenerator
 {
-    private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled);
+    private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
 
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,

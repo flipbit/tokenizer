@@ -11,7 +11,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
 {
     private static readonly Dictionary<string, string[]> MonthAbbreviations;
     private static readonly object LockHandle;
-    private static readonly Regex OrdinalSuffixRegex = new(@"\b(\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled);
+    private static readonly Regex OrdinalSuffixRegex = new(@"\b(\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
 
     static ToDateTimeTransformer()
     {

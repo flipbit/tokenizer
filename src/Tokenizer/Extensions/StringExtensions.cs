@@ -8,7 +8,7 @@ namespace Tokens.Extensions;
 /// </summary>
 public static class StringExtensions
 {
-    private static readonly Regex NewLineSplitRegex = new(@"\r\n|\r|\n", RegexOptions.Compiled);
+    private static readonly Regex NewLineSplitRegex = new(@"\r\n|\r|\n", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
     /// <summary>
     /// Gets the substring after the first matching string.
     /// </summary>

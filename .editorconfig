@@ -135,5 +135,7 @@ dotnet_diagnostic.MA0184.severity = warning
 # Use direct methods instead of LINQ when possible
 dotnet_diagnostic.MA0020.severity = warning
 
+dotnet_diagnostic.MA0009.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

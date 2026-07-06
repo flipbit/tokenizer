@@ -133,10 +133,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
     public ITokenMatcher RegisterTemplate(string content)
     {
-        var template = tokenizer.Compile(content);
-
-        Templates.Add(template);
-
+        var result = tokenizer.Compile(content);
+        Templates.Add(result.Template);
         return this;
     }
 
@@ -148,11 +146,9 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
     public ITokenMatcher RegisterTemplate(string content, string name)
     {
-        var template = tokenizer.Compile(content);
-        template.Name = name;
-
-        Templates.Add(template);
-
+        var result = tokenizer.Compile(content);
+        result.Template.Name = name;
+        Templates.Add(result.Template);
         return this;
     }
 
@@ -202,16 +198,16 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default)
     {
-        var template = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
-        Templates.Add(template);
+        var result = await tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
+        Templates.Add(result.Template);
         return this;
     }
 
     /// <inheritdoc />
     public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
     {
-        var template = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
-        Templates.Add(template);
+        var result = await tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
+        Templates.Add(result.Template);
         return this;
     }
 

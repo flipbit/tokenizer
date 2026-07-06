@@ -25,7 +25,7 @@ internal class TemplateCompiler
         registry = new DecoratorRegistry(options);
     }
 
-    public Template Compile(string content)
+    public CompilationResult Compile(string content)
     {
         IDiagnosticCollector collector = Options.EnableDiagnostics
             ? new DiagnosticCollector(content, null)
@@ -50,7 +50,7 @@ internal class TemplateCompiler
                     detail: $"Template '{template.Name}' compiled with {template.Tokens.Count} token(s)");
             }
 
-            return template;
+            return new CompilationResult(template, collector.GetResult());
         }
         catch (TokenizerException)
         {

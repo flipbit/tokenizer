@@ -16,7 +16,7 @@ public interface ITokenizer
     /// <summary>
     /// Compiles a template pattern string into a reusable <see cref="Template"/>.
     /// </summary>
-    Template Compile(string pattern);
+    CompilationResult Compile(string pattern);
 
     /// <summary>
     /// Tokenizes the input string using a pre-compiled template.
@@ -31,12 +31,12 @@ public interface ITokenizer
     /// <summary>
     /// Asynchronously compiles a template from a <see cref="TextReader"/>.
     /// </summary>
-    Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default);
+    Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default);
 
     /// <summary>
     /// Asynchronously compiles a template from a <see cref="Stream"/>.
     /// </summary>
-    Task<Template> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default);
+    Task<CompilationResult> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default);
 
     /// <summary>
     /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.

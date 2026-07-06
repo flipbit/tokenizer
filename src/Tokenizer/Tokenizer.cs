@@ -237,17 +237,17 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <inheritdoc />
-    public Template Compile(string pattern) => parser.Compile(pattern);
+    public CompilationResult Compile(string pattern) => parser.Compile(pattern);
 
     /// <inheritdoc />
-    public async Task<Template> CompileAsync(TextReader reader, CancellationToken ct = default)
+    public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
         var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
         return parser.Compile(content);
     }
 
     /// <inheritdoc />
-    public async Task<Template> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+    public async Task<CompilationResult> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default)
     {
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
             bufferSize: 1024, leaveOpen: true);

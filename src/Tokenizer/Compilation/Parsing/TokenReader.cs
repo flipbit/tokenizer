@@ -81,7 +81,7 @@ internal sealed class TokenReader
         }
     }
 
-    public string CaptureWindow(int before, int after)
+    public string CaptureWindow(int _, int after)
     {
         // This simple implementation returns upcoming tokens' raw text; previous tokens are not stored to keep streaming.
         EnsureBuffered(after + 1);

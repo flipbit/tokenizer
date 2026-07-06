@@ -18,14 +18,12 @@ public class DiagnosticResult
         DiagnosticEventType.SingleUseTokenRemoved,
     };
 
-    private readonly string? _templateContent;
     private readonly string? _inputContent;
     private DiagnosticSummary? _summary;
     private string? _alignment;
 
-    internal DiagnosticResult(string? templateContent, string? inputContent)
+    internal DiagnosticResult(string? inputContent)
     {
-        _templateContent = templateContent;
         _inputContent = inputContent;
         Events = new List<DiagnosticEvent>();
     }
@@ -77,7 +75,7 @@ public class DiagnosticResult
     /// </summary>
     public string RenderAlignment()
     {
-        _alignment ??= AlignmentRenderer.Render(this, _templateContent, _inputContent);
+        _alignment ??= AlignmentRenderer.Render(this, _inputContent);
         return _alignment;
     }
 }

@@ -85,14 +85,14 @@ public class TokenBuilder
         return this;
     }
 
-    public TokenBuilder WithTransformers(params ITokenTransformer[] transformers)
+    public TokenBuilder WithTransformers(params ITokenTransformer[] _)
     {
         // Note: Transformers property doesn't exist in Token
         // This method is kept for API compatibility
         return this;
     }
 
-    public TokenBuilder WithValidators(params ITokenValidator[] validators)
+    public TokenBuilder WithValidators(params ITokenValidator[] _)
     {
         // Note: Validators property doesn't exist in Token
         // This method is kept for API compatibility

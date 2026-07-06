@@ -23,7 +23,7 @@ public class DiagnosticCollectorTests
     public void GivenActiveCollector_WhenRecordingEvent_ThenEventIsStored()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
 
         // Act
         collector.Record(DiagnosticEventType.TokenAssigned,
@@ -43,7 +43,7 @@ public class DiagnosticCollectorTests
     public void GivenActiveCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
 
         // Act
         collector.Record(DiagnosticEventType.TokenizationStarted);
@@ -63,7 +63,7 @@ public class DiagnosticCollectorTests
     public void GivenDiagnostics_WhenQueryingFailures_ThenReturnsOnlyFailureEvents()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
         collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Second",
             decoratorName: "IsEmail", value: "notanemail");
@@ -89,7 +89,7 @@ public class DiagnosticCollectorTests
     public void GivenDiagnostics_WhenQueryingForToken_ThenReturnsEventsForThatToken()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "First");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Second");
@@ -107,7 +107,7 @@ public class DiagnosticCollectorTests
     public void GivenDiagnostics_WhenQueryingFirstFailure_ThenReturnsFirstFailureEvent()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
         collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Second");
         collector.Record(DiagnosticEventType.TransformerFailed, tokenName: "Third");
@@ -125,7 +125,7 @@ public class DiagnosticCollectorTests
     public void GivenDiagnosticsWithNoFailures_WhenQueryingFirstFailure_ThenReturnsNull()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
 
         // Act

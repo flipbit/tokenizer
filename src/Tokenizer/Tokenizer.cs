@@ -163,7 +163,7 @@ public sealed class Tokenizer : ITokenizer
             context.Initialize(reader);
 
             IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new DiagnosticCollector(null, rawInput)
+                ? new DiagnosticCollector(rawInput)
                 : NullDiagnosticCollector.Instance;
 
             // Process hints first — hint pre-filtering requires the full input string
@@ -330,7 +330,7 @@ public sealed class Tokenizer : ITokenizer
             context.Initialize(reader);
 
             IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new DiagnosticCollector(null, null)
+                ? new DiagnosticCollector(null)
                 : NullDiagnosticCollector.Instance;
 
             try

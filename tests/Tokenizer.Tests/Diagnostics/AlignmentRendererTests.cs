@@ -9,7 +9,7 @@ public class AlignmentRendererTests
     public void GivenSuccessfulMatch_WhenRendering_ThenShowsMatchedTokens()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Name: { Name }", "Name: John");
+        var collector = new DiagnosticCollector("Name: John");
         collector.Record(DiagnosticEventType.TokenizationStarted,
             detail: "Template: test, Tokens: 1, Input length: 10");
         collector.Record(DiagnosticEventType.PreambleMatched,
@@ -33,8 +33,7 @@ public class AlignmentRendererTests
     public void GivenMissedToken_WhenRendering_ThenShowsUnmatchedSection()
     {
         // Arrange
-        var collector = new DiagnosticCollector(
-            "Name: { Name }\nAge: { Age }", "Name: John");
+        var collector = new DiagnosticCollector("Name: John");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
@@ -54,7 +53,7 @@ public class AlignmentRendererTests
     public void GivenRenderedAlignment_WhenRendered_ThenContainsSummarySection()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Name: { Name }", "Name: John");
+        var collector = new DiagnosticCollector("Name: John");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
@@ -72,8 +71,7 @@ public class AlignmentRendererTests
     public void GivenValidatorFailure_WhenRendering_ThenShowsFailureWithHint()
     {
         // Arrange
-        var collector = new DiagnosticCollector(
-            "Email: { Email : IsEmail }", "Email: notanemail");
+        var collector = new DiagnosticCollector("Email: notanemail");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator",
@@ -94,8 +92,7 @@ public class AlignmentRendererTests
     public void GivenTransformerFailure_WhenRendering_ThenShowsTransformerDetails()
     {
         // Arrange
-        var collector = new DiagnosticCollector(
-            "Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }", "Date: 21/11/2005");
+        var collector = new DiagnosticCollector("Date: 21/11/2005");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeUtcTransformer",
@@ -117,7 +114,7 @@ public class AlignmentRendererTests
     public void GivenHeaderSection_WhenRendered_ThenContainsTokenAndInputCounts()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Name: { Name }", "Name: John\nExtra line");
+        var collector = new DiagnosticCollector("Name: John\nExtra line");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());

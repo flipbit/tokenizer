@@ -35,10 +35,10 @@ internal static class DecoratorBinder
             if (TryApplyConcatenation(definition.Name ?? string.Empty, decorator, token, collector))
                 continue;
 
-            if (TryApplyTransformer(definition, decorator, token, registry, decoratorCache, collector))
+            if (TryApplyTransformer(decorator, token, registry, decoratorCache, collector))
                 continue;
 
-            if (TryApplyValidator(definition, decorator, token, registry, decoratorCache, collector))
+            if (TryApplyValidator(decorator, token, registry, decoratorCache, collector))
                 continue;
 
             throw new TokenizerException($"Unknown Token Operation: {decorator.Name}");
@@ -74,7 +74,7 @@ internal static class DecoratorBinder
         return true;
     }
 
-    private static bool TryApplyTransformer(TokenDefinition definition, DecoratorDefinition decorator, Token token,
+    private static bool TryApplyTransformer(DecoratorDefinition decorator, Token token,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
         IDiagnosticCollector collector)
     {
@@ -111,7 +111,7 @@ internal static class DecoratorBinder
         return false;
     }
 
-    private static bool TryApplyValidator(TokenDefinition definition, DecoratorDefinition decorator, Token token,
+    private static bool TryApplyValidator(DecoratorDefinition decorator, Token token,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
         IDiagnosticCollector collector)
     {

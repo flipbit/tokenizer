@@ -4,7 +4,7 @@ namespace Tokens.Diagnostics;
 
 internal static class AlignmentRenderer
 {
-    public static string Render(DiagnosticResult diagnostics, string? templateContent, string? inputContent)
+    public static string Render(DiagnosticResult diagnostics, string? inputContent)
     {
         var sb = new StringBuilder();
         var summary = diagnostics.Summary;

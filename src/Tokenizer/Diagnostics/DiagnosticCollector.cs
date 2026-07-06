@@ -13,11 +13,10 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
     /// <summary>
     /// Initialises a new collector for a single tokenization call.
     /// </summary>
-    /// <param name="templateContent">The template pattern being used.</param>
     /// <param name="inputContent">The input text being tokenized.</param>
-    public DiagnosticCollector(string? templateContent, string? inputContent)
+    public DiagnosticCollector(string? inputContent)
     {
-        _diagnostics = new DiagnosticResult(templateContent, inputContent);
+        _diagnostics = new DiagnosticResult(inputContent);
     }
 
     /// <inheritdoc />

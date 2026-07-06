@@ -31,12 +31,12 @@ public sealed class TokenResult
 
     internal void AddMatch(Token token, object value, FileLocation location)
     {
-        if (TryConcatMatch(token, value, location)) return;
+        if (TryConcatMatch(token, value)) return;
 
         _matches.Add(new TokenMatch(token, value, location.Clone()));
     }
 
-    private bool TryConcatMatch(Token token, object value, FileLocation location)
+    private bool TryConcatMatch(Token token, object value)
     {
         if (token.CanConcatenate == false) return false;
 

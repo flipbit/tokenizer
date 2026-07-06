@@ -86,7 +86,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var results = new TokenMatcherResult();
         return MatchCore(
-            input, tags, results,
+            tags, results,
             template => _tokenizer.Tokenize(template, input),
             (r, result) => r.AddResult((TokenizeResult)result),
             r => r.BestMatch = r.GetBestMatch());
@@ -116,7 +116,7 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         var results = new TokenMatcherResult<T>();
         return MatchCore(
-            input, tags, results,
+            tags, results,
             template => _tokenizer.Tokenize<T>(template, input),
             (r, result) => r.AddResult((TokenizeResult<T>)result),
             r => r.BestMatch = r.GetBestMatch());
@@ -162,7 +162,6 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     private TResult MatchCore<TResult>(
-        string input,
         string[]? tags,
         TResult results,
         Func<Template, TokenizeResultBase> tokenize,

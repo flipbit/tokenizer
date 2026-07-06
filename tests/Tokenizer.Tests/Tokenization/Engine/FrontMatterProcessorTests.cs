@@ -21,7 +21,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null, null);
+        var collector = new DiagnosticCollector(null);
         var location = new FileLocation();
 
         // Act
@@ -46,7 +46,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null, null);
+        var collector = new DiagnosticCollector(null);
         var location = new FileLocation();
 
         // Act
@@ -74,7 +74,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(null, null);
+        var collector = new DiagnosticCollector(null);
         var location = new FileLocation();
 
         // Act

@@ -9,7 +9,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenSuccessfulTokenization_WhenBuildingSummary_ThenVerdictReportsAllMatched()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted,
             detail: "Template: test, Tokens: 2, Input length: 20");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
@@ -30,7 +30,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenTransformerFailure_WhenBuildingSummary_ThenTransformerIssueIsCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TransformerFailed,
             tokenName: "Registered", decoratorName: "ToDateTimeUtc",
@@ -56,7 +56,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenValidatorFailure_WhenBuildingSummary_ThenValidatorIssueIsCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator",
@@ -80,7 +80,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenMissedTokenWithNoPriorFailure_WhenBuildingSummary_ThenPreambleNeverFoundIssueCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
         collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Second");
@@ -102,7 +102,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenRepeatingTokenDisabled_WhenBuildingSummary_ThenRepeatingTokenIssueCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
             tokenName: "NameServers", detail: "Line gap detected");
@@ -123,7 +123,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenHintMissing_WhenBuildingSummary_ThenHintMissingIssueCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.HintMissing, value: "Expected hint text");
         collector.Record(DiagnosticEventType.TokenizationCompleted);
@@ -143,7 +143,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenTransformerFailure_WhenBuildingSummary_ThenHintIsPopulated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TransformerFailed,
             tokenName: "Registered", decoratorName: "ToDateTimeUtcTransformer",
@@ -165,7 +165,7 @@ public class DiagnosticSummaryBuilderTests
     public void GivenVerdict_WhenTokensMissed_ThenVerdictShowsMatchAndMissCount()
     {
         // Arrange
-        var collector = new DiagnosticCollector("template", "input");
+        var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Second");

@@ -18,7 +18,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "notanemail"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -40,7 +40,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsDomainNameValidator",
             Value = "not a domain"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -62,7 +62,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsDomainNameValidator",
             Value = "notadomain!"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -84,7 +84,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsNumericValidator",
             Value = "abc"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -106,7 +106,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsPhoneNumberValidator",
             Value = "not-a-phone"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -128,7 +128,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "SomeCustomValidator",
             Value = "value"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -149,7 +149,7 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "notanemail"
         };
-        var trace = new DiagnosticCollector("t", "i").GetResult()!;
+        var trace = new DiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);

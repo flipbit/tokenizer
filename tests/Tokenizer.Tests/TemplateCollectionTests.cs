@@ -72,10 +72,15 @@ public class TemplateCollectionTests : TokenizerTestBase
     [Fact]
     public void TestCollectionCount()
     {
-        collection.Add(new Template("One"));
-        collection.Add(new Template("Two"));
-        collection.Add(new Template("Three"));
+        // Arrange
+        var tokenizer = CreateTokenizer();
 
+        // Act
+        collection.Add(tokenizer.Compile("One: {One}"));
+        collection.Add(tokenizer.Compile("Two: {Two}"));
+        collection.Add(tokenizer.Compile("Three: {Three}"));
+
+        // Assert
         Assert.Equal(3, collection.Count);
 
         collection.Clear();
@@ -87,9 +92,12 @@ public class TemplateCollectionTests : TokenizerTestBase
     public void GivenCollectionWithTemplates_WhenEnumerated_ThenReturnsAllTemplates()
     {
         // Arrange
+        var tokenizer = CreateTokenizer();
         var coll = new TemplateCollection();
-        var template1 = new TemplateBuilder().WithName("first").Build();
-        var template2 = new TemplateBuilder().WithName("second").Build();
+        var template1 = tokenizer.Compile("First: {First}");
+        template1.Name = "first";
+        var template2 = tokenizer.Compile("Second: {Second}");
+        template2.Name = "second";
         coll.Add(template1);
         coll.Add(template2);
 
@@ -119,9 +127,14 @@ public class TemplateCollectionTests : TokenizerTestBase
     public void GivenCollection_WhenUsedWithLinq_ThenSupportsLinqOperations()
     {
         // Arrange
+        var tokenizer = CreateTokenizer();
         var coll = new TemplateCollection();
-        coll.Add(new TemplateBuilder().WithName("alpha").Build());
-        coll.Add(new TemplateBuilder().WithName("beta").Build());
+        var alpha = tokenizer.Compile("Alpha: {Alpha}");
+        alpha.Name = "alpha";
+        var beta = tokenizer.Compile("Beta: {Beta}");
+        beta.Name = "beta";
+        coll.Add(alpha);
+        coll.Add(beta);
 
         // Act
         var names = coll.Select(t => t.Name).OrderBy(n => n).ToList();
@@ -139,5 +152,57 @@ public class TemplateCollectionTests : TokenizerTestBase
         // Assert
         Assert.NotNull(coll);
         Assert.Empty(coll);
+    }
+
+    [Fact]
+    public void GivenTemplateWithId_WhenAdded_ThenCanRetrieveById()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var template = tokenizer.Compile("Name: {Name}");
+        var coll = new TemplateCollection();
+
+        // Act
+        coll.Add(template);
+
+        // Assert
+        Assert.True(coll.TryGet(template.Id, out var retrieved));
+        Assert.Same(template, retrieved);
+    }
+
+    [Fact]
+    public void GivenTemplateWithName_WhenAdded_ThenCanRetrieveByName()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var template = tokenizer.Compile("Name: {Name}");
+        template.Name = "my-template";
+        var coll = new TemplateCollection();
+
+        // Act
+        coll.Add(template);
+
+        // Assert
+        Assert.NotNull(coll.Get("my-template"));
+    }
+
+    [Fact]
+    public void GivenSamePatternAddedTwice_WhenSecondHasDifferentName_ThenLastWriteWins()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var t1 = tokenizer.Compile("Name: {Name}");
+        t1.Name = "first";
+        var t2 = tokenizer.Compile("Name: {Name}");
+        t2.Name = "second";
+        var coll = new TemplateCollection();
+
+        // Act
+        coll.Add(t1);
+        coll.Add(t2);
+
+        // Assert — same Id, so last write wins
+        Assert.Single(coll);
+        Assert.Equal("second", coll.First().Name);
     }
 }

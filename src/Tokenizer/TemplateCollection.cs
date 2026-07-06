@@ -8,12 +8,7 @@ namespace Tokens;
 /// </summary>
 public class TemplateCollection : IReadOnlyCollection<Template>
 {
-    private readonly ConcurrentDictionary<string, Template> templates;
-
-    /// <summary>
-    /// Returns the names of the templates in this collection
-    /// </summary>
-    public IReadOnlyCollection<string> Names => templates.Keys.ToArray();
+    private readonly ConcurrentDictionary<ulong, Template> templates;
 
     /// <summary>
     /// Returns the number of templates in this collection
@@ -25,32 +20,46 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public TemplateCollection()
     {
-        templates = new ConcurrentDictionary<string, Template>();
+        templates = new ConcurrentDictionary<ulong, Template>();
     }
 
     /// <summary>
     /// Adds a template to the collection.
-    /// If a template with the same name already exists, it will be replaced.
+    /// If a template with the same Id already exists, it will be replaced.
     /// </summary>
-    /// <param name="template"></param>
     public void Add(Template template)
     {
-        templates.AddOrUpdate(template.Name, template, (key, existing) => template);
+        templates.AddOrUpdate(template.Id, template, (key, existing) => template);
     }
 
     /// <summary>
-    /// Tries to get the template with the given name.  If the template exists,
-    /// will return true with the template set as <param>template</param>.
-    /// If the template doesn't exist, will return false.
+    /// Tries to get the template with the given Id.
+    /// </summary>
+    public bool TryGet(ulong id, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
+    {
+        return templates.TryGetValue(id, out template);
+    }
+
+    /// <summary>
+    /// Tries to get the template with the given name (linear scan).
     /// </summary>
     public bool TryGet(string name, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
     {
-        return templates.TryGetValue(name, out template);
+        foreach (var candidate in templates.Values)
+        {
+            if (string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                template = candidate;
+                return true;
+            }
+        }
+
+        template = null;
+        return false;
     }
 
     /// <summary>
-    /// Gets the template with the given name.  If the template doesn't exist,
-    /// will return null.
+    /// Gets the template with the given name. Returns null if not found.
     /// </summary>
     public Template? Get(string name)
     {

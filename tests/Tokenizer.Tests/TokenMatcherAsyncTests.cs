@@ -163,7 +163,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         await matcher.RegisterTemplateAsync(stream, Encoding.UTF8);
 
         // Assert
-        Assert.Single(matcher.Templates.Names);
+        Assert.Single(matcher.Templates);
     }
 
     [Fact]

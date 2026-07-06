@@ -41,7 +41,7 @@ public sealed class TokenMatcherResult
         .OrderByDescending(r => r.Hints.Matches.Count)
         .ThenByDescending(r => r.Tokens.Matches.Count)
         .ThenBy(r => r.Template.Tokens.Count)
-        .ThenBy(r => r.Template.Name)
+        .ThenBy(r => r.Template.Id)
         .FirstOrDefault();
 }
 
@@ -88,6 +88,6 @@ public sealed class TokenMatcherResult<T> where T : class, new()
         .OrderByDescending(r => r.Hints.Matches.Count)
         .ThenByDescending(r => r.Tokens.Matches.Count)
         .ThenBy(r => r.Template.Tokens.Count)
-        .ThenBy(r => r.Template.Name)
+        .ThenBy(r => r.Template.Id)
         .FirstOrDefault();
 }

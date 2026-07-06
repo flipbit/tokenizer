@@ -177,10 +177,8 @@ public sealed class TokenMatcher : ITokenMatcher
     {
         tags ??= Array.Empty<string>();
 
-        foreach (var name in Templates.Names)
+        foreach (var template in Templates)
         {
-            if (!Templates.TryGet(name, out var template)) continue;
-
             if (!CheckTemplateTags(template, tags)) continue;
 
             try
@@ -351,9 +349,8 @@ public sealed class TokenMatcher : ITokenMatcher
         var results = createResult();
         var startPos = stream.Position;
 
-        foreach (var name in Templates.Names)
+        foreach (var template in Templates)
         {
-            if (!Templates.TryGet(name, out var template)) continue;
             if (!CheckTemplateTags(template, tags)) continue;
 
             stream.Position = startPos;

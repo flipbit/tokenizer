@@ -76,9 +76,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         var tokenizer = CreateTokenizer();
 
         // Act
-        collection.Add(tokenizer.Compile("One: {One}"));
-        collection.Add(tokenizer.Compile("Two: {Two}"));
-        collection.Add(tokenizer.Compile("Three: {Three}"));
+        collection.Add(tokenizer.Compile("One: {One}").Template);
+        collection.Add(tokenizer.Compile("Two: {Two}").Template);
+        collection.Add(tokenizer.Compile("Three: {Three}").Template);
 
         // Assert
         Assert.Equal(3, collection.Count);
@@ -94,9 +94,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         // Arrange
         var tokenizer = CreateTokenizer();
         var coll = new TemplateCollection();
-        var template1 = tokenizer.Compile("First: {First}");
+        var template1 = tokenizer.Compile("First: {First}").Template;
         template1.Name = "first";
-        var template2 = tokenizer.Compile("Second: {Second}");
+        var template2 = tokenizer.Compile("Second: {Second}").Template;
         template2.Name = "second";
         coll.Add(template1);
         coll.Add(template2);
@@ -129,9 +129,9 @@ public class TemplateCollectionTests : TokenizerTestBase
         // Arrange
         var tokenizer = CreateTokenizer();
         var coll = new TemplateCollection();
-        var alpha = tokenizer.Compile("Alpha: {Alpha}");
+        var alpha = tokenizer.Compile("Alpha: {Alpha}").Template;
         alpha.Name = "alpha";
-        var beta = tokenizer.Compile("Beta: {Beta}");
+        var beta = tokenizer.Compile("Beta: {Beta}").Template;
         beta.Name = "beta";
         coll.Add(alpha);
         coll.Add(beta);
@@ -159,7 +159,7 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
         // Arrange
         var tokenizer = CreateTokenizer();
-        var template = tokenizer.Compile("Name: {Name}");
+        var template = tokenizer.Compile("Name: {Name}").Template;
         var coll = new TemplateCollection();
 
         // Act
@@ -175,7 +175,7 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
         // Arrange
         var tokenizer = CreateTokenizer();
-        var template = tokenizer.Compile("Name: {Name}");
+        var template = tokenizer.Compile("Name: {Name}").Template;
         template.Name = "my-template";
         var coll = new TemplateCollection();
 
@@ -191,9 +191,9 @@ public class TemplateCollectionTests : TokenizerTestBase
     {
         // Arrange
         var tokenizer = CreateTokenizer();
-        var t1 = tokenizer.Compile("Name: {Name}");
+        var t1 = tokenizer.Compile("Name: {Name}").Template;
         t1.Name = "first";
-        var t2 = tokenizer.Compile("Name: {Name}");
+        var t2 = tokenizer.Compile("Name: {Name}").Template;
         t2.Name = "second";
         var coll = new TemplateCollection();
 

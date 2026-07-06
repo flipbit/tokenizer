@@ -194,7 +194,7 @@ public class TemplateTests : TokenizerTestBase
         var tokenizer = CreateTokenizer();
 
         // Act
-        var template = tokenizer.Compile("Name: {Name}");
+        var template = tokenizer.Compile("Name: {Name}").Template;
 
         // Assert
         Assert.NotEqual(0UL, template.Id);
@@ -208,8 +208,8 @@ public class TemplateTests : TokenizerTestBase
         const string pattern = "Name: {Name}";
 
         // Act
-        var t1 = tokenizer.Compile(pattern);
-        var t2 = tokenizer.Compile(pattern);
+        var t1 = tokenizer.Compile(pattern).Template;
+        var t2 = tokenizer.Compile(pattern).Template;
 
         // Assert
         Assert.Equal(t1.Id, t2.Id);
@@ -222,8 +222,8 @@ public class TemplateTests : TokenizerTestBase
         var tokenizer = CreateTokenizer();
 
         // Act
-        var t1 = tokenizer.Compile("Name: {Name}");
-        var t2 = tokenizer.Compile("Age: {Age}");
+        var t1 = tokenizer.Compile("Name: {Name}").Template;
+        var t2 = tokenizer.Compile("Age: {Age}").Template;
 
         // Assert
         Assert.NotEqual(t1.Id, t2.Id);

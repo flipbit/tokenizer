@@ -18,7 +18,7 @@ public class AllocationOptimizationTests : TokenizerTestBase
     {
         // Arrange
         var enumerator = new TokenEnumerator("Name: Alice");
-        var template = tokenizer.Compile("Name: {Name}");
+        var template = tokenizer.Compile("Name: {Name}").Template;
         var result = tokenizer.Tokenize(template, "Name: Alice");
         var tokensToMatch = result.Template.Tokens;
         var buffer = new List<Token>();
@@ -38,7 +38,7 @@ public class AllocationOptimizationTests : TokenizerTestBase
     public void GivenEndToEndTokenization_WhenTokenizing_ThenProducesCorrectResults()
     {
         // Arrange / Act
-        var template = tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}");
+        var template = tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}").Template;
         var result = tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 30");
 
         // Assert
@@ -51,7 +51,7 @@ public class AllocationOptimizationTests : TokenizerTestBase
     public void GivenTemplateWithDependentTokens_WhenTokenizing_ThenDependenciesResolveCorrectly()
     {
         // Arrange / Act
-        var template = tokenizer.Compile("Name: {SimpleTarget.Name}");
+        var template = tokenizer.Compile("Name: {SimpleTarget.Name}").Template;
         var result = tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob");
 
         // Assert
@@ -63,7 +63,7 @@ public class AllocationOptimizationTests : TokenizerTestBase
     public void GivenMultipleTemplates_WhenTokenizingSequentially_ThenResultsAreIndependent()
     {
         // Arrange / Act
-        var template = tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}");
+        var template = tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}").Template;
         var result1 = tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 25");
         var result2 = tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob\nAge: 30");
 

@@ -22,7 +22,7 @@ public class TokenizationEngineBasicTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("First Name: {FirstName}");
+        var template = parser.Compile("First Name: {FirstName}").Template;
 
         var context = new TokenizationContext();
         var input = "First Name: Alice";
@@ -46,7 +46,7 @@ public class TokenizationEngineBasicTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Hello World"); // Template with no tokens
+        var template = parser.Compile("Hello World").Template; // Template with no tokens
 
         var context = new TokenizationContext();
         var input = "Hello World";

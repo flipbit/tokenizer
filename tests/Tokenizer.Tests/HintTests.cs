@@ -32,7 +32,7 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert
@@ -56,7 +56,7 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert
@@ -81,7 +81,7 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert
@@ -109,7 +109,7 @@ public class HintTests : TokenizerTestBase
         const string input = "First Name: Alice  Last Name: Smith";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert
@@ -131,7 +131,7 @@ public class HintTests : TokenizerTestBase
         const string input = "Domain name: example.com\nDomain status:         available\n";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert

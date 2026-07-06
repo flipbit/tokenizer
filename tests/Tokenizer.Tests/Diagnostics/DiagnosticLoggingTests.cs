@@ -16,7 +16,7 @@ public class DiagnosticLoggingTests : TokenizerTestBase
         var tokenizer = CreateDiagnosticTokenizer();
 
         // Act
-        var template = tokenizer.Compile("Name: { Name }");
+        var template = tokenizer.Compile("Name: { Name }").Template;
         var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert
@@ -31,7 +31,7 @@ public class DiagnosticLoggingTests : TokenizerTestBase
         var tokenizer = CreateDiagnosticTokenizer();
 
         // Act
-        var template = tokenizer.Compile("Name: { Name }\nAge: { Age }");
+        var template = tokenizer.Compile("Name: { Name }\nAge: { Age }").Template;
         var result = tokenizer.Tokenize(template, "Name: John");
 
         // Assert

@@ -32,7 +32,7 @@ public class ListTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var results = tokenizer.Tokenize(template, input);
         var domains = results.Matches.Where(m => m.Token.Name == "DomainName").ToList();
 

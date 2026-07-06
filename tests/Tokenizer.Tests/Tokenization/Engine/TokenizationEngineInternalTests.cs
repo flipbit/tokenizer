@@ -20,7 +20,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenRepeatingToken_WhenInputDoesNotMatchRepeat_ThenBacktracks()
     {
         // Arrange
-        var template = _tokenizer.Compile("test: {Name}");
+        var template = _tokenizer.Compile("test: {Name}").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "test: hello");
@@ -35,7 +35,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenNewlineTerminatedToken_WhenInputHasNewline_ThenAssignsValueBeforeNewline()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Name}\nAge: {Age}");
+        var template = _tokenizer.Compile("Name: {Name}\nAge: {Age}").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "Name: Alice\nAge: 30");
@@ -51,7 +51,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenFrontMatterToken_WhenTokenizing_ThenFrontMatterIsProcessed()
     {
         // Arrange — template with front matter and a body token
-        var template = _tokenizer.Compile("---\nname: MyTemplate\n---\nName: {Name}");
+        var template = _tokenizer.Compile("---\nname: MyTemplate\n---\nName: {Name}").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "Name: Bob");
@@ -65,7 +65,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenCandidateTokens_WhenBothTokensPresent_ThenBothAreAssigned()
     {
         // Arrange — two tokens with distinct preambles and values
-        var template = _tokenizer.Compile("A:{First}B:{Second}");
+        var template = _tokenizer.Compile("A:{First}B:{Second}").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "A:helloB:world");
@@ -79,7 +79,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenRepeatingToken_WhenValueIsAssignable_ThenTokenIsMatched()
     {
         // Arrange
-        var template = _tokenizer.Compile("test: {Name}");
+        var template = _tokenizer.Compile("test: {Name}").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "test: hello");
@@ -93,7 +93,7 @@ public class TokenizationEngineTests : TokenizerTestBase
     public void GivenTemplateWithOnlyFrontMatter_WhenTokenizing_ThenResultIsNotNull()
     {
         // Arrange
-        var template = _tokenizer.Compile("---\nname: MyTemplate\n---\n");
+        var template = _tokenizer.Compile("---\nname: MyTemplate\n---\n").Template;
 
         // Act
         var result = _tokenizer.Tokenize(template, "anything");

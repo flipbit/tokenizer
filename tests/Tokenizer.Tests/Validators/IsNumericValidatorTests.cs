@@ -72,7 +72,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var template = _tok.Compile(pattern);
+        var template = _tok.Compile(pattern).Template;
         var result = _tok.Tokenize(template, input);
 
         // Assert
@@ -88,7 +88,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var compiled = _tok.Compile(template);
+        var compiled = _tok.Compile(template).Template;
         var result = _tok.Tokenize(compiled, input);
 
         // Assert

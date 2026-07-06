@@ -23,7 +23,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize(template, input);
 
         Assert.Single(result.Matches);
@@ -37,7 +37,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Foo>(template, input);
 
         Assert.Single(result.Tokens.Matches);
@@ -52,7 +52,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat(', ') }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize(template, input);
 
         Assert.Single(result.Matches);
@@ -66,7 +66,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat(', ') }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Foo>(template, input);
 
         Assert.Single(result.Tokens.Matches);
@@ -81,7 +81,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat('<CR>') }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize(template, input);
 
         Assert.Single(result.Matches);
@@ -95,7 +95,7 @@ public class ConcatenationTests : TokenizerTestBase
         const string pattern = @"Name: { Name }, Name: { Name : Concat('<CR>') }";
         const string input = @"Name: Alice, Name: Bob";
 
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Foo>(template, input);
 
         Assert.Single(result.Tokens.Matches);

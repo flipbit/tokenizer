@@ -69,7 +69,7 @@ public class MinLengthValidatorTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var compiled = _tok.Compile(template);
+        var compiled = _tok.Compile(template).Template;
         var result = _tok.Tokenize(compiled, input);
 
         // Assert

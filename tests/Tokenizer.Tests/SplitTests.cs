@@ -25,7 +25,7 @@ public class SplitTests : TokenizerTestBase
         const string input = @"Names: Alice,Bob,Charles";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var results = tokenizer.Tokenize<Foo>(template, input);
         var foo = results.Value;
 

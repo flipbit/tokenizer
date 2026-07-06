@@ -17,7 +17,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name: {FirstName}\nName: {LastName}");
+        var template = parser.Compile("Name: {FirstName}\nName: {LastName}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -75,7 +75,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("{Name} is here");
+        var template = parser.Compile("{Name} is here").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -98,7 +98,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name is {Name}");
+        var template = parser.Compile("Name is {Name}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -121,7 +121,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Item: {Item*}");
+        var template = parser.Compile("Item: {Item*}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -144,7 +144,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Item: {Item*#}");
+        var template = parser.Compile("Item: {Item*#}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -166,7 +166,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name: {Name}Age: {Age}");
+        var template = parser.Compile("Name: {Name}Age: {Age}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -221,7 +221,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("{FirstName}{LastName}");
+        var template = parser.Compile("{FirstName}{LastName}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -248,7 +248,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name: {FirstName}{Remaining}");
+        var template = parser.Compile("Name: {FirstName}{Remaining}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -300,7 +300,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions { OutOfOrderTokens = true });
-        var template = parser.Compile("Age: {Age}\nName: {Name}");
+        var template = parser.Compile("Age: {Age}\nName: {Name}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -321,7 +321,7 @@ public class TokenizationEngineTokenMatchingTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions { OutOfOrderTokens = false });
-        var template = parser.Compile("Age: {Age}\nName: {Name}");
+        var template = parser.Compile("Age: {Age}\nName: {Name}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()

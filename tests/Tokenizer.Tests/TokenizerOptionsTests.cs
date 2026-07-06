@@ -17,7 +17,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = true });
 
-        var template = parser.Compile(content);
+        var template = parser.Compile(content).Template;
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -38,7 +38,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var tokenizer = new Tokenizer();
 
-        var template = tokenizer.Compile(content);
+        var template = tokenizer.Compile(content).Template;
         var result = tokenizer.Tokenize<Person>(template, input);
 
         Assert.Equal(30, result.Value.Age);
@@ -53,7 +53,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Compile(content);
+        var template = parser.Compile(content).Template;
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Should not be trimmed\nPreamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -67,7 +67,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Compile(content);
+        var template = parser.Compile(content).Template;
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -82,7 +82,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Compile(content);
+        var template = parser.Compile(content).Template;
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
@@ -96,7 +96,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
 
         var parser = new TemplateCompiler(new TokenizerOptions { TrimPreambleBeforeNewLine = false });
 
-        var template = parser.Compile(content);
+        var template = parser.Compile(content).Template;
 
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);

@@ -51,7 +51,7 @@ public class MultilineTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert
@@ -94,7 +94,7 @@ public class MultilineTests : TokenizerTestBase
                              """;
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
         var result = tokenizer.Tokenize<Student>(template, input);
 
         // Assert

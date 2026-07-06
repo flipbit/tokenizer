@@ -20,7 +20,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenTextReader_WhenTokenizeAsync_ThenMatchesTokens()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Name}, Age: {Age}");
+        var template = _tokenizer.Compile("Name: {Name}, Age: {Age}").Template;
         using var reader = new StringReader("Name: Alice, Age: 30");
 
         // Act
@@ -37,7 +37,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenTextReader_WhenTokenizeAsyncGeneric_ThenPopulatesObject()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Person.Name}, Age: {Person.Age}");
+        var template = _tokenizer.Compile("Name: {Person.Name}, Age: {Person.Age}").Template;
         using var reader = new StringReader("Name: Bob, Age: 25");
 
         // Act
@@ -53,7 +53,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenStream_WhenTokenizeAsync_ThenMatchesTokens()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Name}");
+        var template = _tokenizer.Compile("Name: {Name}").Template;
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Charlie"));
 
         // Act
@@ -68,7 +68,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenCancellationToken_WhenCancelled_ThenThrowsOperationCancelled()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Name}");
+        var template = _tokenizer.Compile("Name: {Name}").Template;
         using var reader = new StringReader("Name: Test");
         var cts = new CancellationTokenSource();
         cts.Cancel();
@@ -82,7 +82,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenStringInput_WhenAsyncAndSyncTokenize_ThenProducesSameResults()
     {
         // Arrange
-        var template = _tokenizer.Compile("Hello {Name}, welcome to {Place}!");
+        var template = _tokenizer.Compile("Hello {Name}, welcome to {Place}!").Template;
         var input = "Hello World, welcome to Earth!";
 
         // Act
@@ -104,7 +104,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
     public async Task GivenStream_WhenTokenizeAsyncGeneric_ThenPopulatesObject()
     {
         // Arrange
-        var template = _tokenizer.Compile("Name: {Person.Name}");
+        var template = _tokenizer.Compile("Name: {Person.Name}").Template;
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Diana"));
 
         // Act
@@ -125,7 +125,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
                                ---
                                Name: {Name}
                                """;
-        var template = _tokenizer.Compile(pattern);
+        var template = _tokenizer.Compile(pattern).Template;
         var syncInput = "Name: SyncAlice";
         var asyncInput = "Name: AsyncBob";
 

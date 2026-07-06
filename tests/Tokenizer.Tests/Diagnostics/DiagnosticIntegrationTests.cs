@@ -18,7 +18,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
@@ -41,7 +41,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
@@ -57,7 +57,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Email: notanemail";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
@@ -76,7 +76,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: john";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
@@ -95,7 +95,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert
@@ -113,7 +113,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var input = "Name: John";
 
         // Act
-        var compiled = tokenizer.Compile(template);
+        var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
         // Assert

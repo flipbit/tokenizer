@@ -19,7 +19,7 @@ public class CompileApiTests : TokenizerTestBase
         const string pattern = "Name: {Name}";
 
         // Act
-        var template = tokenizer.Compile(pattern);
+        var template = tokenizer.Compile(pattern).Template;
 
         // Assert
         Assert.NotNull(template);

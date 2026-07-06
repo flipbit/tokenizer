@@ -70,7 +70,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Item: {Item*}");
+        var template = parser.Compile("Item: {Item*}").Template;
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
             .WithTemplate(template)
@@ -92,7 +92,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("First: {First}Second: {Second}");
+        var template = parser.Compile("First: {First}Second: {Second}").Template;
 
         var context = new TokenizationContext();
         var result = new TokenizeResultBuilder()
@@ -130,7 +130,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Test{Name}");
+        var template = parser.Compile("Test{Name}").Template;
 
         var context = new TokenizationContext();
         var input = "Test Value";
@@ -151,7 +151,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name: {Name}");
+        var template = parser.Compile("Name: {Name}").Template;
         var matchIds = new HashSet<int>();
         var matchedToken = template.Tokens.First();
 
@@ -167,7 +167,7 @@ public class TokenizationEngineStateTests
     {
         // Arrange
         var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("{Item*}");
+        var template = parser.Compile("{Item*}").Template;
         var disabledRepeatingTokens = new HashSet<int>();
         var token = template.Tokens.First();
 

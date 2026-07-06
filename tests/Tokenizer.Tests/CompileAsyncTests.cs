@@ -23,7 +23,7 @@ public class CompileAsyncTests : TokenizerTestBase
         using var reader = new StringReader("Name: {Name}, Age: {Age}");
 
         // Act
-        var template = await _tokenizer.CompileAsync(reader);
+        var template = (await _tokenizer.CompileAsync(reader)).Template;
 
         // Assert
         Assert.NotNull(template);
@@ -37,7 +37,7 @@ public class CompileAsyncTests : TokenizerTestBase
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Value: {Value}"));
 
         // Act
-        var template = await _tokenizer.CompileAsync(stream, Encoding.UTF8);
+        var template = (await _tokenizer.CompileAsync(stream, Encoding.UTF8)).Template;
 
         // Assert
         Assert.NotNull(template);
@@ -62,11 +62,11 @@ public class CompileAsyncTests : TokenizerTestBase
     {
         // Arrange
         var pattern = "Hello {Name}, welcome to {Place}!";
-        var syncTemplate = _tokenizer.Compile(pattern);
+        var syncTemplate = _tokenizer.Compile(pattern).Template;
         using var reader = new StringReader(pattern);
 
         // Act
-        var asyncTemplate = await _tokenizer.CompileAsync(reader);
+        var asyncTemplate = (await _tokenizer.CompileAsync(reader)).Template;
 
         // Assert
         Assert.Equal(syncTemplate.Tokens.Count, asyncTemplate.Tokens.Count);

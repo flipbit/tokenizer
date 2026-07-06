@@ -71,7 +71,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var template = _tok.Compile(pattern);
+        var template = _tok.Compile(pattern).Template;
         var result = _tok.Tokenize(template, input);
 
         // Assert
@@ -87,7 +87,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var template = _tok.Compile(pattern);
+        var template = _tok.Compile(pattern).Template;
         var result = _tok.Tokenize(template, input);
 
         // Assert
@@ -103,7 +103,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var template = _tok.Compile(pattern);
+        var template = _tok.Compile(pattern).Template;
         var result = _tok.Tokenize(template, input);
 
         // Assert
@@ -129,7 +129,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var _tok = new Tokenizer();
-        var template = _tok.Compile(pattern);
+        var template = _tok.Compile(pattern).Template;
         var result = _tok.Tokenize(template, input);
 
         // Assert

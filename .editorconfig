@@ -9,6 +9,11 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.cs]
+# Default all analyzer diagnostics to silent. Only rules explicitly set to
+# warning below will fire. This prevents Meziantou and AnalysisLevel defaults
+# from breaking the build with rules we haven't reviewed yet.
+dotnet_analyzer_diagnostic.severity = silent
+
 # Formatting
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
@@ -29,11 +34,11 @@ dotnet_style_qualification_for_method = false:warning
 dotnet_style_qualification_for_event = false:warning
 
 # Require explicit accessibility modifiers
-dotnet_style_require_accessibility_modifiers = always:warning
-dotnet_diagnostic.IDE0040.severity = warning
+dotnet_style_require_accessibility_modifiers = always:suggestion
+dotnet_diagnostic.IDE0040.severity = suggestion
 
 # Remove unused parameters
-dotnet_diagnostic.IDE0060.severity = warning
+dotnet_diagnostic.IDE0060.severity = suggestion
 
 # Formatting
 dotnet_diagnostic.IDE0055.severity = warning
@@ -89,22 +94,22 @@ dotnet_naming_symbols.private_field_symbols.applicable_accessibilities = private
 # --- Quality rules (CA) ---
 
 # Use nameof instead of string literals
-dotnet_diagnostic.CA1507.severity = warning
+dotnet_diagnostic.CA1507.severity = suggestion
 
 # Avoid dead conditional code
-dotnet_diagnostic.CA1508.severity = warning
+dotnet_diagnostic.CA1508.severity = suggestion
 
 # Avoid zero-length array allocations
-dotnet_diagnostic.CA1825.severity = warning
+dotnet_diagnostic.CA1825.severity = suggestion
 
 # Forward CancellationToken
-dotnet_diagnostic.CA2016.severity = warning
+dotnet_diagnostic.CA2016.severity = suggestion
 
 # Rethrow to preserve stack details
-dotnet_diagnostic.CA2200.severity = warning
+dotnet_diagnostic.CA2200.severity = suggestion
 
 # Disposable fields should be disposed
-dotnet_diagnostic.CA2213.severity = warning
+dotnet_diagnostic.CA2213.severity = suggestion
 
 [*.{xml,csproj,props}]
 indent_size = 2

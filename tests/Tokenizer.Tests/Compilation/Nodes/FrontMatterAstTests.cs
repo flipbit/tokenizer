@@ -41,7 +41,7 @@ public class FrontMatterAstTests
     {
         // Arrange
         var loc = new FileLocation();
-        var fm = new FrontMatterBlock(loc, 0, 10, new SyntaxNode[0]);
+        var fm = new FrontMatterBlock(loc, 0, 10, Array.Empty<SyntaxNode>());
         var content = new[] { new ContentNode(loc, 10, 20) };
 
         // Act

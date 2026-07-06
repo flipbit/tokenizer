@@ -141,7 +141,7 @@ public class TemplateTests : TokenizerTestBase
         template.AddTag("Three");
 
         IList<string> missing;
-        var hasTags = template.HasTags(new string[0], out missing);
+        var hasTags = template.HasTags(Array.Empty<string>(), out missing);
 
         Assert.True(hasTags);
 

@@ -8,5 +8,5 @@ public interface ITokenValidator : ITokenDecorator
     /// <summary>
     /// Determines whether the specified token is valid.
     /// </summary>
-    bool IsValid(object value, params string[] args);
+    public bool IsValid(object value, params string[] args);
 }

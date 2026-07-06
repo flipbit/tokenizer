@@ -21,14 +21,14 @@ internal interface IHintStrategy
     // rawInput enables fast string-based hint pre-filtering on sync paths where the full
     // input is available. Async/streaming paths pass null and fall back to integrated
     // single-pass hint checking via OnTokenMatched callbacks.
-    bool PreProcess(Template template, TokenEnumerator enumerator,
+    public bool PreProcess(Template template, TokenEnumerator enumerator,
                     string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector);
 
     /// <summary>
     /// Called by the engine when a token preamble matches during tokenization (for single-pass strategies).
     /// </summary>
     /// <param name="token">The token whose preamble matched.</param>
-    void OnTokenMatched(Token token);
+    public void OnTokenMatched(Token token);
 
     /// <summary>
     /// Post-processes hints after tokenization completes.
@@ -36,5 +36,5 @@ internal interface IHintStrategy
     /// </summary>
     /// <param name="result">The result object containing tokenization results.</param>
     /// <returns>True if required hints are missing, false otherwise.</returns>
-    bool PostProcess(TokenizeResultBase result);
+    public bool PostProcess(TokenizeResultBase result);
 }

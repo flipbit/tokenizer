@@ -2,7 +2,7 @@ using Serilog;
 
 namespace Tokens;
 
-class SerilogConfig
+internal class SerilogConfig
 {
     public static void Init()
     {

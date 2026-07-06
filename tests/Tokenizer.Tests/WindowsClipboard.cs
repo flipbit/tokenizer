@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Tokens;
 
-static class WindowsClipboard
+internal static class WindowsClipboard
 {
     public static void SetText(string text)
     {
@@ -74,31 +74,31 @@ static class WindowsClipboard
         }
     }
 
-    const uint CfUnicodeText = 13;
+    private const uint CfUnicodeText = 13;
 
-    static void ThrowWin32()
+    private static void ThrowWin32()
     {
         throw new Win32Exception(Marshal.GetLastWin32Error());
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]
-    static extern IntPtr GlobalLock(IntPtr hMem);
+    private static extern IntPtr GlobalLock(IntPtr hMem);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool GlobalUnlock(IntPtr hMem);
+    private static extern bool GlobalUnlock(IntPtr hMem);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool OpenClipboard(IntPtr hWndNewOwner);
+    private static extern bool OpenClipboard(IntPtr hWndNewOwner);
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool CloseClipboard();
+    private static extern bool CloseClipboard();
 
     [DllImport("user32.dll", SetLastError = true)]
-    static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
+    private static extern IntPtr SetClipboardData(uint uFormat, IntPtr data);
 
     [DllImport("user32.dll")]
-    static extern bool EmptyClipboard();
+    private static extern bool EmptyClipboard();
 }

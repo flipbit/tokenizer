@@ -14,18 +14,18 @@ internal interface IDiagnosticCollector
     /// Returns true when this collector is actively recording events.
     /// Use this to guard expensive argument evaluation at call sites.
     /// </summary>
-    bool IsEnabled { get; }
+    public bool IsEnabled { get; }
 
     /// <summary>
     /// Records a diagnostic event. Implementations may discard the event
     /// (NullDiagnosticCollector) or store it (DiagnosticCollector).
     /// </summary>
-    void Record(DiagnosticEventType type, string? tokenName = null, int? tokenId = null,
+    public void Record(DiagnosticEventType type, string? tokenName = null, int? tokenId = null,
                 FileLocation? location = null, string? value = null, string? detail = null,
                 string? decoratorName = null, string[]? decoratorArgs = null);
 
     /// <summary>
     /// Returns the collected diagnostics, or null if collection is disabled.
     /// </summary>
-    DiagnosticResult? GetResult();
+    public DiagnosticResult? GetResult();
 }

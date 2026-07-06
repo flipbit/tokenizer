@@ -34,8 +34,8 @@ dotnet_style_qualification_for_method = false:warning
 dotnet_style_qualification_for_event = false:warning
 
 # Require explicit accessibility modifiers
-dotnet_style_require_accessibility_modifiers = always:suggestion
-dotnet_diagnostic.IDE0040.severity = suggestion
+dotnet_style_require_accessibility_modifiers = always:warning
+dotnet_diagnostic.IDE0040.severity = warning
 
 # Remove unused parameters
 dotnet_diagnostic.IDE0060.severity = suggestion

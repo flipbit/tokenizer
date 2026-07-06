@@ -15,6 +15,6 @@ internal interface IHintGenerator
     /// <param name="sourceEvent">The diagnostic event that caused the issue</param>
     /// <param name="trace">The full diagnostic trace for cross-referencing</param>
     /// <returns>A human-readable hint string, or null if no hint applies</returns>
-    string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
+    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
                             DiagnosticResult trace);
 }

@@ -8,5 +8,5 @@ public interface ITokenTransformer : ITokenDecorator
     /// <summary>
     /// Attempts to transform the given input
     /// </summary>
-    bool TryTransform(object value, string[] args, out object transformed);
+    public bool TryTransform(object value, string[] args, out object transformed);
 }

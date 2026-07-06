@@ -17,7 +17,7 @@ internal interface IHintProcessor
     /// <param name="result">The result object to populate with hint matches and misses</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if any required hints are missing, false if all required hints are found</returns>
-    bool FindAndValidateHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result, IDiagnosticCollector collector);
+    public bool FindAndValidateHints(Template template, TokenEnumerator enumerator, TokenizeResultBase result, IDiagnosticCollector collector);
 
     /// <summary>
     /// Checks if a specific hint text matches at the current enumerator position.
@@ -25,7 +25,7 @@ internal interface IHintProcessor
     /// <param name="hint">The hint to check for</param>
     /// <param name="enumerator">The token enumerator at the position to check</param>
     /// <returns>True if the hint matches at the current position</returns>
-    bool IsHintMatch(Hint hint, TokenEnumerator enumerator);
+    public bool IsHintMatch(Hint hint, TokenEnumerator enumerator);
 
     /// <summary>
     /// Adds a hint match to the result and advances the enumerator past the matched hint.
@@ -34,7 +34,7 @@ internal interface IHintProcessor
     /// <param name="enumerator">The token enumerator positioned at the hint</param>
     /// <param name="result">The result object to add the match to</param>
     /// <returns>True if the hint was successfully added as a match</returns>
-    bool AddHintMatch(Hint hint, TokenEnumerator enumerator, TokenizeResultBase result);
+    public bool AddHintMatch(Hint hint, TokenEnumerator enumerator, TokenizeResultBase result);
 
     /// <summary>
     /// Adds a hint miss to the result for hints that were not found in the input.
@@ -42,11 +42,11 @@ internal interface IHintProcessor
     /// <param name="hint">The hint that was not found</param>
     /// <param name="result">The result object to add the miss to</param>
     /// <returns>True if the hint was successfully added as a miss</returns>
-    bool AddHintMiss(Hint hint, TokenizeResultBase result);
+    public bool AddHintMiss(Hint hint, TokenizeResultBase result);
 
     /// <summary>
     /// Resets the enumerator to the beginning of the input after hint processing is complete.
     /// </summary>
     /// <param name="enumerator">The token enumerator to reset</param>
-    void ResetEnumeratorAfterHintProcessing(TokenEnumerator enumerator);
+    public void ResetEnumeratorAfterHintProcessing(TokenEnumerator enumerator);
 }

@@ -182,7 +182,8 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    tokenizationEngine.ProcessTokenization(template, value, context, result, collector, hintStrategy);
+                    var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    session.Run(context);
 
                     if (hintStrategy.PostProcess(result))
                     {
@@ -309,8 +310,8 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
     }
 
-    // TokenizeAsyncCore intentionally diverges from TokenizeCore: async uses Begin/Continue/End
-    // cooperative protocol with buffer refills, lacks rawInput for diagnostics alignment, and
+    // TokenizeAsyncCore intentionally diverges from TokenizeCore: async uses session.RunAsync
+    // with cooperative buffer refills, lacks rawInput for diagnostics alignment, and
     // adds cancellation-aware exception handling. These structural differences make shared
     // helper extraction awkward without introducing tangled abstractions.
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
@@ -354,21 +355,8 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    var continuation = tokenizationEngine.BeginTokenization(template, value, context, result, collector, hintStrategy);
-                    do
-                    {
-                        await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
-
-                        if (template.Options.MaxInputLength > 0 &&
-                            context.Enumerator.TotalCharactersSeen > template.Options.MaxInputLength)
-                        {
-                            throw new TokenizerException(
-                                $"Input length exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
-                                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
-                        }
-                    }
-                    while (!tokenizationEngine.ContinueTokenization(continuation, context, ct));
-                    tokenizationEngine.EndTokenization(continuation, context);
+                    var session = tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    await session.RunAsync(context, ct).ConfigureAwait(false);
 
                     if (hintStrategy.PostProcess(result))
                     {

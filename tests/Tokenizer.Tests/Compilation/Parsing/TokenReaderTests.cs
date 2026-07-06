@@ -20,7 +20,7 @@ public class TokenReaderTests
             Tok(LexerTokenKind.Colon, ":", ":"),
             Tok(LexerTokenKind.Whitespace, " ", " "),
             Tok(LexerTokenKind.Identifier, "value", "value"),
-            Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty)
+            Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty),
         };
         var r = new TokenReader(tokens);
 
@@ -53,7 +53,7 @@ public class TokenReaderTests
         {
             Tok(LexerTokenKind.Whitespace, " ", " "),
             Tok(LexerTokenKind.Newline, "\n", "\n"),
-            Tok(LexerTokenKind.Identifier, "x", "x")
+            Tok(LexerTokenKind.Identifier, "x", "x"),
         };
         var r = new TokenReader(tokens);
 
@@ -84,7 +84,7 @@ public class TokenReaderTests
         {
             Tok(LexerTokenKind.Identifier, "name", "name"),
             Tok(LexerTokenKind.Colon, ":", ":"),
-            Tok(LexerTokenKind.Identifier, "value", "value")
+            Tok(LexerTokenKind.Identifier, "value", "value"),
         };
         var r = new TokenReader(tokens);
 

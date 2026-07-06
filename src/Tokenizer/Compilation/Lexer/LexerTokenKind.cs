@@ -101,7 +101,7 @@ public enum LexerTokenKind
 
     // Control
     /// <summary>End of input marker</summary>
-    EndOfInput
+    EndOfInput,
 }
 
 

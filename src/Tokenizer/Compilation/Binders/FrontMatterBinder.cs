@@ -42,7 +42,7 @@ internal sealed class FrontMatterBinder
         var token = new TokenDefinition
         {
             IsFrontMatterToken = true,
-            Location = dir.Location.Clone()
+            Location = dir.Location.Clone(),
         };
         token.AppendName(dir.TokenName);
         if (dir.Value is { Length: > 0 } dirValue)
@@ -76,37 +76,37 @@ internal sealed class FrontMatterBinder
             case "trimleadingwhitespace":
                 template.Options = template.Options with
                 {
-                    TrimLeadingWhitespaceInTokenPreamble = ParseBoolean(value, rawName, entry)
+                    TrimLeadingWhitespaceInTokenPreamble = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "trimtrailingwhitespace":
                 template.Options = template.Options with
                 {
-                    TrimTrailingWhiteSpace = ParseBoolean(value, rawName, entry)
+                    TrimTrailingWhiteSpace = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "trimpreamblebeforenewline":
                 template.Options = template.Options with
                 {
-                    TrimPreambleBeforeNewLine = ParseBoolean(value, rawName, entry)
+                    TrimPreambleBeforeNewLine = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "outoforder":
                 template.Options = template.Options with
                 {
-                    OutOfOrderTokens = ParseBoolean(value, rawName, entry)
+                    OutOfOrderTokens = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "terminateonnewline":
                 template.Options = template.Options with
                 {
-                    TerminateOnNewLine = ParseBoolean(value, rawName, entry)
+                    TerminateOnNewLine = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "ignoremissingproperties":
                 template.Options = template.Options with
                 {
-                    IgnoreMissingProperties = ParseBoolean(value, rawName, entry)
+                    IgnoreMissingProperties = ParseBoolean(value, rawName, entry),
                 };
                 break;
             case "casesensitive":
@@ -114,7 +114,7 @@ internal sealed class FrontMatterBinder
                 {
                     TokenStringComparison = ParseBoolean(value, rawName, entry)
                         ? System.StringComparison.InvariantCulture
-                        : System.StringComparison.InvariantCultureIgnoreCase
+                        : System.StringComparison.InvariantCultureIgnoreCase,
                 };
                 break;
             case "name":

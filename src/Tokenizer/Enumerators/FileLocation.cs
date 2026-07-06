@@ -86,7 +86,7 @@ public class FileLocation : IEquatable<FileLocation>
         {
             Column = Column,
             Line = Line,
-            Paragraph = Paragraph
+            Paragraph = Paragraph,
         };
     }
 

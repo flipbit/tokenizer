@@ -20,7 +20,7 @@ public class TokenFactoryTests
             DependsOnId = 5,
             IsFrontMatterToken = true,
             IsNull = true,
-            IsSingleUse = true
+            IsSingleUse = true,
         };
         definition.AppendName("Name");
         definition.AppendPreamble("Preamble: ");
@@ -115,7 +115,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition
         {
             Content = "{Token}",
-            Location = location
+            Location = location,
         };
 
         var token = TokenFactory.Create(definition, new TokenizerOptions(), NullDiagnosticCollector.Instance);

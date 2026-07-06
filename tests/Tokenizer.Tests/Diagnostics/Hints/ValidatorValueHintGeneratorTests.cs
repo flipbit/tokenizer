@@ -16,7 +16,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Email",
             DecoratorName = "IsEmailValidator",
-            Value = "notanemail"
+            Value = "notanemail",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -38,7 +38,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Domain",
             DecoratorName = "IsDomainNameValidator",
-            Value = "not a domain"
+            Value = "not a domain",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -60,7 +60,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Domain",
             DecoratorName = "IsDomainNameValidator",
-            Value = "notadomain!"
+            Value = "notadomain!",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -82,7 +82,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Count",
             DecoratorName = "IsNumericValidator",
-            Value = "abc"
+            Value = "abc",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -104,7 +104,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Phone",
             DecoratorName = "IsPhoneNumberValidator",
-            Value = "not-a-phone"
+            Value = "not-a-phone",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -126,7 +126,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.ValidatorFailed,
             TokenName = "Token",
             DecoratorName = "SomeCustomValidator",
-            Value = "value"
+            Value = "value",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -147,7 +147,7 @@ public class ValidatorValueHintGeneratorTests
             Type = DiagnosticEventType.TransformerFailed,
             TokenName = "Email",
             DecoratorName = "IsEmailValidator",
-            Value = "notanemail"
+            Value = "notanemail",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 

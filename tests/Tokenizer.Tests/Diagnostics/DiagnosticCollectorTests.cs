@@ -81,7 +81,7 @@ public class DiagnosticCollectorTests
         {
             DiagnosticEventType.ValidatorFailed,
             DiagnosticEventType.TransformerFailed,
-            DiagnosticEventType.TokenMissed
+            DiagnosticEventType.TokenMissed,
         }));
     }
 

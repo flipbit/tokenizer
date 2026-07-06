@@ -166,7 +166,7 @@ public class DecoratorBinderTests
         var definition = new TokenDefinition
         {
             Content = "{Decorator}",
-            IsFrontMatterToken = true
+            IsFrontMatterToken = true,
         };
         definition.AppendName("Decorator");
         var token = new Token("{Decorator}", "Decorator", "", new FileLocation());
@@ -183,7 +183,7 @@ public class DecoratorBinderTests
         var definition = new TokenDefinition
         {
             Content = "{Foo}",
-            IsFrontMatterToken = true
+            IsFrontMatterToken = true,
         };
         definition.AppendName("Foo");
         definition.AppendValue("bar");

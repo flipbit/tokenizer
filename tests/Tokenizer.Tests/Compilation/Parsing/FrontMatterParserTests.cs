@@ -83,7 +83,7 @@ public class FrontMatterParserTests
         var reader = new TokenReader(new[]{
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Identifier, "oops", "oops"), Tok(LexerTokenKind.Newline, "\n", "\n"),
-            Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n")
+            Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
         });
         var parser = new FrontMatterParser();
 
@@ -98,7 +98,7 @@ public class FrontMatterParserTests
         var reader = new TokenReader(new[]{
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Colon, ":", ":"), Tok(LexerTokenKind.Newline, "\n", "\n"),
-            Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty)
+            Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty),
         });
         var parser = new FrontMatterParser();
 

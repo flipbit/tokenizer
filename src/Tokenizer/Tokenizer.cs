@@ -134,7 +134,7 @@ public sealed class Tokenizer : ITokenizer
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,
-            ["Operation"] = "Tokenize"
+            ["Operation"] = "Tokenize",
         };
 
         if (rawInput != null)
@@ -315,7 +315,7 @@ public sealed class Tokenizer : ITokenizer
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,
-            ["Operation"] = "TokenizeAsync"
+            ["Operation"] = "TokenizeAsync",
         };
 
         using (_log.BeginScope(scopeProperties))

@@ -42,7 +42,7 @@ public class DependencyInjectionTests : TokenizerTestBase
         services.AddTokenizer(new TokenizerOptions
         {
             TrimTrailingWhiteSpace = false,
-            OutOfOrderTokens = true
+            OutOfOrderTokens = true,
         });
         var serviceProvider = services.BuildServiceProvider();
 
@@ -119,7 +119,7 @@ public class DependencyInjectionTests : TokenizerTestBase
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Tokenizer:TrimTrailingWhiteSpace"] = "false",
-                ["Tokenizer:OutOfOrderTokens"] = "true"
+                ["Tokenizer:OutOfOrderTokens"] = "true",
             })
             .Build();
 
@@ -145,7 +145,7 @@ public class DependencyInjectionTests : TokenizerTestBase
         var options = new TokenizerOptions
         {
             MaxInputLength = 512,
-            EnableDiagnostics = true
+            EnableDiagnostics = true,
         };
 
         // Act

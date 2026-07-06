@@ -52,7 +52,7 @@ public class TokenBinderTests
     {
         var definition = new TemplateDefinition
         {
-            Options = new TokenizerOptions { OutOfOrderTokens = true }
+            Options = new TokenizerOptions { OutOfOrderTokens = true },
         };
         var tokenDef = new TokenDefinition { Content = "{Name}" };
         tokenDef.AppendName("Name");

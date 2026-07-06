@@ -13,7 +13,7 @@ public class DateFormatHintGeneratorTests
         var issue = new DiagnosticIssue
         {
             Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered"
+            TokenName = "Registered",
         };
         var sourceEvent = new DiagnosticEvent
         {
@@ -21,7 +21,7 @@ public class DateFormatHintGeneratorTests
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
-            Value = "21/11/2005"
+            Value = "21/11/2005",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -40,7 +40,7 @@ public class DateFormatHintGeneratorTests
         var issue = new DiagnosticIssue
         {
             Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered"
+            TokenName = "Registered",
         };
         var sourceEvent = new DiagnosticEvent
         {
@@ -48,7 +48,7 @@ public class DateFormatHintGeneratorTests
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
-            Value = "21/11/2005 15:21:32"
+            Value = "21/11/2005 15:21:32",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -68,14 +68,14 @@ public class DateFormatHintGeneratorTests
         var issue = new DiagnosticIssue
         {
             Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Name"
+            TokenName = "Name",
         };
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.TransformerFailed,
             TokenName = "Name",
             DecoratorName = "ToUpperTransformer",
-            Value = "test"
+            Value = "test",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -93,7 +93,7 @@ public class DateFormatHintGeneratorTests
         var issue = new DiagnosticIssue
         {
             Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered"
+            TokenName = "Registered",
         };
         var sourceEvent = new DiagnosticEvent
         {
@@ -101,7 +101,7 @@ public class DateFormatHintGeneratorTests
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
-            Value = "not a date at all"
+            Value = "not a date at all",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 
@@ -119,7 +119,7 @@ public class DateFormatHintGeneratorTests
         var issue = new DiagnosticIssue
         {
             Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Created"
+            TokenName = "Created",
         };
         var sourceEvent = new DiagnosticEvent
         {
@@ -127,7 +127,7 @@ public class DateFormatHintGeneratorTests
             TokenName = "Created",
             DecoratorName = "ToDateTimeTransformer",
             DecoratorArgs = new[] { "dd/MM/yyyy" },
-            Value = "2005-11-21T15:21:32"
+            Value = "2005-11-21T15:21:32",
         };
         var trace = new DiagnosticCollector("i").GetResult()!;
 

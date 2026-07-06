@@ -30,7 +30,7 @@ internal static class TemplateBinder
                     IsOptional = tokenNode.Modifiers.IsOptional,
                     IsRepeating = tokenNode.Modifiers.IsRepeating,
                     IsRequired = tokenNode.Modifiers.IsRequired,
-                    TerminateOnNewLine = tokenNode.Modifiers.IsTerminate
+                    TerminateOnNewLine = tokenNode.Modifiers.IsTerminate,
                 };
 
                 // Derived semantics: repeating tokens are optional (can match 0 times)
@@ -141,7 +141,7 @@ internal static class TemplateBinder
                         IsOptional = true,
                         IsRepeating = true,
                         TerminateOnNewLine = def.TerminateOnNewLine,
-                        Content = def.Content
+                        Content = def.Content,
                     };
                     repeat.AppendName(def.Name);
                     repeat.AppendPreamble(repeatingTail);

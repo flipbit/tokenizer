@@ -117,5 +117,8 @@ dotnet_diagnostic.MA0003.severity = warning
 # Avoid comparing with boolean constants
 dotnet_diagnostic.MA0073.severity = warning
 
+# Add trailing comma in multi-line initializers
+dotnet_diagnostic.MA0007.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

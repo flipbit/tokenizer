@@ -18,7 +18,7 @@ public class DiagnosticEventTests
             Value = "bbc.co.uk",
             Detail = "Assigned successfully",
             DecoratorName = null,
-            DecoratorArgs = null
+            DecoratorArgs = null,
         };
 
         // Assert
@@ -43,7 +43,7 @@ public class DiagnosticEventTests
             TokenId = 5,
             Value = "21/11/2005",
             DecoratorName = "ToDateTimeUtc",
-            DecoratorArgs = new[] { "yyyy-MM-dd" }
+            DecoratorArgs = new[] { "yyyy-MM-dd" },
         };
 
         // Assert
@@ -63,7 +63,7 @@ public class DiagnosticEventTests
             TokenName = "Registered",
             Description = "ToDateTimeUtc('yyyy-MM-dd') failed on '21/11/2005'",
             Location = new FileLocation(),
-            Hint = "Value matches format 'dd/MM/yyyy'"
+            Hint = "Value matches format 'dd/MM/yyyy'",
         };
 
         // Assert

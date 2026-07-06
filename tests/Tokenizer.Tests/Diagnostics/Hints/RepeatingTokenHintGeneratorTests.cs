@@ -15,7 +15,7 @@ public class RepeatingTokenHintGeneratorTests
         {
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
-            Detail = "Line gap detected"
+            Detail = "Line gap detected",
         };
         var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
@@ -43,7 +43,7 @@ public class RepeatingTokenHintGeneratorTests
         {
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "Dates",
-            Detail = "Validation failure"
+            Detail = "Validation failure",
         };
         var collector = new DiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TransformerFailed,
@@ -71,7 +71,7 @@ public class RepeatingTokenHintGeneratorTests
         {
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
-            Detail = "Line gap detected"
+            Detail = "Line gap detected",
         };
         var trace = new DiagnosticCollector("input").GetResult()!;
 
@@ -112,7 +112,7 @@ public class RepeatingTokenHintGeneratorTests
         {
             Type = DiagnosticEventType.TransformerFailed,
             TokenName = "Token",
-            Detail = "Some detail"
+            Detail = "Some detail",
         };
         var trace = new DiagnosticCollector("input").GetResult()!;
 

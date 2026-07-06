@@ -27,7 +27,7 @@ public class TemplateLexerTests
             LexerTokenKind.Comma,
             LexerTokenKind.OpenParen,
             LexerTokenKind.CloseParen,
-            LexerTokenKind.EndOfInput
+            LexerTokenKind.EndOfInput,
         }, kinds);
     }
 
@@ -60,7 +60,7 @@ public class TemplateLexerTests
             LexerTokenKind.Equals,
             LexerTokenKind.Comma,
             LexerTokenKind.OpenParen,
-            LexerTokenKind.CloseParen
+            LexerTokenKind.CloseParen,
         }, structural);
 
         // EndOfInput should be the final token kind
@@ -88,7 +88,7 @@ public class TemplateLexerTests
             LexerTokenKind.Identifier,
             expectedKind,
             LexerTokenKind.CloseBrace,
-            LexerTokenKind.EndOfInput
+            LexerTokenKind.EndOfInput,
         }, tokens.Select(t => t.Kind).ToArray());
 
         // Assert absolute positions (Start)
@@ -122,7 +122,7 @@ public class TemplateLexerTests
             LexerTokenKind.Identifier,   // name
             LexerTokenKind.CloseBrace,   // }
             LexerTokenKind.Identifier,   // . (dot counts as identifier char in lexer)
-            LexerTokenKind.EndOfInput
+            LexerTokenKind.EndOfInput,
         }, tokens.Select(t => t.Kind).ToArray());
 
         // Assert values for the identifier and punctuation
@@ -166,7 +166,7 @@ public class TemplateLexerTests
             LexerTokenKind.Exclamation,
             LexerTokenKind.Dollar,
             LexerTokenKind.Hash,
-            LexerTokenKind.EndOfInput
+            LexerTokenKind.EndOfInput,
         }, kinds);
     }
 
@@ -202,7 +202,7 @@ public class TemplateLexerTests
         {
             LexerTokenKind.EscapedOpenBrace,
             LexerTokenKind.EscapedCloseBrace,
-            LexerTokenKind.EndOfInput
+            LexerTokenKind.EndOfInput,
         }, kinds);
     }
 

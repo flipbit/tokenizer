@@ -15,7 +15,7 @@ public class PreambleNearMissHintGeneratorTests
         {
             Type = DiagnosticEventType.TokenMissed,
             TokenName = "Registrar",
-            Detail = "Registrar:"
+            Detail = "Registrar:",
         };
         var collector = new DiagnosticCollector("Line one\nREGISTRAR:\nLine three");
         var trace = collector.GetResult()!;
@@ -38,7 +38,7 @@ public class PreambleNearMissHintGeneratorTests
         {
             Type = DiagnosticEventType.TokenMissed,
             TokenName = "Server",
-            Detail = "Name Server:"
+            Detail = "Name Server:",
         };
         var collector = new DiagnosticCollector("First line\n  Name Server:  extra text\nThird line");
         var trace = collector.GetResult()!;
@@ -60,7 +60,7 @@ public class PreambleNearMissHintGeneratorTests
         {
             Type = DiagnosticEventType.TokenMissed,
             TokenName = "Registrar",
-            Detail = "Registrar:"
+            Detail = "Registrar:",
         };
         var collector = new DiagnosticCollector("Completely unrelated text\nNothing here");
         var trace = collector.GetResult()!;
@@ -81,7 +81,7 @@ public class PreambleNearMissHintGeneratorTests
         {
             Type = DiagnosticEventType.TransformerFailed,
             TokenName = "Registrar",
-            Detail = "Registrar:"
+            Detail = "Registrar:",
         };
         var collector = new DiagnosticCollector("REGISTRAR: some value");
         var trace = collector.GetResult()!;

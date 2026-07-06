@@ -18,7 +18,7 @@ public class FrontMatterBinderTests
         {
             new FrontMatterEntry(loc, 0, 5, "trimleadingwhitespace", "yes"),
             new FrontMatterEntry(loc, 0, 5, "casesensitive", "on"),
-            new FrontMatterEntry(loc, 0, 5, "ignoremissingproperties", "false")
+            new FrontMatterEntry(loc, 0, 5, "ignoremissingproperties", "false"),
         };
         var fm = new FrontMatterBlock(loc, 0, 10, entries);
         var template = new TemplateDefinition();
@@ -42,7 +42,7 @@ public class FrontMatterBinderTests
             new FrontMatterEntry(loc, 0, 5, "name", "My Template"),
             new FrontMatterEntry(loc, 0, 5, "hint", "A hint"),
             new FrontMatterEntry(loc, 0, 5, "hint?", "Optional hint"),
-            new FrontMatterEntry(loc, 0, 5, "tag", "alpha")
+            new FrontMatterEntry(loc, 0, 5, "tag", "alpha"),
         };
         var fm = new FrontMatterBlock(loc, 0, 10, entries);
         var template = new TemplateDefinition();
@@ -94,7 +94,7 @@ public class FrontMatterBinderTests
         var entries = new SyntaxNode[]
         {
             new FrontMatterEntry(loc, 0, 5, "name", "First"),
-            new FrontMatterEntry(loc, 0, 5, "Name", "Second")
+            new FrontMatterEntry(loc, 0, 5, "Name", "Second"),
         };
         var fm = new FrontMatterBlock(loc, 0, 10, entries);
         var template = new TemplateDefinition();
@@ -114,7 +114,7 @@ public class FrontMatterBinderTests
         var entries = new SyntaxNode[]
         {
             new FrontMatterEntry(loc, 0, 5, "trimleadingwhitespace", "off"),
-            new FrontMatterEntry(loc, 0, 5, "TrimLeadingWhitespace", "on")
+            new FrontMatterEntry(loc, 0, 5, "TrimLeadingWhitespace", "on"),
         };
         var fm = new FrontMatterBlock(loc, 0, 10, entries);
         var template = new TemplateDefinition();
@@ -138,7 +138,7 @@ public class FrontMatterBinderTests
             new FrontMatterEntry(loc, 0, 5, "tag", "alpha"),
             new FrontMatterEntry(loc, 0, 5, "tag", "beta"),
             new SetTokenDirective(loc, 0, 5, "value1"),
-            new SetTokenDirective(loc, 0, 5, "value2")
+            new SetTokenDirective(loc, 0, 5, "value2"),
         };
         var fm = new FrontMatterBlock(loc, 0, 10, entries);
         var template = new TemplateDefinition();

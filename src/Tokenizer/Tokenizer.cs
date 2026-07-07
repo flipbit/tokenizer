@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Tokens.Exceptions;
+using Tokens.Extensions;
 using Tokens.Tokenization;
 using Tokens.Tokenization.Strategies;
 
@@ -109,7 +110,7 @@ public sealed class Tokenizer : ITokenizer
         if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
         {
             throw new TokenizerException(
-                $"Input length {input.Length:N0} exceeds maximum allowed length of {template.Options.MaxInputLength:N0}. " +
+                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
                 "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
         }
 
@@ -269,7 +270,7 @@ public sealed class Tokenizer : ITokenizer
             if (maxLength > 0 && sb.Length > maxLength)
             {
                 throw new TokenizerException(
-                    $"Template length {sb.Length:N0} exceeds maximum allowed length of {maxLength:N0}. " +
+                    $"Template length {sb.Length.ToInvariant("N0")} exceeds maximum allowed length of {maxLength.ToInvariant("N0")}. " +
                     "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
             }
         }

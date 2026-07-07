@@ -94,6 +94,24 @@ internal sealed class CandidateProcessor
             _result.AddException(e);
             return false;
         }
+        catch (MissingMemberException e)
+        {
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
+            }
+            _result.AddException(e);
+            return false;
+        }
+        catch (Exception e)
+        {
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
+            }
+            _result.AddException(e);
+            return false;
+        }
     }
 
     /// <summary>

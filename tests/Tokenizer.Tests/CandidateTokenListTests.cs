@@ -1,6 +1,7 @@
 using System.Text;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
+using Tokens.Tokenization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,6 +11,7 @@ public class CandidateTokenListTests : TokenizerTestBase
 {
     private static readonly FileLocation NoLocation = new FileLocation();
     private static readonly TokenizerOptions DefaultOptions = new TokenizerOptions();
+    private static readonly TokenAssigner DefaultAssigner = new TokenAssigner(DefaultOptions, NullDiagnosticCollector.Instance);
 
     public CandidateTokenListTests(ITestOutputHelper output) : base(output)
     {
@@ -192,7 +194,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
 
         // Assert
         Assert.True(result);
@@ -210,7 +212,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
 
         // Assert
         Assert.False(result);
@@ -228,7 +230,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultOptions, NoLocation, out var assigned, out var assignedValue, NullDiagnosticCollector.Instance);
+        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
 
         // Assert
         Assert.False(result);
@@ -246,7 +248,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         list.Add(token);
 
         // Act
-        var result = list.CanAnyAssign("some value");
+        var result = list.CanAnyAssign("some value", DefaultAssigner);
 
         // Assert
         Assert.True(result);
@@ -261,7 +263,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var list = new CandidateTokenList();
 
         // Act
-        var result = list.CanAnyAssign("some value");
+        var result = list.CanAnyAssign("some value", DefaultAssigner);
 
         // Assert
         Assert.False(result);
@@ -276,7 +278,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         list.Add(token);
 
         // Act
-        var result = list.CanAnyAssign(string.Empty);
+        var result = list.CanAnyAssign(string.Empty, DefaultAssigner);
 
         // Assert
         Assert.False(result);

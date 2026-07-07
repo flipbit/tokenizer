@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
-using Tokens.Exceptions;
 
 namespace Tokens.Tokenization;
 
@@ -14,6 +13,7 @@ internal sealed class CandidateProcessor
     private readonly object? _targetObject;
     private readonly TokenizeResultBase _result;
     private readonly Template _template;
+    private readonly TokenAssigner _assigner;
     private readonly IDiagnosticCollector _collector;
     private readonly ILogger _logger;
 
@@ -21,12 +21,14 @@ internal sealed class CandidateProcessor
         object? targetObject,
         TokenizeResultBase result,
         Template template,
+        TokenAssigner assigner,
         IDiagnosticCollector collector,
         ILogger logger)
     {
         _targetObject = targetObject;
         _result = result;
         _template = template;
+        _assigner = assigner;
         _collector = collector;
         _logger = logger;
     }
@@ -47,7 +49,7 @@ internal sealed class CandidateProcessor
 
         try
         {
-            if (context.Candidates.TryAssign(_targetObject, context.Replacement, _template.Options, location, out var assigned, out var assignedValue, _collector))
+            if (context.Candidates.TryAssign(_targetObject, context.Replacement, _assigner, location, out var assigned, out var assignedValue))
             {
                 if (_collector.IsEnabled)
                 {
@@ -76,33 +78,6 @@ internal sealed class CandidateProcessor
 
             return false;
         }
-        catch (TokenAssignmentException e)
-        {
-            if (_logger.IsEnabled(LogLevel.Warning))
-            {
-                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
-            }
-            _result.AddException(e);
-            return false;
-        }
-        catch (TypeConversionException e)
-        {
-            if (_logger.IsEnabled(LogLevel.Warning))
-            {
-                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
-            }
-            _result.AddException(e);
-            return false;
-        }
-        catch (MissingMemberException e)
-        {
-            if (_logger.IsEnabled(LogLevel.Warning))
-            {
-                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
-            }
-            _result.AddException(e);
-            return false;
-        }
         catch (Exception e)
         {
             if (_logger.IsEnabled(LogLevel.Warning))
@@ -122,7 +97,7 @@ internal sealed class CandidateProcessor
     {
         var replacementValue = context.Replacement.ToString();
 
-        if (!context.Candidates.CanAnyAssign(replacementValue))
+        if (!context.Candidates.CanAnyAssign(replacementValue, _assigner))
         {
             if (_collector.IsEnabled)
             {

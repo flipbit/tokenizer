@@ -17,6 +17,7 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
@@ -42,6 +43,7 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
@@ -67,6 +69,7 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
@@ -95,6 +98,7 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,

@@ -9,7 +9,6 @@ namespace Tokens.Tokenization;
 /// Handles assignment of matched values to target objects via the token's decorator pipeline.
 /// Session-scoped: constructed once per tokenization session with shared options and diagnostics.
 /// </summary>
-#pragma warning disable MA0182 // Will be wired into CandidateProcessor and related callers in subsequent refactoring steps
 internal sealed class TokenAssigner
 {
     private readonly TokenizerOptions _options;

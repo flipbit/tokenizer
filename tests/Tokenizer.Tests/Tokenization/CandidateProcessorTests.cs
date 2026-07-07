@@ -18,6 +18,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -44,6 +45,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -69,6 +71,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -94,6 +97,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -117,6 +121,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -141,6 +146,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -166,6 +172,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -191,6 +198,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             new ThrowingTarget(), result, template,
+            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 

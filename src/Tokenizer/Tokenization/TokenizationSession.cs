@@ -16,6 +16,7 @@ internal sealed class TokenizationSession
     private readonly object? _targetObject;
     private readonly TokenizeResultBase _result;
     private readonly IDiagnosticCollector _collector;
+    private readonly TokenAssigner _assigner;
     private readonly TokenMatchRouter _router;
     private readonly CandidateProcessor _candidateProcessor;
     private readonly bool _hasExplicitLimit;
@@ -35,8 +36,9 @@ internal sealed class TokenizationSession
         _collector = collector;
         _hasExplicitLimit = _template.Options.MaxIterations > 0;
 
+        _assigner = new TokenAssigner(_template.Options, collector);
         _candidateProcessor = new CandidateProcessor(
-            targetObject, result, template, collector, logger);
+            targetObject, result, template, _assigner, collector, logger);
         _router = new TokenMatchRouter(
             template, _candidateProcessor, collector, hintStrategy);
     }

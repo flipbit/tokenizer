@@ -89,8 +89,8 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
                     var valueToFormat = valueString;
 
                     // Remove day ordinals
-                    if (format.Contains(" d ") ||
-                        format.Contains(" dd ") ||
+                    if (format.Contains(" d ", StringComparison.Ordinal) ||
+                        format.Contains(" dd ", StringComparison.Ordinal) ||
                         format.StartsWith("d ") ||
                         format.StartsWith("dd "))
                     {
@@ -126,7 +126,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
         {
             if (string.IsNullOrWhiteSpace(format)) continue;
 
-            if (!format.Contains("MMM")) continue;
+            if (!format.Contains("MMM", StringComparison.Ordinal)) continue;
 
             foreach (var key in MonthAbbreviations.Keys)
             {

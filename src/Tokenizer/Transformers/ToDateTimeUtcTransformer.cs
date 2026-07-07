@@ -13,12 +13,12 @@ public sealed class ToDateTimeUtcTransformer : ITokenTransformer
     {
         if (value is string valueString && !string.IsNullOrWhiteSpace(valueString))
         {
-            if (valueString.Contains("(UTC)"))
+            if (valueString.Contains("(UTC)", StringComparison.Ordinal))
             {
                 valueString = valueString.SubstringBeforeString("(UTC)");
             }
 
-            if (valueString.Contains("UTC"))
+            if (valueString.Contains("UTC", StringComparison.Ordinal))
             {
                 valueString = valueString.SubstringBeforeString("UTC");
             }

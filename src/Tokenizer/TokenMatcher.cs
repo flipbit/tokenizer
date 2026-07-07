@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Exceptions;
+using Tokens.Extensions;
 
 namespace Tokens;
 
@@ -282,8 +283,10 @@ public sealed class TokenMatcher : ITokenMatcher
     // AllowStreamBuffering is intentionally not checked here. Unlike Stream (which can be
     // seekable), TextReader has no seek concept — buffering into a MemoryStream is the only
     // way to support rewinding between multiple template matches.
-    private static async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
+    private async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
     {
+        var maxInputLength = _tokenizer.Options.MaxInputLength;
+        long totalChars = 0;
         var buffer = new MemoryStream();
 #if NETSTANDARD2_0
         using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
@@ -295,6 +298,17 @@ public sealed class TokenMatcher : ITokenMatcher
         while ((read = await reader.ReadAsync(charBuf, 0, charBuf.Length).ConfigureAwait(false)) > 0)
         {
             ct.ThrowIfCancellationRequested();
+            totalChars += read;
+            if (maxInputLength > 0 && totalChars > maxInputLength)
+            {
+#if NET8_0_OR_GREATER
+                await buffer.DisposeAsync().ConfigureAwait(false);
+#else
+                buffer.Dispose();
+#endif
+                throw new TokenizerException(
+                    $"Input exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during TextReader buffering.");
+            }
             await writer.WriteAsync(charBuf, 0, read).ConfigureAwait(false);
         }
 #if NETSTANDARD2_0
@@ -317,12 +331,26 @@ public sealed class TokenMatcher : ITokenMatcher
                 "set TokenizerOptions.AllowStreamBuffering = true to allow buffering into memory.");
         }
 
+        var maxInputLength = _tokenizer.Options.MaxInputLength;
         var buffer = new MemoryStream();
+        var copyBuf = new byte[81920];
+        long totalBytes = 0;
+        int read;
+        while ((read = await input.ReadAsync(copyBuf, 0, copyBuf.Length, ct).ConfigureAwait(false)) > 0)
+        {
+            totalBytes += read;
+            if (maxInputLength > 0 && totalBytes > maxInputLength)
+            {
 #if NET8_0_OR_GREATER
-        await input.CopyToAsync(buffer, ct).ConfigureAwait(false);
+                await buffer.DisposeAsync().ConfigureAwait(false);
 #else
-        await input.CopyToAsync(buffer, 81920, ct).ConfigureAwait(false);
+                buffer.Dispose();
 #endif
+                throw new TokenizerException(
+                    $"Input stream exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during buffering.");
+            }
+            await buffer.WriteAsync(copyBuf, 0, read, ct).ConfigureAwait(false);
+        }
         buffer.Position = 0;
         return buffer;
     }

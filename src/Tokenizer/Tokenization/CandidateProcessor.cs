@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
+using Tokens.Exceptions;
 
 namespace Tokens.Tokenization;
 
@@ -75,7 +76,16 @@ internal sealed class CandidateProcessor
 
             return false;
         }
-        catch (Exception e)
+        catch (TokenAssignmentException e)
+        {
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
+            }
+            _result.AddException(e);
+            return false;
+        }
+        catch (TypeConversionException e)
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {

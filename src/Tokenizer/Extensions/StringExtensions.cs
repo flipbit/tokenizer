@@ -14,7 +14,7 @@ public static partial class StringExtensions
     private static partial Regex NewLineSplitRegex();
 #pragma warning restore MA0009
 #else
-    private static readonly Regex NewLineSplitRegexInstance = new(@"\r\n|\r|\n", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+    private static readonly Regex NewLineSplitRegexInstance = new(@"\r\n|\r|\n", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static Regex NewLineSplitRegex() => NewLineSplitRegexInstance;
 #endif
     /// <summary>

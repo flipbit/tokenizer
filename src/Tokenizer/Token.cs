@@ -164,7 +164,7 @@ public sealed class Token
                 if (CanConcatenateValues(current, assignedValue))
                 {
                     var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
-                    if (concatenated != null) target.SetValue(Name, concatenated);
+                    if (concatenated != null) target.SetValue(Name, concatenated, StringComparison.Ordinal);
                 }
                 else
                 {
@@ -173,7 +173,7 @@ public sealed class Token
             }
             else
             {
-                target.SetValue(Name, assignedValue!);
+                target.SetValue(Name, assignedValue!, StringComparison.Ordinal);
             }
         }
         catch (MissingMemberException)
@@ -248,7 +248,7 @@ public sealed class Token
 
         if (!string.IsNullOrEmpty(value) && TerminateOnNewLine)
         {
-            var index = value.IndexOf("\n");
+            var index = value.IndexOf('\n');
             if (index > 0)
             {
                 value = value.Substring(0, index);

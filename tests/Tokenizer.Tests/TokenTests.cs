@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Tokens.Builders;
 using Tokens.Enumerators;
 using Tokens.Validators;
 using Xunit;
@@ -84,5 +85,38 @@ public class TokenTests : TokenizerTestBase
         // Assert
         Assert.True(assigned);
         Assert.Equal("Sue", person.Name);
+    }
+
+    [Fact]
+    public void GivenTokenWithExactPropertyName_WhenAssigning_ThenSetsValue()
+    {
+        // Arrange
+        var person = new Person();
+        var token = new TokenBuilder()
+            .WithName("Name")
+            .Build();
+
+        // Act
+        token.Assign(person, "Alice", new TokenizerOptions(), new FileLocation(), out _, NullDiagnosticCollector.Instance);
+
+        // Assert
+        Assert.Equal("Alice", person.Name);
+    }
+
+    [Fact]
+    public void GivenTokenWithTerminateOnNewLine_WhenValueContainsNewLine_ThenTruncatesAtNewLine()
+    {
+        // Arrange
+        var person = new Person();
+        var token = new TokenBuilder()
+            .WithName("Name")
+            .WithTerminateOnNewLine(true)
+            .Build();
+
+        // Act
+        token.Assign(person, "Alice\nBob", new TokenizerOptions(), new FileLocation(), out _, NullDiagnosticCollector.Instance);
+
+        // Assert
+        Assert.Equal("Alice", person.Name);
     }
 }

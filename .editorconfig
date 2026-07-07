@@ -179,5 +179,8 @@ dotnet_diagnostic.MA0101.severity = warning
 # Avoid implicit culture-sensitive operations
 dotnet_diagnostic.MA0074.severity = warning
 
+# Do not use implicit culture-sensitive ToString in interpolated strings
+dotnet_diagnostic.MA0076.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

@@ -1,4 +1,5 @@
 using Tokens.Exceptions;
+using Tokens.Extensions;
 
 namespace Tokens.Compilation.Binders;
 
@@ -12,7 +13,7 @@ internal static class TemplateLengthValidator
         if (options.MaxTemplateLength > 0 && content.Length > options.MaxTemplateLength)
         {
             throw new ParsingException(
-                $"Template length {content.Length:N0} exceeds maximum allowed length of {options.MaxTemplateLength:N0}. " +
+                $"Template length {content.Length.ToInvariant("N0")} exceeds maximum allowed length of {options.MaxTemplateLength.ToInvariant("N0")}. " +
                 "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.",
                 new Enumerators.FileLocation());
         }

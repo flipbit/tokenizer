@@ -17,8 +17,8 @@ public sealed class IsEmailValidator : ITokenValidator
         var valueString = value.ToString();
 
         if (string.IsNullOrEmpty(valueString)) return false;
-        if (valueString.Contains("@-")) return false;
-        if (valueString.Trim().Contains(" ")) return false;
+        if (valueString.Contains("@-", StringComparison.Ordinal)) return false;
+        if (valueString.Trim().Contains(" ", StringComparison.Ordinal)) return false;
 
         try
         {

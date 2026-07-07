@@ -176,5 +176,8 @@ dotnet_diagnostic.MA0031.severity = warning
 # String contains an implicit end of line character
 dotnet_diagnostic.MA0101.severity = warning
 
+# Avoid implicit culture-sensitive operations
+dotnet_diagnostic.MA0074.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

@@ -5,7 +5,7 @@ using Tokens.Diagnostics;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+namespace Tokens.Tokenization;
 
 public class TokenizationSessionTests
 {

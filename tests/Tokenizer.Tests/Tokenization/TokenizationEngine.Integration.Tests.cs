@@ -3,7 +3,8 @@ using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Xunit;
 
-namespace Tokens.Tokenization.Integration;
+#pragma warning disable MA0048 // Scenario test: TokenizationEngine.Integration.Tests.cs
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for TokenizationEngine complex integration scenarios (10+ tokens, mixed features, end-to-end)

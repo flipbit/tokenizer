@@ -1,7 +1,8 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Tokenization.Engine;
+#pragma warning disable MA0048 // Scenario test: TokenizationEngine.Internal.Tests.cs
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for TokenizationEngine behaviors that were previously tested through internal methods.

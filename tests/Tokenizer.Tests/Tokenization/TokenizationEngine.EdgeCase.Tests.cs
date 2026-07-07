@@ -3,7 +3,8 @@ using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+#pragma warning disable MA0048 // Scenario test: TokenizationEngine.EdgeCase.Tests.cs
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for TokenizationEngine edge cases (unicode, special chars, long input, etc.)

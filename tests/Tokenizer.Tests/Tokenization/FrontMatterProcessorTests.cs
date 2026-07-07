@@ -3,7 +3,7 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+namespace Tokens.Tokenization;
 
 public class FrontMatterProcessorTests
 {

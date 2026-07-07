@@ -4,7 +4,8 @@ using Tokens.Diagnostics;
 using Tokens.Enumerators;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+#pragma warning disable MA0048 // Scenario test: TokenizationEngine.State.Tests.cs
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for TokenizationEngine state management (context transitions, candidate tracking, match IDs, etc.)

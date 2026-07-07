@@ -4,7 +4,7 @@ using Tokens.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+namespace Tokens.Tokenization;
 
 public class TokenMatchRouterTests
 {

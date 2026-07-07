@@ -1,6 +1,7 @@
 using Xunit;
 
-namespace Tokens.Tokenization.Integration;
+#pragma warning disable MA0048 // Scenario test: TokenizationContext.Constructor.Tests.cs
+namespace Tokens.Tokenization;
 
 public class ServiceConstructorTests
 {

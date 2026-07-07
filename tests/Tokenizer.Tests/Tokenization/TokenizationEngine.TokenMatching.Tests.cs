@@ -3,7 +3,8 @@ using Tokens.Compilation;
 using Tokens.Diagnostics;
 using Xunit;
 
-namespace Tokens.Tokenization.Engine;
+#pragma warning disable MA0048 // Scenario test: TokenizationEngine.TokenMatching.Tests.cs
+namespace Tokens.Tokenization;
 
 /// <summary>
 /// Tests for TokenizationEngine token matching logic (partial matches, ambiguous matches, boundaries, etc.)

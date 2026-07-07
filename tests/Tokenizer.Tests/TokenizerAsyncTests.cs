@@ -69,7 +69,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
         var template = _tokenizer.Compile("Name: {Name}").Template;
         using var reader = new StringReader("Name: Test");
         var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Act & Assert
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -152,7 +152,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
         Assert.Empty(errors);
     }
 
-    private class Person
+    private sealed class Person
     {
         public string Name { get; set; } = null!;
         public int Age { get; set; }

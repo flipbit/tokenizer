@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Builders;
 using Tokens.Compilation;
 using Tokens.Diagnostics;
@@ -177,7 +178,7 @@ public class TokenizationEngineEmptyPreambleTests
         var templateBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < 100; i++)
         {
-            templateBuilder.Append($"{{t{i}}}");
+            templateBuilder.Append(CultureInfo.InvariantCulture, $"{{t{i}}}");
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());

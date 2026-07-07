@@ -7,7 +7,7 @@ public class SplitTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
-    private class Foo
+    private sealed class Foo
     {
         public List<string> Names { get; set; } = null!;
     }

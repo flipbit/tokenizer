@@ -7,7 +7,7 @@ namespace Tokens;
 
 public class TokenMatcherAsyncTests : TokenizerTestBase
 {
-    private class Person
+    private sealed class Person
     {
         public string Name { get; set; } = null!;
         public int Age { get; set; }
@@ -70,7 +70,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         await matcher.MatchAsync(stream, Encoding.UTF8);
 
         Assert.True(stream.CanRead);
-        stream.Dispose();
+        await stream.DisposeAsync();
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     /// <summary>
     /// A stream wrapper that does not support seeking — simulates a NetworkStream.
     /// </summary>
-    private class NonSeekableStream : Stream
+    private sealed class NonSeekableStream : Stream
     {
         private readonly MemoryStream _inner;
 

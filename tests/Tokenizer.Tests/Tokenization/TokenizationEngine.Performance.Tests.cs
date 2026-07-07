@@ -113,7 +113,7 @@ public class TokenizationEnginePerformanceTests
         var inputBuilder = new StringBuilder();
         for (int i = 0; i < 10000; i++)
         {
-            inputBuilder.AppendLine($"Item: Value{i}");
+            inputBuilder.AppendLine(CultureInfo.InvariantCulture, $"Item: Value{i}");
         }
 
         var input = inputBuilder.ToString();
@@ -142,7 +142,7 @@ public class TokenizationEnginePerformanceTests
         var inputBuilder = new StringBuilder();
         for (int i = 0; i < 1000; i++)
         {
-            inputBuilder.AppendLine($"Item: Value{i}");
+            inputBuilder.AppendLine(CultureInfo.InvariantCulture, $"Item: Value{i}");
         }
 
         var input = inputBuilder.ToString();
@@ -171,8 +171,8 @@ public class TokenizationEnginePerformanceTests
         // Create 50 levels of nesting
         for (int i = 0; i < 50; i++)
         {
-            templateBuilder.Append($"Level{i}: {{Level{i}}}\n");
-            inputBuilder.Append($"Level{i}: Value{i}\n");
+            templateBuilder.Append(CultureInfo.InvariantCulture, $"Level{i}: {{Level{i}}}\n");
+            inputBuilder.Append(CultureInfo.InvariantCulture, $"Level{i}: Value{i}\n");
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());
@@ -204,8 +204,8 @@ public class TokenizationEnginePerformanceTests
         for (int i = 0; i < 500; i++)
         {
             var letter = (char)('a' + (i % 26));
-            templateBuilder.Append($"{{{letter}{i}}}");
-            inputBuilder.Append($"{letter}");
+            templateBuilder.Append(CultureInfo.InvariantCulture, $"{{{letter}{i}}}");
+            inputBuilder.Append(CultureInfo.InvariantCulture, $"{letter}");
         }
 
         var parser = new TemplateCompiler(new TokenizerOptions());

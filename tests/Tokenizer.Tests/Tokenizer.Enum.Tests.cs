@@ -8,7 +8,7 @@ public class EnumTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
-    private class Student
+    private sealed class Student
     {
         public string Name { get; set; } = null!;
 

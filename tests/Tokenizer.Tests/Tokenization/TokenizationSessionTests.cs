@@ -63,7 +63,9 @@ public class TokenizationSessionTests
         var syncSession = CreateSession(template, target: null, syncResult);
         var syncContext = new TokenizationContext();
         syncContext.Initialize(new System.IO.StringReader(input));
+#pragma warning disable MA0042 // Intentionally testing sync Run path alongside RunAsync
         syncSession.Run(syncContext);
+#pragma warning restore MA0042
 
         // Act — async
         var asyncResult = new TokenizeResultBuilder().WithTemplate(template).Build();
@@ -111,7 +113,7 @@ public class TokenizationSessionTests
         context.Initialize(new System.IO.StringReader("Name: Alice"));
 
         var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Act & Assert
         await Assert.ThrowsAsync<OperationCanceledException>(() =>

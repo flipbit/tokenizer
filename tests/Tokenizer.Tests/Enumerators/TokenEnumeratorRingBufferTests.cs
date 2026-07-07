@@ -72,7 +72,7 @@ public class TokenEnumeratorRingBufferTests
         // Arrange
         var enumerator = new TokenEnumerator(new StringReader("test"));
         var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // Act / Assert
         await Assert.ThrowsAsync<OperationCanceledException>(

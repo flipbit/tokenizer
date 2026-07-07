@@ -7,7 +7,7 @@ public class ConcatenationTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
-    private class Foo
+    private sealed class Foo
     {
         public string Name { get; set; } = null!;
     }

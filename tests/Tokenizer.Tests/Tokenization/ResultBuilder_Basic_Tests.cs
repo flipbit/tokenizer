@@ -113,7 +113,7 @@ public class ResultBuilder_Basic_Tests
             .Build();
     }
 
-    private class TestClass
+    private sealed class TestClass
     {
         public string Name { get; set; } = null!;
     }

@@ -208,7 +208,7 @@ public class CandidateProcessorTests
         Assert.Single(result.Exceptions);
     }
 
-    private class ThrowingTarget
+    private sealed class ThrowingTarget
     {
 #pragma warning disable CA1822 // Accessed via reflection as instance property
         public string Name

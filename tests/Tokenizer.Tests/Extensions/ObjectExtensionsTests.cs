@@ -4,7 +4,7 @@ namespace Tokens.Extensions;
 
 public class ObjectExtensionsTests
 {
-    private class Foo
+    private sealed class Foo
     {
         public Bar Bar { get; set; } = null!;
 
@@ -13,12 +13,12 @@ public class ObjectExtensionsTests
         public int? Boo { get; set; }
     }
 
-    private class Bar
+    private sealed class Bar
     {
         public int Age { get; set; }
     }
 
-    private class GetterOnlyCollectionTarget
+    private sealed class GetterOnlyCollectionTarget
     {
         public IList<string> Tags { get; } = new List<string>();
     }

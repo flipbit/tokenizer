@@ -110,7 +110,7 @@ public class DecoratorRegistryTests
         Assert.DoesNotContain(typeof(ITokenValidator), registry.Validators);
     }
 
-    private class StubTransformer : ITokenTransformer
+    private sealed class StubTransformer : ITokenTransformer
     {
         public bool TryTransform(object value, string[] args, out object transformed)
         {
@@ -119,7 +119,7 @@ public class DecoratorRegistryTests
         }
     }
 
-    private class StubValidator : ITokenValidator
+    private sealed class StubValidator : ITokenValidator
     {
         public bool IsValid(object value, params string[] args) => true;
     }

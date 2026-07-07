@@ -13,7 +13,7 @@ public class TokenizationEngineBasicTests
 {
     private readonly TokenizationEngine _engine = new();
 
-    private class Person
+    private sealed class Person
     {
         public string FirstName { get; set; } = null!;
     }

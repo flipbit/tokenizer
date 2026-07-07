@@ -5,7 +5,7 @@ namespace Tokens.Enumerators;
 /// and delivers data in small chunks — simulating a non-buffered reader
 /// (e.g. NetworkStream-backed StreamReader where Peek() returns -1 between reads).
 /// </summary>
-internal class NonBufferedTextReader : TextReader
+internal sealed class NonBufferedTextReader : TextReader
 {
     private readonly string _data;
     private int _position;

@@ -7,7 +7,7 @@ public class MultilineTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
-    private class Student
+    private sealed class Student
     {
         public string FirstName { get; set; } = null!;
 

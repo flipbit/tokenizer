@@ -44,6 +44,6 @@ public class LargeRecord
     public string PostalCode { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public object Keywords { get; set; } = string.Empty;
-    public List<string> Items { get; set; } = new();
+    public IList<string> Items { get; set; } = new List<string>();
     public string Found { get; set; } = string.Empty;
 }

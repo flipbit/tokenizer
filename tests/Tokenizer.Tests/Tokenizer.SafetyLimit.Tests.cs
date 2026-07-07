@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Exceptions;
 using Xunit;
 
@@ -119,7 +120,7 @@ public class TokenizerSafetyLimitTests
         var templateBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < 6; i++)
         {
-            templateBuilder.Append($"T{i}: {{Token{i}}}\n");
+            templateBuilder.Append(CultureInfo.InvariantCulture, $"T{i}: {{Token{i}}}\n");
         }
 
         // Act & Assert
@@ -140,7 +141,7 @@ public class TokenizerSafetyLimitTests
         var templateBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < 5; i++)
         {
-            templateBuilder.Append($"T{i}: {{Token{i}}}\n");
+            templateBuilder.Append(CultureInfo.InvariantCulture, $"T{i}: {{Token{i}}}\n");
         }
 
         // Act

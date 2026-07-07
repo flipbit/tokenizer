@@ -8,7 +8,7 @@ public class TokenMatcherTests : TokenizerTestBase
 {
     private readonly ITokenMatcher _matcher;
 
-    private class Person
+    private sealed class Person
     {
         public string Name { get; set; } = null!;
         public int Age { get; set; }

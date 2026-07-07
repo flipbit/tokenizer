@@ -10,7 +10,7 @@ public class TokenizerTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
-    private class TestClass
+    private sealed class TestClass
     {
         public string Message { get; set; } = null!;
 
@@ -36,7 +36,7 @@ public class TokenizerTests : TokenizerTestBase
         public int Number { get; set; }
     }
 
-    private class Teacher : Student
+    private sealed class Teacher : Student
     {
         public List<string> Class { get; set; } = null!;
     }

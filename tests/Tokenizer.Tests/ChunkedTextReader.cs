@@ -5,7 +5,7 @@ namespace Tokens;
 /// simulating a network stream or similar source where data arrives incrementally.
 /// Forces multiple buffer fills and cooperative yield cycles in the tokenization engine.
 /// </summary>
-internal class ChunkedTextReader : TextReader
+internal sealed class ChunkedTextReader : TextReader
 {
     private readonly string _data;
     private int _position;

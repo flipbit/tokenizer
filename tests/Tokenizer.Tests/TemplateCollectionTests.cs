@@ -137,7 +137,7 @@ public class TemplateCollectionTests : TokenizerTestBase
         coll.Add(beta);
 
         // Act
-        var names = coll.Select(t => t.Name).Order().ToList();
+        var names = coll.Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
 
         // Assert
         Assert.Equal(new[] { "alpha", "beta" }, names);

@@ -19,7 +19,7 @@ public class InputValidatorTests
     public void GivenDictionaryTarget_WhenValidating_ThenDoesNotThrow()
     {
         // Arrange
-        var target = new Dictionary<string, object>();
+        var target = new Dictionary<string, object>(StringComparer.Ordinal);
 
         // Act & Assert
         InputValidator.ValidateTargetObject(target, _logger);
@@ -47,7 +47,7 @@ public class InputValidatorTests
         Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
     }
 
-    private class WritableTarget
+    private sealed class WritableTarget
     {
         public string Name { get; set; } = null!;
     }

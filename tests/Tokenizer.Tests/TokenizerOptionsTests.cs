@@ -24,7 +24,7 @@ public class TokenizerOptionsTests : TokenizerTestBase
         Assert.Equal("Second: ", template.Tokens.ElementAt(1).Preamble);
     }
 
-    private class Person
+    private sealed class Person
     {
         public int Age { get; set; }
         public string Address { get; set; } = null!;

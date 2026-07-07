@@ -131,7 +131,7 @@ public class TemplateParserEdgeCaseTests
         var sb = new StringBuilder();
         for (int i = 0; i < 100; i++)
         {
-            sb.Append($"{{token{i}}}");
+            sb.Append(CultureInfo.InvariantCulture, $"{{token{i}}}");
         }
 
         // Act

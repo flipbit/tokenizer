@@ -134,5 +134,5 @@ public class ImmutableCollectionsTests
         Assert.Equal(typeof(IReadOnlyList<object>), returnType);
     }
 
-    private class TestClass;
+    private sealed class TestClass;
 }

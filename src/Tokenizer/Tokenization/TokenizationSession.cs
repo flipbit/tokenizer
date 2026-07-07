@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Tokens.Diagnostics;
 using Tokens.Exceptions;
+using Tokens.Extensions;
 
 namespace Tokens.Tokenization;
 
@@ -55,7 +56,7 @@ internal sealed class TokenizationSession
                 context.Enumerator.TotalCharactersSeen > _template.Options.MaxInputLength)
             {
                 throw new TokenizerException(
-                    $"Input length exceeds maximum allowed length of {_template.Options.MaxInputLength:N0}. " +
+                    $"Input length exceeds maximum allowed length of {_template.Options.MaxInputLength.ToInvariant("N0")}. " +
                     "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
             }
         }
@@ -79,7 +80,7 @@ internal sealed class TokenizationSession
                 context.Enumerator.TotalCharactersSeen > _template.Options.MaxInputLength)
             {
                 throw new TokenizerException(
-                    $"Input length exceeds maximum allowed length of {_template.Options.MaxInputLength:N0}. " +
+                    $"Input length exceeds maximum allowed length of {_template.Options.MaxInputLength.ToInvariant("N0")}. " +
                     "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
             }
         }
@@ -113,7 +114,7 @@ internal sealed class TokenizationSession
             if (_hasExplicitLimit && _iterationCount > _template.Options.MaxIterations)
             {
                 throw new TokenizerException(
-                    $"Tokenization exceeded maximum iteration count of {_template.Options.MaxIterations:N0}. " +
+                    $"Tokenization exceeded maximum iteration count of {_template.Options.MaxIterations.ToInvariant("N0")}. " +
                     "This may indicate a problematic template pattern. " +
                     "Increase TokenizerOptions.MaxIterations to allow more iterations.");
             }
@@ -121,8 +122,8 @@ internal sealed class TokenizationSession
             if (!_hasExplicitLimit && _iterationCount > context.Enumerator.CharactersConsumed * 2 + 100)
             {
                 throw new TokenizerException(
-                    $"Tokenization exceeded derived iteration limit (iterations: {_iterationCount:N0}, " +
-                    $"characters consumed: {context.Enumerator.CharactersConsumed:N0}). " +
+                    $"Tokenization exceeded derived iteration limit (iterations: {_iterationCount.ToInvariant("N0")}, " +
+                    $"characters consumed: {context.Enumerator.CharactersConsumed.ToInvariant("N0")}). " +
                     "This may indicate a problematic template pattern. " +
                     "Set TokenizerOptions.MaxIterations to override the automatic limit.");
             }

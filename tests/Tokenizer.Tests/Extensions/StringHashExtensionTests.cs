@@ -1,8 +1,7 @@
-using Tokens.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens;
+namespace Tokens.Extensions;
 
 public class StringHashExtensionTests : TokenizerTestBase
 {

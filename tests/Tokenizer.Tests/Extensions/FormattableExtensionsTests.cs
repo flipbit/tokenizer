@@ -1,7 +1,6 @@
-using Tokens.Extensions;
 using Xunit;
 
-namespace Tokens.Tests.Extensions;
+namespace Tokens.Extensions;
 
 public class FormattableExtensionsTests
 {

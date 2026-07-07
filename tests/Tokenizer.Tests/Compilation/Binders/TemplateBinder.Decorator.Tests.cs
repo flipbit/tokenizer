@@ -1,6 +1,9 @@
+using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Binding;
+#pragma warning disable MA0048 // Scenario test: TemplateBinder.Decorator.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for decorator binding logic from AST to DecoratorDefinition

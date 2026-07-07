@@ -1,6 +1,9 @@
+using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.FrontMatter;
+#pragma warning disable MA0048 // Scenario test: FrontMatterBinder.Options.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for front matter option parsing and binding

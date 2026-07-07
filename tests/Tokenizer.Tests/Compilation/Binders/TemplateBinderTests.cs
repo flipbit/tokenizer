@@ -1,7 +1,7 @@
-using Tokens.Compilation.Binders;
+using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing;
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for template binding from AST to TemplateDefinition

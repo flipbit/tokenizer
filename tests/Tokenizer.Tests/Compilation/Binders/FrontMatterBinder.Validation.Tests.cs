@@ -1,7 +1,10 @@
+using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.FrontMatter;
+#pragma warning disable MA0048 // Scenario test: FrontMatterBinder.Validation.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for front matter validation and error handling

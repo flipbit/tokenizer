@@ -1,7 +1,9 @@
-using Tokens.Compilation.Binders;
+using Tokens.Compilation.Parsing;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Binding;
+#pragma warning disable MA0048 // Scenario test: TemplateBinder.Modifier.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for modifier binding logic from AST to TokenDefinition

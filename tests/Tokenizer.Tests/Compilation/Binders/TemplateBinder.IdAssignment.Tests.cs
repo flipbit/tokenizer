@@ -1,6 +1,8 @@
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Binding;
+#pragma warning disable MA0048 // Scenario test: TemplateBinder.IdAssignment.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for token Id assignment during template construction.

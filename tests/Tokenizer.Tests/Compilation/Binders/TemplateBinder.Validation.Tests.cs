@@ -1,7 +1,10 @@
+using Tokens.Compilation.Parsing;
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Binding;
+#pragma warning disable MA0048 // Scenario test: TemplateBinder.Validation.Tests.cs
+
+namespace Tokens.Compilation.Binders;
 
 /// <summary>
 /// Tests for semantic validation during binding

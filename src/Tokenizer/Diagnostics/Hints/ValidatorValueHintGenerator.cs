@@ -19,26 +19,26 @@ internal sealed class ValidatorValueHintGenerator : IHintGenerator
         if (decoratorName == null)
             return null;
 
-        if (decoratorName.Contains("IsEmail"))
+        if (decoratorName.Contains("IsEmail", StringComparison.Ordinal))
         {
-            if (!value.Contains("@"))
+            if (!value.Contains("@", StringComparison.Ordinal))
                 return $"Value '{value}' does not contain '@'";
             return null;
         }
 
-        if (decoratorName.Contains("IsDomainName"))
+        if (decoratorName.Contains("IsDomainName", StringComparison.Ordinal))
         {
-            if (value.Contains(" "))
+            if (value.Contains(" ", StringComparison.Ordinal))
                 return $"Value '{value}' contains spaces";
             return $"Value '{value}' does not appear to be a domain name";
         }
 
-        if (decoratorName.Contains("IsNumeric"))
+        if (decoratorName.Contains("IsNumeric", StringComparison.Ordinal))
         {
             return $"Value '{value}' is not a valid number";
         }
 
-        if (decoratorName.Contains("IsPhoneNumber"))
+        if (decoratorName.Contains("IsPhoneNumber", StringComparison.Ordinal))
         {
             return $"Value '{value}' may contain non-phone characters";
         }

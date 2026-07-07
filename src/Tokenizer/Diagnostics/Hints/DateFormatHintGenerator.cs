@@ -25,7 +25,7 @@ internal sealed class DateFormatHintGenerator : IHintGenerator
                                    DiagnosticResult trace)
     {
         if (sourceEvent.DecoratorName == null ||
-            !sourceEvent.DecoratorName.Contains("ToDateTime"))
+            !sourceEvent.DecoratorName.Contains("ToDateTime", StringComparison.Ordinal))
         {
             return null;
         }

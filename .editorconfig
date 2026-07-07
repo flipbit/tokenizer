@@ -182,6 +182,9 @@ dotnet_diagnostic.MA0101.severity = warning
 # Avoid implicit culture-sensitive operations
 dotnet_diagnostic.MA0074.severity = warning
 
+# Use StringComparison overloads
+dotnet_diagnostic.MA0001.severity = warning
+
 # Do not use implicit culture-sensitive ToString in interpolated strings
 dotnet_diagnostic.MA0076.severity = warning
 

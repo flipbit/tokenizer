@@ -1,3 +1,7 @@
+#if NETSTANDARD2_0
+using Tokens.Extensions;
+#endif
+
 namespace Tokens.Transformers;
 
 /// <summary>

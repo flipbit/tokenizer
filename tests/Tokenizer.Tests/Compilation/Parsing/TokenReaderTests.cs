@@ -22,7 +22,7 @@ public class TokenReaderTests
             Tok(LexerTokenKind.Identifier, "value", "value"),
             Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty),
         };
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act & Assert
         Assert.Equal(LexerTokenKind.Identifier, r.Peek().Kind);
@@ -35,7 +35,7 @@ public class TokenReaderTests
     {
         // Arrange
         var tokens = new List<LexerToken> { Tok(LexerTokenKind.Colon, ":", ":") };
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act
         var ok = r.TryConsume(LexerTokenKind.Colon, out var t);
@@ -55,7 +55,7 @@ public class TokenReaderTests
             Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.Identifier, "x", "x"),
         };
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act
         r.SkipWhitespace();
@@ -70,7 +70,7 @@ public class TokenReaderTests
     {
         // Arrange
         var tokens = new List<LexerToken> { Tok(LexerTokenKind.Identifier, "x", "x") };
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act & Assert
         Assert.Throws<ParsingException>(() => r.Expect(LexerTokenKind.Colon));
@@ -86,7 +86,7 @@ public class TokenReaderTests
             Tok(LexerTokenKind.Colon, ":", ":"),
             Tok(LexerTokenKind.Identifier, "value", "value"),
         };
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act
         var win = r.CaptureWindow(0, 2);
@@ -102,7 +102,7 @@ public class TokenReaderTests
     {
         // Arrange
         var tokens = new List<LexerToken>();
-        var r = new TokenReader(tokens);
+        using var r = new TokenReader(tokens);
 
         // Act & Assert
         Assert.Equal(LexerTokenKind.EndOfInput, r.Peek().Kind);

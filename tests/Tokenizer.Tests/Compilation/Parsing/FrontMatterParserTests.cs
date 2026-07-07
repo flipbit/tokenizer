@@ -13,7 +13,7 @@ public class FrontMatterParserTests
 
     private static FrontMatterBlock Parse(params LexerToken[] tokens)
     {
-        var reader = new TokenReader(tokens);
+        using var reader = new TokenReader(tokens);
         return FrontMatterParser.Parse(reader);
     }
 
@@ -79,7 +79,7 @@ public class FrontMatterParserTests
     public void GivenMissingColon_WhenParsing_ThenThrows()
     {
         // Arrange
-        var reader = new TokenReader(new[]{
+        using var reader = new TokenReader(new[]{
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Identifier, "oops", "oops"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
@@ -92,7 +92,7 @@ public class FrontMatterParserTests
     public void GivenUnterminatedBlock_WhenParsing_ThenThrows()
     {
         // Arrange
-        var reader = new TokenReader(new[]{
+        using var reader = new TokenReader(new[]{
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Colon, ":", ":"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty),

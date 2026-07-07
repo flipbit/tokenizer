@@ -182,5 +182,12 @@ dotnet_diagnostic.MA0074.severity = warning
 # Do not use implicit culture-sensitive ToString in interpolated strings
 dotnet_diagnostic.MA0076.severity = warning
 
+# File name must match type name
+dotnet_diagnostic.MA0048.severity = warning
+
+# Namespace must match folder structure
+dotnet_style_namespace_match_folder = true
+dotnet_diagnostic.IDE0130.severity = warning
+
 [*.{xml,csproj,props}]
 indent_size = 2

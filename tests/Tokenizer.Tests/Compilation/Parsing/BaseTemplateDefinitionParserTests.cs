@@ -4,18 +4,6 @@ using Xunit.Abstractions;
 
 namespace Tokens.Compilation.Parsing;
 
-public class AstTemplateDefinitionParserTests(ITestOutputHelper testOutputHelper) : BaseTemplateDefinitionParserTests(testOutputHelper)
-{
-    protected override ITemplateDefinitionParser Parser { get; } = new AstTemplateDefinitionParser();
-}
-
-/*
-public class TemplateDefinitionParserTests(ITestOutputHelper testOutputHelper) : BaseTemplateDefinitionParserTests(testOutputHelper)
-{
-    protected override ITemplateDefinitionParser Parser { get; } = new TemplateDefinitionParser();
-}
-*/
-
 public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOutputHelper)
 {
     protected abstract ITemplateDefinitionParser Parser { get; }

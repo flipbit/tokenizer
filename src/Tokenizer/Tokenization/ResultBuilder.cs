@@ -9,7 +9,7 @@ namespace Tokens.Tokenization;
 /// Result builder that creates and populates tokenization result objects with matches, misses, and exception information.
 /// This service encapsulates result object creation, token match/miss management, and exception collection.
 /// </summary>
-internal class ResultBuilder : IResultBuilder
+internal sealed class ResultBuilder : IResultBuilder
 {
     private readonly ILogger<ResultBuilder> _log;
 

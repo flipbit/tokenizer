@@ -3,7 +3,7 @@ using Tokens.Enumerators;
 
 namespace Tokens.Compilation.Parsing;
 
-internal class TemplateDefinitionEnumerator
+internal sealed class TemplateDefinitionEnumerator
 {
     private readonly string _pattern;
     private readonly int _patternLength;

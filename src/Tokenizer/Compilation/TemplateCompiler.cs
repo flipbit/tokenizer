@@ -11,7 +11,7 @@ namespace Tokens.Compilation;
 /// Compiles template pattern strings into <see cref="Template"/> objects
 /// that can be used to extract structured data from input text.
 /// </summary>
-internal class TemplateCompiler
+internal sealed class TemplateCompiler
 {
     private readonly DecoratorRegistry _registry;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();

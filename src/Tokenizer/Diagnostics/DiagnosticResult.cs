@@ -4,7 +4,7 @@ namespace Tokens.Diagnostics;
 /// Contains all diagnostic events collected during a single tokenization call,
 /// together with derived views and rendered output for debugging.
 /// </summary>
-public class DiagnosticResult
+public sealed class DiagnosticResult
 {
     private static readonly DiagnosticEventType[] FailureTypes =
     {

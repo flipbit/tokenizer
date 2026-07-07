@@ -7,7 +7,7 @@ namespace Tokens.Compilation;
 /// Discovers built-in transformers and validators via assembly reflection
 /// and merges custom registrations from <see cref="TokenizerOptions"/>.
 /// </summary>
-internal class DecoratorRegistry
+internal sealed class DecoratorRegistry
 {
     public IReadOnlyList<Type> Transformers { get; }
 

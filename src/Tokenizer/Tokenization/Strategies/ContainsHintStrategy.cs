@@ -8,7 +8,7 @@ namespace Tokens.Tokenization.Strategies;
 /// Does not touch the enumerator, so no reset is needed.
 /// Only used on the sync path where rawInput is always available.
 /// </summary>
-internal class ContainsHintStrategy : IHintStrategy
+internal sealed class ContainsHintStrategy : IHintStrategy
 {
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,

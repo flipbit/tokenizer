@@ -8,7 +8,7 @@ namespace Tokens.Tokenization;
 /// Thin orchestrator that validates inputs and creates tokenization sessions.
 /// All tokenization logic lives in <see cref="TokenizationSession"/> and its sub-components.
 /// </summary>
-internal class TokenizationEngine : ITokenizationEngine
+internal sealed class TokenizationEngine : ITokenizationEngine
 {
     private readonly ILogger<TokenizationEngine> _log;
 

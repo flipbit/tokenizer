@@ -18,7 +18,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -45,7 +45,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -71,7 +71,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -97,7 +97,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -121,7 +121,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -146,7 +146,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -172,7 +172,7 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             targetObject: null, result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
+            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
@@ -187,43 +187,5 @@ public class CandidateProcessorTests
         // Assert
         Assert.False(context.Candidates.HasCandidates);
         Assert.Equal(0, context.Replacement.Length);
-    }
-
-    [Fact]
-    public void GivenThrowingAssignment_WhenTryAssign_ThenReturnsFalseAndRecordsException()
-    {
-        // Arrange — use a target object whose property setter throws
-        var parser = new TemplateCompiler(new TokenizerOptions());
-        var template = parser.Compile("Name: {Name}").Template;
-        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var processor = new CandidateProcessor(
-            new ThrowingTarget(), result, template,
-            new TokenAssigner(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
-            NullLogger<TokenizationEngine>.Instance);
-
-        var context = new TokenizationContext();
-        context.Initialize(new System.IO.StringReader("Name: Alice"));
-        context.Candidates.AddRange(template.Tokens);
-        context.Replacement.Append("Alice");
-        var location = new FileLocation();
-
-        // Act
-        var assigned = processor.TryAssign(context, location);
-
-        // Assert
-        Assert.False(assigned);
-        Assert.Single(result.Exceptions);
-    }
-
-    private sealed class ThrowingTarget
-    {
-#pragma warning disable CA1822 // Accessed via reflection as instance property
-        public string Name
-#pragma warning restore CA1822
-        {
-            get => throw new InvalidOperationException("boom");
-            set => throw new InvalidOperationException("boom");
-        }
     }
 }

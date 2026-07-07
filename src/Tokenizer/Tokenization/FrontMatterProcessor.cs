@@ -1,5 +1,6 @@
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
+using Tokens.Extensions;
 
 namespace Tokens.Tokenization;
 
@@ -9,37 +10,43 @@ namespace Tokens.Tokenization;
 internal static class FrontMatterProcessor
 {
     /// <summary>
-    /// Iterates template tokens and assigns values for any front matter tokens.
+    /// Iterates template tokens and evaluates values for any front matter tokens.
+    /// Assigns the evaluated value to the result and, if a target object is provided, reflects it onto the target.
     /// </summary>
     public static void Process(
         Template template,
         object? targetObject,
         TokenizeResultBase result,
-        TokenAssigner assigner,
+        DecoratorPipeline pipeline,
         FileLocation location)
     {
         foreach (var token in template.Tokens)
         {
             if (!token.IsFrontMatterToken) continue;
 
-            if (assigner.Assign(token, targetObject, string.Empty, location, out var assignedValue))
+            if (pipeline.Evaluate(token, string.Empty, location, out var evaluatedValue))
             {
-                if (assigner.Collector.IsEnabled)
+                if (pipeline.Collector.IsEnabled)
                 {
-                    assigner.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
+                    pipeline.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
                         tokenName: token.Name, tokenId: token.Id,
-                        value: assignedValue?.ToString());
+                        value: evaluatedValue?.ToString());
                 }
-                if (assignedValue != null)
+                if (evaluatedValue != null)
                 {
-                    result.Tokens.AddMatch(token, assignedValue, token.Location);
+                    result.Tokens.AddMatch(token, evaluatedValue, token.Location);
+
+                    if (targetObject != null && !string.IsNullOrWhiteSpace(token.Name))
+                    {
+                        targetObject.SetValue(token.Name, evaluatedValue, StringComparison.Ordinal);
+                    }
                 }
             }
             else
             {
-                if (assigner.Collector.IsEnabled)
+                if (pipeline.Collector.IsEnabled)
                 {
-                    assigner.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
+                    pipeline.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
                         tokenName: token.Name, tokenId: token.Id);
                 }
             }

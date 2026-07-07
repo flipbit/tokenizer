@@ -11,7 +11,7 @@ public class CandidateTokenListTests : TokenizerTestBase
 {
     private static readonly FileLocation NoLocation = new FileLocation();
     private static readonly TokenizerOptions DefaultOptions = new TokenizerOptions();
-    private static readonly TokenAssigner DefaultAssigner = new TokenAssigner(DefaultOptions, NullDiagnosticCollector.Instance);
+    private static readonly DecoratorPipeline DefaultPipeline = new DecoratorPipeline(DefaultOptions, NullDiagnosticCollector.Instance);
 
     public CandidateTokenListTests(ITestOutputHelper output) : base(output)
     {
@@ -182,10 +182,10 @@ public class CandidateTokenListTests : TokenizerTestBase
         Assert.False(list.IsNullToken);
     }
 
-    // TryAssign: returns true when a candidate accepts the value
+    // TryEvaluate: returns true when a candidate accepts the value
 
     [Fact]
-    public void GivenTokenWithName_WhenTryAssignCalledWithValue_ThenReturnsTrueAndSetsAssigned()
+    public void GivenTokenWithName_WhenTryEvaluateCalledWithValue_ThenReturnsTrueAndSetsEvaluated()
     {
         // Arrange
         var token = new Token("Name", "preamble", NoLocation);
@@ -194,34 +194,34 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
+        var result = list.TryEvaluate(value, DefaultPipeline, NoLocation, out var evaluated, out var evaluatedValue);
 
         // Assert
         Assert.True(result);
-        Assert.Same(token, assigned);
-        Assert.Equal("hello", assignedValue);
+        Assert.Same(token, evaluated);
+        Assert.Equal("hello", evaluatedValue);
     }
 
-    // TryAssign: returns false when no candidates match
+    // TryEvaluate: returns false when no candidates match
 
     [Fact]
-    public void GivenEmptyList_WhenTryAssignCalled_ThenReturnsFalse()
+    public void GivenEmptyList_WhenTryEvaluateCalled_ThenReturnsFalse()
     {
         // Arrange
         var list = new CandidateTokenList();
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
+        var result = list.TryEvaluate(value, DefaultPipeline, NoLocation, out var evaluated, out var evaluatedValue);
 
         // Assert
         Assert.False(result);
-        Assert.Null(assigned);
-        Assert.Null(assignedValue);
+        Assert.Null(evaluated);
+        Assert.Null(evaluatedValue);
     }
 
     [Fact]
-    public void GivenTokenWithBlankName_WhenTryAssignCalled_ThenReturnsFalse()
+    public void GivenTokenWithBlankName_WhenTryEvaluateCalled_ThenReturnsFalse()
     {
         // Arrange
         var token = new Token("   ", "preamble", NoLocation);
@@ -230,17 +230,17 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryAssign(target: null, value, DefaultAssigner, NoLocation, out var assigned, out var assignedValue);
+        var result = list.TryEvaluate(value, DefaultPipeline, NoLocation, out var evaluated, out var evaluatedValue);
 
         // Assert
         Assert.False(result);
-        Assert.Null(assigned);
+        Assert.Null(evaluated);
     }
 
-    // CanAnyAssign: returns true when at least one token can accept
+    // CanAnyEvaluate: returns true when at least one token can accept
 
     [Fact]
-    public void GivenTokenWithName_WhenCanAnyAssignCalledWithNonEmptyValue_ThenReturnsTrue()
+    public void GivenTokenWithName_WhenCanAnyEvaluateCalledWithNonEmptyValue_ThenReturnsTrue()
     {
         // Arrange
         var token = new Token("Name", "preamble", NoLocation);
@@ -248,29 +248,29 @@ public class CandidateTokenListTests : TokenizerTestBase
         list.Add(token);
 
         // Act
-        var result = list.CanAnyAssign("some value", DefaultAssigner);
+        var result = list.CanAnyEvaluate("some value", DefaultPipeline);
 
         // Assert
         Assert.True(result);
     }
 
-    // CanAnyAssign: returns false when no tokens match
+    // CanAnyEvaluate: returns false when no tokens match
 
     [Fact]
-    public void GivenEmptyList_WhenCanAnyAssignCalled_ThenReturnsFalse()
+    public void GivenEmptyList_WhenCanAnyEvaluateCalled_ThenReturnsFalse()
     {
         // Arrange
         var list = new CandidateTokenList();
 
         // Act
-        var result = list.CanAnyAssign("some value", DefaultAssigner);
+        var result = list.CanAnyEvaluate("some value", DefaultPipeline);
 
         // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public void GivenAnyToken_WhenCanAnyAssignCalledWithEmptyValue_ThenReturnsFalse()
+    public void GivenAnyToken_WhenCanAnyEvaluateCalledWithEmptyValue_ThenReturnsFalse()
     {
         // Arrange
         var token = new Token("Name", "preamble", NoLocation);
@@ -278,7 +278,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         list.Add(token);
 
         // Act
-        var result = list.CanAnyAssign(string.Empty, DefaultAssigner);
+        var result = list.CanAnyEvaluate(string.Empty, DefaultPipeline);
 
         // Assert
         Assert.False(result);

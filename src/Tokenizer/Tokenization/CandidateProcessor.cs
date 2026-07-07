@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
+using Tokens.Exceptions;
+using Tokens.Extensions;
 
 namespace Tokens.Tokenization;
 
@@ -13,7 +15,7 @@ internal sealed class CandidateProcessor
     private readonly object? _targetObject;
     private readonly TokenizeResultBase _result;
     private readonly Template _template;
-    private readonly TokenAssigner _assigner;
+    private readonly DecoratorPipeline _pipeline;
     private readonly IDiagnosticCollector _collector;
     private readonly ILogger _logger;
 
@@ -21,21 +23,21 @@ internal sealed class CandidateProcessor
         object? targetObject,
         TokenizeResultBase result,
         Template template,
-        TokenAssigner assigner,
+        DecoratorPipeline pipeline,
         IDiagnosticCollector collector,
         ILogger logger)
     {
         _targetObject = targetObject;
         _result = result;
         _template = template;
-        _assigner = assigner;
+        _pipeline = pipeline;
         _collector = collector;
         _logger = logger;
     }
 
     /// <summary>
-    /// Attempts to assign the accumulated replacement value to a candidate token.
-    /// Returns true if assignment succeeded.
+    /// Attempts to evaluate the accumulated replacement value against candidate tokens.
+    /// Returns true if evaluation succeeded and a match was recorded.
     /// </summary>
     public bool TryAssign(TokenizationContext context, FileLocation location)
     {
@@ -49,20 +51,25 @@ internal sealed class CandidateProcessor
 
         try
         {
-            if (context.Candidates.TryAssign(_targetObject, context.Replacement, _assigner, location, out var assigned, out var assignedValue))
+            if (context.Candidates.TryEvaluate(context.Replacement, _pipeline, location, out var evaluated, out var evaluatedValue))
             {
                 if (_collector.IsEnabled)
                 {
                     _collector.Record(DiagnosticEventType.TokenAssigned,
-                        tokenName: assigned.Name, tokenId: assigned.Id,
+                        tokenName: evaluated.Name, tokenId: evaluated.Id,
                         location: location,
-                        value: assignedValue?.ToString());
+                        value: evaluatedValue?.ToString());
                 }
 
-                if (assignedValue != null)
+                if (evaluatedValue != null)
                 {
-                    _result.Tokens.AddMatch(assigned, assignedValue, location);
-                    AddMatchedTokenIds(assigned, context.MatchIds);
+                    if (!AssignToTarget(evaluated, evaluatedValue, location))
+                    {
+                        return false;
+                    }
+
+                    _result.Tokens.AddMatch(evaluated, evaluatedValue, location);
+                    AddMatchedTokenIds(evaluated, context.MatchIds);
                 }
 
                 return true;
@@ -90,6 +97,103 @@ internal sealed class CandidateProcessor
     }
 
     /// <summary>
+    /// Assigns the evaluated value to the target object (dictionary, typed object, or null).
+    /// Returns false if assignment fails due to type conversion or other errors.
+    /// </summary>
+    private bool AssignToTarget(Token token, object evaluatedValue, FileLocation location)
+    {
+        if (_targetObject is IDictionary<string, object> dictionary)
+        {
+            return SetDictionaryValue(token, dictionary, evaluatedValue);
+        }
+
+        if (_targetObject is null)
+        {
+            return true;
+        }
+
+        try
+        {
+            if (token.CanConcatenate)
+            {
+                var current = _targetObject.GetValue(token.Name);
+
+                if (current == null)
+                {
+                    _targetObject.SetValue(token.Name, evaluatedValue, StringComparison.Ordinal);
+                }
+                else if (ValueConcatenation.CanConcatenate(current, evaluatedValue))
+                {
+                    var concatenated = ValueConcatenation.Concatenate(current, evaluatedValue, token.ConcatenationString);
+                    if (concatenated != null) _targetObject.SetValue(token.Name, concatenated, StringComparison.Ordinal);
+                }
+                else
+                {
+                    throw new TokenAssignmentException(token, $"Unable to concatenate type {evaluatedValue.GetType().Name} to {token.Name}");
+                }
+            }
+            else
+            {
+                _targetObject.SetValue(token.Name, evaluatedValue, StringComparison.Ordinal);
+            }
+        }
+        catch (MissingMemberException)
+        {
+            if (!_pipeline.Options.IgnoreMissingProperties)
+            {
+                throw;
+            }
+
+            if (_collector.IsEnabled)
+            {
+                _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                    tokenName: token.Name, tokenId: token.Id,
+                    location: location,
+                    detail: $"Property '{token.Name}' not found on target type; ignored via IgnoreMissingProperties");
+            }
+        }
+        catch (TypeConversionException ex)
+        {
+            _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                tokenName: token.Name, tokenId: token.Id,
+                location: location,
+                detail: $"Type conversion failed: {ex.Message}");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool SetDictionaryValue(Token token, IDictionary<string, object> dictionary, object input)
+    {
+        if (token.IsRepeating)
+        {
+            List<object> list;
+            if (dictionary.ContainsKey(token.Name))
+            {
+                list = dictionary[token.Name] as List<object> ?? new List<object> { dictionary[token.Name] };
+            }
+            else
+            {
+                list = new List<object>();
+            }
+            list.Add(input);
+            input = list;
+        }
+
+        if (dictionary.ContainsKey(token.Name))
+        {
+            dictionary[token.Name] = input;
+        }
+        else
+        {
+            dictionary.Add(token.Name, input);
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Handles repeated token backtracking when the accumulated value cannot be assigned.
     /// Returns true if the outer loop should continue processing, false if candidates were cleared.
     /// </summary>
@@ -97,7 +201,7 @@ internal sealed class CandidateProcessor
     {
         var replacementValue = context.Replacement.ToString();
 
-        if (!context.Candidates.CanAnyAssign(replacementValue, _assigner))
+        if (!context.Candidates.CanAnyEvaluate(replacementValue, _pipeline))
         {
             if (_collector.IsEnabled)
             {
@@ -164,7 +268,6 @@ internal sealed class CandidateProcessor
     /// Handles newline-terminated token processing: optionally disables repeating tokens
     /// that span non-adjacent lines, attempts assignment, then clears candidates,
     /// replacement, and updates the replacement location.
-    /// Clears candidates and replacement after processing.
     /// </summary>
     public void HandleNewline(TokenizationContext context)
     {

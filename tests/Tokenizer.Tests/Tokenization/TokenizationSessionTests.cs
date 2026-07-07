@@ -16,7 +16,7 @@ public class TokenizationSessionTests
         var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var session = CreateSession(template, target: null, result);
+        var session = CreateSession(template, result);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -36,7 +36,7 @@ public class TokenizationSessionTests
         var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var session = CreateSession(template, target: null, result);
+        var session = CreateSession(template, result);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -60,7 +60,7 @@ public class TokenizationSessionTests
 
         // Act — sync
         var syncResult = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var syncSession = CreateSession(template, target: null, syncResult);
+        var syncSession = CreateSession(template, syncResult);
         var syncContext = new TokenizationContext();
         syncContext.Initialize(new System.IO.StringReader(input));
 #pragma warning disable MA0042 // Intentionally testing sync Run path alongside RunAsync
@@ -69,7 +69,7 @@ public class TokenizationSessionTests
 
         // Act — async
         var asyncResult = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var asyncSession = CreateSession(template, target: null, asyncResult);
+        var asyncSession = CreateSession(template, asyncResult);
         var asyncContext = new TokenizationContext();
         asyncContext.Initialize(new System.IO.StringReader(input));
         await asyncSession.RunAsync(asyncContext, CancellationToken.None);
@@ -91,7 +91,7 @@ public class TokenizationSessionTests
         var parser = new TemplateCompiler(options);
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var session = CreateSession(template, target: null, result);
+        var session = CreateSession(template, result);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: A long value that exceeds one iteration"));
@@ -107,7 +107,7 @@ public class TokenizationSessionTests
         var parser = new TemplateCompiler(new TokenizerOptions());
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var session = CreateSession(template, target: null, result);
+        var session = CreateSession(template, result);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -143,11 +143,11 @@ public class TokenizationSessionTests
     }
 
     private static TokenizationSession CreateSession(
-        Template template, object? target, TokenizeResultBase result,
+        Template template, TokenizeResultBase result,
         IDiagnosticCollector? collector = null)
     {
         return new TokenizationSession(
-            template, target, result,
+            template, targetObject: null, result,
             collector ?? NullDiagnosticCollector.Instance,
             hintStrategy: null,
             NullLogger<TokenizationEngine>.Instance);

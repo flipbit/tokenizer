@@ -55,28 +55,27 @@ internal sealed class CandidateTokenList
     }
 
     /// <summary>
-    /// Attempts to assign the given string value to the target object using the first candidate token
-    /// whose validators and transformers accept it.
+    /// Evaluates the given string value against each candidate token using the decorator pipeline.
+    /// Returns true if a candidate's decorators accept the value.
     /// </summary>
-    /// <param name="target">The object to assign the value to, or <see langword="null"/> for unbound matching.</param>
-    /// <param name="value">The raw matched text to assign.</param>
-    /// <param name="assigner">The assigner that handles the decorator pipeline and value assignment.</param>
+    /// <param name="value">The raw matched text to evaluate.</param>
+    /// <param name="pipeline">The decorator pipeline that handles transformers and validators.</param>
     /// <param name="location">The location in the source input where the value was found.</param>
-    /// <param name="assigned">When this method returns <see langword="true"/>, the token that successfully accepted the value; otherwise <see langword="null"/>.</param>
-    /// <param name="assignedValue">When this method returns <see langword="true"/>, the (potentially transformed) value that was assigned; otherwise <see langword="null"/>.</param>
+    /// <param name="evaluated">When this method returns <see langword="true"/>, the token that successfully accepted the value; otherwise <see langword="null"/>.</param>
+    /// <param name="evaluatedValue">When this method returns <see langword="true"/>, the (potentially transformed) value; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> if a candidate token accepted the value; otherwise <see langword="false"/>.</returns>
-    public bool TryAssign(object? target, StringBuilder value, TokenAssigner assigner, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? assigned, out object? assignedValue)
+    public bool TryEvaluate(StringBuilder value, DecoratorPipeline pipeline, FileLocation location, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Token? evaluated, out object? evaluatedValue)
     {
-        assigned = null;
-        assignedValue = null;
+        evaluated = null;
+        evaluatedValue = null;
 
         var valueString = value.ToString();
 
         foreach (var token in _tokens)
         {
-            if (assigner.Assign(token, target, valueString, location, out assignedValue))
+            if (pipeline.Evaluate(token, valueString, location, out evaluatedValue))
             {
-                assigned = token;
+                evaluated = token;
                 return true;
             }
         }
@@ -85,17 +84,16 @@ internal sealed class CandidateTokenList
     }
 
     /// <summary>
-    /// Returns <see langword="true"/> if at least one candidate token could accept the given value
-    /// (i.e. its validators would pass), without performing an actual assignment.
+    /// Returns <see langword="true"/> if at least one candidate token's decorators would accept the given value.
     /// </summary>
-    /// <param name="value">The value to test against the candidate _tokens.</param>
-    /// <param name="assigner">The assigner that handles the decorator pipeline check.</param>
+    /// <param name="value">The value to test against the candidate tokens.</param>
+    /// <param name="pipeline">The decorator pipeline that handles the decorator check.</param>
     /// <returns><see langword="true"/> if any candidate token can accept the value; otherwise <see langword="false"/>.</returns>
-    public bool CanAnyAssign(string value, TokenAssigner assigner)
+    public bool CanAnyEvaluate(string value, DecoratorPipeline pipeline)
     {
         foreach (var token in _tokens)
         {
-            if (assigner.CanAssign(token, value))
+            if (pipeline.CanEvaluate(token, value))
             {
                 return true;
             }

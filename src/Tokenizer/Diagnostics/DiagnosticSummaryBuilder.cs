@@ -1,5 +1,6 @@
 using System.Text;
 using Tokens.Diagnostics.Hints;
+using Tokens.Extensions;
 
 namespace Tokens.Diagnostics;
 
@@ -47,9 +48,9 @@ internal static class DiagnosticSummaryBuilder
     private static string BuildVerdict(int matched, int total, int missed)
     {
         if (missed == 0)
-            return $"Matched {matched} of {total} tokens.";
+            return $"Matched {matched.ToInvariant()} of {total.ToInvariant()} tokens.";
 
-        return $"Matched {matched} of {total} tokens ({missed} missed).";
+        return $"Matched {matched.ToInvariant()} of {total.ToInvariant()} tokens ({missed.ToInvariant()} missed).";
     }
 
     private static IReadOnlyList<DiagnosticIssue> BuildIssues(List<DiagnosticEvent> events,

@@ -94,4 +94,17 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         // Assert
         Assert.Equal("domain.com", result.First("DomainName"));
     }
+
+    [Theory]
+    [InlineData("HelloWorld", "Hello", "World")]
+    [InlineData("HelloWorld", "hello", "HelloWorld")]
+    public void GivenStringAndPrefix_WhenTransforming_ThenMatchesOrdinal(string input, string prefix, string expectedOutput)
+    {
+        // Arrange / Act
+        var result = _transformer.TryTransform(input, [prefix], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(expectedOutput, transformed);
+    }
 }

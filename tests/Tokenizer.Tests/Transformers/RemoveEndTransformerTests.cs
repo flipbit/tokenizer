@@ -94,4 +94,17 @@ public class RemoveEndTransformerTests : TokenizerTestBase
         // Assert
         Assert.Equal("domain.com", result.First("DomainName"));
     }
+
+    [Theory]
+    [InlineData("HelloWorld", "World", "Hello")]
+    [InlineData("HelloWorld", "world", "HelloWorld")]
+    public void GivenStringAndSuffix_WhenTransforming_ThenMatchesOrdinal(string input, string suffix, string expectedOutput)
+    {
+        // Arrange / Act
+        var result = _transformer.TryTransform(input, [suffix], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(expectedOutput, transformed);
+    }
 }

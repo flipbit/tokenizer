@@ -18,7 +18,7 @@ public sealed class RemoveEndTransformer : ITokenTransformer
 
         if (args == null || args.Length != 1) throw new ArgumentException($"RemoveEnd(value): missing arguments processing: {value}", nameof(args));
 
-        if (valueString.EndsWith(args[0]))
+        if (valueString.EndsWith(args[0], StringComparison.Ordinal))
         {
             transformed = valueString.SubstringBeforeLastString(args[0]);
         }

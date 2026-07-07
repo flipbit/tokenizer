@@ -18,7 +18,7 @@ public sealed class RemoveStartTransformer : ITokenTransformer
 
         if (args == null || args.Length != 1) throw new ArgumentException($"RemoveStart(value): missing arguments processing: {value}", nameof(args));
 
-        if (valueString.StartsWith(args[0]))
+        if (valueString.StartsWith(args[0], StringComparison.Ordinal))
         {
             transformed = valueString.SubstringAfterString(args[0]);
         }

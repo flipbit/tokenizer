@@ -21,7 +21,7 @@ public static class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match))
+            if (value.Contains(match, StringComparison.Ordinal))
             {
                 result = value.Substring(value.IndexOf(match, StringComparison.Ordinal) + match.Length);
             }
@@ -44,7 +44,7 @@ public static class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match))
+                if (value.Contains(match, StringComparison.Ordinal))
                 {
                     result = value.SubstringAfterString(match);
 
@@ -70,7 +70,7 @@ public static class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match))
+                if (value.Contains(match, StringComparison.Ordinal))
                 {
                     result = value.SubstringAfterLastString(match);
 
@@ -95,7 +95,7 @@ public static class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match))
+            if (value.Contains(match, StringComparison.Ordinal))
             {
                 result = value.Substring(value.LastIndexOf(match, StringComparison.Ordinal) + match.Length);
             }
@@ -116,7 +116,7 @@ public static class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match))
+            if (value.Contains(match, StringComparison.Ordinal))
             {
                 result = value.Substring(0, value.IndexOf(match, StringComparison.Ordinal));
             }
@@ -137,7 +137,7 @@ public static class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match))
+            if (value.Contains(match, StringComparison.Ordinal))
             {
                 result = value.Substring(0, value.LastIndexOf(match, StringComparison.Ordinal));
             }
@@ -160,7 +160,7 @@ public static class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match))
+                if (value.Contains(match, StringComparison.Ordinal))
                 {
                     result = value.SubstringBeforeString(match);
 

@@ -157,7 +157,7 @@ public class TokenDefinition
     {
         var preambleContent = _preamble.ToString();
 
-        if (preambleContent.Contains('\n'))
+        if (preambleContent.Contains("\n", StringComparison.Ordinal))
         {
             var trimmed = preambleContent.Substring(preambleContent.LastIndexOf('\n') + 1);
 

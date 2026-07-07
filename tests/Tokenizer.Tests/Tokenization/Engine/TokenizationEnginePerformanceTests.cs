@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Tokens.Builders;
 using Tokens.Compilation;
@@ -76,11 +77,11 @@ public class TokenizationEnginePerformanceTests
         for (int i = 0; i < 100; i++)
         {
             tokens.Add(new TokenBuilder()
-                .WithName($"Token{i}")
-                .WithPreamble($"T{i}: ")
+                .WithName($"Token{i.ToString(CultureInfo.InvariantCulture)}")
+                .WithPreamble($"T{i.ToString(CultureInfo.InvariantCulture)}: ")
                 .Build());
 
-            inputBuilder.AppendLine($"T{i}: Value{i}");
+            inputBuilder.AppendLine($"T{i.ToString(CultureInfo.InvariantCulture)}: Value{i.ToString(CultureInfo.InvariantCulture)}");
         }
 
         templateBuilder.WithTokens(tokens.ToArray());

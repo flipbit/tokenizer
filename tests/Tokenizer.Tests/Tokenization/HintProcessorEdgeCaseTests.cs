@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Builders;
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
@@ -114,7 +115,7 @@ public class HintProcessorEdgeCaseTests
         for (int i = 0; i < 100; i++)
         {
             hints[i] = new HintBuilder()
-                .WithText($"Hint{i}")
+                .WithText($"Hint{i.ToString(CultureInfo.InvariantCulture)}")
                 .WithOptional()
                 .Build();
         }

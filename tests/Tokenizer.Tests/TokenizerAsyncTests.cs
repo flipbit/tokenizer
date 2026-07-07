@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -134,14 +135,14 @@ public class TokenizerAsyncTests : TokenizerTestBase
             {
                 var result = _tokenizer.Tokenize(template, syncInput);
                 if (!result.Success || result.Tokens.Matches.All(m => !string.Equals(m.Value?.ToString(), "SyncAlice", StringComparison.Ordinal)))
-                    errors.Add($"Sync iteration {i} failed");
+                    errors.Add($"Sync iteration {i.ToString(CultureInfo.InvariantCulture)} failed");
             }
             else
             {
                 using var reader = new StringReader(asyncInput);
                 var result = await _tokenizer.TokenizeAsync(template, reader);
                 if (!result.Success || result.Tokens.Matches.All(m => !string.Equals(m.Value?.ToString(), "AsyncBob", StringComparison.Ordinal)))
-                    errors.Add($"Async iteration {i} failed");
+                    errors.Add($"Async iteration {i.ToString(CultureInfo.InvariantCulture)} failed");
             }
         }));
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Xunit;
 
@@ -44,7 +45,7 @@ public class TemplateParserEdgeCaseTests
     public void GivenVeryLongDecoratorChain_WhenParsing_ThenHandlesCorrectly()
     {
         // Arrange
-        var decorators = string.Join(',', Enumerable.Range(1, 50).Select(i => $"dec{i}"));
+        var decorators = string.Join(',', Enumerable.Range(1, 50).Select(i => $"dec{i.ToString(CultureInfo.InvariantCulture)}"));
         var template = $"{{name:{decorators}}}";
 
         // Act

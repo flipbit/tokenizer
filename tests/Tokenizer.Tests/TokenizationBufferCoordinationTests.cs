@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
@@ -252,7 +253,7 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         var sb = new System.Text.StringBuilder();
         for (var i = 0; i < 20; i++)
         {
-            var item = $"Value{i:D3}_{new string((char)('a' + i % 26), 50)}";
+            var item = $"Value{i.ToString("D3", CultureInfo.InvariantCulture)}_{new string((char)('a' + i % 26), 50)}";
             items.Add(item);
             sb.Append($"Item: {item}\n");
         }

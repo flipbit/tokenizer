@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace Tokens;
@@ -30,7 +31,7 @@ internal class AssertWriter
                 WriteValue($"""result.All("{name}").Count""", listMatches.Count);
                 foreach (var listMatch in listMatches)
                 {
-                    WriteValue($"""result.All("{name}")[{listCount}]""", listMatch);
+                    WriteValue($"""result.All("{name}")[{listCount.ToString(CultureInfo.InvariantCulture)}]""", listMatch);
 
                     listCount++;
                 }

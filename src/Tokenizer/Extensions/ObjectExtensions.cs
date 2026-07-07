@@ -24,7 +24,7 @@ public static class ObjectExtensions
     /// </summary>
     public static T SetValue<T>(this T @object, string propertyPath, object value) where T : class
     {
-        return SetValue(@object, propertyPath, value, StringComparison.InvariantCulture);
+        return SetValue(@object, propertyPath, value, StringComparison.Ordinal);
     }
 
     /// <summary>

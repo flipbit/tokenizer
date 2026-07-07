@@ -254,12 +254,12 @@ internal static class TemplateBinder
         {
             if (entry is FrontMatterEntry e)
             {
-                var k = (e.Key ?? string.Empty).Trim().ToLowerInvariant();
-                if (k == key)
+                var k = (e.Key ?? string.Empty).Trim();
+                if (string.Equals(k, key, StringComparison.OrdinalIgnoreCase))
                 {
-                    var v = (e.Value ?? string.Empty).Trim().ToLowerInvariant();
-                    if (v == "true" || v == "yes" || v == "on") return true;
-                    if (v == "false" || v == "no" || v == "off") return false;
+                    var v = (e.Value ?? string.Empty).Trim();
+                    if (string.Equals(v, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "yes", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "on", StringComparison.OrdinalIgnoreCase)) return true;
+                    if (string.Equals(v, "false", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "no", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "off", StringComparison.OrdinalIgnoreCase)) return false;
                 }
             }
         }

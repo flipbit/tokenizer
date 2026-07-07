@@ -1,5 +1,6 @@
 #if NETSTANDARD2_0
 // ReSharper disable once CheckNamespace
+#pragma warning disable MA0048 // File name must match type name — polyfill for System.Diagnostics.CodeAnalysis.NotNullWhenAttribute
 namespace System.Diagnostics.CodeAnalysis;
 
 /// <summary>
@@ -12,4 +13,5 @@ internal sealed class NotNullWhenAttribute : Attribute
     public NotNullWhenAttribute(bool returnValue) => ReturnValue = returnValue;
     public bool ReturnValue { get; }
 }
+#pragma warning restore MA0048
 #endif

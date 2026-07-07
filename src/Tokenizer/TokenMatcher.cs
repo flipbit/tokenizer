@@ -214,7 +214,11 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default)
     {
+#if NETSTANDARD2_0
         using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+#else
+        await using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+#endif
         return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
             stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => _tokenizer.TokenizeAsync(template, reader, token),
@@ -230,7 +234,11 @@ public sealed class TokenMatcher : ITokenMatcher
     /// <inheritdoc />
     public async Task<TokenMatcherResult<T>> MatchAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
     {
+#if NETSTANDARD2_0
         using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+#else
+        await using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
+#endif
         return await MatchAsyncFromSeekableStream<TokenMatcherResult<T>, TokenizeResult<T>>(
             stream, Encoding.UTF8, tags, ct,
             (template, reader, token) => _tokenizer.TokenizeAsync<T>(template, reader, token),
@@ -277,7 +285,11 @@ public sealed class TokenMatcher : ITokenMatcher
     private static async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
     {
         var buffer = new MemoryStream();
+#if NETSTANDARD2_0
         using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
+#else
+        await using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
+#endif
         var charBuf = new char[4096];
         int read;
         while ((read = await reader.ReadAsync(charBuf, 0, charBuf.Length).ConfigureAwait(false)) > 0)

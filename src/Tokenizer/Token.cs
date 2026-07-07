@@ -330,7 +330,7 @@ public sealed class Token
     {
         if (existingValue is string && newValue is string)
         {
-            var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine);
+            var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine, StringComparison.Ordinal);
 
             return $"{existingValue}{concatStringValue}{newValue}";
         }

@@ -16,7 +16,7 @@ public sealed class RemoveTransformer : ITokenTransformer
 
         if (args == null || args.Length != 1) throw new ArgumentException($"Remove(value): missing arguments processing: {value}", nameof(args));
 
-        transformed = valueString.Replace(args[0], string.Empty);
+        transformed = valueString.Replace(args[0], string.Empty, StringComparison.Ordinal);
 
         return true;
     }

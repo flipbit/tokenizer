@@ -58,4 +58,46 @@ public class RemoveTransformerTests
         Assert.True(result);
         Assert.Equal(string.Empty, transformed);
     }
+
+    [Fact]
+    public void GivenCaseMismatch_WhenTransforming_ThenDoesNotRemove()
+    {
+        // Arrange
+        var input = "Hello World";
+
+        // Act
+        var result = _transformer.TryTransform(input, ["hello"], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal("Hello World", transformed);
+    }
+
+    [Fact]
+    public void GivenMultipleOccurrences_WhenTransforming_ThenRemovesAll()
+    {
+        // Arrange
+        var input = "one two one two";
+
+        // Act
+        var result = _transformer.TryTransform(input, ["one"], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(" two  two", transformed);
+    }
+
+    [Fact]
+    public void GivenSubstringNotFound_WhenTransforming_ThenReturnsOriginal()
+    {
+        // Arrange
+        var input = "hello world";
+
+        // Act
+        var result = _transformer.TryTransform(input, ["xyz"], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal("hello world", transformed);
+    }
 }

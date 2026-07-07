@@ -18,6 +18,6 @@ public sealed class ContainsValidator : ITokenValidator
 
         if (args == null || args.Length == 0) throw new ArgumentException($"Contains(): missing argument processing: {value}", nameof(args));
 
-        return valueString.Contains(args[0]);
+        return valueString.Contains(args[0], StringComparison.Ordinal);
     }
 }

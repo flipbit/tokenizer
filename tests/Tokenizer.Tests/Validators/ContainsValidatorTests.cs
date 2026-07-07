@@ -90,4 +90,17 @@ public class ContainsValidatorTests : TokenizerTestBase
         // Assert
         Assert.Equal("Bob", result.First("Name"));
     }
+
+    [Theory]
+    [InlineData("Hello World", "World", true)]
+    [InlineData("Hello World", "world", false)]
+    [InlineData("Hello World", "lo Wo", true)]
+    public void GivenStringAndSubstring_WhenValidating_ThenMatchesOrdinal(string input, string substring, bool expected)
+    {
+        // Arrange / Act
+        var result = _validator.IsValid(input, substring);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
 }

@@ -1,4 +1,5 @@
 using Tokens.Compilation.Definitions;
+using Tokens.Extensions;
 
 namespace Tokens.Compilation.Binders;
 
@@ -14,7 +15,7 @@ internal static class TemplateFactory
         var template = new Template(id, definition.Options);
 
         template.Name = string.IsNullOrWhiteSpace(definition.Name)
-            ? $"Template_{Interlocked.Increment(ref _templateCounter)}"
+            ? $"Template_{Interlocked.Increment(ref _templateCounter).ToInvariant()}"
             : definition.Name;
 
         return template;

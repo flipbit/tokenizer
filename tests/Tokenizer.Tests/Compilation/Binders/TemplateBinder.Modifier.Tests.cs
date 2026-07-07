@@ -11,19 +11,18 @@ namespace Tokens.Compilation.Binders;
 public class TemplateBinderModifierTests
 {
     [Fact]
-    public void GivenFrontMatterTerminateOnNewLine_WhenBinding_ThenAllTokensTerminateOnNewLine()
+    public void GivenFrontMatterTerminateOnNewLine_WhenCompiling_ThenAllTokensTerminateOnNewLine()
     {
         // Arrange
         var input = "---\nTerminateOnNewLine: true\n---\nA: {a}\nB: {b}";
-        var parser = new TemplateParser();
-        var doc = parser.Parse(input);
+        var compiler = new Compilation.TemplateCompiler(new TokenizerOptions());
 
         // Act
-        var def = TemplateBinder.Bind(doc);
+        var result = compiler.Compile(input);
 
         // Assert
-        Assert.Equal(2, def.Tokens.Count);
-        Assert.All(def.Tokens, t => Assert.True(t.TerminateOnNewLine));
+        Assert.Equal(2, result.Template.Tokens.Count);
+        Assert.All(result.Template.Tokens, t => Assert.True(t.TerminateOnNewLine));
     }
     private readonly ITemplateDefinitionParser _parser = new AstTemplateDefinitionParser();
 

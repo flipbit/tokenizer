@@ -31,7 +31,7 @@ internal sealed class AstTemplateDefinitionParser : ITemplateDefinitionParser
         var result = new TemplateDefinition { Options = options with { } };
         FrontMatterBinder.Bind(result, document.FrontMatter);
         // Bind tokens from AST (Phase 2 syntax → definitions)
-        var bound = TemplateBinder.Bind(document);
+        var bound = TemplateBinder.Bind(document, result.Options);
         foreach (var tok in bound.Tokens)
         {
             result.Tokens.Add(tok);

@@ -134,7 +134,7 @@ internal static class FrontMatterBinder
         }
     }
 
-    private static bool ParseBoolean(string input, string rawName, FrontMatterEntry entry)
+    internal static bool ParseBoolean(string input, string rawName, FrontMatterEntry entry)
     {
         if (string.IsNullOrWhiteSpace(input))
         {

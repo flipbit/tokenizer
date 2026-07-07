@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Compilation.Binders;
 using Tokens.Compilation.Parsing;
 using Tokens.Diagnostics;
@@ -15,13 +17,15 @@ internal sealed class TemplateCompiler
 {
     private readonly DecoratorRegistry _registry;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache = new();
+    private readonly ILogger<TemplateCompiler> _log;
 
     public TokenizerOptions Options { get; }
 
-    public TemplateCompiler(TokenizerOptions options)
+    public TemplateCompiler(TokenizerOptions options, ILoggerFactory? loggerFactory = null)
     {
         Options = options;
         _registry = new DecoratorRegistry(options);
+        _log = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<TemplateCompiler>();
     }
 
     public CompilationResult Compile(string content)
@@ -31,6 +35,8 @@ internal sealed class TemplateCompiler
             : NullDiagnosticCollector.Instance;
 
         TemplateLengthValidator.Validate(content, Options);
+
+        _log.LogDebug("Starting template compilation (content length: {ContentLength})", content.Length);
 
         try
         {
@@ -49,14 +55,20 @@ internal sealed class TemplateCompiler
                     detail: $"Template '{template.Name}' compiled with {template.Tokens.Count} token(s)");
             }
 
+            _log.LogDebug("Template '{TemplateName}' compiled successfully with {TokenCount} token(s)",
+                template.Name, template.Tokens.Count);
+
             return new CompilationResult(template, collector.GetResult());
         }
-        catch (TokenizerException)
+        catch (TokenizerException ex)
         {
+            _log.LogError(ex, "Template compilation failed: {Message}", ex.Message);
+            ex.Data["DiagnosticResult"] = collector.GetResult();
             throw;
         }
         catch (Exception ex)
         {
+            _log.LogError(ex, "Unexpected error during template compilation: {Message}", ex.Message);
             throw new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
         }
     }

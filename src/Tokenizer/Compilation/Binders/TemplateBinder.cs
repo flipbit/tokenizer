@@ -10,15 +10,12 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class TemplateBinder
 {
-    public static TemplateDefinition Bind(TemplateDocument document)
+    public static TemplateDefinition Bind(TemplateDocument document, TokenizerOptions? options = null)
     {
+        options ??= new TokenizerOptions();
         var result = new TemplateDefinition();
         var tokens = new List<TokenDefinition>();
         var preambleBuilder = new System.Text.StringBuilder();
-
-        // Read relevant front matter options to influence binding
-        var globalTrimPreambleBeforeNewLine = IsFrontMatterOptionTrue(document, "trimpreamblebeforenewline");
-        var globalTerminateOnNewLine = IsFrontMatterOptionTrue(document, "terminateonnewline");
 
         foreach (var node in document.Content)
         {
@@ -45,7 +42,7 @@ internal static class TemplateBinder
                 {
                     var pre = preambleBuilder.ToString();
 #pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
-                    if (globalTrimPreambleBeforeNewLine && pre.IndexOf('\n') > -1)
+                    if (options.TrimPreambleBeforeNewLine && pre.IndexOf('\n') > -1)
                     {
                         pre = pre.Substring(pre.LastIndexOf('\n') + 1);
                     }
@@ -121,12 +118,6 @@ internal static class TemplateBinder
                     throw new ParsingException($"Optional token {def.Name} can't be Required", def.Location);
                 }
 
-                // Apply global terminate option if set in front matter
-                if (globalTerminateOnNewLine)
-                {
-                    def.TerminateOnNewLine = true;
-                }
-
                 // Legacy behavior: expand repeating token with multiline preamble tail
                 var repeatingTail = GetRepeatingMultilinePreamble(def);
                 if (def.IsRepeating && repeatingTail is { Length: > 0 })
@@ -169,7 +160,7 @@ internal static class TemplateBinder
             var tail = new TokenDefinition();
             tail.AppendName(string.Empty);
 #pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
-            if (globalTrimPreambleBeforeNewLine && trailingPreamble.IndexOf('\n') > -1)
+            if (options.TrimPreambleBeforeNewLine && trailingPreamble.IndexOf('\n') > -1)
             {
                 trailingPreamble = trailingPreamble.Substring(trailingPreamble.LastIndexOf('\n') + 1);
             }
@@ -253,24 +244,6 @@ internal static class TemplateBinder
         return null;
     }
 
-    private static bool IsFrontMatterOptionTrue(TemplateDocument document, string key)
-    {
-        if (document?.FrontMatter == null) return false;
-        foreach (var entry in document.FrontMatter.Entries)
-        {
-            if (entry is FrontMatterEntry e)
-            {
-                var k = (e.Key ?? string.Empty).Trim();
-                if (string.Equals(k, key, StringComparison.OrdinalIgnoreCase))
-                {
-                    var v = (e.Value ?? string.Empty).Trim();
-                    if (string.Equals(v, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "yes", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "on", StringComparison.OrdinalIgnoreCase)) return true;
-                    if (string.Equals(v, "false", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "no", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "off", StringComparison.OrdinalIgnoreCase)) return false;
-                }
-            }
-        }
-        return false;
-    }
 }
 
 

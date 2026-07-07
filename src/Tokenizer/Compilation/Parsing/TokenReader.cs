@@ -8,7 +8,7 @@ namespace Tokens.Compilation.Parsing;
 /// Streaming token reader over <see cref="TemplateLexer"/> that provides minimal lookahead,
 /// consumption, and convenience helpers for whitespace/newline skipping and error creation.
 /// </summary>
-internal sealed class TokenReader
+internal sealed class TokenReader : IDisposable
 {
     private readonly IEnumerator<LexerToken> _enumerator;
     private readonly Queue<LexerToken> _buffer = new Queue<LexerToken>(4);
@@ -110,6 +110,11 @@ internal sealed class TokenReader
             if (!_enumerator.MoveNext()) break;
             _buffer.Enqueue(_enumerator.Current);
         }
+    }
+
+    public void Dispose()
+    {
+        _enumerator.Dispose();
     }
 
     private static LexerToken EndToken()

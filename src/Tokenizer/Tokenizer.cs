@@ -48,7 +48,7 @@ public sealed class Tokenizer : ITokenizer
 
         Options = options with { };
         _log = loggerFactory.CreateLogger<Tokenizer>();
-        _parser = new TemplateCompiler(Options);
+        _parser = new TemplateCompiler(Options, loggerFactory);
         _tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         _resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
     }

@@ -29,7 +29,7 @@ public class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public void Add(Template template)
     {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         _templates.AddOrUpdate(template.Id, (key, t) => t, (key, existing, t) => t, template);
 #else
         _templates.AddOrUpdate(template.Id, template, (key, existing) => template);

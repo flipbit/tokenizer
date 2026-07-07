@@ -18,7 +18,9 @@ public class TemplateParserWhitespaceTests
 
         // Act
         var doc = parser.Parse(input);
-        var def = TemplateBinder.Bind(doc);
+        var templateDef = new Tokens.Compilation.Definitions.TemplateDefinition { Options = new TokenizerOptions() };
+        FrontMatterBinder.Bind(templateDef, doc.FrontMatter);
+        var def = TemplateBinder.Bind(doc, templateDef.Options);
 
         // Assert
         Assert.Single(def.Tokens);

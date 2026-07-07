@@ -20,7 +20,7 @@ internal sealed class TemplateParser
     public static TemplateDocument Parse(IEnumerable<LexerToken> tokens)
     {
         if (tokens == null) throw new ArgumentNullException(nameof(tokens));
-        var reader = new TokenReader(tokens);
+        using var reader = new TokenReader(tokens);
         var first = reader.Peek(0);
         // Allow leading whitespace/newlines before front matter block
         while (first.Kind == LexerTokenKind.Whitespace || first.Kind == LexerTokenKind.Newline)

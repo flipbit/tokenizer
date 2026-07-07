@@ -1,5 +1,4 @@
 using System.Text;
-using Tokens.Compilation.Parsing;
 using Tokens.Enumerators;
 
 namespace Tokens.Exceptions;
@@ -9,10 +8,6 @@ namespace Tokens.Exceptions;
 /// </summary>
 public class ParsingException : TokenizerException
 {
-    internal ParsingException(string message, TemplateDefinitionEnumerator enumerator) : this(message, enumerator.Location)
-    {
-    }
-
     /// <summary>
     /// Initializes a new instance with a message and the source location where the error occurred.
     /// </summary>

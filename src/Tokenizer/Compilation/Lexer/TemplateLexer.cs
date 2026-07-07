@@ -448,7 +448,7 @@ public class TemplateLexer
     private static bool TryReadFrontMatter(LookaheadReader reader, FileLocation location, ref int absolutePosition, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out LexerToken? token)
     {
         token = null;
-        var next3 = reader.PeekString(3); if (next3 != "---") return false;
+        var next3 = reader.PeekString(3); if (!string.Equals(next3, "---", StringComparison.Ordinal)) return false;
         var tokenLocation = location.Clone();
         reader.ReadChar(); location.Increment('-'); absolutePosition++;
         reader.ReadChar(); location.Increment('-'); absolutePosition++;
@@ -461,7 +461,7 @@ public class TemplateLexer
     {
         token = null;
         var next2 = reader.PeekString(2);
-        if (next2 == "{{")
+        if (string.Equals(next2, "{{", StringComparison.Ordinal))
         {
             var tokenLocation = location.Clone();
             reader.ReadChar(); location.Increment('{'); absolutePosition++;
@@ -469,7 +469,7 @@ public class TemplateLexer
             token = new LexerToken(LexerTokenKind.EscapedOpenBrace, "{{", "{{", tokenLocation, absolutePosition - 2, 2);
             return true;
         }
-        if (next2 == "}}")
+        if (string.Equals(next2, "}}", StringComparison.Ordinal))
         {
             var tokenLocation = location.Clone();
             reader.ReadChar(); location.Increment('}'); absolutePosition++;

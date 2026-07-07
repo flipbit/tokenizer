@@ -181,6 +181,11 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(string input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
+        return TokenizeString(input);
+    }
+
+    private IEnumerable<LexerToken> TokenizeString(string input)
+    {
         if (_log.IsEnabled(LogLevel.Debug))
         {
             _log.LogDebug("Lexing template pattern start: PatternLength={PatternLength}", input.Length);
@@ -211,6 +216,11 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(Stream input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
+        return TokenizeStream(input);
+    }
+
+    private IEnumerable<LexerToken> TokenizeStream(Stream input)
+    {
         using (var reader = new StreamReader(input, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
         {
             foreach (var token in Tokenize(reader))
@@ -233,6 +243,11 @@ public class TemplateLexer
     public IEnumerable<LexerToken> Tokenize(TextReader input)
     {
         if (input == null) throw new ArgumentNullException(nameof(input));
+        return TokenizeReader(input);
+    }
+
+    private IEnumerable<LexerToken> TokenizeReader(TextReader input)
+    {
         var reader = new LookaheadReader(input);
         var location = new FileLocation();
         var absolutePosition = 0;

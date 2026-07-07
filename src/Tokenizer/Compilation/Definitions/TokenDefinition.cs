@@ -100,7 +100,7 @@ public class TokenDefinition
     /// <param name="value">The text to append.</param>
     public void AppendPreamble(string value)
     {
-        if (value == "\r") return;
+        if (string.Equals(value, "\r", StringComparison.Ordinal)) return;
 
         _preamble.Append(value);
     }

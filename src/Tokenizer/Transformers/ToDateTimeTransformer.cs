@@ -10,7 +10,11 @@ namespace Tokens.Transformers;
 public sealed partial class ToDateTimeTransformer : ITokenTransformer
 {
     private static readonly Dictionary<string, string[]> MonthAbbreviations;
+#if NET9_0_OR_GREATER
+    private static readonly System.Threading.Lock LockHandle;
+#else
     private static readonly object LockHandle;
+#endif
 #if NET8_0_OR_GREATER
 #pragma warning disable MA0009 // GeneratedRegex does not support matchTimeout; source-generated regex avoids ReDoS
     [System.Text.RegularExpressions.GeneratedRegex(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.ExplicitCapture)]
@@ -24,7 +28,11 @@ public sealed partial class ToDateTimeTransformer : ITokenTransformer
     static ToDateTimeTransformer()
     {
         MonthAbbreviations = new Dictionary<string, string[]>(StringComparer.Ordinal);
+#if NET9_0_OR_GREATER
+        LockHandle = new System.Threading.Lock();
+#else
         LockHandle = new object();
+#endif
     }
 
     /// <inheritdoc />

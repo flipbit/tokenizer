@@ -1,4 +1,5 @@
 using System.Text;
+using Tokens.Extensions;
 
 namespace Tokens.Diagnostics;
 
@@ -37,7 +38,7 @@ internal static class AlignmentRenderer
             sb.AppendLine("── Matched Tokens ──");
             foreach (var evt in matchedEvents)
             {
-                var line = evt.Location != null ? $" (line {evt.Location.Line})" : string.Empty;
+                var line = evt.Location != null ? $" (line {evt.Location.Line.ToInvariant()})" : string.Empty;
                 sb.Append("  ✓ ").Append(evt.TokenName).Append(" = \"").Append(evt.Value).Append('"').AppendLine(line);
             }
         }

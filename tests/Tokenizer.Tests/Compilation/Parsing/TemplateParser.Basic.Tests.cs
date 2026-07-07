@@ -1,6 +1,7 @@
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Template;
+#pragma warning disable MA0048 // Scenario test: TemplateParser.Basic.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests for basic template parsing (empty, single, multiple tokens)

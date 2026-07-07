@@ -1,6 +1,7 @@
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Integration;
+#pragma warning disable MA0048 // Scenario test: AstTemplateDefinitionParser.EndToEnd.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// End-to-end tests for the full parsing pipeline (Lexer → Parser → Binder → Definition)

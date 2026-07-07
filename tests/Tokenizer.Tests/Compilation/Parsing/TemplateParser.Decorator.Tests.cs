@@ -1,7 +1,8 @@
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Template;
+#pragma warning disable MA0048 // Scenario test: TemplateParser.Decorator.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests for decorator parsing

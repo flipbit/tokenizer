@@ -1,7 +1,8 @@
 using Tokens.Compilation.Binders;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Template;
+#pragma warning disable MA0048 // Scenario test: TemplateParser.Whitespace.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests for whitespace and line ending handling

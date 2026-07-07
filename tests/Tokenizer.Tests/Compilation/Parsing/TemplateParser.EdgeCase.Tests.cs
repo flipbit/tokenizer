@@ -2,7 +2,8 @@ using System.Globalization;
 using System.Text;
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Template;
+#pragma warning disable MA0048 // Scenario test: TemplateParser.EdgeCase.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests for edge cases and boundary conditions

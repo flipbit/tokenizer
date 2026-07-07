@@ -1,6 +1,7 @@
 using Xunit;
 
-namespace Tokens.Compilation.Parsing.Integration;
+#pragma warning disable MA0048 // Scenario test: AstTemplateDefinitionParser.RealWorld.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests using real-world template patterns

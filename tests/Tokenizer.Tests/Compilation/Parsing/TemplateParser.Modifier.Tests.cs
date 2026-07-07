@@ -2,7 +2,8 @@ using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Compilation.Parsing.Template;
+#pragma warning disable MA0048 // Scenario test: TemplateParser.Modifier.Tests.cs
+namespace Tokens.Compilation.Parsing;
 
 /// <summary>
 /// Tests for modifier parsing (?, *, !, $)

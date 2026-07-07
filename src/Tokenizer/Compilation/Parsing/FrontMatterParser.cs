@@ -9,9 +9,9 @@ namespace Tokens.Compilation.Parsing;
 /// Parses front matter syntax delimited by lines containing '---' at the start and end.
 /// Produces a <see cref="FrontMatterBlock"/> with ordered entries.
 /// </summary>
-internal sealed class FrontMatterParser
+internal static class FrontMatterParser
 {
-    public FrontMatterBlock Parse(TokenReader reader)
+    public static FrontMatterBlock Parse(TokenReader reader)
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
         // Must start with front matter delimiter followed by newline
@@ -75,7 +75,7 @@ internal sealed class FrontMatterParser
         }
     }
 
-    private SyntaxNode? ParseLine(TokenReader reader)
+    private static SyntaxNode? ParseLine(TokenReader reader)
     {
         // Capture start
         var first = reader.Peek(0);

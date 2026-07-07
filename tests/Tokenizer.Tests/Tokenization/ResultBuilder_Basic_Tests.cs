@@ -95,7 +95,7 @@ public class ResultBuilder_Basic_Tests
         Assert.Contains(exception, result.Exceptions);
     }
 
-    private Template CreateTemplate(string name = "TestTemplate")
+    private static Template CreateTemplate(string name = "TestTemplate")
     {
         return new TemplateBuilder()
             .WithName(name)
@@ -106,7 +106,7 @@ public class ResultBuilder_Basic_Tests
             .Build();
     }
 
-    private TokenizeResult CreateResult(Template? template = null)
+    private static TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())

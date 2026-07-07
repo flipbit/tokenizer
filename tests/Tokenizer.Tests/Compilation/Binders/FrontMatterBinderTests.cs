@@ -28,7 +28,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.True(template.Options.TrimLeadingWhitespaceInTokenPreamble);
@@ -52,7 +52,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.Equal("My Template", template.Name);
@@ -70,7 +70,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.Single(template.Tokens);
@@ -87,7 +87,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act & Assert
-        Assert.Throws<ParsingException>(() => new FrontMatterBinder().Bind(template, fm));
+        Assert.Throws<ParsingException>(() => FrontMatterBinder.Bind(template, fm));
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.Equal("Second", template.Name);
@@ -124,7 +124,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.True(template.Options.TrimLeadingWhitespaceInTokenPreamble);
@@ -148,7 +148,7 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var template = new TemplateDefinition();
 
         // Act
-        new FrontMatterBinder().Bind(template, fm);
+        FrontMatterBinder.Bind(template, fm);
 
         // Assert
         Assert.Equal(2, template.Hints.Count);

@@ -111,6 +111,9 @@ dotnet_diagnostic.CA2200.severity = warning
 # Disposable fields should be disposed
 dotnet_diagnostic.CA2213.severity = warning
 
+# Mark members as static
+dotnet_diagnostic.CA1822.severity = warning
+
 # ArgumentException should include paramName
 dotnet_diagnostic.MA0003.severity = warning
 

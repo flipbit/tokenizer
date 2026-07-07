@@ -54,7 +54,7 @@ public class ResultBuilder_Unmatched_Tests
         Assert.Equal("Age", result.Tokens.Misses[0].Name);
     }
 
-    private Template CreateTemplate(string name = "TestTemplate")
+    private static Template CreateTemplate(string name = "TestTemplate")
     {
         return new TemplateBuilder()
             .WithName(name)
@@ -65,7 +65,7 @@ public class ResultBuilder_Unmatched_Tests
             .Build();
     }
 
-    private TokenizeResult CreateResult(Template? template = null)
+    private static TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())

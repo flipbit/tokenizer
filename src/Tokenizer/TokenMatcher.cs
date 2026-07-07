@@ -274,7 +274,7 @@ public sealed class TokenMatcher : ITokenMatcher
     // AllowStreamBuffering is intentionally not checked here. Unlike Stream (which can be
     // seekable), TextReader has no seek concept — buffering into a MemoryStream is the only
     // way to support rewinding between multiple template matches.
-    private async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
+    private static async Task<MemoryStream> BufferTextReaderAsync(TextReader reader, CancellationToken ct)
     {
         var buffer = new MemoryStream();
         using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
@@ -355,7 +355,7 @@ public sealed class TokenMatcher : ITokenMatcher
         return results;
     }
 
-    private bool CheckTemplateTags(Template template, string[] tags)
+    private static bool CheckTemplateTags(Template template, string[] tags)
     {
         // No tags specified, always match template
         if (tags.Length == 0) return true;

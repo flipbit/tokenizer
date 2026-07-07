@@ -604,17 +604,17 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("Found", result.First("Status"));
     }
 
-    private string ReadData(string name)
+    private static string ReadData(string name)
     {
         return Read("Data", name);
     }
 
-    private string ReadTemplate(string name)
+    private static string ReadTemplate(string name)
     {
         return Read("Patterns", name);
     }
 
-    private string Read(string type, string name)
+    private static string Read(string type, string name)
     {
         var fileName = $@"../../../Samples/{type}/{name}.txt";
 

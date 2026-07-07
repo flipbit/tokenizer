@@ -217,7 +217,7 @@ public class HintProcessorBasicTests
         Assert.True(true);
     }
 
-    private Template CreateTemplateWithHints(params Hint[] hints)
+    private static Template CreateTemplateWithHints(params Hint[] hints)
     {
         return new TemplateBuilder()
             .WithName("TestTemplate")
@@ -226,12 +226,12 @@ public class HintProcessorBasicTests
             .Build();
     }
 
-    private TokenEnumerator CreateEnumerator(string input = "Hello World")
+    private static TokenEnumerator CreateEnumerator(string input = "Hello World")
     {
         return new TokenEnumerator(input);
     }
 
-    private TokenizeResult CreateResult(Template? template = null)
+    private static TokenizeResult CreateResult(Template? template = null)
     {
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? new TemplateBuilder().Build())

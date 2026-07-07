@@ -17,7 +17,7 @@ internal sealed class TemplateParser
         return Parse(_lexer.Tokenize(input));
     }
 
-    public TemplateDocument Parse(IEnumerable<LexerToken> tokens)
+    public static TemplateDocument Parse(IEnumerable<LexerToken> tokens)
     {
         if (tokens == null) throw new ArgumentNullException(nameof(tokens));
         var reader = new TokenReader(tokens);
@@ -34,8 +34,7 @@ internal sealed class TemplateParser
         FrontMatterBlock? frontMatter = null;
         if (first.Kind == LexerTokenKind.FrontMatterDelimiter)
         {
-            var fmParser = new FrontMatterParser();
-            frontMatter = fmParser.Parse(reader);
+            frontMatter = FrontMatterParser.Parse(reader);
         }
 
         var contentNodes = ParseContent(reader);

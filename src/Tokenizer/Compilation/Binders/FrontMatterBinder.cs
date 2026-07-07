@@ -8,9 +8,9 @@ namespace Tokens.Compilation.Binders;
 /// <summary>
 /// Binds front matter AST nodes onto <see cref="TemplateDefinition"/> and its <see cref="TokenizerOptions"/>.
 /// </summary>
-internal sealed class FrontMatterBinder
+internal static class FrontMatterBinder
 {
-    public void Bind(TemplateDefinition template, FrontMatterBlock? frontMatter)
+    public static void Bind(TemplateDefinition template, FrontMatterBlock? frontMatter)
     {
         if (template == null) throw new ArgumentNullException(nameof(template));
         if (frontMatter == null) return;

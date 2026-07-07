@@ -210,7 +210,9 @@ public class CandidateProcessorTests
 
     private class ThrowingTarget
     {
+#pragma warning disable CA1822 // Accessed via reflection as instance property
         public string Name
+#pragma warning restore CA1822
         {
             get => throw new InvalidOperationException("boom");
             set => throw new InvalidOperationException("boom");

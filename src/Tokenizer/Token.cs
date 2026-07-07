@@ -314,7 +314,7 @@ public sealed class Token
         return true;
     }
 
-    internal bool CanConcatenateValues(object? existingValue, object newValue)
+    internal static bool CanConcatenateValues(object? existingValue, object newValue)
     {
         if (existingValue is string && newValue is string)
         {
@@ -324,7 +324,7 @@ public sealed class Token
         return false;
     }
 
-    internal object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
+    internal static object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
     {
         if (existingValue is string && newValue is string)
         {

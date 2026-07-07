@@ -45,9 +45,9 @@ public sealed class TokenResult
 
         var match = _matches[index];
 
-        if (!token.CanConcatenateValues(match.Value, value)) return false;
+        if (!Token.CanConcatenateValues(match.Value, value)) return false;
 
-        var concatenated = token.ConcatenateValues(match.Value, value, token.ConcatenationString);
+        var concatenated = Token.ConcatenateValues(match.Value, value, token.ConcatenationString);
         if (concatenated != null) _matches[index] = match with { Value = concatenated };
 
         return true;

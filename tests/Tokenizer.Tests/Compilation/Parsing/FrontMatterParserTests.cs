@@ -14,8 +14,7 @@ public class FrontMatterParserTests
     private static FrontMatterBlock Parse(params LexerToken[] tokens)
     {
         var reader = new TokenReader(tokens);
-        var parser = new FrontMatterParser();
-        return parser.Parse(reader);
+        return FrontMatterParser.Parse(reader);
     }
 
     [Fact]
@@ -85,10 +84,8 @@ public class FrontMatterParserTests
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Identifier, "oops", "oops"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.FrontMatterDelimiter, "---", "---"), Tok(LexerTokenKind.Newline, "\n", "\n"),
         });
-        var parser = new FrontMatterParser();
-
         // Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse(reader));
+        Assert.Throws<ParsingException>(() => FrontMatterParser.Parse(reader));
     }
 
     [Fact]
@@ -100,10 +97,9 @@ public class FrontMatterParserTests
             Tok(LexerTokenKind.Identifier, "name", "name"), Tok(LexerTokenKind.Colon, ":", ":"), Tok(LexerTokenKind.Newline, "\n", "\n"),
             Tok(LexerTokenKind.EndOfInput, string.Empty, string.Empty),
         });
-        var parser = new FrontMatterParser();
 
         // Act & Assert
-        Assert.Throws<ParsingException>(() => parser.Parse(reader));
+        Assert.Throws<ParsingException>(() => FrontMatterParser.Parse(reader));
     }
 }
 

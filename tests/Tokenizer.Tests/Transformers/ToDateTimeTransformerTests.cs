@@ -205,4 +205,20 @@ public class ToDateTimeTransformerTests
         Assert.True(result);
         Assert.Equal(new DateTime(1997, 4, 16), dateTime);
     }
+
+    [Theory]
+    [InlineData("1st January 2020", "d MMMM yyyy")]
+    [InlineData("22nd March 2020", "dd MMMM yyyy")]
+    public void GivenDateWithOrdinalSuffix_WhenFormatStartsWithDaySpecifier_ThenParsesCorrectly(string input, string format)
+    {
+        // Arrange
+        var transformer = new ToDateTimeTransformer();
+
+        // Act
+        var result = transformer.TryTransform(input, [format], out var transformed);
+
+        // Assert
+        Assert.True(result);
+        Assert.IsType<DateTime>(transformed);
+    }
 }

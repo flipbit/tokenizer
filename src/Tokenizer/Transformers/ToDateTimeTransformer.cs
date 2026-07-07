@@ -91,8 +91,8 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
                     // Remove day ordinals
                     if (format.Contains(" d ", StringComparison.Ordinal) ||
                         format.Contains(" dd ", StringComparison.Ordinal) ||
-                        format.StartsWith("d ") ||
-                        format.StartsWith("dd "))
+                        format.StartsWith("d ", StringComparison.Ordinal) ||
+                        format.StartsWith("dd ", StringComparison.Ordinal))
                     {
                         valueToFormat = OrdinalSuffixRegex.Replace(valueToFormat, "${digits}");
                     }

@@ -6,7 +6,7 @@ namespace Tokens.Diagnostics;
 /// A single issue identified during tokenization, with an optional
 /// adaptive hint suggesting how to fix it.
 /// </summary>
-public class DiagnosticIssue
+public sealed class DiagnosticIssue
 {
     /// <summary>
     /// Category of the issue for programmatic filtering.

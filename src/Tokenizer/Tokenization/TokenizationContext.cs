@@ -8,6 +8,10 @@ namespace Tokens.Tokenization;
 /// This context manages the state that needs to be shared between different tokenization services,
 /// including candidate tokens, enumerator, replacement state, and tracking collections.
 /// </summary>
+/// <remarks>
+/// IDisposable was removed — the enumerator lifecycle is managed by TokenizationSession,
+/// and there are no other disposable resources.
+/// </remarks>
 internal sealed class TokenizationContext
 {
     /// <summary>

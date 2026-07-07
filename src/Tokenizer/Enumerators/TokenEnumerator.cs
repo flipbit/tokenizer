@@ -4,7 +4,7 @@ namespace Tokens.Enumerators;
 /// A forward-only, character-level enumerator over a <see cref="TextReader"/> that tracks the current
 /// <see cref="FileLocation"/> (line and column) as it advances. All line endings are normalised to <c>\n</c>.
 /// </summary>
-public class TokenEnumerator
+public sealed class TokenEnumerator
 {
     private const int DefaultBufferSize = 1024;
     private const int RefillWatermark = 256;

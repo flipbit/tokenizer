@@ -6,7 +6,7 @@ namespace Tokens.Diagnostics;
 /// A single diagnostic event recorded during tokenization, representing
 /// one decision point in the matching process.
 /// </summary>
-public class DiagnosticEvent
+public sealed class DiagnosticEvent
 {
     /// <summary>
     /// The type of decision or event. See <see cref="DiagnosticEventType"/>

@@ -6,6 +6,10 @@ namespace Tokens;
 /// <summary>
 /// Options for the <see cref="Tokenizer"/>.
 /// </summary>
+/// <remarks>
+/// This record class cannot be sealed because C# record types require a protected copy
+/// constructor for deep-copy semantics via <c>with {}</c> expressions.
+/// </remarks>
 public record class TokenizerOptions
 {
     private readonly List<Type> _transformers = new List<Type>();

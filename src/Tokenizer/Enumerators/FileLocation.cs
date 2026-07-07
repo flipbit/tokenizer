@@ -3,7 +3,7 @@ namespace Tokens.Enumerators;
 /// <summary>
 /// Represents a location in a text file
 /// </summary>
-public class FileLocation : IEquatable<FileLocation>
+public sealed class FileLocation : IEquatable<FileLocation>
 {
     private int _newLineCounter = 0;
 

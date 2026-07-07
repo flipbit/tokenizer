@@ -3,7 +3,7 @@ namespace Tokens.Diagnostics;
 /// <summary>
 /// A high-level summary of a tokenization run, computed from the collected events.
 /// </summary>
-public class DiagnosticSummary
+public sealed class DiagnosticSummary
 {
     /// <summary>
     /// A human-readable verdict describing the overall outcome of the tokenization run.

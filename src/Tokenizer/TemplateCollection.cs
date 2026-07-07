@@ -6,7 +6,7 @@ namespace Tokens;
 /// <summary>
 /// Collection of <see cref="Template" /> objects.
 /// </summary>
-public class TemplateCollection : IReadOnlyCollection<Template>
+public sealed class TemplateCollection : IReadOnlyCollection<Template>
 {
     private readonly ConcurrentDictionary<ulong, Template> _templates;
 

@@ -18,6 +18,6 @@ public sealed class EndsWithValidator : ITokenValidator
 
         if (args == null || args.Length == 0) throw new ArgumentException($"EndsWith(): missing argument processing: {value}", nameof(args));
 
-        return valueString.EndsWith(args[0]);
+        return valueString.EndsWith(args[0], StringComparison.Ordinal);
     }
 }

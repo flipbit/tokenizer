@@ -90,4 +90,17 @@ public class StartsWithValidatorTests : TokenizerTestBase
         // Assert
         Assert.Equal("192.168.1.1", result.First("InternalIpAddress"));
     }
+
+    [Theory]
+    [InlineData("Hello World", "Hello", true)]
+    [InlineData("Hello World", "hello", false)]
+    [InlineData("Hello World", "World", false)]
+    public void GivenStringAndPrefix_WhenValidating_ThenMatchesOrdinal(string input, string prefix, bool expected)
+    {
+        // Arrange / Act
+        var result = _validator.IsValid(input, prefix);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
 }

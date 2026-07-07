@@ -90,4 +90,17 @@ public class EndsWithValidatorTests : TokenizerTestBase
         // Assert
         Assert.Equal("bob@admin.com", result.First("AdminEmail"));
     }
+
+    [Theory]
+    [InlineData("Hello World", "World", true)]
+    [InlineData("Hello World", "world", false)]
+    [InlineData("Hello World", "Hello", false)]
+    public void GivenStringAndSuffix_WhenValidating_ThenMatchesOrdinal(string input, string suffix, bool expected)
+    {
+        // Arrange / Act
+        var result = _validator.IsValid(input, suffix);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
 }

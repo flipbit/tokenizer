@@ -18,6 +18,6 @@ public sealed class StartsWithValidator : ITokenValidator
 
         if (args == null || args.Length == 0) throw new ArgumentException($"StartsWith(): missing argument processing: {value}", nameof(args));
 
-        return valueString.StartsWith(args[0]);
+        return valueString.StartsWith(args[0], StringComparison.Ordinal);
     }
 }

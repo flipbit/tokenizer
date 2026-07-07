@@ -18,6 +18,7 @@ public sealed class DiagnosticResult
         DiagnosticEventType.SingleUseTokenRemoved,
     };
 
+    private readonly List<DiagnosticEvent> _events;
     private readonly string? _inputContent;
     private DiagnosticSummary? _summary;
     private string? _alignment;
@@ -25,7 +26,7 @@ public sealed class DiagnosticResult
     internal DiagnosticResult(string? inputContent)
     {
         _inputContent = inputContent;
-        Events = new List<DiagnosticEvent>();
+        _events = new List<DiagnosticEvent>();
     }
 
     /// <summary>
@@ -36,7 +37,7 @@ public sealed class DiagnosticResult
     /// <summary>
     /// All events recorded during this tokenization call, in the order they occurred.
     /// </summary>
-    public List<DiagnosticEvent> Events { get; }
+    public IReadOnlyList<DiagnosticEvent> Events => _events;
 
     /// <summary>
     /// A high-level summary computed lazily from the collected events.
@@ -67,7 +68,9 @@ public sealed class DiagnosticResult
     /// The first failure event in the event list, or null if there are none.
     /// </summary>
     public DiagnosticEvent? FirstFailure =>
-        Events.Find(e => FailureTypes.Contains(e.Type));
+        _events.Find(e => FailureTypes.Contains(e.Type));
+
+    internal void AddEvent(DiagnosticEvent evt) => _events.Add(evt);
 
     /// <summary>
     /// Renders an alignment view showing how the template tokens mapped onto the input text.

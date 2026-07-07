@@ -39,7 +39,7 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
             DecoratorArgs = decoratorArgs,
         };
 
-        _diagnostics.Events.Add(evt);
+        _diagnostics.AddEvent(evt);
     }
 
     /// <inheritdoc />

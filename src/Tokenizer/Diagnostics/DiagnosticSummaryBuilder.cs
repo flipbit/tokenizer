@@ -53,7 +53,7 @@ internal static class DiagnosticSummaryBuilder
         return $"Matched {matched.ToInvariant()} of {total.ToInvariant()} tokens ({missed.ToInvariant()} missed).";
     }
 
-    private static IReadOnlyList<DiagnosticIssue> BuildIssues(List<DiagnosticEvent> events,
+    private static IReadOnlyList<DiagnosticIssue> BuildIssues(IReadOnlyList<DiagnosticEvent> events,
                                                                DiagnosticResult diagnostics)
     {
         var issues = new List<DiagnosticIssue>();

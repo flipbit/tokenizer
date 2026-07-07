@@ -2,11 +2,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Tokens.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Integration;
+namespace Tokens.Extensions;
 
 public class DependencyInjectionTests : TokenizerTestBase
 {

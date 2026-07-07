@@ -1,7 +1,8 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tokens.Types;
+#pragma warning disable MA0048 // Scenario test: Tokenizer.Bool.Tests.cs
+namespace Tokens;
 
 public class BoolTests : TokenizerTestBase
 {

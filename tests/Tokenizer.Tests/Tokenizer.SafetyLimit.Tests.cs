@@ -1,7 +1,8 @@
 using Tokens.Exceptions;
 using Xunit;
 
-namespace Tokens.Safety;
+#pragma warning disable MA0048 // Scenario test: Tokenizer.SafetyLimit.Tests.cs
+namespace Tokens;
 
 public class TokenizerSafetyLimitTests
 {

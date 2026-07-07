@@ -67,36 +67,35 @@ internal static class TemplateBinder
                 foreach (var dec in tokenNode.Decorators)
                 {
                     var decoratorName = (dec.Name.Text ?? string.Empty).Trim();
-                    var lower = decoratorName.ToLowerInvariant();
                     var hasArgs = dec.Args != null && dec.Args.Count > 0;
 
                     // Special longhand forms without args
                     if (!hasArgs)
                     {
-                        if (lower == "eol" || lower == "$")
+                        if (string.Equals(decoratorName, "eol", StringComparison.OrdinalIgnoreCase) || string.Equals(decoratorName, "$", StringComparison.OrdinalIgnoreCase))
                         {
                             def.TerminateOnNewLine = true;
                             continue;
                         }
-                        if (lower == "optional" || lower == "?")
+                        if (string.Equals(decoratorName, "optional", StringComparison.OrdinalIgnoreCase) || string.Equals(decoratorName, "?", StringComparison.OrdinalIgnoreCase))
                         {
                             def.IsOptional = true;
                             optionalExplicit = true;
                             continue;
                         }
-                        if (lower == "repeating" || lower == "*")
+                        if (string.Equals(decoratorName, "repeating", StringComparison.OrdinalIgnoreCase) || string.Equals(decoratorName, "*", StringComparison.OrdinalIgnoreCase))
                         {
                             def.IsRepeating = true;
                             def.IsOptional = true; // repeating implies optional, but not explicit
                             continue;
                         }
-                        if (lower == "required" || lower == "!")
+                        if (string.Equals(decoratorName, "required", StringComparison.OrdinalIgnoreCase) || string.Equals(decoratorName, "!", StringComparison.OrdinalIgnoreCase))
                         {
                             def.IsRequired = true;
                             continue;
                         }
                         // Longhand modifier: Once => IsSingleUse semantics
-                        if (lower == "once")
+                        if (string.Equals(decoratorName, "once", StringComparison.OrdinalIgnoreCase))
                         {
                             def.IsSingleUse = true;
                             continue;

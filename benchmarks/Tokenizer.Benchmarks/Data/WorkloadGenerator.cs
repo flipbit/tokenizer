@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Tokens.Data;
 
 /// <summary>
@@ -194,11 +196,11 @@ public static class WorkloadGenerator
     public static string NonMatchingTemplate(int index) =>
         $$"""
         ---
-        name: non-matching-{{index}}
-        hint: XYZZY-NOMATCH-{{index}}
+        name: non-matching-{{index.ToString(CultureInfo.InvariantCulture)}}
+        hint: XYZZY-NOMATCH-{{index.ToString(CultureInfo.InvariantCulture)}}
         ---
 
-        XYZZY-NOMATCH-{{index}}
+        XYZZY-NOMATCH-{{index.ToString(CultureInfo.InvariantCulture)}}
 
         Field: { NonMatch.Field }
         """;

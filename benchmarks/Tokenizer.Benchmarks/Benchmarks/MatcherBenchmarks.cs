@@ -1,3 +1,4 @@
+using System.Globalization;
 using BenchmarkDotNet.Attributes;
 using Tokens.Config;
 using Tokens.Data;
@@ -33,7 +34,7 @@ public class MatcherBenchmarks
         {
             _matcherBestFirst.RegisterTemplate(
                 WorkloadGenerator.NonMatchingTemplate(i),
-                $"non-matching-{i}");
+                $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
         }
 
         // Best-last: non-matching templates first, matching template last
@@ -42,7 +43,7 @@ public class MatcherBenchmarks
         {
             _matcherBestLast.RegisterTemplate(
                 WorkloadGenerator.NonMatchingTemplate(i),
-                $"non-matching-{i}");
+                $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
         }
         _matcherBestLast.RegisterTemplate(matchingTemplate, "matching");
     }

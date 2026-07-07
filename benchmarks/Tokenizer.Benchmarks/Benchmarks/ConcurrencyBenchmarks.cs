@@ -1,3 +1,4 @@
+using System.Globalization;
 using BenchmarkDotNet.Attributes;
 using Tokens.Compilation;
 using Tokens.Config;
@@ -42,7 +43,7 @@ public class ConcurrencyBenchmarks
         {
             _sharedMatcher.RegisterTemplate(
                 WorkloadGenerator.NonMatchingTemplate(i),
-                $"non-matching-{i}");
+                $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
         }
     }
 
@@ -87,7 +88,7 @@ public class ConcurrencyBenchmarks
                 {
                     matcher.RegisterTemplate(
                         WorkloadGenerator.NonMatchingTemplate(i),
-                        $"non-matching-{i}");
+                        $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
                 }
                 matcher.Match<MediumRecord>(_mediumInput);
             });

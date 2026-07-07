@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using Tokens.Config;
@@ -31,7 +32,7 @@ public class AsyncMatcherBenchmarks
         {
             _matcher.RegisterTemplate(
                 WorkloadGenerator.NonMatchingTemplate(i),
-                $"non-matching-{i}");
+                $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
         }
     }
 

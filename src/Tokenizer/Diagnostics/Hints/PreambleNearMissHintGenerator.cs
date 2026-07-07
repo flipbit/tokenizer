@@ -8,9 +8,17 @@ namespace Tokens.Diagnostics.Hints;
 /// for near-matches of the missed token's preamble (case-insensitive, whitespace-normalised,
 /// or substring containment).
 /// </summary>
-internal sealed class PreambleNearMissHintGenerator : IHintGenerator
+internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
 {
-    private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+#if NET8_0_OR_GREATER
+#pragma warning disable MA0009 // GeneratedRegex does not support matchTimeout; source-generated regex avoids ReDoS
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
+    private static partial Regex WhitespaceRegex();
+#pragma warning restore MA0009
+#else
+    private static readonly Regex WhitespaceRegexInstance = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+    private static Regex WhitespaceRegex() => WhitespaceRegexInstance;
+#endif
 
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
@@ -54,6 +62,6 @@ internal sealed class PreambleNearMissHintGenerator : IHintGenerator
 
     private static string NormalizeWhitespace(string value)
     {
-        return WhitespaceRegex.Replace(value.Trim(), " ");
+        return WhitespaceRegex().Replace(value.Trim(), " ");
     }
 }

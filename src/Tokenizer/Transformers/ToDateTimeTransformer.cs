@@ -7,11 +7,19 @@ namespace Tokens.Transformers;
 /// <summary>
 /// Converts the token value to a <see cref="DateTime"/>
 /// </summary>
-public sealed class ToDateTimeTransformer : ITokenTransformer
+public sealed partial class ToDateTimeTransformer : ITokenTransformer
 {
     private static readonly Dictionary<string, string[]> MonthAbbreviations;
     private static readonly object LockHandle;
-    private static readonly Regex OrdinalSuffixRegex = new(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(-1));
+#if NET8_0_OR_GREATER
+#pragma warning disable MA0009 // GeneratedRegex does not support matchTimeout; source-generated regex avoids ReDoS
+    [System.Text.RegularExpressions.GeneratedRegex(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.ExplicitCapture)]
+    private static partial Regex OrdinalSuffixRegex();
+#pragma warning restore MA0009
+#else
+    private static readonly Regex OrdinalSuffixRegexInstance = new(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(-1));
+    private static Regex OrdinalSuffixRegex() => OrdinalSuffixRegexInstance;
+#endif
 
     static ToDateTimeTransformer()
     {
@@ -94,7 +102,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
                         format.StartsWith("d ", StringComparison.Ordinal) ||
                         format.StartsWith("dd ", StringComparison.Ordinal))
                     {
-                        valueToFormat = OrdinalSuffixRegex.Replace(valueToFormat, "${digits}");
+                        valueToFormat = OrdinalSuffixRegex().Replace(valueToFormat, "${digits}");
                     }
 
                     if (DateTime.TryParseExact(valueToFormat, format, culture, dateTimeStyles, out result))

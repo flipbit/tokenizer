@@ -6,9 +6,17 @@ namespace Tokens.Extensions;
 /// <summary>
 /// String extension class
 /// </summary>
-public static class StringExtensions
+public static partial class StringExtensions
 {
-    private static readonly Regex NewLineSplitRegex = new(@"\r\n|\r|\n", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+#if NET8_0_OR_GREATER
+#pragma warning disable MA0009 // GeneratedRegex does not support matchTimeout; source-generated regex avoids ReDoS
+    [System.Text.RegularExpressions.GeneratedRegex(@"\r\n|\r|\n")]
+    private static partial Regex NewLineSplitRegex();
+#pragma warning restore MA0009
+#else
+    private static readonly Regex NewLineSplitRegexInstance = new(@"\r\n|\r|\n", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+    private static Regex NewLineSplitRegex() => NewLineSplitRegexInstance;
+#endif
     /// <summary>
     /// Gets the substring after the first matching string.
     /// </summary>
@@ -184,7 +192,7 @@ public static class StringExtensions
             return Array.Empty<string>();
         }
 
-        return NewLineSplitRegex.Split(value);
+        return NewLineSplitRegex().Split(value);
     }
 
     /// <summary>

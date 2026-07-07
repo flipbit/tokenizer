@@ -1,4 +1,5 @@
 using Tokens.Diagnostics;
+using Tokens.Extensions;
 
 namespace Tokens.Compilation.Binders;
 
@@ -23,7 +24,7 @@ internal static class RepeatingTokenLinker
                 collector.Record(DiagnosticEventType.RepeatingTokenLinked,
                     tokenName: token.Name,
                     tokenId: token.Id,
-                    detail: $"Linked to token {previous.Id}");
+                    detail: $"Linked to token {previous.Id.ToInvariant()}");
             }
         }
     }

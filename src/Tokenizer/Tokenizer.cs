@@ -80,7 +80,7 @@ public sealed class Tokenizer : ITokenizer
     {
         var result = new TokenizeResult(template);
 
-        Tokenize(result, value: null, template, input);
+        Tokenize(result, template, input);
 
         return result;
 
@@ -96,14 +96,10 @@ public sealed class Tokenizer : ITokenizer
     /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
     public TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new()
     {
-        var result = new TokenizeResult<T>(template);
-
-        Tokenize(result, result.Value, template, input);
-
-        return result;
+        return Tokenize(template, input).Assign<T>();
     }
 
-    private void Tokenize(TokenizeResultBase result, object? value, Template template, string input)
+    private void Tokenize(TokenizeResultBase result, Template template, string input)
     {
         // template.Options reflects merged instance + front matter overrides — intentionally
         // used instead of this.Options so per-template front matter settings take effect.
@@ -114,21 +110,20 @@ public sealed class Tokenizer : ITokenizer
                 "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
         }
 
-        TokenizeCore(result, value, template, new StringReader(input), input);
+        TokenizeCore(result, template, new StringReader(input), input);
     }
 
     /// <summary>
     /// Core tokenization logic.
     /// </summary>
     /// <param name="result">The result to populate.</param>
-    /// <param name="value">The target object to assign values to, or null.</param>
     /// <param name="template">The compiled template.</param>
     /// <param name="reader">The reader to tokenize from.</param>
     /// <param name="rawInput">
     /// The raw input string. Drives length-dependent features: hint pre-filtering,
     /// input-length-based iteration cap, alignment rendering in diagnostics.
     /// </param>
-    private void TokenizeCore(TokenizeResultBase result, object? value, Template template, TextReader reader, string? rawInput)
+    private void TokenizeCore(TokenizeResultBase result, Template template, TextReader reader, string? rawInput)
     {
         var hintStrategy = new ContainsHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
@@ -178,7 +173,7 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    var session = _tokenizationEngine.CreateSession(template, result, collector, hintStrategy);
                     session.Run(context);
 
                     if (hintStrategy.PostProcess(result))
@@ -297,7 +292,7 @@ public sealed class Tokenizer : ITokenizer
     public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
         var result = new TokenizeResult(template);
-        await TokenizeAsyncCore(result, value: null, template, input, ct).ConfigureAwait(false);
+        await TokenizeAsyncCore(result, template, input, ct).ConfigureAwait(false);
         return result;
     }
 
@@ -311,9 +306,8 @@ public sealed class Tokenizer : ITokenizer
     /// </remarks>
     public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
     {
-        var result = new TokenizeResult<T>(template);
-        await TokenizeAsyncCore(result, result.Value, template, input, ct).ConfigureAwait(false);
-        return result;
+        var result = await TokenizeAsync(template, input, ct).ConfigureAwait(false);
+        return result.Assign<T>();
     }
 
     /// <summary>
@@ -346,7 +340,7 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
     }
 
-    private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
+    private async Task TokenizeAsyncCore(TokenizeResultBase result, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new IntegratedHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
@@ -386,7 +380,7 @@ public sealed class Tokenizer : ITokenizer
                 }
                 else
                 {
-                    var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    var session = _tokenizationEngine.CreateSession(template, result, collector, hintStrategy);
                     await session.RunAsync(context, ct).ConfigureAwait(false);
 
                     if (hintStrategy.PostProcess(result))

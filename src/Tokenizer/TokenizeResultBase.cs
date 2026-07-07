@@ -26,6 +26,19 @@ public abstract class TokenizeResultBase
     }
 
     /// <summary>
+    /// Creates a projected result carrying forward state from a completed tokenization.
+    /// Stage 1 exceptions are not copied — only assignment exceptions belong on typed results.
+    /// </summary>
+    protected TokenizeResultBase(Template template, TokenResult tokens, HintResult hints, Diagnostics.DiagnosticResult? diagnostics)
+    {
+        _exceptions = new List<Exception>();
+        Template = template;
+        Tokens = tokens;
+        Hints = hints;
+        Diagnostics = diagnostics;
+    }
+
+    /// <summary>
     /// The <see cref="Template"/> containing the mapping between tokens in the
     /// template and properties on the target object.
     /// </summary>
@@ -60,10 +73,10 @@ public abstract class TokenizeResultBase
     /// <summary>
     /// Determines whether the matching process was successful
     /// </summary>
-    public bool Success => Tokens.HasMatches &&
-                           !Tokens.HasMissingRequiredTokens &&
-                           !Hints.HasMissingRequiredHints &&
-                           (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
+    public virtual bool Success => Tokens.HasMatches &&
+                                   !Tokens.HasMissingRequiredTokens &&
+                                   !Hints.HasMissingRequiredHints &&
+                                   (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
 
     /// <inheritdoc />
     public override string ToString() =>

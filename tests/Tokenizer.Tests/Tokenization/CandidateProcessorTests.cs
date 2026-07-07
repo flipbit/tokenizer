@@ -17,7 +17,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -44,7 +44,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name:IsNumeric}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -70,7 +70,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -96,7 +96,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -120,7 +120,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -145,7 +145,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}\n").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -171,7 +171,7 @@ public class CandidateProcessorTests
         var template = parser.Compile("Name: {Name}\n").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);

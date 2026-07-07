@@ -13,7 +13,6 @@ namespace Tokens.Tokenization;
 internal sealed class TokenizationSession
 {
     private readonly Template _template;
-    private readonly object? _targetObject;
     private readonly TokenizeResultBase _result;
     private readonly IDiagnosticCollector _collector;
     private readonly DecoratorPipeline _pipeline;
@@ -24,21 +23,19 @@ internal sealed class TokenizationSession
 
     public TokenizationSession(
         Template template,
-        object? targetObject,
         TokenizeResultBase result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy,
         ILogger logger)
     {
         _template = template;
-        _targetObject = targetObject;
         _result = result;
         _collector = collector;
         _hasExplicitLimit = _template.Options.MaxIterations > 0;
 
         _pipeline = new DecoratorPipeline(_template.Options, collector);
         _candidateProcessor = new CandidateProcessor(
-            targetObject, result, template, _pipeline, collector, logger);
+            result, template, _pipeline, collector, logger);
         _router = new TokenMatchRouter(
             template, _candidateProcessor, collector, hintStrategy);
     }
@@ -139,7 +136,7 @@ internal sealed class TokenizationSession
     private void Finalize(TokenizationContext context)
     {
         _candidateProcessor.ProcessRemaining(context);
-        FrontMatterProcessor.Process(_template, _targetObject, _result, _pipeline, context.Enumerator.Location);
+        FrontMatterProcessor.Process(_template, _result, _pipeline, context.Enumerator.Location);
         _collector.Record(DiagnosticEventType.TokenizationCompleted,
             detail: $"Matches: {_result.Tokens.Matches.Count}, Misses: {_result.Tokens.Misses.Count}");
     }

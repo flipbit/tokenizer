@@ -13,7 +13,6 @@ internal interface ITokenizationEngine
     /// </summary>
     public TokenizationSession CreateSession(
         Template template,
-        object? targetObject,
         TokenizeResultBase result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null);

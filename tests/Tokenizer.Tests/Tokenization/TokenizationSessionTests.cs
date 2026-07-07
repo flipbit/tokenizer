@@ -135,7 +135,7 @@ public class TokenizationSessionTests
         var input = "Name: This is a very long input string that exceeds the limit";
         context.Initialize(new System.IO.StringReader(input));
 
-        var session = engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
 
         // Act & Assert
         var ex = Assert.Throws<TokenizerException>(() => session.Run(context));
@@ -147,7 +147,7 @@ public class TokenizationSessionTests
         IDiagnosticCollector? collector = null)
     {
         return new TokenizationSession(
-            template, targetObject: null, result,
+            template, result,
             collector ?? NullDiagnosticCollector.Instance,
             hintStrategy: null,
             NullLogger<TokenizationEngine>.Instance);

@@ -1,6 +1,5 @@
 using Tokens.Diagnostics;
 using Tokens.Enumerators;
-using Tokens.Extensions;
 
 namespace Tokens.Tokenization;
 
@@ -10,12 +9,11 @@ namespace Tokens.Tokenization;
 internal static class FrontMatterProcessor
 {
     /// <summary>
-    /// Iterates template tokens and evaluates values for any front matter tokens.
-    /// Assigns the evaluated value to the result and, if a target object is provided, reflects it onto the target.
+    /// Iterates template tokens and evaluates values for any front matter tokens,
+    /// recording matches on the result.
     /// </summary>
     public static void Process(
         Template template,
-        object? targetObject,
         TokenizeResultBase result,
         DecoratorPipeline pipeline,
         FileLocation location)
@@ -35,11 +33,6 @@ internal static class FrontMatterProcessor
                 if (evaluatedValue != null)
                 {
                     result.Tokens.AddMatch(token, evaluatedValue, token.Location);
-
-                    if (targetObject != null && !string.IsNullOrWhiteSpace(token.Name))
-                    {
-                        targetObject.SetValue(token.Name, evaluatedValue, StringComparison.Ordinal);
-                    }
                 }
             }
             else

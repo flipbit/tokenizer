@@ -13,11 +13,6 @@ public class TokenizationEngineBasicTests
 {
     private readonly TokenizationEngine _engine = new();
 
-    private sealed class Person
-    {
-        public string FirstName { get; set; } = null!;
-    }
-
     [Fact]
     public void GivenValidInput_WhenProcessingTokenization_ThenProcessesSuccessfully()
     {
@@ -33,10 +28,8 @@ public class TokenizationEngineBasicTests
             .WithTemplate(template)
             .Build();
 
-        var value = new Person { FirstName = "Alice" };
-
         // Act
-        var session = _engine.CreateSession(template, value, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -59,7 +52,7 @@ public class TokenizationEngineBasicTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

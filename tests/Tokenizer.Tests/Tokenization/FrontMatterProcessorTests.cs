@@ -26,7 +26,7 @@ public class FrontMatterProcessorTests
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, targetObject: null, result, pipeline, location);
+        FrontMatterProcessor.Process(template, result, pipeline, location);
 
         // Assert
         Assert.Contains(collector.GetResult()!.Events,
@@ -52,7 +52,7 @@ public class FrontMatterProcessorTests
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, targetObject: null, result, pipeline, location);
+        FrontMatterProcessor.Process(template, result, pipeline, location);
 
         // Assert
         var diagnosticResult = collector.GetResult();
@@ -81,7 +81,7 @@ public class FrontMatterProcessorTests
         var location = new FileLocation();
 
         // Act
-        FrontMatterProcessor.Process(template, targetObject: null, result, pipeline, location);
+        FrontMatterProcessor.Process(template, result, pipeline, location);
 
         // Assert
         Assert.Contains(collector.GetResult()!.Events,

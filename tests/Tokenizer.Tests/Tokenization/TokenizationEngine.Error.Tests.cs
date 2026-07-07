@@ -26,11 +26,6 @@ public class TokenizationEngineErrorTests
             .Build();
 
         var context = new TokenizationContext();
-        var result = new TokenizeResultBuilder()
-            .WithTemplate(template)
-            .Build();
-
-        var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => context.Initialize((System.IO.TextReader)null!));
@@ -41,11 +36,10 @@ public class TokenizationEngineErrorTests
     {
         // Arrange
         var result = new TokenizeResultBuilder().Build();
-        var value = new { Name = "" };
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.CreateSession(null!, value, result, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(null!, result, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -56,34 +50,9 @@ public class TokenizationEngineErrorTests
             .WithName("TestTemplate")
             .Build();
 
-        var value = new { Name = "" };
-
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.CreateSession(template, value, null!, NullDiagnosticCollector.Instance));
-    }
-
-    [Fact]
-    public void GivenReadOnlyTargetObject_WhenProcessingTokenization_ThenThrowsArgumentException()
-    {
-        // Arrange
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithTokens(new TokenBuilder()
-                .WithName("Name")
-                .Build())
-            .WithDefaultOptions()
-            .Build();
-
-        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-
-        var readOnlyTarget = new ReadOnlyTarget("test");
-
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
-            _engine.CreateSession(template, readOnlyTarget, result, NullDiagnosticCollector.Instance));
-
-        Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
+            _engine.CreateSession(template, null!, NullDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -104,17 +73,11 @@ public class TokenizationEngineErrorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
         Assert.Empty(result.Exceptions);
         Assert.False(result.Success);
-    }
-
-    private sealed class ReadOnlyTarget
-    {
-        public ReadOnlyTarget(string name) { Name = name; }
-        public string Name { get; }
     }
 }

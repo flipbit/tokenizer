@@ -16,7 +16,7 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -42,7 +42,7 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -68,7 +68,7 @@ public class TokenMatchRouterTests
         var template = parser.Compile("A:{First}B:{Second}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
@@ -97,7 +97,7 @@ public class TokenMatchRouterTests
         var template = parser.Compile("Name: {Name$}").Template;
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
-            targetObject: null, result, template,
+            result, template,
             new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);

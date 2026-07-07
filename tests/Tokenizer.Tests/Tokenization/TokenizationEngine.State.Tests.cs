@@ -79,7 +79,7 @@ public class TokenizationEngineStateTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — the repeating token should have matched multiple times
@@ -103,7 +103,7 @@ public class TokenizationEngineStateTests
         // Act
         var input = "First: ValueASecond: ValueB";
         context.Initialize(new System.IO.StringReader(input));
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert - Both tokens should be processed
@@ -142,7 +142,7 @@ public class TokenizationEngineStateTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — token should capture the value after the preamble "Test"
@@ -186,7 +186,7 @@ public class TokenizationEngineStateTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — all three occurrences are matched; each must be named "Item"

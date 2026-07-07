@@ -23,7 +23,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -45,7 +45,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -67,7 +67,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -88,7 +88,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -108,7 +108,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -130,43 +130,12 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
         Assert.Single(result.Tokens.Matches);
         Assert.Equal("x", result.Tokens.Matches[0].Value);
-    }
-
-    [Fact]
-    public void GivenConsecutiveTokensWithEmptyPreamble_WhenTargetHasNoSettableProperties_ThenThrowsArgumentException()
-    {
-        // Arrange — a read-only target with no settable properties is rejected at the entry-point
-        // validation before the tokenization loop begins. The error message documents that the
-        // empty-preambles guard (which would fire deeper in the loop) is pre-empted by this check.
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithTokens(
-                new TokenBuilder()
-                    .WithName("First")
-                    .WithPreamble("")
-                    .Build(),
-                new TokenBuilder()
-                    .WithName("Second")
-                    .WithPreamble("")
-                    .Build())
-            .WithDefaultOptions()
-            .Build();
-
-        var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-
-        var target = new ReadOnlyTarget("value");
-
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
-            _engine.CreateSession(template, target, result, NullDiagnosticCollector.Instance));
-
-        Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -187,16 +156,11 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, targetObject: null, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — the key thing is that this completes (does not hang)
         Assert.Equal(100, result.Tokens.Matches.Count);
     }
 
-    private sealed class ReadOnlyTarget
-    {
-        public ReadOnlyTarget(string name) { Name = name; }
-        public string Name { get; }
-    }
 }

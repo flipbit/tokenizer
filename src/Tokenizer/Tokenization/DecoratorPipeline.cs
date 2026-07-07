@@ -21,8 +21,6 @@ internal sealed class DecoratorPipeline
 
     internal IDiagnosticCollector Collector => _collector;
 
-    internal TokenizerOptions Options => _options;
-
     /// <summary>
     /// Prepares the value and runs the decorator pipeline (transformers then validators).
     /// Returns true if the value passes all decorators; the evaluated (potentially transformed)

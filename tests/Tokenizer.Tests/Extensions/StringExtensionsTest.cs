@@ -143,6 +143,78 @@ public class StringExtensionsTest
     }
 
     [Fact]
+    public void GivenAllCharactersMatch_WhenKeep_ThenReturnsFullInput()
+    {
+        // Arrange / Act
+        var result = "abc".Keep("abc");
+
+        // Assert
+        Assert.Equal("abc", result);
+    }
+
+    [Fact]
+    public void GivenDuplicateCharactersInInput_WhenKeep_ThenKeepsAllOccurrences()
+    {
+        // Arrange / Act
+        var result = "aabbcc".Keep("ab");
+
+        // Assert
+        Assert.Equal("aabb", result);
+    }
+
+    [Fact]
+    public void GivenDuplicateCharactersInFilter_WhenKeep_ThenKeepsMatchingCharacters()
+    {
+        // Arrange / Act
+        var result = "abcdef".Keep("aabbcc");
+
+        // Assert
+        Assert.Equal("abc", result);
+    }
+
+    [Fact]
+    public void GivenSingleCharacterInput_WhenKeep_ThenKeepsIfInFilter()
+    {
+        // Arrange / Act
+        var kept = "a".Keep("abc");
+        var dropped = "z".Keep("abc");
+
+        // Assert
+        Assert.Equal("a", kept);
+        Assert.Equal("", dropped);
+    }
+
+    [Fact]
+    public void GivenSpecialCharacters_WhenKeep_ThenPreservesNewlinesAndTabs()
+    {
+        // Arrange / Act
+        var result = "hello\tworld\n".Keep("\t\n");
+
+        // Assert
+        Assert.Equal("\t\n", result);
+    }
+
+    [Fact]
+    public void GivenDigitsAndLetters_WhenKeep_ThenPreservesInputOrder()
+    {
+        // Arrange / Act
+        var result = "a1b2c3".Keep("321");
+
+        // Assert
+        Assert.Equal("123", result);
+    }
+
+    [Fact]
+    public void GivenMatchEmptyString_WhenKeep_ThenReturnsEmpty()
+    {
+        // Arrange / Act
+        var result = "123456".Keep("");
+
+        // Assert
+        Assert.Equal("", result);
+    }
+
+    [Fact]
     public void TestSubstringBeforeNewLineWithUnixNewLine()
     {
         var result = "Hello\nWorld".SubstringBeforeNewLine();

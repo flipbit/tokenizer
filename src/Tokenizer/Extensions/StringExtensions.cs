@@ -250,9 +250,11 @@ public static class StringExtensions
         if (!string.IsNullOrEmpty(value) &&
             !string.IsNullOrEmpty(keepTheseCharacters))
         {
+            var allowed = new HashSet<char>(keepTheseCharacters);
+
             foreach (var character in value)
             {
-                if (!keepTheseCharacters.Contains(character)) continue;
+                if (!allowed.Contains(character)) continue;
 
                 result.Append(character);
             }

@@ -145,52 +145,61 @@ public sealed class Tokenizer : ITokenizer
 
         using (_log.BeginScope(scopeProperties))
         {
-            if (_log.IsEnabled(LogLevel.Debug))
+            try
             {
-                _log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
-                if (rawInput != null)
+                if (_log.IsEnabled(LogLevel.Debug))
                 {
-                    _log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
-                        template.Tokens.Count, rawInput.Length);
+                    _log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
+                    if (rawInput != null)
+                    {
+                        _log.LogDebug("Template has {TokenCount} tokens, input length is {InputLength}",
+                            template.Tokens.Count, rawInput.Length);
+                    }
+                    else
+                    {
+                        _log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                    }
+                }
+
+                // Create and initialize the tokenization context
+                var context = new TokenizationContext();
+                context.Initialize(reader);
+
+                IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                    ? new DiagnosticCollector(rawInput)
+                    : NullDiagnosticCollector.Instance;
+
+                // Process hints first — hint pre-filtering requires the full input string
+                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
+
+                if (hintsMissing)
+                {
+                    _log.LogWarning("Required hints are missing, skipping tokenization");
                 }
                 else
                 {
-                    _log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
+                    var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
+                    session.Run(context);
+
+                    if (hintStrategy.PostProcess(result))
+                    {
+                        _log.LogWarning("Post-tokenization hint check failed");
+                    }
                 }
-            }
 
-            // Create and initialize the tokenization context
-            var context = new TokenizationContext();
-            context.Initialize(reader);
+                FinalizeTokenization(result, template, collector, rawInput);
 
-            IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new DiagnosticCollector(rawInput)
-                : NullDiagnosticCollector.Instance;
-
-            // Process hints first — hint pre-filtering requires the full input string
-            var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
-
-            if (hintsMissing)
-            {
-                _log.LogWarning("Required hints are missing, skipping tokenization");
-            }
-            else
-            {
-                var session = _tokenizationEngine.CreateSession(template, value, result, collector, hintStrategy);
-                session.Run(context);
-
-                if (hintStrategy.PostProcess(result))
+                if (_log.IsEnabled(LogLevel.Debug))
                 {
-                    _log.LogWarning("Post-tokenization hint check failed");
+                    _log.LogDebug("Tokenization {Result} for template {TemplateName}",
+                        result.Success ? "succeeded" : "failed", template.Name);
                 }
             }
-
-            FinalizeTokenization(result, template, collector, rawInput);
-
-            if (_log.IsEnabled(LogLevel.Debug))
+            catch (TokenizerException ex)
             {
-                _log.LogDebug("Tokenization {Result} for template {TemplateName}",
-                    result.Success ? "succeeded" : "failed", template.Name);
+                _log.LogError(ex, "Tokenization failed for template {TemplateName}: {Message}",
+                    template.Name, ex.Message);
+                throw;
             }
         }
     }

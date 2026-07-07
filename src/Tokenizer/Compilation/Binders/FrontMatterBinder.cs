@@ -140,9 +140,9 @@ internal sealed class FrontMatterBinder
         {
             throw new ParsingException($"Unable to convert front matter option to boolean: {rawName}", entry.Location);
         }
-        var v = input.Trim().ToLowerInvariant();
-        if (v == "true" || v == "yes" || v == "on") return true;
-        if (v == "false" || v == "no" || v == "off") return false;
+        var v = input.Trim();
+        if (string.Equals(v, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "yes", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "on", StringComparison.OrdinalIgnoreCase)) return true;
+        if (string.Equals(v, "false", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "no", StringComparison.OrdinalIgnoreCase) || string.Equals(v, "off", StringComparison.OrdinalIgnoreCase)) return false;
         throw new ParsingException($"Unable to convert front matter option to boolean: {rawName}", entry.Location);
     }
 }

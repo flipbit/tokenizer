@@ -131,7 +131,7 @@ public sealed class Tokenizer : ITokenizer
     private void TokenizeCore(TokenizeResultBase result, object? value, Template template, TextReader reader, string? rawInput)
     {
         var hintStrategy = new ContainsHintStrategy();
-        var scopeProperties = new Dictionary<string, object>
+        var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,
@@ -312,7 +312,7 @@ public sealed class Tokenizer : ITokenizer
     private async Task TokenizeAsyncCore(TokenizeResultBase result, object? value, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new IntegratedHintStrategy();
-        var scopeProperties = new Dictionary<string, object>
+        var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,

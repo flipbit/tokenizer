@@ -11,7 +11,7 @@ namespace Tokens.Tokenization.Strategies;
 internal sealed class IntegratedHintStrategy : IHintStrategy
 {
     private Template? _currentTemplate;
-    private readonly HashSet<string> _matchedPreambles = new();
+    private readonly HashSet<string> _matchedPreambles = new(StringComparer.Ordinal);
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,

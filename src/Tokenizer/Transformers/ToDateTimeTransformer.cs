@@ -15,7 +15,7 @@ public sealed class ToDateTimeTransformer : ITokenTransformer
 
     static ToDateTimeTransformer()
     {
-        MonthAbbreviations = new Dictionary<string, string[]>();
+        MonthAbbreviations = new Dictionary<string, string[]>(StringComparer.Ordinal);
         LockHandle = new object();
     }
 

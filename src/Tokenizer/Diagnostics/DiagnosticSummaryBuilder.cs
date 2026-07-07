@@ -64,7 +64,8 @@ internal static class DiagnosticSummaryBuilder
                 .Where(e => (e.Type == DiagnosticEventType.TransformerFailed
                           || e.Type == DiagnosticEventType.ValidatorFailed)
                          && e.TokenName != null)
-                .Select(e => e.TokenName!));
+                .Select(e => e.TokenName!),
+            StringComparer.Ordinal);
 
         // 1. Transformer failures
         foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.TransformerFailed))

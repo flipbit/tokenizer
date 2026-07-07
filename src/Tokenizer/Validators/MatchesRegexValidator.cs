@@ -8,7 +8,7 @@ namespace Tokens.Validators;
 /// </summary>
 public sealed class MatchesRegexValidator : ITokenValidator
 {
-    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new();
+    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Determines whether the specified token is valid.

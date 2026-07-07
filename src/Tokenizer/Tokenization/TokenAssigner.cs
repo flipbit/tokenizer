@@ -20,6 +20,8 @@ internal sealed class TokenAssigner
         _collector = collector;
     }
 
+    internal IDiagnosticCollector Collector => _collector;
+
     /// <summary>
     /// Prepares the value, runs the decorator pipeline, and assigns the result to the target object.
     /// </summary>

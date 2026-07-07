@@ -139,7 +139,7 @@ internal sealed class TokenizationSession
     private void Finalize(TokenizationContext context)
     {
         _candidateProcessor.ProcessRemaining(context);
-        FrontMatterProcessor.Process(_template, _targetObject, _result, _collector, context.Enumerator.Location);
+        FrontMatterProcessor.Process(_template, _targetObject, _result, _assigner, context.Enumerator.Location);
         _collector.Record(DiagnosticEventType.TokenizationCompleted,
             detail: $"Matches: {_result.Tokens.Matches.Count}, Misses: {_result.Tokens.Misses.Count}");
     }

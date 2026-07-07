@@ -15,18 +15,18 @@ internal static class FrontMatterProcessor
         Template template,
         object? targetObject,
         TokenizeResultBase result,
-        IDiagnosticCollector collector,
+        TokenAssigner assigner,
         FileLocation location)
     {
         foreach (var token in template.Tokens)
         {
             if (!token.IsFrontMatterToken) continue;
 
-            if (token.Assign(targetObject, string.Empty, template.Options, location, out var assignedValue, collector))
+            if (assigner.Assign(token, targetObject, string.Empty, location, out var assignedValue))
             {
-                if (collector.IsEnabled)
+                if (assigner.Collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
+                    assigner.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
                         tokenName: token.Name, tokenId: token.Id,
                         value: assignedValue?.ToString());
                 }
@@ -37,9 +37,9 @@ internal static class FrontMatterProcessor
             }
             else
             {
-                if (collector.IsEnabled)
+                if (assigner.Collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
+                    assigner.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
                         tokenName: token.Name, tokenId: token.Id);
                 }
             }

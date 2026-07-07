@@ -18,7 +18,7 @@ public class TemplateParserErrorTests
 
         // Assert
         Assert.NotNull(ex.Message);
-        Assert.Contains("}", ex.Message);
+        Assert.Contains("}", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class TemplateParserErrorTests
 
         // Assert
         Assert.NotNull(ex.Message);
-        Assert.Contains(")", ex.Message);
+        Assert.Contains(")", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -84,7 +84,7 @@ public class TokenizationEngineErrorTests
         var ex = Assert.Throws<ArgumentException>(() =>
             _engine.CreateSession(template, readOnlyTarget, result, NullDiagnosticCollector.Instance));
 
-        Assert.Contains("no settable properties", ex.Message);
+        Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

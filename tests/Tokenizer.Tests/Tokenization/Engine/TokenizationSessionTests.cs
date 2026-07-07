@@ -137,7 +137,7 @@ public class TokenizationSessionTests
 
         // Act & Assert
         var ex = Assert.Throws<TokenizerException>(() => session.Run(context));
-        Assert.Contains("exceeds maximum allowed length", ex.Message);
+        Assert.Contains("exceeds maximum allowed length", ex.Message, StringComparison.Ordinal);
     }
 
     private static TokenizationSession CreateSession(

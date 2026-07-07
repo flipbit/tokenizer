@@ -82,7 +82,7 @@ public class EndToEndParsingTests
         foreach (var token in definition.Tokens)
         {
             Assert.True(token.TerminateOnNewLine);
-            if (token.Name.Contains("date"))
+            if (token.Name.Contains("date", StringComparison.Ordinal))
             {
                 Assert.Single(token.Decorators);
                 Assert.Equal("ToDateTime", token.Decorators[0].Name);
@@ -140,6 +140,6 @@ public class EndToEndParsingTests
 
         // Assert
         Assert.Single(definition.Tokens);
-        Assert.Contains("{name}", definition.Tokens[0].Preamble);
+        Assert.Contains("{name}", definition.Tokens[0].Preamble, StringComparison.Ordinal);
     }
 }

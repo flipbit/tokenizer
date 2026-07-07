@@ -28,7 +28,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo();
 
-        foo.SetValue("Foo.Baz", "Value");
+        foo.SetValue("Foo.Baz", "Value", StringComparison.Ordinal);
 
         Assert.Equal("Value", foo.Baz);
     }
@@ -38,7 +38,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo();
 
-        foo.SetValue("Baz", "Value");
+        foo.SetValue("Baz", "Value", StringComparison.Ordinal);
 
         Assert.Equal("Value", foo.Baz);
     }
@@ -48,7 +48,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo();
 
-        foo.SetValue("Bar.Age", 10);
+        foo.SetValue("Bar.Age", 10, StringComparison.Ordinal);
 
         Assert.Equal(10, foo.Bar.Age);
     }
@@ -68,7 +68,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo();
 
-        foo.SetValue("Boo", "10");
+        foo.SetValue("Boo", "10", StringComparison.Ordinal);
         //foo.Boo.
         Assert.True(foo.Boo.HasValue);
         Assert.Equal(10, foo.Boo.Value);
@@ -79,7 +79,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo { Baz = "Value" };
 
-        var result = foo.GetValue<string>("Foo.Baz");
+        var result = foo.GetValue<string>("Foo.Baz", StringComparison.Ordinal);
 
         Assert.Equal("Value", result);
     }
@@ -89,7 +89,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo { Baz = "Value" };
 
-        var result = foo.GetValue<string>("Baz");
+        var result = foo.GetValue<string>("Baz", StringComparison.Ordinal);
 
         Assert.Equal("Value", result);
     }
@@ -99,7 +99,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo { Bar = new Bar { Age = 10 } };
 
-        var result = foo.GetValue<int>("Bar.Age");
+        var result = foo.GetValue<int>("Bar.Age", StringComparison.Ordinal);
 
         Assert.Equal(10, result);
     }
@@ -119,7 +119,7 @@ public class ObjectExtensionsTests
     {
         var foo = new Foo();
 
-        var result = foo.GetValue<string>("Baz");
+        var result = foo.GetValue<string>("Baz", StringComparison.Ordinal);
 
         Assert.Null(result);
     }
@@ -141,8 +141,8 @@ public class ObjectExtensionsTests
         var target = new GetterOnlyCollectionTarget();
 
         // Act
-        target.SetValue("Tags", "first");
-        target.SetValue("Tags", "second");
+        target.SetValue("Tags", "first", StringComparison.Ordinal);
+        target.SetValue("Tags", "second", StringComparison.Ordinal);
 
         // Assert
         Assert.Equal(2, target.Tags.Count);

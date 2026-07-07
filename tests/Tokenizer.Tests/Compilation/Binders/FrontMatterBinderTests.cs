@@ -58,6 +58,6 @@ public class FrontMatterBinderTests : TokenizerTestBase
         // Assert — front matter said false, so leading whitespace should be preserved
         Assert.False(template.Options.TrimLeadingWhitespaceInTokenPreamble);
         var token = template.Tokens.First(t => string.Equals(t.Name, "Name", StringComparison.Ordinal));
-        Assert.StartsWith("   ", token.Preamble);
+        Assert.StartsWith("   ", token.Preamble, StringComparison.Ordinal);
     }
 }

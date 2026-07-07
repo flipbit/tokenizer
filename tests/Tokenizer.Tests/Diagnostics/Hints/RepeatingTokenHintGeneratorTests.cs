@@ -29,9 +29,9 @@ public class RepeatingTokenHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("NameServers", hint);
-        Assert.Contains("IsDomainNameValidator", hint);
-        Assert.Contains("not a domain", hint);
+        Assert.Contains("NameServers", hint, StringComparison.Ordinal);
+        Assert.Contains("IsDomainNameValidator", hint, StringComparison.Ordinal);
+        Assert.Contains("not a domain", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -57,9 +57,9 @@ public class RepeatingTokenHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("Dates", hint);
-        Assert.Contains("ToDateTimeTransformer", hint);
-        Assert.Contains("not-a-date", hint);
+        Assert.Contains("Dates", hint, StringComparison.Ordinal);
+        Assert.Contains("ToDateTimeTransformer", hint, StringComparison.Ordinal);
+        Assert.Contains("not-a-date", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -80,8 +80,8 @@ public class RepeatingTokenHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("NameServers", hint);
-        Assert.Contains("Line gap detected", hint);
+        Assert.Contains("NameServers", hint, StringComparison.Ordinal);
+        Assert.Contains("Line gap detected", hint, StringComparison.Ordinal);
     }
 
     [Fact]

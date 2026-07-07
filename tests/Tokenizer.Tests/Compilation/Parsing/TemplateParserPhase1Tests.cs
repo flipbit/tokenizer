@@ -151,7 +151,7 @@ public class TemplateParserPhase1Tests
         var parser = new TemplateParser();
         var doc = parser.Parse("Hello {{name}} world");
         var text = Assert.IsType<TextNode>(doc.Content[0]);
-        Assert.Contains("{name}", text.Text);
+        Assert.Contains("{name}", text.Text, StringComparison.Ordinal);
     }
 
     [Fact]

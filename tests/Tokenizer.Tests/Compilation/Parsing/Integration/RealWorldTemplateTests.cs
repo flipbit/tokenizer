@@ -30,7 +30,7 @@ public class RealWorldTemplateTests
         Assert.Equal(7, definition.Tokens.Count);
         Assert.All(definition.Tokens, token => Assert.True(token.TerminateOnNewLine));
 
-        var dateTokens = definition.Tokens.Where(t => t.Name.Contains("date")).ToList();
+        var dateTokens = definition.Tokens.Where(t => t.Name.Contains("date", StringComparison.Ordinal)).ToList();
         Assert.Equal(3, dateTokens.Count);
         Assert.All(dateTokens, token => Assert.Single(token.Decorators));
     }
@@ -87,7 +87,7 @@ public class RealWorldTemplateTests
         // Assert
         Assert.Equal(6, definition.Tokens.Count);
 
-        var emailTokens = definition.Tokens.Where(t => t.Name.Contains("email")).ToList();
+        var emailTokens = definition.Tokens.Where(t => t.Name.Contains("email", StringComparison.Ordinal)).ToList();
         Assert.Equal(2, emailTokens.Count);
         Assert.All(emailTokens, token =>
         {
@@ -182,6 +182,6 @@ public class RealWorldTemplateTests
         Assert.Equal("id", namedTokens[0].Name);
         Assert.Equal("name", namedTokens[1].Name);
         Assert.Equal("active", namedTokens[2].Name);
-        Assert.Contains("{", definition.Tokens[0].Preamble);
+        Assert.Contains("{", definition.Tokens[0].Preamble, StringComparison.Ordinal);
     }
 }

@@ -66,9 +66,9 @@ public class TemplateParserEdgeCaseTests
 
         // Assert
         Assert.Single(result.Tokens);
-        Assert.Contains("世界", result.Tokens[0].Preamble);
-        Assert.Contains("🌍", result.Tokens[0].Preamble);
-        Assert.Contains("Ñoño", result.Tokens[0].Preamble);
+        Assert.Contains("世界", result.Tokens[0].Preamble, StringComparison.Ordinal);
+        Assert.Contains("🌍", result.Tokens[0].Preamble, StringComparison.Ordinal);
+        Assert.Contains("Ñoño", result.Tokens[0].Preamble, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class TemplateParserEdgeCaseTests
 
         // Assert
         Assert.Equal(2, result.Tokens.Count);
-        Assert.Contains("🎉", result.Tokens[0].Preamble);
-        Assert.Contains("🎊", result.Tokens[1].Preamble);
+        Assert.Contains("🎉", result.Tokens[0].Preamble, StringComparison.Ordinal);
+        Assert.Contains("🎊", result.Tokens[1].Preamble, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -149,8 +149,8 @@ public class TemplateParserEdgeCaseTests
 
         // Assert
         Assert.Single(result.Tokens);
-        Assert.Contains("Start", result.Tokens[0].Preamble);
-        Assert.Contains("Indented", result.Tokens[0].Preamble);
+        Assert.Contains("Start", result.Tokens[0].Preamble, StringComparison.Ordinal);
+        Assert.Contains("Indented", result.Tokens[0].Preamble, StringComparison.Ordinal);
     }
 
     [Fact]

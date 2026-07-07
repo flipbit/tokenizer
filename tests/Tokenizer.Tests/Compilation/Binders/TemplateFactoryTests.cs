@@ -18,7 +18,7 @@ public class TemplateFactoryTests
     {
         var definition = new TemplateDefinition { Name = string.Empty };
         var template = TemplateFactory.Create(42UL, definition);
-        Assert.StartsWith("Template_", template.Name);
+        Assert.StartsWith("Template_", template.Name, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class TemplateFactoryTests
     {
         var definition = new TemplateDefinition { Name = "   " };
         var template = TemplateFactory.Create(42UL, definition);
-        Assert.StartsWith("Template_", template.Name);
+        Assert.StartsWith("Template_", template.Name, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class TemplateFactoryTests
         var t1 = TemplateFactory.Create(1UL, definition);
         var t2 = TemplateFactory.Create(2UL, definition);
         Assert.NotEqual(t1.Name, t2.Name);
-        Assert.StartsWith("Template_", t1.Name);
-        Assert.StartsWith("Template_", t2.Name);
+        Assert.StartsWith("Template_", t1.Name, StringComparison.Ordinal);
+        Assert.StartsWith("Template_", t2.Name, StringComparison.Ordinal);
     }
 }

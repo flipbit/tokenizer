@@ -328,6 +328,6 @@ Content: {Content}").Template;
 
         // Assert
         Assert.Single(result.Tokens.Matches);
-        Assert.DoesNotContain("Next line", result.Tokens.Matches[0].Value.ToString());
+        Assert.False(result.Tokens.Matches[0].Value.ToString()!.Contains("Next line", StringComparison.Ordinal));
     }
 }

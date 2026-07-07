@@ -44,7 +44,7 @@ public class InputValidatorTests
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
             InputValidator.ValidateTargetObject(target, _logger));
-        Assert.Contains("no settable properties", ex.Message);
+        Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
     }
 
     private class WritableTarget

@@ -49,7 +49,7 @@ public class TemplateBinderTests
 
         var def = TemplateBinder.Bind(doc);
         var tok = Assert.Single(def.Tokens);
-        Assert.Contains("Hello", tok.Preamble);
+        Assert.Contains("Hello", tok.Preamble, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class TemplateBinderTests
         Assert.Equal(2, def.Tokens.Count);
         Assert.Equal("first", def.Tokens[0].Name);
         Assert.Equal("second", def.Tokens[1].Name);
-        Assert.Contains("middle", def.Tokens[1].Preamble);
+        Assert.Contains("middle", def.Tokens[1].Preamble, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class TemplateBinderTests
         Assert.Equal(2, def.Tokens.Count);
         Assert.Equal("name", def.Tokens[0].Name);
         Assert.Equal(string.Empty, def.Tokens[1].Name);
-        Assert.Contains("trailing", def.Tokens[1].Preamble);
+        Assert.Contains("trailing", def.Tokens[1].Preamble, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -22,7 +22,7 @@ public class DiagnosticSummaryBuilderTests
         var summary = diagnostics.Summary;
 
         // Assert
-        Assert.Contains("2", summary.Verdict);
+        Assert.Contains("2", summary.Verdict, StringComparison.Ordinal);
         Assert.Empty(summary.Issues);
     }
 
@@ -48,8 +48,8 @@ public class DiagnosticSummaryBuilderTests
             .Where(i => i.Type == DiagnosticIssueType.TransformerFailure).ToList();
         Assert.Single(transformerIssues);
         Assert.Equal("Registered", transformerIssues[0].TokenName);
-        Assert.Contains("ToDateTimeUtc", transformerIssues[0].Description);
-        Assert.Contains("21/11/2005", transformerIssues[0].Description);
+        Assert.Contains("ToDateTimeUtc", transformerIssues[0].Description, StringComparison.Ordinal);
+        Assert.Contains("21/11/2005", transformerIssues[0].Description, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class DiagnosticSummaryBuilderTests
             .Where(i => i.Type == DiagnosticIssueType.ValidatorRejection).ToList();
         Assert.Single(validatorIssues);
         Assert.Equal("Email", validatorIssues[0].TokenName);
-        Assert.Contains("IsEmailValidator", validatorIssues[0].Description);
+        Assert.Contains("IsEmailValidator", validatorIssues[0].Description, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class DiagnosticSummaryBuilderTests
         var hintIssues = summary.Issues
             .Where(i => i.Type == DiagnosticIssueType.HintMissing).ToList();
         Assert.Single(hintIssues);
-        Assert.Contains("Expected hint text", hintIssues[0].Description);
+        Assert.Contains("Expected hint text", hintIssues[0].Description, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class DiagnosticSummaryBuilderTests
         // Assert
         var issue = summary.Issues.First(i => i.Type == DiagnosticIssueType.TransformerFailure);
         Assert.NotNull(issue.Hint);
-        Assert.Contains("dd/MM/yyyy", issue.Hint);
+        Assert.Contains("dd/MM/yyyy", issue.Hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class DiagnosticSummaryBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Assert
-        Assert.Contains("2", diagnostics.Summary.Verdict); // matched count
-        Assert.Contains("1", diagnostics.Summary.Verdict); // missed count
+        Assert.Contains("2", diagnostics.Summary.Verdict, StringComparison.Ordinal); // matched count
+        Assert.Contains("1", diagnostics.Summary.Verdict, StringComparison.Ordinal); // missed count
     }
 }

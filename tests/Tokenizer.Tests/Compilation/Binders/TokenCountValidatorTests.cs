@@ -20,7 +20,7 @@ public class TokenCountValidatorTests
             .Build();
 
         var ex = Assert.Throws<ParsingException>(() => TokenCountValidator.Validate(template, options));
-        Assert.Contains("exceeding maximum", ex.Message);
+        Assert.Contains("exceeding maximum", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -30,7 +30,7 @@ public class DateFormatHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("dd/MM/yyyy", hint);
+        Assert.Contains("dd/MM/yyyy", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class DateFormatHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("dd/MM/yyyy", hint);
-        Assert.Contains("HH:mm:ss", hint);
+        Assert.Contains("dd/MM/yyyy", hint, StringComparison.Ordinal);
+        Assert.Contains("HH:mm:ss", hint, StringComparison.Ordinal);
     }
 
     [Fact]

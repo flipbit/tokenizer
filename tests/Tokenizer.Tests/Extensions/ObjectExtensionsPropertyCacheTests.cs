@@ -10,8 +10,8 @@ public class ObjectExtensionsPropertyCacheTests
         var target1 = new TestTarget();
         var target2 = new TestTarget();
 
-        target1.SetValue("Name", "Alice");
-        target2.SetValue("Name", "Bob");
+        target1.SetValue("Name", "Alice", StringComparison.Ordinal);
+        target2.SetValue("Name", "Bob", StringComparison.Ordinal);
 
         Assert.Equal("Alice", target1.Name);
         Assert.Equal("Bob", target2.Name);
@@ -21,7 +21,7 @@ public class ObjectExtensionsPropertyCacheTests
     public void GivenNestedType_WhenSettingProperty_ThenSucceeds()
     {
         var target = new TestTarget();
-        target.SetValue("Inner.Value", "test");
+        target.SetValue("Inner.Value", "test", StringComparison.Ordinal);
 
         Assert.NotNull(target.Inner);
         Assert.Equal("test", target.Inner!.Value);

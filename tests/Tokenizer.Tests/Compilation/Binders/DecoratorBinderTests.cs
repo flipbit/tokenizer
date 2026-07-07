@@ -92,7 +92,7 @@ public class DecoratorBinderTests
 
         var ex = Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
-        Assert.Contains("cannot be prefixed with '!'", ex.Message);
+        Assert.Contains("cannot be prefixed with '!'", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class DecoratorBinderTests
 
         var ex = Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
-        Assert.Contains("Unknown Token Operation", ex.Message);
+        Assert.Contains("Unknown Token Operation", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class DecoratorBinderTests
 
         var ex = Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
-        Assert.Contains("must have an assignment operation", ex.Message);
+        Assert.Contains("must have an assignment operation", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

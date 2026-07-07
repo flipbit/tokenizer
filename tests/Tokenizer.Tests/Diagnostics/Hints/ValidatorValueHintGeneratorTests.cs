@@ -25,7 +25,7 @@ public class ValidatorValueHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("@", hint);
+        Assert.Contains("@", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class ValidatorValueHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("spaces", hint);
+        Assert.Contains("spaces", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class ValidatorValueHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("domain name", hint);
+        Assert.Contains("domain name", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class ValidatorValueHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("not a valid number", hint);
+        Assert.Contains("not a valid number", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class ValidatorValueHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("non-phone characters", hint);
+        Assert.Contains("non-phone characters", hint, StringComparison.Ordinal);
     }
 
     [Fact]

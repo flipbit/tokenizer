@@ -92,9 +92,9 @@ public class TokenReaderTests
         var win = r.CaptureWindow(0, 2);
 
         // Assert
-        Assert.Contains("name", win);
-        Assert.Contains(":", win);
-        Assert.Contains("value", win);
+        Assert.Contains("name", win, StringComparison.Ordinal);
+        Assert.Contains(":", win, StringComparison.Ordinal);
+        Assert.Contains("value", win, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -166,7 +166,7 @@ public class TokenizationEngineEmptyPreambleTests
         var ex = Assert.Throws<ArgumentException>(() =>
             _engine.CreateSession(template, target, result, NullDiagnosticCollector.Instance));
 
-        Assert.Contains("no settable properties", ex.Message);
+        Assert.Contains("no settable properties", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -219,7 +219,7 @@ public class TemplateLexerTests
         var kinds = tokens.Select(t => t.Kind).ToList();
         Assert.DoesNotContain(LexerTokenKind.QuotedString, kinds);
         // Should contain text tokens for the apostrophe
-        Assert.Contains(tokens, t => t.Kind == LexerTokenKind.Text && t.Value.Contains("'"));
+        Assert.Contains(tokens, t => t.Kind == LexerTokenKind.Text && t.Value.Contains("'", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -487,9 +487,9 @@ public class TemplateLexerTests
         var xml = File.ReadAllText(xmlPath);
 
         // Act / Assert
-        Assert.Contains("T:Tokens.Compilation.Lexer.TemplateLexer", xml);
-        Assert.Contains("T:Tokens.Compilation.Lexer.LexerToken", xml);
-        Assert.Contains("T:Tokens.Compilation.Lexer.LexerTokenKind", xml);
+        Assert.Contains("T:Tokens.Compilation.Lexer.TemplateLexer", xml, StringComparison.Ordinal);
+        Assert.Contains("T:Tokens.Compilation.Lexer.LexerToken", xml, StringComparison.Ordinal);
+        Assert.Contains("T:Tokens.Compilation.Lexer.LexerTokenKind", xml, StringComparison.Ordinal);
     }
 
     private static string FindFileUpwards(string relativePath)

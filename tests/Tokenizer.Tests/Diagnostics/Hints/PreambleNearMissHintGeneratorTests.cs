@@ -25,8 +25,8 @@ public class PreambleNearMissHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("2", hint);
-        Assert.Contains("case difference", hint);
+        Assert.Contains("2", hint, StringComparison.Ordinal);
+        Assert.Contains("case difference", hint, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class PreambleNearMissHintGeneratorTests
 
         // Assert
         Assert.NotNull(hint);
-        Assert.Contains("2", hint);
+        Assert.Contains("2", hint, StringComparison.Ordinal);
     }
 
     [Fact]

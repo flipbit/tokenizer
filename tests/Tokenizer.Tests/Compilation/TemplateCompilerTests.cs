@@ -61,7 +61,7 @@ public class TemplateCompilerTests
     {
         var template = _parser.Compile("Preamble").Template;
 
-        Assert.StartsWith("Template_", template.Name);
+        Assert.StartsWith("Template_", template.Name, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class TemplateCompilerTests
     {
         var template = _parser.Compile("").Template;
 
-        Assert.StartsWith("Template_", template.Name);
+        Assert.StartsWith("Template_", template.Name, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -24,9 +24,9 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Name", output);
-        Assert.Contains("John", output);
-        Assert.Contains("✓", output);
+        Assert.Contains("Name", output, StringComparison.Ordinal);
+        Assert.Contains("John", output, StringComparison.Ordinal);
+        Assert.Contains("✓", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Age", output);
-        Assert.Contains("✗", output);
+        Assert.Contains("Age", output, StringComparison.Ordinal);
+        Assert.Contains("✗", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Matched", output);
+        Assert.Contains("Matched", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -84,8 +84,8 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Email", output);
-        Assert.Contains("✗", output);
+        Assert.Contains("Email", output, StringComparison.Ordinal);
+        Assert.Contains("✗", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Date", output);
-        Assert.Contains("ToDateTimeUtcTransformer", output);
+        Assert.Contains("Date", output, StringComparison.Ordinal);
+        Assert.Contains("ToDateTimeUtcTransformer", output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -125,6 +125,6 @@ public class AlignmentRendererTests
         var output = diagnostics.RenderAlignment();
 
         // Assert
-        Assert.Contains("Alignment", output);
+        Assert.Contains("Alignment", output, StringComparison.Ordinal);
     }
 }

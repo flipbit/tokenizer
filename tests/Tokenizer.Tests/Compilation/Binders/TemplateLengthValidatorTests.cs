@@ -14,7 +14,7 @@ public class TemplateLengthValidatorTests
 
         // Act & Assert
         var ex = Assert.Throws<ParsingException>(() => TemplateLengthValidator.Validate(content, options));
-        Assert.Contains("exceeds maximum allowed length", ex.Message);
+        Assert.Contains("exceeds maximum allowed length", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -17,9 +17,9 @@ public class TokenizerSafetyLimitTests
         var template = tokenizer.Compile("Name: {Name}").Template;
         var ex = Assert.Throws<TokenizerException>(() =>
             tokenizer.Tokenize(template, input));
-        Assert.Contains("101", ex.Message);
-        Assert.Contains("100", ex.Message);
-        Assert.Contains("MaxInputLength", ex.Message);
+        Assert.Contains("101", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("100", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("MaxInputLength", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class TokenizerSafetyLimitTests
         // Act & Assert
         var ex = Assert.Throws<ParsingException>(() =>
             tokenizer.Compile(longTemplate).Template);
-        Assert.Contains("MaxTemplateLength", ex.Message);
+        Assert.Contains("MaxTemplateLength", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -124,9 +124,9 @@ public class TokenizerSafetyLimitTests
         // Act & Assert
         var ex = Assert.Throws<ParsingException>(() =>
             tokenizer.Compile(templateBuilder.ToString()).Template);
-        Assert.Contains("6", ex.Message);
-        Assert.Contains("5", ex.Message);
-        Assert.Contains("MaxTokenCount", ex.Message);
+        Assert.Contains("6", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("5", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("MaxTokenCount", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class TokenizerSafetyLimitTests
         var template = tokenizer.Compile("Name: {Name}").Template;
         var ex = Assert.Throws<TokenizerException>(() =>
             tokenizer.Tokenize(template, "Name: John Doe"));
-        Assert.Contains("MaxIterations", ex.Message);
+        Assert.Contains("MaxIterations", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class TokenizerSafetyLimitTests
         // Act & Assert
         var ex = await Assert.ThrowsAsync<TokenizerException>(
             () => tokenizer.CompileAsync(reader));
-        Assert.Contains("MaxTemplateLength", ex.Message);
+        Assert.Contains("MaxTemplateLength", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -257,6 +257,6 @@ public class TokenizerSafetyLimitTests
         // Act & Assert
         var ex = await Assert.ThrowsAsync<TokenizerException>(
             () => tokenizer.TokenizeAsync(template, reader));
-        Assert.Contains("MaxInputLength", ex.Message);
+        Assert.Contains("MaxInputLength", ex.Message, StringComparison.Ordinal);
     }
 }

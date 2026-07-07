@@ -21,6 +21,7 @@ public class TokenAssignerTests : TokenizerTestBase
     {
         public string Name { get; set; } = null!;
         public int Age { get; set; }
+        public int? Score { get; set; }
     }
 
     [Fact]
@@ -215,6 +216,21 @@ public class TokenAssignerTests : TokenizerTestBase
 
         // Assert
         Assert.Equal("Alice, Bob", person.Name);
+    }
+
+    [Fact]
+    public void GivenTypeConversionFailure_WhenAssigning_ThenReturnsFalse()
+    {
+        // Arrange
+        var person = new Person();
+        var token = new TokenBuilder().WithName("Score").Build();
+
+        // Act
+        var result = _assigner.Assign(token, person, "not-a-number", new FileLocation(), out _);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(person.Score);
     }
 
     [Fact]

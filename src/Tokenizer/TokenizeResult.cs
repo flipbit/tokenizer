@@ -29,12 +29,12 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public object First(string key)
     {
-        if (!Matches.Any(m => m.Token.Name == key))
+        if (!Matches.Any(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)))
         {
             throw new TokenizerException($"Token '{key}' was not found in the input text.");
         }
 
-        return Matches.First(m => m.Token.Name == key).Value;
+        return Matches.First(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)).Value;
     }
 
     /// <summary>
@@ -47,12 +47,12 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <exception cref="Exceptions.TokenizerException">Thrown when no token with the given key was matched.</exception>
     public T First<T>(string key)
     {
-        if (!Matches.Any(m => m.Token.Name == key))
+        if (!Matches.Any(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)))
         {
             throw new TokenizerException($"Token '{key}' was not found in the input text.");
         }
 
-        return (T)Matches.First(m => m.Token.Name == key).Value;
+        return (T)Matches.First(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)).Value;
     }
 
     /// <summary>
@@ -63,9 +63,9 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <returns>The matched value, or <see langword="null"/>.</returns>
     public object? FirstOrDefault(string key)
     {
-        if (Matches.Any(m => m.Token?.Name == key))
+        if (Matches.Any(m => string.Equals(m.Token?.Name, key, StringComparison.Ordinal)))
         {
-            return Matches.First(m => m.Token.Name == key).Value;
+            return Matches.First(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)).Value;
         }
 
         return null;
@@ -80,9 +80,9 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <returns>The matched value cast to <typeparamref name="T"/>, or <see langword="default"/>.</returns>
     public T? FirstOrDefault<T>(string key)
     {
-        if (Matches.Any(m => m.Token?.Name == key))
+        if (Matches.Any(m => string.Equals(m.Token?.Name, key, StringComparison.Ordinal)))
         {
-            return (T)Matches.First(m => m.Token.Name == key).Value;
+            return (T)Matches.First(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal)).Value;
         }
 
         return default;
@@ -96,7 +96,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     public IReadOnlyList<object> All(string key)
     {
         return Matches
-            .Where(m => m.Token.Name == key)
+            .Where(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal))
             .Select(m => m.Value)
             .ToList();
     }
@@ -108,7 +108,7 @@ public sealed class TokenizeResult : TokenizeResultBase
     /// <returns><see langword="true"/> if at least one match exists for the key; otherwise <see langword="false"/>.</returns>
     public bool Contains(string key)
     {
-        return Matches.Any(m => m.Token.Name == key);
+        return Matches.Any(m => string.Equals(m.Token.Name, key, StringComparison.Ordinal));
     }
 }
 

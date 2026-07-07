@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Tokens.Extensions;
 
 namespace Tokens.Diagnostics.Hints;
 
@@ -39,12 +40,12 @@ internal sealed class PreambleNearMissHintGenerator : IHintGenerator
 
             if (normalizedLine.Equals(normalizedPreamble, StringComparison.OrdinalIgnoreCase))
             {
-                return $"Input contains '{line.Trim()}' at line {lineNumber} (case difference). Update template preamble to match.";
+                return $"Input contains '{line.Trim()}' at line {lineNumber.ToInvariant()} (case difference). Update template preamble to match.";
             }
 
             if (normalizedLine.IndexOf(normalizedPreamble, StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return $"Input contains '{line.Trim()}' at line {lineNumber} (case difference). Update template preamble to match.";
+                return $"Input contains '{line.Trim()}' at line {lineNumber.ToInvariant()} (case difference). Update template preamble to match.";
             }
         }
 

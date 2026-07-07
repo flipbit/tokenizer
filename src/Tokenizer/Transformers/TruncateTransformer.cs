@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Tokens.Transformers;
 
 /// <summary>
@@ -21,7 +23,7 @@ public sealed class TruncateTransformer : ITokenTransformer
 
         try
         {
-            var maxLength = Convert.ToInt32(args[0]);
+            var maxLength = Convert.ToInt32(args[0], CultureInfo.InvariantCulture);
 
             transformed = valueString.Length <= maxLength
                 ? valueString

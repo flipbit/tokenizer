@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Tokens.Validators;
 
 /// <summary>
@@ -16,6 +18,6 @@ public sealed class IsNumericValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        return float.TryParse(valueString, out var test);
+        return float.TryParse(valueString, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
     }
 }

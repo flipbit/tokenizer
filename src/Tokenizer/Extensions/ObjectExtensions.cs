@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Reflection;
 using Tokens.Exceptions;
 
@@ -126,7 +127,7 @@ public static class ObjectExtensions
                         }
                         else
                         {
-                            var convertedValue = Convert.ChangeType(value, genericType);
+                            var convertedValue = Convert.ChangeType(value, genericType, CultureInfo.InvariantCulture);
 
                             propertyInfo.SetValue(@object, convertedValue, index: null);
                         }
@@ -190,7 +191,7 @@ public static class ObjectExtensions
             return ChangeEnumType(value, targetType);
         }
 
-        return Convert.ChangeType(value, targetType);
+        return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
     }
 
     private static object ChangeEnumType(object value, Type targetType)

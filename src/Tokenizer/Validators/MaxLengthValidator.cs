@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Tokens.Validators;
 
 /// <summary>
@@ -17,7 +19,7 @@ public sealed class MaxLengthValidator : ITokenValidator
 
         try
         {
-            var maxLength = Convert.ToInt32(args[0]);
+            var maxLength = Convert.ToInt32(args[0], CultureInfo.InvariantCulture);
 
             return (value?.ToString() ?? string.Empty).Length <= maxLength;
         }

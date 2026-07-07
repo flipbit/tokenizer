@@ -204,7 +204,7 @@ public static partial class StringExtensions
     {
         if (!string.IsNullOrEmpty(value))
         {
-            foreach (var character in value.ToCharArray())
+            foreach (var character in value)
             {
                 if (character != ' ')
                 {

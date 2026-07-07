@@ -277,7 +277,14 @@ public sealed class Tokenizer : ITokenizer
         return sb.ToString();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode is approximated from matched preambles rather than
+    /// searching the full input. Hints referencing text that only appears in extracted values
+    /// (not preambles) may not be detected.
+    /// </remarks>
     public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
         var result = new TokenizeResult(template);
@@ -285,7 +292,14 @@ public sealed class Tokenizer : ITokenizer
         return result;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/>, mapping values onto a new <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode is approximated from matched preambles rather than
+    /// searching the full input. Hints referencing text that only appears in extracted values
+    /// (not preambles) may not be detected.
+    /// </remarks>
     public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
     {
         var result = new TokenizeResult<T>(template);
@@ -293,7 +307,14 @@ public sealed class Tokenizer : ITokenizer
         return result;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/> using a pre-compiled template.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode is approximated from matched preambles rather than
+    /// searching the full input. Hints referencing text that only appears in extracted values
+    /// (not preambles) may not be detected.
+    /// </remarks>
     public async Task<TokenizeResult> TokenizeAsync(Template template, Stream input, Encoding encoding, CancellationToken ct = default)
     {
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
@@ -301,7 +322,14 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync(template, reader, ct).ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/>, mapping values onto a new <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode is approximated from matched preambles rather than
+    /// searching the full input. Hints referencing text that only appears in extracted values
+    /// (not preambles) may not be detected.
+    /// </remarks>
     public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
     {
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,

@@ -12,6 +12,8 @@ public sealed class TokenDecoratorContext
 {
     // Decorators are cached by type within a TemplateCompiler instance: ITokenTransformer/ITokenValidator are stateless (input via params, output via return). User-registered decorators must be stateless and thread-safe.
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache;
+    private readonly bool _isTransformer;
+    private readonly bool _isValidator;
 
     private readonly List<string> _parameters;
     private string[]? _parameterArray;
@@ -26,6 +28,8 @@ public sealed class TokenDecoratorContext
         DecoratorType = tokenDecorator;
         _parameters = new List<string>();
         _decoratorCache = decoratorCache;
+        _isTransformer = typeof(ITokenTransformer).IsAssignableFrom(tokenDecorator);
+        _isValidator = typeof(ITokenValidator).IsAssignableFrom(tokenDecorator);
     }
 
     /// <summary>
@@ -66,13 +70,13 @@ public sealed class TokenDecoratorContext
     /// Returns <see langword="true"/> if the decorator is a <see cref="ITokenTransformer"/> used to transform
     /// the token value.
     /// </summary>
-    public bool IsTransformer => typeof(ITokenTransformer).IsAssignableFrom(DecoratorType);
+    public bool IsTransformer => _isTransformer;
 
     /// <summary>
     /// Returns <see langword="true"/> if the decorator is a <see cref="ITokenValidator"/> used to validate
     /// the token value.
     /// </summary>
-    public bool IsValidator => typeof(ITokenValidator).IsAssignableFrom(DecoratorType);
+    public bool IsValidator => _isValidator;
 
     /// <summary>
     /// Determines if this validator should reverse it's output

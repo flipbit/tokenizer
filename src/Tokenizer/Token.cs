@@ -6,7 +6,9 @@ using Tokens.Extensions;
 namespace Tokens;
 
 /// <summary>
-/// Represents a single token in a string
+/// Represents a single token in a string.
+/// Properties use <c>internal set</c> because they are populated by the compilation
+/// pipeline (TokenBinder and OptionApplier) after construction.
 /// </summary>
 public sealed class Token
 {
@@ -182,6 +184,14 @@ public sealed class Token
             {
                 throw;
             }
+
+            if (collector.IsEnabled)
+            {
+                collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                    tokenName: Name, tokenId: Id,
+                    value: value,
+                    detail: $"Property '{Name}' not found on target type; ignored via IgnoreMissingProperties");
+            }
         }
         catch (TypeConversionException ex)
         {
@@ -208,7 +218,7 @@ public sealed class Token
             List<object> list;
             if (dictionary.ContainsKey(Name))
             {
-                list = dictionary[Name] as List<object> ?? new List<object>();
+                list = dictionary[Name] as List<object> ?? new List<object> { dictionary[Name] };
             }
             else
             {
@@ -250,7 +260,7 @@ public sealed class Token
         {
 #pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
             var index = value.IndexOf('\n');
-            if (index > 0)
+            if (index >= 0)
             {
                 value = value.Substring(0, index);
             }

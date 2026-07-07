@@ -31,7 +31,7 @@ internal class ContainsHintStrategy : IHintStrategy
                 continue;
             }
 
-            if (rawInput.Contains(hint.Text))
+            if (rawInput.Contains(hint.Text, StringComparison.Ordinal))
             {
                 result.Hints.TryAddMatch(hint, enumerator);
 

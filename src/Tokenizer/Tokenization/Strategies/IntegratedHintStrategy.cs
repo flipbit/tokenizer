@@ -47,7 +47,7 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
                 continue;
             }
 
-            var satisfied = _matchedPreambles.Any(p => p.Contains(hint.Text));
+            var satisfied = _matchedPreambles.Any(p => p.Contains(hint.Text, StringComparison.Ordinal));
 
             if (satisfied)
             {

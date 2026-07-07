@@ -29,7 +29,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.Contains(result.Diagnostics.Events,
             e => e.Type == DiagnosticEventType.TokenizationCompleted);
         Assert.Contains(result.Diagnostics.Events,
-            e => e.Type == DiagnosticEventType.TokenAssigned && e.TokenName == "Name");
+            e => e.Type == DiagnosticEventType.TokenAssigned && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.Events,
             e => e.Type == DiagnosticEventType.ValidatorFailed
-              && e.DecoratorName == "IsEmailValidator");
+              && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.Events,
             e => e.Type == DiagnosticEventType.TransformerSucceeded
-              && e.DecoratorName == "ToUpperTransformer");
+              && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.Events,
-            e => e.Type == DiagnosticEventType.TokenMissed && e.TokenName == "Age");
+            e => e.Type == DiagnosticEventType.TokenMissed && string.Equals(e.TokenName, "Age", StringComparison.Ordinal));
     }
 
     [Fact]

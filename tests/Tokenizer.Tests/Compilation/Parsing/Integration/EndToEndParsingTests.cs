@@ -48,7 +48,7 @@ public class EndToEndParsingTests
 
         // Assert
         Assert.Equal("Complete Template", definition.Name);
-        Assert.Contains(definition.Tags, t => t == "test");
+        Assert.Contains(definition.Tags, t => string.Equals(t, "test", StringComparison.Ordinal));
         Assert.Single(definition.Hints);
         Assert.Equal(4, definition.Tokens.Count); // Response, id, name, trailing token
 

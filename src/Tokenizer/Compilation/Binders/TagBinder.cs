@@ -12,7 +12,7 @@ internal static class TagBinder
     {
         foreach (var tag in definition.Tags)
         {
-            if (template.Tags.Any(t => t == tag))
+            if (template.Tags.Any(t => string.Equals(t, tag, StringComparison.Ordinal)))
                 continue;
 
             template.AddTag(tag);

@@ -24,7 +24,7 @@ public sealed class IsEmailValidator : ITokenValidator
         {
             var address = new MailAddress(valueString);
 
-            return address.Address == valueString;
+            return string.Equals(address.Address, valueString, StringComparison.Ordinal);
         }
         catch
         {

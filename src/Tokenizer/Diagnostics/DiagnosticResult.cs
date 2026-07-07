@@ -61,7 +61,7 @@ public class DiagnosticResult
     /// </summary>
     /// <param name="name">The token name to filter by.</param>
     public IEnumerable<DiagnosticEvent> ForToken(string name) =>
-        Events.Where(e => e.TokenName == name);
+        Events.Where(e => string.Equals(e.TokenName, name, StringComparison.Ordinal));
 
     /// <summary>
     /// The first failure event in the event list, or null if there are none.

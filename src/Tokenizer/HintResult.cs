@@ -32,7 +32,7 @@ public sealed class HintResult
 
     internal bool TryAddMatch(Hint hint, TokenEnumerator enumerator)
     {
-        if (_matches.Exists(m => m.Text == hint.Text)) return false;
+        if (_matches.Exists(m => string.Equals(m.Text, hint.Text, StringComparison.Ordinal))) return false;
 
         _matches.Add(new HintMatch(hint.Text, hint.Optional, enumerator.Location.Clone()));
 
@@ -41,8 +41,8 @@ public sealed class HintResult
 
     internal bool TryAddMiss(Hint hint)
     {
-        if (_misses.Exists(m => m.Text == hint.Text) ||
-            _matches.Exists(m => m.Text == hint.Text)) return false;
+        if (_misses.Exists(m => string.Equals(m.Text, hint.Text, StringComparison.Ordinal)) ||
+            _matches.Exists(m => string.Equals(m.Text, hint.Text, StringComparison.Ordinal))) return false;
 
         _misses.Add(hint with { });
 

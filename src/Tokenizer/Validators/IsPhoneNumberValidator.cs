@@ -20,7 +20,7 @@ public sealed class IsPhoneNumberValidator : ITokenValidator
 
         var trimmed = valueString.Keep(" ()+.-0123456789");
 
-        if (trimmed != valueString) return false;
+        if (!string.Equals(trimmed, valueString, StringComparison.Ordinal)) return false;
 
         if (string.IsNullOrWhiteSpace(trimmed)) return false;
 

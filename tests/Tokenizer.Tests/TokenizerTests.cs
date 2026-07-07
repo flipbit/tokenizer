@@ -647,7 +647,7 @@ public class TokenizerTests : TokenizerTestBase
 
         // Assert
         Assert.Equal("John", student.FirstName);
-        Assert.Equal("Smith", result.Tokens.Matches.First(m => m.Token.Name == "Foo").Value);
+        Assert.Equal("Smith", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Foo", StringComparison.Ordinal)).Value);
     }
 
     [Fact]

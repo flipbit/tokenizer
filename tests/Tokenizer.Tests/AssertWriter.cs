@@ -19,7 +19,7 @@ internal class AssertWriter
         {
             var name = match.Token.Name;
 
-            if (result.Matches.Where(m => m.Token.Name == name).Skip(1).Any())
+            if (result.Matches.Where(m => string.Equals(m.Token.Name, name, StringComparison.Ordinal)).Skip(1).Any())
             {
                 if (listNames.Contains(name)) continue;
 

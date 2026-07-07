@@ -220,7 +220,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.BestMatch);
-        var nameMatch = result.BestMatch.Tokens.Matches.FirstOrDefault(m => m.Token.Name == "Name");
+        var nameMatch = result.BestMatch.Tokens.Matches.FirstOrDefault(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal));
         Assert.NotNull(nameMatch);
         Assert.Equal("Alice", nameMatch.Value);
     }

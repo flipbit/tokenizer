@@ -52,7 +52,7 @@ internal static class AlignmentRenderer
                 var decoratorDesc = BuildDecoratorDescription(evt);
                 sb.Append("  ✗ ").Append(evt.TokenName).Append(": ").Append(evt.Type).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(evt.Value).AppendLine("'");
 
-                var issue = summary.Issues.FirstOrDefault(i => i.TokenName == evt.TokenName
+                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal)
                     && (i.Type == DiagnosticIssueType.TransformerFailure
                      || i.Type == DiagnosticIssueType.ValidatorRejection));
                 if (issue?.Hint != null)
@@ -69,7 +69,7 @@ internal static class AlignmentRenderer
             {
                 sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
 
-                var issue = summary.Issues.FirstOrDefault(i => i.TokenName == evt.TokenName);
+                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal));
                 if (issue?.Hint != null)
                     sb.Append("      Hint: ").AppendLine(issue.Hint);
             }

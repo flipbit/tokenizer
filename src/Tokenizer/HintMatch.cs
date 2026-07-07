@@ -38,7 +38,7 @@ public sealed class HintMatch : IEquatable<HintMatch>
     /// <inheritdoc />
     public bool Equals(HintMatch? other)
     {
-        return other is not null && Text == other.Text && Optional == other.Optional && Location == other.Location;
+        return other is not null && string.Equals(Text, other.Text, StringComparison.Ordinal) && Optional == other.Optional && Location == other.Location;
     }
 
     /// <inheritdoc />

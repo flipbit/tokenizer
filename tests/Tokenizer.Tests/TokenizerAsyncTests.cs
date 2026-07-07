@@ -26,8 +26,8 @@ public class TokenizerAsyncTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal("Alice", result.Tokens.Matches.First(m => m.Token.Name == "Name").Value);
-        Assert.Equal("30", result.Tokens.Matches.First(m => m.Token.Name == "Age").Value);
+        Assert.Equal("Alice", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -133,14 +133,14 @@ public class TokenizerAsyncTests : TokenizerTestBase
             if (i % 2 == 0)
             {
                 var result = _tokenizer.Tokenize(template, syncInput);
-                if (!result.Success || result.Tokens.Matches.All(m => m.Value?.ToString() != "SyncAlice"))
+                if (!result.Success || result.Tokens.Matches.All(m => !string.Equals(m.Value?.ToString(), "SyncAlice", StringComparison.Ordinal)))
                     errors.Add($"Sync iteration {i} failed");
             }
             else
             {
                 using var reader = new StringReader(asyncInput);
                 var result = await _tokenizer.TokenizeAsync(template, reader);
-                if (!result.Success || result.Tokens.Matches.All(m => m.Value?.ToString() != "AsyncBob"))
+                if (!result.Success || result.Tokens.Matches.All(m => !string.Equals(m.Value?.ToString(), "AsyncBob", StringComparison.Ordinal)))
                     errors.Add($"Async iteration {i} failed");
             }
         }));

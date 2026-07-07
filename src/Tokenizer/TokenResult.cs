@@ -40,7 +40,7 @@ public sealed class TokenResult
     {
         if (!token.CanConcatenate) return false;
 
-        var index = _matches.FindIndex(m => m.Token.Name == token.Name);
+        var index = _matches.FindIndex(m => string.Equals(m.Token.Name, token.Name, StringComparison.Ordinal));
         if (index < 0) return false;
 
         var match = _matches[index];

@@ -43,8 +43,8 @@ public class TokenizationEngineTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal("Alice", result.Tokens.Matches.First(m => m.Token.Name == "Name").Value);
-        Assert.Equal("30", result.Tokens.Matches.First(m => m.Token.Name == "Age").Value);
+        Assert.Equal("Alice", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class TokenizationEngineTests : TokenizerTestBase
 
         // Assert
         Assert.True(result.Success);
-        Assert.Contains(result.Tokens.Matches, m => m.Token.Name == "Name");
+        Assert.Contains(result.Tokens.Matches, m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -71,8 +71,8 @@ public class TokenizationEngineTests : TokenizerTestBase
         var result = _tokenizer.Tokenize(template, "A:helloB:world");
 
         // Assert
-        Assert.Contains(result.Tokens.Matches, m => m.Token.Name == "First" && (string)m.Value == "hello");
-        Assert.Contains(result.Tokens.Matches, m => m.Token.Name == "Second" && (string)m.Value == "world");
+        Assert.Contains(result.Tokens.Matches, m => string.Equals(m.Token.Name, "First", StringComparison.Ordinal) && string.Equals((string)m.Value, "hello", StringComparison.Ordinal));
+        Assert.Contains(result.Tokens.Matches, m => string.Equals(m.Token.Name, "Second", StringComparison.Ordinal) && string.Equals((string)m.Value, "world", StringComparison.Ordinal));
     }
 
     [Fact]

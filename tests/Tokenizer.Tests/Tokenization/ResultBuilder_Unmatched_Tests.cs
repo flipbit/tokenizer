@@ -43,7 +43,7 @@ public class ResultBuilder_Unmatched_Tests
             .Build();
 
         // Add a match for the Name token
-        var nameToken = template.Tokens.First(t => t.Name == "Name");
+        var nameToken = template.Tokens.First(t => string.Equals(t.Name, "Name", StringComparison.Ordinal));
         result.Tokens.AddMatch(nameToken, "TestName", new FileLocation());
 
         // Act

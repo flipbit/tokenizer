@@ -18,6 +18,6 @@ public sealed class IsNotValidator : ITokenValidator
 
         if (args.Length != 1) throw new ArgumentException("IsNot() - Must supply a string value", nameof(args));
 
-        return valueString != args[0];
+        return !string.Equals(valueString, args[0], StringComparison.Ordinal);
     }
 }

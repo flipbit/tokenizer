@@ -30,7 +30,7 @@ public class TokenPropertyImmutabilityTests
         var result = tokenizer.Tokenize(template, "Name: Alice");
 
         // Assert
-        var nameToken = Assert.Single(result.Tokens.Matches, m => m.Token.Name == "Name");
+        var nameToken = Assert.Single(result.Tokens.Matches, m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal));
         Assert.True(nameToken.Token.IsOptional);
     }
 

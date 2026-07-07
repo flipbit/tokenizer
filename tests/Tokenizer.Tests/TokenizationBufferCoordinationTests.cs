@@ -133,9 +133,9 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(3, result.Tokens.Matches.Count);
-        Assert.Equal(v1, result.Tokens.Matches.First(m => m.Token.Name == "First").Value);
-        Assert.Equal(v2, result.Tokens.Matches.First(m => m.Token.Name == "Second").Value);
-        Assert.Equal(v3, result.Tokens.Matches.First(m => m.Token.Name == "Third").Value);
+        Assert.Equal(v1, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "First", StringComparison.Ordinal)).Value);
+        Assert.Equal(v2, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Second", StringComparison.Ordinal)).Value);
+        Assert.Equal(v3, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Third", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -176,8 +176,8 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal("Alice", result.Tokens.Matches.First(m => m.Token.Name == "Name").Value);
-        Assert.Equal("30", result.Tokens.Matches.First(m => m.Token.Name == "Age").Value);
+        Assert.Equal("Alice", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -197,9 +197,9 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(3, result.Tokens.Matches.Count);
-        Assert.Equal(v1, result.Tokens.Matches.First(m => m.Token.Name == "First").Value);
-        Assert.Equal(v2, result.Tokens.Matches.First(m => m.Token.Name == "Second").Value);
-        Assert.Equal(v3, result.Tokens.Matches.First(m => m.Token.Name == "Third").Value);
+        Assert.Equal(v1, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "First", StringComparison.Ordinal)).Value);
+        Assert.Equal(v2, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Second", StringComparison.Ordinal)).Value);
+        Assert.Equal(v3, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Third", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -217,8 +217,8 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal(longName, result.Tokens.Matches.First(m => m.Token.Name == "Name").Value);
-        Assert.Equal("25", result.Tokens.Matches.First(m => m.Token.Name == "Age").Value);
+        Assert.Equal(longName, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("25", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -239,8 +239,8 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal(value, result.Tokens.Matches.First(m => m.Token.Name == "Name").Value);
-        Assert.Equal("30", result.Tokens.Matches.First(m => m.Token.Name == "Age").Value);
+        Assert.Equal(value, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -318,8 +318,8 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal(v1, result.Tokens.Matches.First(m => m.Token.Name == "First").Value);
-        Assert.Equal(v2, result.Tokens.Matches.First(m => m.Token.Name == "Second").Value);
+        Assert.Equal(v1, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "First", StringComparison.Ordinal)).Value);
+        Assert.Equal(v2, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Second", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Equal(2, result.Tokens.Matches.Count);
-        Assert.Equal(v1, result.Tokens.Matches.First(m => m.Token.Name == "Alpha").Value);
-        Assert.Equal(v2, result.Tokens.Matches.First(m => m.Token.Name == "Beta").Value);
+        Assert.Equal(v1, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Alpha", StringComparison.Ordinal)).Value);
+        Assert.Equal(v2, result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Beta", StringComparison.Ordinal)).Value);
     }
 }

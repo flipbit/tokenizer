@@ -106,8 +106,8 @@ public class TemplateCollectionTests : TokenizerTestBase
 
         // Assert
         Assert.Equal(2, templates.Count);
-        Assert.Contains(templates, t => t.Name == "first");
-        Assert.Contains(templates, t => t.Name == "second");
+        Assert.Contains(templates, t => string.Equals(t.Name, "first", StringComparison.Ordinal));
+        Assert.Contains(templates, t => string.Equals(t.Name, "second", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using Tokens.Exceptions;
+using Tokens.Extensions;
 
 namespace Tokens.Compilation.Binders;
 
@@ -12,7 +13,7 @@ internal static class TokenCountValidator
         if (options.MaxTokenCount > 0 && template.Tokens.Count > options.MaxTokenCount)
         {
             throw new ParsingException(
-                $"Template contains {template.Tokens.Count} tokens, exceeding maximum of {options.MaxTokenCount:N0}. " +
+                $"Template contains {template.Tokens.Count.ToInvariant()} tokens, exceeding maximum of {options.MaxTokenCount.ToInvariant("N0")}. " +
                 "Increase TokenizerOptions.MaxTokenCount to allow more tokens.",
                 new Enumerators.FileLocation());
         }

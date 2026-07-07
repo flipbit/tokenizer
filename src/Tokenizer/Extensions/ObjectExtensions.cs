@@ -12,6 +12,7 @@ public static class ObjectExtensions
 {
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
     private static readonly ConcurrentDictionary<Type, MethodInfo> AddMethodCache = new();
+    private static readonly ConcurrentDictionary<string, string[]> PathSegmentCache = new(StringComparer.Ordinal);
 
     private static PropertyInfo[] GetCachedProperties(Type type)
     {
@@ -42,7 +43,7 @@ public static class ObjectExtensions
             throw new ArgumentNullException(nameof(propertyPath));
         }
 
-        var segments = propertyPath.Split('.');
+        var segments = PathSegmentCache.GetOrAdd(propertyPath, static p => p.Split('.'));
         var objectType = @object.GetType().Name;
         var depth = string.Equals(objectType, segments[0], stringComparison) ? 1 : 0;
         @object = (T)SetInnerValue(@object, segments, depth, value, stringComparison);
@@ -91,16 +92,20 @@ public static class ObjectExtensions
                         t.GetMethod("Add")
                         ?? throw new InvalidOperationException($"Type {t.Name} does not have an Add method"));
 
+                    var elementType = propertyInfo.PropertyType.GetGenericArguments()[0];
+
                     if (value is IEnumerable<string> valueList)
                     {
                         foreach (var valueItem in valueList)
                         {
-                            addMethod.Invoke(list, new[] { valueItem });
+                            var converted = ConvertForList(valueItem, elementType, propertyInfo.Name, @object.GetType().Name);
+                            addMethod.Invoke(list, new[] { converted });
                         }
                     }
                     else
                     {
-                        addMethod.Invoke(list, new[] { value });
+                        var converted = ConvertForList(value, elementType, propertyInfo.Name, @object.GetType().Name);
+                        addMethod.Invoke(list, new[] { converted });
                     }
 
                 }
@@ -184,6 +189,21 @@ public static class ObjectExtensions
         return @object;
     }
 
+    private static object ConvertForList(object value, Type elementType, string propertyName, string typeName)
+    {
+        if (elementType.IsInstanceOfType(value)) return value;
+        try
+        {
+            return Convert.ChangeType(value, elementType, CultureInfo.InvariantCulture);
+        }
+        catch (Exception ex)
+        {
+            throw new TypeConversionException(
+                $"Cannot add value of type '{value.GetType().Name}' to {typeName}.{propertyName} (List<{elementType.Name}>)",
+                value, elementType, ex);
+        }
+    }
+
     private static object ChangeType(object value, Type targetType)
     {
         if (targetType.IsEnum)
@@ -247,7 +267,7 @@ public static class ObjectExtensions
             throw new ArgumentNullException(nameof(propertyPath));
         }
 
-        var segments = propertyPath.Split('.');
+        var segments = PathSegmentCache.GetOrAdd(propertyPath, static p => p.Split('.'));
         var objectType = target.GetType().Name;
         var depth = string.Equals(objectType, segments[0], stringComparison) ? 1 : 0;
 

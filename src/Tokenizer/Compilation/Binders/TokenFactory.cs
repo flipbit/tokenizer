@@ -13,7 +13,7 @@ internal static class TokenFactory
     {
         var preamble = ComputePreamble(definition, options);
         var location = definition.Location ?? new Enumerators.FileLocation();
-        var token = new Token(definition.Content, definition.Name ?? string.Empty, preamble, location);
+        var token = new Token(definition.Name ?? string.Empty, preamble, location);
 
         token.IsOptional = definition.IsOptional;
         token.IsRepeating = definition.IsRepeating;

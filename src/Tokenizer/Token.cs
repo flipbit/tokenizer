@@ -1,7 +1,5 @@
-using Tokens.Diagnostics;
+using System.Diagnostics;
 using Tokens.Enumerators;
-using Tokens.Exceptions;
-using Tokens.Extensions;
 
 namespace Tokens;
 
@@ -10,25 +8,19 @@ namespace Tokens;
 /// Properties use <c>internal set</c> because they are populated by the compilation
 /// pipeline (TokenBinder and OptionApplier) after construction.
 /// </summary>
+[DebuggerDisplay("{Name} (Id={Id}, Optional={IsOptional})")]
 public sealed class Token
 {
-    private string _content;
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="Token"/> class.
-    /// </summary>
     private readonly List<TokenDecoratorContext> _decorators;
 
     /// <summary>
-    /// Creates a new <see cref="Token"/> with the specified raw content, name, preamble, and source location.
+    /// Creates a new <see cref="Token"/> with the specified name, preamble, and source location.
     /// </summary>
-    /// <param name="content">The raw token string as it appears in the template.</param>
     /// <param name="name">The token name used to map the extracted value to a target property.</param>
     /// <param name="preamble">The static text that must precede this token in the input.</param>
     /// <param name="location">The location of this token within the template pattern.</param>
-    public Token(string content, string name, string preamble, FileLocation location)
+    public Token(string name, string preamble, FileLocation location)
     {
-        this._content = content;
         Name = name;
         Preamble = preamble;
         Location = location;
@@ -121,230 +113,4 @@ public sealed class Token
     /// If true, this token will only be attempted to be matched once.
     /// </summary>
     public bool IsSingleUse { get; internal set; }
-
-    /// <summary>
-    /// Returns the string from which this token was created.
-    /// </summary>
-    public override string ToString()
-    {
-        return _content;
-    }
-
-    internal bool Assign(object? target, string value, TokenizerOptions options, FileLocation location, out object? assignedValue, IDiagnosticCollector collector)
-    {
-        assignedValue = null;
-
-        var prepared = PrepareValue(value);
-        if (prepared == null) return false;
-
-        if (options.TrimTrailingWhiteSpace)
-        {
-            prepared = prepared.TrimEnd();
-        }
-
-        if (!RunDecoratorPipeline(prepared, collector, location, out assignedValue)) return false;
-
-        if (target is IDictionary<string, object> dictionary)
-        {
-            return SetDictionaryValue(dictionary, assignedValue!);
-        }
-
-        // Target can be null if not reflecting onto an object
-        if (target is null)
-        {
-            return true;
-        }
-
-        try
-        {
-            if (CanConcatenate)
-            {
-                if (assignedValue == null) return true;
-
-                var current = target.GetValue(Name);
-
-                if (CanConcatenateValues(current, assignedValue))
-                {
-                    var concatenated = ConcatenateValues(current, assignedValue, ConcatenationString);
-                    if (concatenated != null) target.SetValue(Name, concatenated, StringComparison.Ordinal);
-                }
-                else
-                {
-                    throw new TokenAssignmentException(this, $"Unable to concatenate type {assignedValue.GetType().Name} to {Name}");
-                }
-            }
-            else
-            {
-                target.SetValue(Name, assignedValue!, StringComparison.Ordinal);
-            }
-        }
-        catch (MissingMemberException)
-        {
-            if (!options.IgnoreMissingProperties)
-            {
-                throw;
-            }
-
-            if (collector.IsEnabled)
-            {
-                collector.Record(DiagnosticEventType.TokenAssignmentFailed,
-                    tokenName: Name, tokenId: Id,
-                    value: value,
-                    detail: $"Property '{Name}' not found on target type; ignored via IgnoreMissingProperties");
-            }
-        }
-        catch (TypeConversionException ex)
-        {
-            collector.Record(DiagnosticEventType.TokenAssignmentFailed,
-                tokenName: Name, tokenId: Id,
-                value: value,
-                detail: $"Type conversion failed: {ex.Message}");
-            return false;
-        }
-        catch (Exception e)
-        {
-            var ex = new TokenAssignmentException(this, e);
-
-            throw ex;
-        }
-
-        return true;
-    }
-
-    private bool SetDictionaryValue(IDictionary<string, object> dictionary, object input)
-    {
-        if (IsRepeating)
-        {
-            List<object> list;
-            if (dictionary.ContainsKey(Name))
-            {
-                list = dictionary[Name] as List<object> ?? new List<object> { dictionary[Name] };
-            }
-            else
-            {
-                list = new List<object>();
-            }
-            list.Add(input);
-            input = list;
-        }
-
-        if (dictionary.ContainsKey(Name))
-        {
-            dictionary[Name] = input;
-        }
-        else
-        {
-            dictionary.Add(Name, input);
-        }
-
-        return true;
-    }
-
-    internal bool CanAssign(string value)
-    {
-        var prepared = PrepareValue(value);
-        if (prepared == null) return false;
-
-        return RunDecoratorPipeline(prepared, collector: null, location: null, out _);
-    }
-
-    private string? PrepareValue(string value)
-    {
-        if (string.IsNullOrEmpty(value) && !IsFrontMatterToken) return null;
-        if (IsNull) return null;
-        if (string.IsNullOrWhiteSpace(Name)) return null;
-
-        value = value.TrimTrailingNewLine();
-
-        if (!string.IsNullOrEmpty(value) && TerminateOnNewLine)
-        {
-#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
-            var index = value.IndexOf('\n');
-            if (index >= 0)
-            {
-                value = value.Substring(0, index);
-            }
-#pragma warning restore MA0001
-        }
-
-        return value;
-    }
-
-    private bool RunDecoratorPipeline(object input, IDiagnosticCollector? collector,
-        FileLocation? location, out object? assignedValue)
-    {
-        assignedValue = input;
-
-        foreach (var decorator in Decorators)
-        {
-            if (decorator.IsTransformer)
-            {
-                if (!decorator.TryTransform(assignedValue!, out var output))
-                {
-                    collector?.Record(DiagnosticEventType.TransformerFailed,
-                        tokenName: Name, tokenId: Id,
-                        location: location,
-                        value: assignedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name,
-                        decoratorArgs: decorator.Parameters.ToArray());
-
-                    return false;
-                }
-
-                collector?.Record(DiagnosticEventType.TransformerSucceeded,
-                    tokenName: Name, tokenId: Id,
-                    location: location,
-                    value: assignedValue?.ToString(),
-                    detail: output?.ToString(),
-                    decoratorName: decorator.DecoratorType.Name,
-                    decoratorArgs: decorator.Parameters.ToArray());
-
-                assignedValue = output;
-            }
-
-            if (decorator.IsValidator)
-            {
-                if (decorator.Validate(assignedValue!))
-                {
-                    collector?.Record(DiagnosticEventType.ValidatorPassed,
-                        tokenName: Name, tokenId: Id,
-                        value: assignedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
-                }
-                else
-                {
-                    collector?.Record(DiagnosticEventType.ValidatorFailed,
-                        tokenName: Name, tokenId: Id,
-                        value: input?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
-
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    internal static bool CanConcatenateValues(object? existingValue, object newValue)
-    {
-        if (existingValue is string && newValue is string)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    internal static object? ConcatenateValues(object? existingValue, object newValue, string? concatenationString)
-    {
-        if (existingValue is string && newValue is string)
-        {
-            var concatStringValue = (concatenationString ?? string.Empty).Replace("<CR>", Environment.NewLine, StringComparison.Ordinal);
-
-            return $"{existingValue}{concatStringValue}{newValue}";
-        }
-
-        return existingValue;
-    }
 }

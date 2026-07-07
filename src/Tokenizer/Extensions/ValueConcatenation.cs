@@ -3,7 +3,6 @@ namespace Tokens.Extensions;
 /// <summary>
 /// Utility methods for concatenating token values.
 /// </summary>
-#pragma warning disable MA0182 // Will be wired into Token and related callers in subsequent refactoring steps
 internal static class ValueConcatenation
 {
     /// <summary>

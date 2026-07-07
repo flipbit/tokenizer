@@ -59,7 +59,6 @@ public class ResultBuilder_Unmatched_Tests
         return new TemplateBuilder()
             .WithName(name)
             .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
                 .WithName("Name")
                 .Build())
             .Build();

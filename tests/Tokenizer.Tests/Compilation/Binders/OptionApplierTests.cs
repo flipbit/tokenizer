@@ -10,7 +10,7 @@ public class OptionApplierTests
     public void GivenOutOfOrderTokensEnabled_WhenApplying_ThenTokenIsOptional()
     {
         var options = new TokenizerOptions { OutOfOrderTokens = true };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
 
         OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
 
@@ -21,7 +21,7 @@ public class OptionApplierTests
     public void GivenOutOfOrderTokensDisabled_WhenApplying_ThenTokenOptionalUnchanged()
     {
         var options = new TokenizerOptions { OutOfOrderTokens = false };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
 
         OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
 
@@ -32,7 +32,7 @@ public class OptionApplierTests
     public void GivenGlobalTerminateOnNewLine_WhenTokenDoesNotSetIt_ThenTokenGetsNewLineTermination()
     {
         var options = new TokenizerOptions { TerminateOnNewLine = true };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = false;
 
         OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
@@ -44,7 +44,7 @@ public class OptionApplierTests
     public void GivenGlobalTerminateOnNewLine_WhenTokenAlreadySetsIt_ThenTokenUnchanged()
     {
         var options = new TokenizerOptions { TerminateOnNewLine = true };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = true;
 
         OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
@@ -56,7 +56,7 @@ public class OptionApplierTests
     public void GivenNoGlobalTerminateOnNewLine_WhenApplying_ThenTokenNewLineUnchanged()
     {
         var options = new TokenizerOptions { TerminateOnNewLine = false };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = false;
 
         OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
@@ -68,7 +68,7 @@ public class OptionApplierTests
     public void GivenDiagnosticsEnabled_WhenOptionApplied_ThenRecordsEvent()
     {
         var options = new TokenizerOptions { OutOfOrderTokens = true };
-        var token = new Token("{Name}", "Name", "Preamble", new FileLocation());
+        var token = new Token("Name", "Preamble", new FileLocation());
         var collector = new DiagnosticCollector(inputContent: null);
 
         OptionApplier.Apply(token, options, collector);

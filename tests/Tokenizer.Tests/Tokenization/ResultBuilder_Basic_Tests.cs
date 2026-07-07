@@ -50,7 +50,6 @@ public class ResultBuilder_Basic_Tests
         // Arrange
         var result = new TokenizeResultBuilder().Build();
         var token = new TokenBuilder()
-            .WithContent("{Name}")
             .WithName("Name")
             .Build();
         var assignedValue = "TestValue";
@@ -69,7 +68,6 @@ public class ResultBuilder_Basic_Tests
         // Arrange
         var result = new TokenizeResultBuilder().Build();
         var token = new TokenBuilder()
-            .WithContent("{Name}")
             .WithName("Name")
             .Build();
 
@@ -100,7 +98,6 @@ public class ResultBuilder_Basic_Tests
         return new TemplateBuilder()
             .WithName(name)
             .WithTokens(new TokenBuilder()
-                .WithContent("{Name}")
                 .WithName("Name")
                 .Build())
             .Build();

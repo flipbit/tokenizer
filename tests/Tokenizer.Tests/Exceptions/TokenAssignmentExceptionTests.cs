@@ -9,7 +9,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAndMessage_WhenConstructed_ThenTokenPropertyIsSet()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
 
         // Act
         var exception = new TokenAssignmentException(token, "assignment failed");
@@ -22,7 +22,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAndMessage_WhenConstructed_ThenMessageContainsText()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
 
         // Act
         var exception = new TokenAssignmentException(token, "assignment failed");
@@ -35,7 +35,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAndInnerException_WhenConstructed_ThenTokenPropertyIsSet()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
         var inner = new InvalidOperationException("inner error");
 
         // Act
@@ -49,7 +49,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAndInnerException_WhenConstructed_ThenMessageContainsTokenName()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
         var inner = new InvalidOperationException("inner error");
 
         // Act
@@ -63,7 +63,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAndInnerException_WhenConstructed_ThenInnerExceptionIsPreserved()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
         var inner = new InvalidOperationException("inner error");
 
         // Act
@@ -77,7 +77,7 @@ public class TokenAssignmentExceptionTests
     public void GivenTokenAssignmentException_WhenCheckedForInheritance_ThenInheritsFromTokenizerException()
     {
         // Arrange
-        var token = new Token("content", "MyToken", "preamble", new FileLocation());
+        var token = new Token("MyToken", "preamble", new FileLocation());
 
         // Act
         var exception = new TokenAssignmentException(token, "test");

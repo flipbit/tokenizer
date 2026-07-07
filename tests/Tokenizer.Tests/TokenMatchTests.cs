@@ -9,7 +9,7 @@ public class TokenMatchTests
     public void GivenTokenMatch_WhenToString_ThenReturnsCompactFormat()
     {
         // Arrange
-        var token = new Token("content", "firstName", "Name:", new FileLocation());
+        var token = new Token("firstName", "Name:", new FileLocation());
         var match = new TokenMatch(token, "John", new FileLocation());
 
         // Act
@@ -23,7 +23,7 @@ public class TokenMatchTests
     public void GivenTokenMatchWithNullValue_WhenToString_ThenHandlesGracefully()
     {
         // Arrange
-        var token = new Token("content", "firstName", "Name:", new FileLocation());
+        var token = new Token("firstName", "Name:", new FileLocation());
         var match = new TokenMatch(token, null!, new FileLocation());
 
         // Act

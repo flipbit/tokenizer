@@ -29,7 +29,6 @@ public class TokenFactoryTests
 
         Assert.Equal("Name", token.Name);
         Assert.Equal("Preamble: ", token.Preamble);
-        Assert.Equal("{Name}", token.ToString());
         Assert.True(token.IsOptional);
         Assert.True(token.IsRepeating);
         Assert.True(token.TerminateOnNewLine);

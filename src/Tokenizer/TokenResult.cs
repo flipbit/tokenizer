@@ -1,4 +1,5 @@
 using Tokens.Enumerators;
+using Tokens.Extensions;
 
 namespace Tokens;
 
@@ -45,9 +46,9 @@ public sealed class TokenResult
 
         var match = _matches[index];
 
-        if (!Token.CanConcatenateValues(match.Value, value)) return false;
+        if (!ValueConcatenation.CanConcatenate(match.Value, value)) return false;
 
-        var concatenated = Token.ConcatenateValues(match.Value, value, token.ConcatenationString);
+        var concatenated = ValueConcatenation.Concatenate(match.Value, value, token.ConcatenationString);
         if (concatenated != null) _matches[index] = match with { Value = concatenated };
 
         return true;

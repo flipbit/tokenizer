@@ -10,6 +10,15 @@ public class TokenizerTests : TokenizerTestBase
 {
     private readonly ITokenizer _tokenizer;
 
+    private sealed class Person
+    {
+        public string Name { get; set; } = null!;
+
+        public int Age { get; set; }
+
+        public DateTime Birthday { get; set; }
+    }
+
     private sealed class TestClass
     {
         public string Message { get; set; } = null!;
@@ -597,7 +606,7 @@ public class TokenizerTests : TokenizerTestBase
         // Act
         var _tok = new Tokenizer();
         var template = _tok.Compile(pattern).Template;
-        var person = _tok.Tokenize<TokenTests.Person>(template, input).Value;
+        var person = _tok.Tokenize<Person>(template, input).Value;
 
         // Assert
         Assert.Equal(11, person.Age);

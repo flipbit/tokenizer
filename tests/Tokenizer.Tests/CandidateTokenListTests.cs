@@ -21,7 +21,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithPreamble_WhenAddingToList_ThenListContainsTokenAndSetsPreamble()
     {
         // Arrange
-        var token = new Token("foo", string.Empty, "bar", NoLocation);
+        var token = new Token(string.Empty, "bar", NoLocation);
         var list = new CandidateTokenList();
 
         // Act
@@ -38,7 +38,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithTerminateOnNewLine_WhenAddingAsFirstToken_ThenTerminateOnNewLineIsTrue()
     {
         // Arrange
-        var token = new Token("content", "Name", "pre", NoLocation);
+        var token = new Token("Name", "pre", NoLocation);
         token.TerminateOnNewLine = true;
         var list = new CandidateTokenList();
 
@@ -53,7 +53,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithBlankName_WhenAddingAsFirstToken_ThenIsNullTokenIsTrue()
     {
         // Arrange
-        var token = new Token("content", "   ", "pre", NoLocation);
+        var token = new Token("   ", "pre", NoLocation);
         var list = new CandidateTokenList();
 
         // Act
@@ -67,7 +67,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithNonBlankName_WhenAddingAsFirstToken_ThenIsNullTokenIsFalse()
     {
         // Arrange
-        var token = new Token("content", "Name", "pre", NoLocation);
+        var token = new Token("Name", "pre", NoLocation);
         var list = new CandidateTokenList();
 
         // Act
@@ -81,9 +81,9 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenFirstTokenSetsProperties_WhenAddingSecondToken_ThenPropertiesAreNotOverridden()
     {
         // Arrange
-        var first = new Token("content", "First", "preamble-one", NoLocation);
+        var first = new Token("First", "preamble-one", NoLocation);
         first.TerminateOnNewLine = true;
-        var second = new Token("content", "Second", "preamble-two", NoLocation);
+        var second = new Token("Second", "preamble-two", NoLocation);
         second.TerminateOnNewLine = false;
         var list = new CandidateTokenList();
 
@@ -105,9 +105,9 @@ public class CandidateTokenListTests : TokenizerTestBase
         // Arrange
         var tokens = new[]
         {
-            new Token("c1", "Name1", "pre1", NoLocation),
-            new Token("c2", "Name2", "pre2", NoLocation),
-            new Token("c3", "Name3", "pre3", NoLocation),
+            new Token("Name1", "pre1", NoLocation),
+            new Token("Name2", "pre2", NoLocation),
+            new Token("Name3", "pre3", NoLocation),
         };
         var list = new CandidateTokenList();
 
@@ -125,7 +125,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenPopulatedList_WhenClearing_ThenPreambleIsReset()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -140,7 +140,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenPopulatedList_WhenClearing_ThenTokensAreRemoved()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -155,7 +155,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenListWithTerminateOnNewLine_WhenClearing_ThenTerminateOnNewLineIsReset()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         token.TerminateOnNewLine = true;
         var list = new CandidateTokenList();
         list.Add(token);
@@ -171,7 +171,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenListWithNullToken_WhenClearing_ThenIsNullTokenIsReset()
     {
         // Arrange
-        var token = new Token("content", "   ", "preamble", NoLocation);
+        var token = new Token("   ", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -188,7 +188,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithName_WhenTryAssignCalledWithValue_ThenReturnsTrueAndSetsAssigned()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
         var value = new StringBuilder("hello");
@@ -224,7 +224,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithBlankName_WhenTryAssignCalled_ThenReturnsFalse()
     {
         // Arrange
-        var token = new Token("content", "   ", "preamble", NoLocation);
+        var token = new Token("   ", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
         var value = new StringBuilder("hello");
@@ -243,7 +243,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithName_WhenCanAnyAssignCalledWithNonEmptyValue_ThenReturnsTrue()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -273,7 +273,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenAnyToken_WhenCanAnyAssignCalledWithEmptyValue_ThenReturnsFalse()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -290,7 +290,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenListWithTokens_WhenCheckingHasCandidates_ThenReturnsTrue()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -314,7 +314,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenListWithToken_WhenTokenRemoved_ThenCountDecreases()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
 
@@ -342,7 +342,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenListAfterAddAndClear_WhenCheckingCount_ThenReturnsZero()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         var list = new CandidateTokenList();
         list.Add(token);
         list.Clear();
@@ -357,7 +357,7 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenTokenWithTerminateOnNewLineFalse_WhenAddedAsFirstToken_ThenTerminateOnNewLineIsFalse()
     {
         // Arrange
-        var token = new Token("content", "Name", "preamble", NoLocation);
+        var token = new Token("Name", "preamble", NoLocation);
         token.TerminateOnNewLine = false;
         var list = new CandidateTokenList();
 
@@ -375,9 +375,9 @@ public class CandidateTokenListTests : TokenizerTestBase
     public void GivenClearedList_WhenNewTokenAdded_ThenPropertiesReflectNewToken()
     {
         // Arrange
-        var firstToken = new Token("c1", "FirstName", "first-preamble", NoLocation);
+        var firstToken = new Token("FirstName", "first-preamble", NoLocation);
         firstToken.TerminateOnNewLine = true;
-        var secondToken = new Token("c2", "SecondName", "second-preamble", NoLocation);
+        var secondToken = new Token("SecondName", "second-preamble", NoLocation);
         secondToken.TerminateOnNewLine = false;
         var list = new CandidateTokenList();
         list.Add(firstToken);

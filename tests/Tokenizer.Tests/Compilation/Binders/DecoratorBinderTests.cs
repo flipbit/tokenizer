@@ -20,7 +20,7 @@ public class DecoratorBinderTests
         var definition = new TokenDefinition { Content = "{Foo}" };
         definition.AppendName("Foo");
         definition.AppendValue("bar");
-        var token = new Token("{Foo}", "Foo", "", new FileLocation());
+        var token = new Token("Foo", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -38,7 +38,7 @@ public class DecoratorBinderTests
         decorator.AppendName("ToDateTime");
         decorator.Args.Add("yyyy-MM-dd");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Date}", "Date", "", new FileLocation());
+        var token = new Token("Date", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -55,7 +55,7 @@ public class DecoratorBinderTests
         var decorator = new DecoratorDefinition();
         decorator.AppendName("IsNumeric");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Amount}", "Amount", "", new FileLocation());
+        var token = new Token("Amount", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -71,7 +71,7 @@ public class DecoratorBinderTests
         var decorator = new DecoratorDefinition { IsNotDecorator = true };
         decorator.AppendName("IsNumeric");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Amount}", "Amount", "", new FileLocation());
+        var token = new Token("Amount", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -88,7 +88,7 @@ public class DecoratorBinderTests
         decorator.AppendName("ToDateTime");
         decorator.Args.Add("yyyy-MM-dd");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Date}", "Date", "", new FileLocation());
+        var token = new Token("Date", "", new FileLocation());
 
         var ex = Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
@@ -104,7 +104,7 @@ public class DecoratorBinderTests
         decorator.AppendName("concat");
         decorator.Args.Add(", ");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Items}", "Items", "", new FileLocation());
+        var token = new Token("Items", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -121,7 +121,7 @@ public class DecoratorBinderTests
         var decorator = new DecoratorDefinition();
         decorator.AppendName("concat");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Items}", "Items", "", new FileLocation());
+        var token = new Token("Items", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 
@@ -139,7 +139,7 @@ public class DecoratorBinderTests
         decorator.Args.Add(", ");
         decorator.Args.Add("extra");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Items}", "Items", "", new FileLocation());
+        var token = new Token("Items", "", new FileLocation());
 
         Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
@@ -153,7 +153,7 @@ public class DecoratorBinderTests
         var decorator = new DecoratorDefinition();
         decorator.AppendName("NonExistentDecorator");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Token}", "Token", "", new FileLocation());
+        var token = new Token("Token", "", new FileLocation());
 
         var ex = Assert.Throws<TokenizerException>(() =>
             DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance));
@@ -169,7 +169,7 @@ public class DecoratorBinderTests
             IsFrontMatterToken = true,
         };
         definition.AppendName("Decorator");
-        var token = new Token("{Decorator}", "Decorator", "", new FileLocation());
+        var token = new Token("Decorator", "", new FileLocation());
         token.IsFrontMatterToken = true;
 
         var ex = Assert.Throws<TokenizerException>(() =>
@@ -187,7 +187,7 @@ public class DecoratorBinderTests
         };
         definition.AppendName("Foo");
         definition.AppendValue("bar");
-        var token = new Token("{Foo}", "Foo", "", new FileLocation());
+        var token = new Token("Foo", "", new FileLocation());
         token.IsFrontMatterToken = true;
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
@@ -204,7 +204,7 @@ public class DecoratorBinderTests
         var decorator = new DecoratorDefinition();
         decorator.AppendName("ToUpper");
         definition.Decorators.Add(decorator);
-        var token = new Token("{Name}", "Name", "", new FileLocation());
+        var token = new Token("Name", "", new FileLocation());
 
         DecoratorBinder.Bind(definition, token, _registry, _decoratorCache, NullDiagnosticCollector.Instance);
 

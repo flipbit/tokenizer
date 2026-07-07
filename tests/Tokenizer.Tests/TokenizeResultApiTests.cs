@@ -13,7 +13,7 @@ public class TokenizeResultApiTests
     public void GivenMatchingToken_WhenCallingFirst_ThenReturnsValue()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
+        var token = new TokenBuilder().WithName("Name").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, "Alice", new FileLocation());
@@ -42,7 +42,7 @@ public class TokenizeResultApiTests
     public void GivenMatchingToken_WhenCallingFirstGeneric_ThenReturnsCastValue()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Count}").WithName("Count").Build();
+        var token = new TokenBuilder().WithName("Count").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, 42, new FileLocation());
@@ -71,7 +71,7 @@ public class TokenizeResultApiTests
     public void GivenMatchingToken_WhenCallingFirstOrDefault_ThenReturnsValue()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
+        var token = new TokenBuilder().WithName("Name").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, "Bob", new FileLocation());
@@ -103,7 +103,7 @@ public class TokenizeResultApiTests
     public void GivenMatchingToken_WhenCallingFirstOrDefaultGeneric_ThenReturnsCastValue()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Score}").WithName("Score").Build();
+        var token = new TokenBuilder().WithName("Score").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, 99, new FileLocation());
@@ -135,7 +135,7 @@ public class TokenizeResultApiTests
     public void GivenMultipleMatchingTokens_WhenCallingAll_ThenReturnsAllValues()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Tag}").WithName("Tag").Build();
+        var token = new TokenBuilder().WithName("Tag").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, "one", new FileLocation());
@@ -172,7 +172,7 @@ public class TokenizeResultApiTests
     public void GivenMatchingToken_WhenCallingContains_ThenReturnsTrue()
     {
         // Arrange
-        var token = new TokenBuilder().WithContent("{Name}").WithName("Name").Build();
+        var token = new TokenBuilder().WithName("Name").Build();
         var template = new TemplateBuilder().WithName("Test").WithTokens(token).Build();
         var result = new TokenizeResult(template);
         result.Tokens.AddMatch(token, "Carol", new FileLocation());

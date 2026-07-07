@@ -14,9 +14,9 @@ public class TokenCountValidatorTests
         var template = new TemplateBuilder()
             .WithOptions(options)
             .WithTokens(
-                new Token("a", "A", "", new FileLocation()),
-                new Token("b", "B", "", new FileLocation()),
-                new Token("c", "C", "", new FileLocation()))
+                new Token("A", "", new FileLocation()),
+                new Token("B", "", new FileLocation()),
+                new Token("C", "", new FileLocation()))
             .Build();
 
         var ex = Assert.Throws<ParsingException>(() => TokenCountValidator.Validate(template, options));
@@ -30,8 +30,8 @@ public class TokenCountValidatorTests
         var template = new TemplateBuilder()
             .WithOptions(options)
             .WithTokens(
-                new Token("a", "A", "", new FileLocation()),
-                new Token("b", "B", "", new FileLocation()))
+                new Token("A", "", new FileLocation()),
+                new Token("B", "", new FileLocation()))
             .Build();
 
         TokenCountValidator.Validate(template, options);
@@ -44,9 +44,9 @@ public class TokenCountValidatorTests
         var template = new TemplateBuilder()
             .WithOptions(options)
             .WithTokens(
-                new Token("a", "A", "", new FileLocation()),
-                new Token("b", "B", "", new FileLocation()),
-                new Token("c", "C", "", new FileLocation()))
+                new Token("A", "", new FileLocation()),
+                new Token("B", "", new FileLocation()),
+                new Token("C", "", new FileLocation()))
             .Build();
 
         TokenCountValidator.Validate(template, options);

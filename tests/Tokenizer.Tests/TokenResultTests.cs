@@ -23,7 +23,7 @@ public class TokenResultTests
     {
         // Arrange
         var result = new TokenResult();
-        var token = new Token("content", "name", "Name:", new FileLocation());
+        var token = new Token("name", "Name:", new FileLocation());
         result.AddMatch(token, "John", new FileLocation());
         result.AddMiss(token);
 

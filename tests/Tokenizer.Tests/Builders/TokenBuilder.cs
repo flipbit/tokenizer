@@ -9,17 +9,10 @@ namespace Tokens.Builders;
 /// </summary>
 public class TokenBuilder
 {
-    private string _content = "default";
     private string _name = string.Empty;
     private string _preamble = string.Empty;
     private FileLocation _location = new();
     private readonly List<Action<Token>> _configurations = new();
-
-    public TokenBuilder WithContent(string content)
-    {
-        _content = content;
-        return this;
-    }
 
     public TokenBuilder WithName(string name)
     {
@@ -101,7 +94,7 @@ public class TokenBuilder
 
     public Token Build()
     {
-        var token = new Token(_content, _name, _preamble, _location);
+        var token = new Token(_name, _preamble, _location);
         foreach (var config in _configurations) config(token);
         return token;
     }

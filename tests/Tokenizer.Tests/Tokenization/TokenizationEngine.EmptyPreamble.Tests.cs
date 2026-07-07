@@ -148,12 +148,10 @@ public class TokenizationEngineEmptyPreambleTests
             .WithName("TestTemplate")
             .WithTokens(
                 new TokenBuilder()
-                    .WithContent("{First}")
                     .WithName("First")
                     .WithPreamble("")
                     .Build(),
                 new TokenBuilder()
-                    .WithContent("{Second}")
                     .WithName("Second")
                     .WithPreamble("")
                     .Build())

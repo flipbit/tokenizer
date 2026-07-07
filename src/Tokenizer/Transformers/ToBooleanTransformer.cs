@@ -16,7 +16,7 @@ public sealed class ToBooleanTransformer : ITokenTransformer
 
         if (valueString.Equals("true", StringComparison.OrdinalIgnoreCase) ||
             valueString.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
-            valueString == "1")
+            valueString.Equals("1", StringComparison.Ordinal))
         {
             transformed = true;
             return true;
@@ -24,7 +24,7 @@ public sealed class ToBooleanTransformer : ITokenTransformer
 
         if (valueString.Equals("false", StringComparison.OrdinalIgnoreCase) ||
             valueString.Equals("no", StringComparison.OrdinalIgnoreCase) ||
-            valueString == "0")
+            valueString.Equals("0", StringComparison.Ordinal))
         {
             transformed = false;
             return true;

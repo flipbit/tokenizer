@@ -358,6 +358,8 @@ public sealed class Tokenizer : ITokenizer
             var context = new TokenizationContext();
             context.Initialize(reader);
 
+            // Streaming cannot provide full input — alignment rendering and near-miss
+            // hints in diagnostics are unavailable in the async path.
             IDiagnosticCollector collector = template.Options.EnableDiagnostics
                 ? new DiagnosticCollector(inputContent: null)
                 : NullDiagnosticCollector.Instance;

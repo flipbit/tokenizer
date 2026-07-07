@@ -157,7 +157,8 @@ internal sealed class ResultBuilder : IResultBuilder
                 }
 
                 collector.Record(DiagnosticEventType.TokenMissed,
-                    tokenName: token.Name, tokenId: token.Id);
+                    tokenName: token.Name, tokenId: token.Id,
+                    detail: token.Preamble);
 
                 result.Tokens.AddMiss(token);
                 unmatchedCount++;

@@ -61,11 +61,13 @@ internal static class TokenFactory
 
         if (options.TrimPreambleBeforeNewLine)
         {
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
             if (!string.IsNullOrEmpty(preamble) && preamble.IndexOf('\n') > -1)
             {
                 var idx = preamble.LastIndexOf('\n');
                 preamble = preamble.Substring(idx + 1);
             }
+#pragma warning restore MA0001
         }
 
         return preamble;

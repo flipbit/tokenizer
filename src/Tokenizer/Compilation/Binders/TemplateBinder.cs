@@ -44,10 +44,12 @@ internal static class TemplateBinder
                 if (preambleBuilder.Length > 0)
                 {
                     var pre = preambleBuilder.ToString();
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
                     if (globalTrimPreambleBeforeNewLine && pre.IndexOf('\n') > -1)
                     {
                         pre = pre.Substring(pre.LastIndexOf('\n') + 1);
                     }
+#pragma warning restore MA0001
                     def.AppendPreamble(pre);
                     preambleBuilder.Clear();
                 }
@@ -166,10 +168,12 @@ internal static class TemplateBinder
         {
             var tail = new TokenDefinition();
             tail.AppendName(string.Empty);
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
             if (globalTrimPreambleBeforeNewLine && trailingPreamble.IndexOf('\n') > -1)
             {
                 trailingPreamble = trailingPreamble.Substring(trailingPreamble.LastIndexOf('\n') + 1);
             }
+#pragma warning restore MA0001
             tail.AppendPreamble(trailingPreamble);
             tokens.Add(tail);
         }
@@ -233,7 +237,9 @@ internal static class TemplateBinder
     {
         if (!token.IsRepeating) return null;
         if (string.IsNullOrEmpty(token.Preamble)) return null;
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
         if (token.Preamble.IndexOf('\n') == -1) return null;
+#pragma warning restore MA0001
 
         var pre = token.Preamble.SubstringBeforeLastString("\n");
         var post = token.Preamble.SubstringAfterLastString("\n");

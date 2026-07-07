@@ -272,6 +272,7 @@ public static class StringExtensions
     {
         if (!string.IsNullOrEmpty(value))
         {
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
             // Only run conversion up to a new line character
             var newlineIndex = value.IndexOf('\n');
             if (newlineIndex > -1)
@@ -285,6 +286,7 @@ public static class StringExtensions
             {
                 value = value.Substring(0, newlineIndex);
             }
+#pragma warning restore MA0001
         }
 
         return value;

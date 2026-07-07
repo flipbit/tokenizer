@@ -248,11 +248,13 @@ public sealed class Token
 
         if (!string.IsNullOrEmpty(value) && TerminateOnNewLine)
         {
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
             var index = value.IndexOf('\n');
             if (index > 0)
             {
                 value = value.Substring(0, index);
             }
+#pragma warning restore MA0001
         }
 
         return value;

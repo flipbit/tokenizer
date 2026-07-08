@@ -32,7 +32,7 @@ namespace Tokens.Compilation.Lexer;
 /// }
 /// </code>
 /// </example>
-public class TemplateLexer
+public sealed class TemplateLexer
 {
     private readonly ILogger<TemplateLexer> _log;
 

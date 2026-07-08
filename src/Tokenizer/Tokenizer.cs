@@ -195,7 +195,7 @@ public sealed class Tokenizer : ITokenizer
     {
         var isSync = rawInput != null;
         IHintStrategy hintStrategy = isSync
-            ? new UpfrontHintStrategy()
+            ? UpfrontHintStrategy.Instance
             : new StreamingHintStrategy();
 
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)

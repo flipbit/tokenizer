@@ -10,6 +10,8 @@ namespace Tokens.Tokenization.Strategies;
 /// </summary>
 internal sealed class UpfrontHintStrategy : IHintStrategy
 {
+    internal static readonly UpfrontHintStrategy Instance = new();
+
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
                            string? rawInput, TokenizeResult result, IDiagnosticCollector collector)

@@ -55,6 +55,10 @@ public record class TokenizerOptions
     /// with adaptive hints, and a visual alignment diff.
     /// Default: false. Has no performance impact when disabled.
     /// </summary>
+    /// <remarks>
+    /// Diagnostic output may contain fragments of the input text. Avoid enabling in
+    /// production when input may contain personally identifiable information (PII).
+    /// </remarks>
     public bool EnableDiagnostics { get; init; }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace Tokens;
 
 /// <summary>
@@ -9,6 +11,7 @@ public sealed class Template
     private readonly List<Token> _tokens;
     private readonly List<Hint> _hints;
     private readonly List<string> _tags;
+    private ReadOnlyCollection<Token>? _readOnlyTokens;
 
     /// <summary>
     /// Creates a new template with a content-based Id and options.
@@ -51,7 +54,7 @@ public sealed class Template
     /// <summary>
     /// The tokens contained within the template
     /// </summary>
-    public IReadOnlyCollection<Token> Tokens => _tokens.AsReadOnly();
+    public IReadOnlyCollection<Token> Tokens => _readOnlyTokens ??= _tokens.AsReadOnly();
 
     /// <summary>
     /// Contains the <see cref="TokenizerOptions"/> used when parsing this <see cref="Template"/>.
@@ -130,7 +133,21 @@ public sealed class Template
         return missing.Count == 0;
     }
 
-    internal bool HasOnlyFrontMatterTokens => _tokens.Where(t => !string.IsNullOrWhiteSpace(t.Name)).All(t => t.IsFrontMatterToken);
+    internal bool HasOnlyFrontMatterTokens
+    {
+        get
+        {
+            foreach (var token in _tokens)
+            {
+                if (!string.IsNullOrWhiteSpace(token.Name) && !token.IsFrontMatterToken)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
 
     internal void GetTokenIdsUpTo(Token token, HashSet<int> matchIds)
     {
@@ -160,6 +177,7 @@ public sealed class Template
     {
         token.Id = _tokens.Count + 1;
         _tokens.Add(token);
+        _readOnlyTokens = null;
     }
 
     internal IEnumerable<Token> TokensExcluding(HashSet<int> excludedIds, List<Token> buffer, HashSet<int> idBuffer)

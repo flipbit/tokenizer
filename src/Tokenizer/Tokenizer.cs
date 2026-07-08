@@ -70,6 +70,24 @@ public sealed class Tokenizer : ITokenizer
         _resultBuilder = resultBuilder;
     }
 
+    /// <inheritdoc />
+    public CompilationResult Compile(string pattern) => _parser.Compile(pattern);
+
+    /// <inheritdoc />
+    public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
+    {
+        var content = await reader.ReadToEndBoundedAsync(Options.MaxTemplateLength, ct).ConfigureAwait(false);
+        return _parser.Compile(content);
+    }
+
+    /// <inheritdoc />
+    public async Task<CompilationResult> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await CompileAsync(reader, ct).ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>.
     /// </summary>
@@ -80,10 +98,19 @@ public sealed class Tokenizer : ITokenizer
     {
         var result = new TokenizeResult(template);
 
-        Tokenize(result, template, input);
+        // template.Options reflects merged instance + front matter overrides — intentionally
+        // used instead of this.Options so per-template front matter settings take effect.
+        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
+        {
+            throw new TokenizerException(
+                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
+                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+        }
+
+        RunCoreAsync(result, template, new StringReader(input), input, CancellationToken.None)
+            .GetAwaiter().GetResult();
 
         return result;
-
     }
 
     /// <summary>
@@ -101,38 +128,81 @@ public sealed class Tokenizer : ITokenizer
         return result.Assign<T>();
     }
 
-    private void Tokenize(TokenizeResult result, Template template, string input)
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode scans buffer contents incrementally rather than
+    /// searching the full input. Alignment rendering in diagnostics is unavailable.
+    /// </remarks>
+    public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
     {
-        // template.Options reflects merged instance + front matter overrides — intentionally
-        // used instead of this.Options so per-template front matter settings take effect.
-        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
-        {
-            throw new TokenizerException(
-                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
-                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
-        }
-
-        TokenizeCore(result, template, new StringReader(input), input);
+        var result = new TokenizeResult(template);
+        await RunCoreAsync(result, template, input, rawInput: null, ct).ConfigureAwait(false);
+        return result;
     }
 
     /// <summary>
-    /// Core tokenization logic.
+    /// Asynchronously tokenizes input from a <see cref="TextReader"/>, mapping values onto a new <typeparamref name="T"/>.
     /// </summary>
-    /// <param name="result">The result to populate.</param>
-    /// <param name="template">The compiled template.</param>
-    /// <param name="reader">The reader to tokenize from.</param>
-    /// <param name="rawInput">
-    /// The raw input string. Drives length-dependent features: hint pre-filtering,
-    /// input-length-based iteration cap, alignment rendering in diagnostics.
-    /// </param>
-    private void TokenizeCore(TokenizeResult result, Template template, TextReader reader, string? rawInput)
+    /// <remarks>
+    /// Hint matching in streaming mode scans buffer contents incrementally rather than
+    /// searching the full input. Alignment rendering in diagnostics is unavailable.
+    /// </remarks>
+    public async Task<T?> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
     {
-        var hintStrategy = new UpfrontHintStrategy();
+        var result = await TokenizeAsync(template, input, ct).ConfigureAwait(false);
+        if (!result.Success) return null;
+        return result.Assign<T>();
+    }
+
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/> using a pre-compiled template.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode scans buffer contents incrementally rather than
+    /// searching the full input. Alignment rendering in diagnostics is unavailable.
+    /// </remarks>
+    public async Task<TokenizeResult> TokenizeAsync(Template template, Stream input, Encoding encoding, CancellationToken ct = default)
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await TokenizeAsync(template, reader, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asynchronously tokenizes input from a <see cref="Stream"/>, mapping values onto a new <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Hint matching in streaming mode scans buffer contents incrementally rather than
+    /// searching the full input. Alignment rendering in diagnostics is unavailable.
+    /// </remarks>
+    public async Task<T?> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
+    {
+        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+        return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Unified tokenization core. Handles both sync and async paths.
+    /// Sync callers pass <paramref name="rawInput"/> (non-null) and the method completes synchronously.
+    /// Async callers pass <paramref name="rawInput"/> as null and await the result.
+    /// </summary>
+    private async Task RunCoreAsync(
+        TokenizeResult result, Template template, TextReader reader,
+        string? rawInput, CancellationToken ct)
+    {
+        var isSync = rawInput != null;
+        IHintStrategy hintStrategy = isSync
+            ? new UpfrontHintStrategy()
+            : new StreamingHintStrategy();
+
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["TemplateName"] = template.Name,
             ["TokenCount"] = template.Tokens.Count,
-            ["Operation"] = "Tokenize",
+            ["Operation"] = isSync ? "Tokenize" : "TokenizeAsync",
         };
 
         if (rawInput != null)
@@ -158,7 +228,6 @@ public sealed class Tokenizer : ITokenizer
                     }
                 }
 
-                // Create and initialize the tokenization context
                 var context = new TokenizationContext();
                 context.Initialize(reader);
 
@@ -166,8 +235,12 @@ public sealed class Tokenizer : ITokenizer
                     ? new DiagnosticCollector(rawInput)
                     : NullDiagnosticCollector.Instance;
 
-                // Process hints first — hint pre-filtering requires the full input string
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
+
+                // The enumerator's constructor pre-fills the first buffer; report it now
+                // so StreamingHintStrategy can scan for hints in the initial chunk.
+                // UpfrontHintStrategy no-ops this call.
+                hintStrategy.OnBufferFilled(context.Enumerator.StagingBuffer, context.Enumerator.LastReadCount);
 
                 if (hintsMissing)
                 {
@@ -176,7 +249,17 @@ public sealed class Tokenizer : ITokenizer
                 else
                 {
                     var session = _tokenizationEngine.CreateSession(template, result, collector, hintStrategy);
-                    session.Run(context);
+
+                    if (isSync)
+                    {
+#pragma warning disable MA0042 // Intentionally calling sync Run — sync path never awaits
+                        session.Run(context);
+#pragma warning restore MA0042
+                    }
+                    else
+                    {
+                        await session.RunAsync(context, ct).ConfigureAwait(false);
+                    }
 
                     if (hintStrategy.PostProcess(result))
                     {
@@ -191,6 +274,11 @@ public sealed class Tokenizer : ITokenizer
                     _log.LogDebug("Tokenization {Result} for template {TemplateName}",
                         result.Success ? "succeeded" : "failed", template.Name);
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                _log.LogWarning("Async tokenization cancelled for template {TemplateName}", template.Name);
+                throw;
             }
             catch (TokenizerException ex)
             {
@@ -241,157 +329,4 @@ public sealed class Tokenizer : ITokenizer
             }
         }
     }
-
-    /// <inheritdoc />
-    public CompilationResult Compile(string pattern) => _parser.Compile(pattern);
-
-    /// <inheritdoc />
-    public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
-    {
-        var content = await reader.ReadToEndBoundedAsync(Options.MaxTemplateLength, ct).ConfigureAwait(false);
-        return _parser.Compile(content);
-    }
-
-    /// <inheritdoc />
-    public async Task<CompilationResult> CompileAsync(Stream input, Encoding encoding, CancellationToken ct = default)
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return await CompileAsync(reader, ct).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
-    /// </summary>
-    /// <remarks>
-    /// Hint matching in streaming mode is approximated from matched preambles rather than
-    /// searching the full input. Hints referencing text that only appears in extracted values
-    /// (not preambles) may not be detected.
-    /// </remarks>
-    public async Task<TokenizeResult> TokenizeAsync(Template template, TextReader input, CancellationToken ct = default)
-    {
-        var result = new TokenizeResult(template);
-        await TokenizeAsyncCore(result, template, input, ct).ConfigureAwait(false);
-        return result;
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes input from a <see cref="TextReader"/>, mapping values onto a new <typeparamref name="T"/>.
-    /// </summary>
-    /// <remarks>
-    /// Hint matching in streaming mode is approximated from matched preambles rather than
-    /// searching the full input. Hints referencing text that only appears in extracted values
-    /// (not preambles) may not be detected.
-    /// </remarks>
-    public async Task<T?> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
-    {
-        var result = await TokenizeAsync(template, input, ct).ConfigureAwait(false);
-        if (!result.Success) return null;
-        return result.Assign<T>();
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes input from a <see cref="Stream"/> using a pre-compiled template.
-    /// </summary>
-    /// <remarks>
-    /// Hint matching in streaming mode is approximated from matched preambles rather than
-    /// searching the full input. Hints referencing text that only appears in extracted values
-    /// (not preambles) may not be detected.
-    /// </remarks>
-    public async Task<TokenizeResult> TokenizeAsync(Template template, Stream input, Encoding encoding, CancellationToken ct = default)
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return await TokenizeAsync(template, reader, ct).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Asynchronously tokenizes input from a <see cref="Stream"/>, mapping values onto a new <typeparamref name="T"/>.
-    /// </summary>
-    /// <remarks>
-    /// Hint matching in streaming mode is approximated from matched preambles rather than
-    /// searching the full input. Hints referencing text that only appears in extracted values
-    /// (not preambles) may not be detected.
-    /// </remarks>
-    public async Task<T?> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
-    {
-        using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
-            bufferSize: 1024, leaveOpen: true);
-        return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
-    }
-
-    private async Task TokenizeAsyncCore(TokenizeResult result, Template template, TextReader reader, CancellationToken ct)
-    {
-        var hintStrategy = new StreamingHintStrategy();
-        var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
-        {
-            ["TemplateName"] = template.Name,
-            ["TokenCount"] = template.Tokens.Count,
-            ["Operation"] = "TokenizeAsync",
-        };
-
-        using (_log.BeginScope(scopeProperties))
-        {
-            if (_log.IsEnabled(LogLevel.Debug))
-            {
-                _log.LogDebug("Starting async tokenization for template {TemplateName}", template.Name);
-                _log.LogDebug("Template has {TokenCount} tokens", template.Tokens.Count);
-            }
-
-            var context = new TokenizationContext();
-            context.Initialize(reader);
-
-            // Streaming cannot provide full input — alignment rendering and near-miss
-            // hints in diagnostics are unavailable in the async path.
-            IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new DiagnosticCollector(inputContent: null)
-                : NullDiagnosticCollector.Instance;
-
-            try
-            {
-                // Async path uses StreamingHintStrategy — it scans buffer contents via
-                // OnBufferFilled callbacks as each buffer is filled, since the full
-                // input string isn't available during streaming.
-                var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput: null, result, collector);
-
-                // The enumerator's constructor pre-fills the first buffer; report it now
-                // so StreamingHintStrategy can scan for hints in the initial chunk.
-                hintStrategy.OnBufferFilled(context.Enumerator.StagingBuffer, context.Enumerator.LastReadCount);
-
-                if (hintsMissing)
-                {
-                    _log.LogWarning("Required hints are missing, skipping tokenization");
-                }
-                else
-                {
-                    var session = _tokenizationEngine.CreateSession(template, result, collector, hintStrategy);
-                    await session.RunAsync(context, ct).ConfigureAwait(false);
-
-                    if (hintStrategy.PostProcess(result))
-                    {
-                        _log.LogWarning("Post-tokenization hint check failed");
-                    }
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                _log.LogWarning("Async tokenization cancelled for template {TemplateName}", template.Name);
-                throw;
-            }
-            catch (TokenizerException ex)
-            {
-                _log.LogError(ex, "Async tokenization failed for template {TemplateName}: {Message}", template.Name, ex.Message);
-                throw;
-            }
-
-            FinalizeTokenization(result, template, collector, rawInput: null);
-
-            if (_log.IsEnabled(LogLevel.Debug))
-            {
-                _log.LogDebug("Async tokenization {Result} for template {TemplateName}",
-                    result.Success ? "succeeded" : "failed", template.Name);
-            }
-        }
-    }
-
 }

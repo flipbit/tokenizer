@@ -84,7 +84,7 @@ internal sealed class DecoratorPipeline
         {
             if (decorator.IsTransformer)
             {
-                if (!decorator.TryTransform(evaluatedValue!, out var output))
+                if (!decorator.TryTransform(evaluatedValue!, _options, out var output))
                 {
                     _collector.Record(DiagnosticEventType.TransformerFailed,
                         tokenName: token.Name, tokenId: token.Id,
@@ -109,7 +109,7 @@ internal sealed class DecoratorPipeline
 
             if (decorator.IsValidator)
             {
-                if (decorator.Validate(evaluatedValue!))
+                if (decorator.Validate(evaluatedValue!, _options))
                 {
                     _collector.Record(DiagnosticEventType.ValidatorPassed,
                         tokenName: token.Name, tokenId: token.Id,

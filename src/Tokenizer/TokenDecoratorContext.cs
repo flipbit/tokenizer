@@ -94,6 +94,21 @@ public sealed class TokenDecoratorContext
     }
 
     /// <summary>
+    /// Transforms the token value, passing options to options-aware transformers.
+    /// </summary>
+    public bool TryTransform(object value, TokenizerOptions options, out object transformed)
+    {
+        var instance = (ITokenTransformer)CreateDecorator();
+
+        if (instance is IOptionsAwareTransformer optionsAware)
+        {
+            return optionsAware.TryTransform(value, GetParameterArray(), options, out transformed);
+        }
+
+        return instance.TryTransform(value, GetParameterArray(), out transformed);
+    }
+
+    /// <summary>
     /// Validates the token value.
     /// </summary>
     public bool Validate(object value)
@@ -106,5 +121,26 @@ public sealed class TokenDecoratorContext
         }
 
         return instance.IsValid(value, GetParameterArray());
+    }
+
+    /// <summary>
+    /// Validates the token value, passing options to options-aware validators.
+    /// </summary>
+    public bool Validate(object value, TokenizerOptions options)
+    {
+        var instance = (ITokenValidator)CreateDecorator();
+
+        bool result;
+
+        if (instance is IOptionsAwareValidator optionsAware)
+        {
+            result = optionsAware.IsValid(value, GetParameterArray(), options);
+        }
+        else
+        {
+            result = instance.IsValid(value, GetParameterArray());
+        }
+
+        return IsNotValidator ? !result : result;
     }
 }

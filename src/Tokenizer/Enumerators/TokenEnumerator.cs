@@ -6,6 +6,8 @@ namespace Tokens.Enumerators;
 /// </summary>
 public sealed class TokenEnumerator
 {
+    internal static readonly TokenEnumerator Empty = new(string.Empty);
+
     private const int DefaultBufferSize = 1024;
     private const int RefillWatermark = 256;
 
@@ -282,7 +284,7 @@ public sealed class TokenEnumerator
                 matches.Add(token);
             }
 
-            if (!token.IsOptional) break;
+            if (!token.IsOptional && !outOfOrderTokens) break;
         }
 
         return matches.Count > 0;

@@ -100,7 +100,7 @@ internal sealed class StreamingHintStrategy : IHintStrategy
 
             if (_foundHints.Contains(hint.Text))
             {
-                result.Hints.TryAddMatch(hint, new TokenEnumerator(string.Empty));
+                result.Hints.TryAddMatch(hint, TokenEnumerator.Empty);
             }
         }
 

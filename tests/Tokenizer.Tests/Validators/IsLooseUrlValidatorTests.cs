@@ -115,6 +115,6 @@ public class IsLooseUrlValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("www.server.com", result.First("ServerUrl"));
+        Assert.Equal("www.server.com", result.Matches.First(m => string.Equals(m.Token.Name, "ServerUrl", StringComparison.Ordinal)).Value);
     }
 }

@@ -88,7 +88,7 @@ public class StartsWithValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("192.168.1.1", result.First("InternalIpAddress"));
+        Assert.Equal("192.168.1.1", result.Matches.First(m => string.Equals(m.Token.Name, "InternalIpAddress", StringComparison.Ordinal)).Value);
     }
 
     [Theory]

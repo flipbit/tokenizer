@@ -60,7 +60,7 @@ public class SetTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal("Alice", result.First("Name"));
+        Assert.Equal("Alice", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -76,6 +76,6 @@ public class SetTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal("ALICE", result.First("Name"));
+        Assert.Equal("ALICE", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 }

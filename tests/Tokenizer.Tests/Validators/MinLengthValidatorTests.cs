@@ -73,6 +73,6 @@ public class MinLengthValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("45678", result.First("ZipCode"));
+        Assert.Equal("45678", result.Matches.First(m => string.Equals(m.Token.Name, "ZipCode", StringComparison.Ordinal)).Value);
     }
 }

@@ -109,6 +109,6 @@ public class IsAlphanumericValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("ABC123", result.First("Code"));
+        Assert.Equal("ABC123", result.Matches.First(m => string.Equals(m.Token.Name, "Code", StringComparison.Ordinal)).Value);
     }
 }

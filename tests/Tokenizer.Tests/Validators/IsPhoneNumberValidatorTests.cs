@@ -153,6 +153,6 @@ public class IsPhoneNumberValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("+44 (0) 1603 555-1234", result.First("Phone"));
+        Assert.Equal("+44 (0) 1603 555-1234", result.Matches.First(m => string.Equals(m.Token.Name, "Phone", StringComparison.Ordinal)).Value);
     }
 }

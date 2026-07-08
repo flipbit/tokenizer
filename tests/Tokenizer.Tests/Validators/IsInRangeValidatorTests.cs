@@ -176,6 +176,6 @@ public class IsInRangeValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("25", result.First("Age"));
+        Assert.Equal("25", result.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 }

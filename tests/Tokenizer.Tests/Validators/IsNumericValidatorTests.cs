@@ -76,7 +76,7 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal("ten", result.First("Age"));
+        Assert.Equal("ten", result.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -92,6 +92,6 @@ public class IsNumericValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("10", result.First("Age"));
+        Assert.Equal("10", result.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 }

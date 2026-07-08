@@ -62,7 +62,7 @@ public class TemplateOptionsCascadeTests : TokenizerTestBase
         var result = tokenizer.Tokenize(template, "Name: Alice\nExtra data");
 
         // Assert
-        Assert.Equal("Alice", result.First("Name"));
+        Assert.Equal("Alice", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     // --- TrimPreambleBeforeNewLine ---

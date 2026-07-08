@@ -124,15 +124,5 @@ public class ImmutableCollectionsTests
         Assert.Equal(typeof(IReadOnlyList<TokenMatch>), propertyType);
     }
 
-    [Fact]
-    public void GivenTokenizeResult_WhenCallingAll_ThenReturnTypeIsIReadOnlyList()
-    {
-        // Arrange & Act
-        var returnType = typeof(TokenizeResult).GetMethod("All")!.ReturnType;
-
-        // Assert
-        Assert.Equal(typeof(IReadOnlyList<object>), returnType);
-    }
-
     private sealed class TestClass;
 }

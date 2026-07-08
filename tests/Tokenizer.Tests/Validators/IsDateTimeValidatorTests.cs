@@ -102,6 +102,6 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("2019-10-04", result.First("Date"));
+        Assert.Equal("2019-10-04", result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
     }
 }

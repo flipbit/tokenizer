@@ -73,6 +73,6 @@ public class MaxLengthValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("78912", result.First("ZipCode"));
+        Assert.Equal("78912", result.Matches.First(m => string.Equals(m.Token.Name, "ZipCode", StringComparison.Ordinal)).Value);
     }
 }

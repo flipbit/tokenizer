@@ -29,30 +29,32 @@ public class SampleTests : TokenizerTestBase
         {
             Assert.NotNull(result);
 
-            Assert.Equal("bbc.co.uk", result.First("DomainName"));
-            Assert.Equal("British Broadcasting Corporation", result.First("Registrant.Name"));
+            Assert.Equal("bbc.co.uk", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
+            Assert.Equal("British Broadcasting Corporation", result.Matches.First(m => string.Equals(m.Token.Name, "Registrant.Name", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(6, result.All("Registrant.Address").Count);
-            Assert.Equal("British Broadcasting Corporation", result.All("Registrant.Address")[0]);
-            Assert.Equal("Broadcasting House", result.All("Registrant.Address")[1]);
-            Assert.Equal("Portland Place", result.All("Registrant.Address")[2]);
-            Assert.Equal("London", result.All("Registrant.Address")[3]);
-            Assert.Equal("W1A 1AA", result.All("Registrant.Address")[4]);
-            Assert.Equal("United Kingdom", result.All("Registrant.Address")[5]);
+            var registrantAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "Registrant.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(6, registrantAddress.Count);
+            Assert.Equal("British Broadcasting Corporation", registrantAddress[0]);
+            Assert.Equal("Broadcasting House", registrantAddress[1]);
+            Assert.Equal("Portland Place", registrantAddress[2]);
+            Assert.Equal("London", registrantAddress[3]);
+            Assert.Equal("W1A 1AA", registrantAddress[4]);
+            Assert.Equal("United Kingdom", registrantAddress[5]);
 
-            Assert.Equal("British Broadcasting Corporation [Tag = BBC]", result.First("Registrar.Name"));
-            Assert.Equal("http://www.bbc.co.uk", result.First("Registrar.Url"));
-            Assert.Equal(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Registered"));
-            Assert.Equal(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
-            Assert.Equal(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Updated"));
-            Assert.Equal("Registered until expiry date.", result.First("DomainStatus"));
+            Assert.Equal("British Broadcasting Corporation [Tag = BBC]", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("http://www.bbc.co.uk", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Url", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+            Assert.Equal("Registered until expiry date.", result.Matches.First(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(3, result.All("NameServers").Count);
-            Assert.Equal("ns1.rbsov.bbc.co.uk", result.All("NameServers")[0]);
-            Assert.Equal("ns1.tcams.bbc.co.uk", result.All("NameServers")[1]);
-            Assert.Equal("ns1.thdow.bbc.co.uk", result.All("NameServers")[2]);
+            var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(3, nameServers.Count);
+            Assert.Equal("ns1.rbsov.bbc.co.uk", nameServers[0]);
+            Assert.Equal("ns1.tcams.bbc.co.uk", nameServers[1]);
+            Assert.Equal("ns1.thdow.bbc.co.uk", nameServers[2]);
 
-            Assert.Equal("Found", result.First("Status"));
+            Assert.Equal("Found", result.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
         }
         catch
         {
@@ -81,57 +83,61 @@ public class SampleTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
 
-        Assert.Equal("com", result.First("Tld"));
-        Assert.Equal("VeriSign Global Registry Services", result.First("Organization.Name"));
+        Assert.Equal("com", result.Matches.First(m => string.Equals(m.Token.Name, "Tld", StringComparison.Ordinal)).Value);
+        Assert.Equal("VeriSign Global Registry Services", result.Matches.First(m => string.Equals(m.Token.Name, "Organization.Name", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(3, result.All("Organization.Address").Count);
-        Assert.Equal("12061 Bluemont Way", result.All("Organization.Address")[0]);
-        Assert.Equal("Reston Virginia 20190", result.All("Organization.Address")[1]);
-        Assert.Equal("United States", result.All("Organization.Address")[2]);
+        var orgAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "Organization.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(3, orgAddress.Count);
+        Assert.Equal("12061 Bluemont Way", orgAddress[0]);
+        Assert.Equal("Reston Virginia 20190", orgAddress[1]);
+        Assert.Equal("United States", orgAddress[2]);
 
-        Assert.Equal("Registry Customer Service", result.First("AdminContact.Name"));
-        Assert.Equal("VeriSign Global Registry Services", result.First("AdminContact.Organization"));
+        Assert.Equal("Registry Customer Service", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("VeriSign Global Registry Services", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Organization", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(3, result.All("AdminContact.Address").Count);
-        Assert.Equal("12061 Bluemont Way", result.All("AdminContact.Address")[0]);
-        Assert.Equal("Reston Virginia 20190", result.All("AdminContact.Address")[1]);
-        Assert.Equal("United States", result.All("AdminContact.Address")[2]);
+        var adminAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "AdminContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(3, adminAddress.Count);
+        Assert.Equal("12061 Bluemont Way", adminAddress[0]);
+        Assert.Equal("Reston Virginia 20190", adminAddress[1]);
+        Assert.Equal("United States", adminAddress[2]);
 
-        Assert.Equal("+1 703 925-6999", result.First("AdminContact.TelephoneNumber"));
-        Assert.Equal("+1 703 948 3978", result.First("AdminContact.FaxNumber"));
-        Assert.Equal("info@verisign-grs.com", result.First("AdminContact.Email"));
-        Assert.Equal("Registry Customer Service", result.First("TechContact.Name"));
-        Assert.Equal("VeriSign Global Registry Services", result.First("TechContact.Organization"));
+        Assert.Equal("+1 703 925-6999", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("+1 703 948 3978", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.FaxNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("info@verisign-grs.com", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Email", StringComparison.Ordinal)).Value);
+        Assert.Equal("Registry Customer Service", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("VeriSign Global Registry Services", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Organization", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(3, result.All("TechContact.Address").Count);
-        Assert.Equal("12061 Bluemont Way", result.All("TechContact.Address")[0]);
-        Assert.Equal("Reston Virginia 20190", result.All("TechContact.Address")[1]);
-        Assert.Equal("United States", result.All("TechContact.Address")[2]);
+        var techAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "TechContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(3, techAddress.Count);
+        Assert.Equal("12061 Bluemont Way", techAddress[0]);
+        Assert.Equal("Reston Virginia 20190", techAddress[1]);
+        Assert.Equal("United States", techAddress[2]);
 
-        Assert.Equal("+1 703 925-6999", result.First("TechContact.TelephoneNumber"));
-        Assert.Equal("+1 703 948 3978", result.First("TechContact.FaxNumber"));
-        Assert.Equal("info@verisign-grs.com", result.First("TechContact.Email"));
+        Assert.Equal("+1 703 925-6999", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("+1 703 948 3978", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.FaxNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("info@verisign-grs.com", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Email", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(13, result.All("NameServers").Count);
-        Assert.Equal("A.GTLD-SERVERS.NET 192.5.6.30 2001:503:a83e:0:0:0:2:30", result.All("NameServers")[0]);
-        Assert.Equal("B.GTLD-SERVERS.NET 192.33.14.30 2001:503:231d:0:0:0:2:30", result.All("NameServers")[1]);
-        Assert.Equal("C.GTLD-SERVERS.NET 192.26.92.30", result.All("NameServers")[2]);
-        Assert.Equal("D.GTLD-SERVERS.NET 192.31.80.30", result.All("NameServers")[3]);
-        Assert.Equal("E.GTLD-SERVERS.NET 192.12.94.30", result.All("NameServers")[4]);
-        Assert.Equal("F.GTLD-SERVERS.NET 192.35.51.30", result.All("NameServers")[5]);
-        Assert.Equal("G.GTLD-SERVERS.NET 192.42.93.30", result.All("NameServers")[6]);
-        Assert.Equal("H.GTLD-SERVERS.NET 192.54.112.30", result.All("NameServers")[7]);
-        Assert.Equal("I.GTLD-SERVERS.NET 192.43.172.30", result.All("NameServers")[8]);
-        Assert.Equal("J.GTLD-SERVERS.NET 192.48.79.30", result.All("NameServers")[9]);
-        Assert.Equal("K.GTLD-SERVERS.NET 192.52.178.30", result.All("NameServers")[10]);
-        Assert.Equal("L.GTLD-SERVERS.NET 192.41.162.30", result.All("NameServers")[11]);
-        Assert.Equal("M.GTLD-SERVERS.NET 192.55.83.30", result.All("NameServers")[12]);
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(13, nameServers.Count);
+        Assert.Equal("A.GTLD-SERVERS.NET 192.5.6.30 2001:503:a83e:0:0:0:2:30", nameServers[0]);
+        Assert.Equal("B.GTLD-SERVERS.NET 192.33.14.30 2001:503:231d:0:0:0:2:30", nameServers[1]);
+        Assert.Equal("C.GTLD-SERVERS.NET 192.26.92.30", nameServers[2]);
+        Assert.Equal("D.GTLD-SERVERS.NET 192.31.80.30", nameServers[3]);
+        Assert.Equal("E.GTLD-SERVERS.NET 192.12.94.30", nameServers[4]);
+        Assert.Equal("F.GTLD-SERVERS.NET 192.35.51.30", nameServers[5]);
+        Assert.Equal("G.GTLD-SERVERS.NET 192.42.93.30", nameServers[6]);
+        Assert.Equal("H.GTLD-SERVERS.NET 192.54.112.30", nameServers[7]);
+        Assert.Equal("I.GTLD-SERVERS.NET 192.43.172.30", nameServers[8]);
+        Assert.Equal("J.GTLD-SERVERS.NET 192.48.79.30", nameServers[9]);
+        Assert.Equal("K.GTLD-SERVERS.NET 192.52.178.30", nameServers[10]);
+        Assert.Equal("L.GTLD-SERVERS.NET 192.41.162.30", nameServers[11]);
+        Assert.Equal("M.GTLD-SERVERS.NET 192.55.83.30", nameServers[12]);
 
-        Assert.Equal("whois.verisign-grs.com", result.First("Url"));
-        Assert.Equal("Registration information: http://www.verisign-grs.com", result.First("Remarks"));
-        Assert.Equal("1985-01-01", result.First("Created"));
-        Assert.Equal("2012-02-15", result.First("Changed"));
-        Assert.Equal("Found", result.First("Status"));
+        Assert.Equal("whois.verisign-grs.com", result.Matches.First(m => string.Equals(m.Token.Name, "Url", StringComparison.Ordinal)).Value);
+        Assert.Equal("Registration information: http://www.verisign-grs.com", result.Matches.First(m => string.Equals(m.Token.Name, "Remarks", StringComparison.Ordinal)).Value);
+        Assert.Equal("1985-01-01", result.Matches.First(m => string.Equals(m.Token.Name, "Created", StringComparison.Ordinal)).Value);
+        Assert.Equal("2012-02-15", result.Matches.First(m => string.Equals(m.Token.Name, "Changed", StringComparison.Ordinal)).Value);
+        Assert.Equal("Found", result.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -143,51 +149,55 @@ public class SampleTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
 
-        Assert.Equal("abogado", result.First("Tld"));
-        Assert.Equal("Minds + Machines Group Limited", result.First("Organization.Name"));
+        Assert.Equal("abogado", result.Matches.First(m => string.Equals(m.Token.Name, "Tld", StringComparison.Ordinal)).Value);
+        Assert.Equal("Minds + Machines Group Limited", result.Matches.First(m => string.Equals(m.Token.Name, "Organization.Name", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(2, result.All("Organization.Address").Count);
-        Assert.Equal("Craigmuir Chambers, Road Town Tortola VG 1110", result.All("Organization.Address")[0]);
-        Assert.Equal("Virgin Islands, British", result.All("Organization.Address")[1]);
+        var orgAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "Organization.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(2, orgAddress.Count);
+        Assert.Equal("Craigmuir Chambers, Road Town Tortola VG 1110", orgAddress[0]);
+        Assert.Equal("Virgin Islands, British", orgAddress[1]);
 
-        Assert.Equal("Admin Contact", result.First("AdminContact.Name"));
-        Assert.Equal("Minds + Machines Ltd", result.First("AdminContact.Organization"));
+        Assert.Equal("Admin Contact", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("Minds + Machines Ltd", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Organization", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(2, result.All("AdminContact.Address").Count);
-        Assert.Equal("32 Nassau St, Dublin 2", result.All("AdminContact.Address")[0]);
-        Assert.Equal("Ireland", result.All("AdminContact.Address")[1]);
+        var adminAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "AdminContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(2, adminAddress.Count);
+        Assert.Equal("32 Nassau St, Dublin 2", adminAddress[0]);
+        Assert.Equal("Ireland", adminAddress[1]);
 
-        Assert.Equal("+1-877-734-4783", result.First("AdminContact.TelephoneNumber"));
-        Assert.Equal("ops@mmx.co", result.First("AdminContact.Email"));
-        Assert.Equal("TLD Registry Services Technical", result.First("TechContact.Name"));
-        Assert.Equal("Nominet", result.First("TechContact.Organization"));
+        Assert.Equal("+1-877-734-4783", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("ops@mmx.co", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Email", StringComparison.Ordinal)).Value);
+        Assert.Equal("TLD Registry Services Technical", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("Nominet", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Organization", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(6, result.All("TechContact.Address").Count);
-        Assert.Equal("Minerva House,", result.All("TechContact.Address")[0]);
-        Assert.Equal("Edmund Halley Road,", result.All("TechContact.Address")[1]);
-        Assert.Equal("Oxford Science Park,", result.All("TechContact.Address")[2]);
-        Assert.Equal("Oxford,", result.All("TechContact.Address")[3]);
-        Assert.Equal("OX4 4DQ", result.All("TechContact.Address")[4]);
-        Assert.Equal("United Kingdom", result.All("TechContact.Address")[5]);
+        var techAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "TechContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(6, techAddress.Count);
+        Assert.Equal("Minerva House,", techAddress[0]);
+        Assert.Equal("Edmund Halley Road,", techAddress[1]);
+        Assert.Equal("Oxford Science Park,", techAddress[2]);
+        Assert.Equal("Oxford,", techAddress[3]);
+        Assert.Equal("OX4 4DQ", techAddress[4]);
+        Assert.Equal("United Kingdom", techAddress[5]);
 
-        Assert.Equal("+44.1865332211", result.First("TechContact.TelephoneNumber"));
-        Assert.Equal("registrytechnical@nominet.uk", result.First("TechContact.Email"));
+        Assert.Equal("+44.1865332211", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+        Assert.Equal("registrytechnical@nominet.uk", result.Matches.First(m => string.Equals(m.Token.Name, "TechContact.Email", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(8, result.All("NameServers").Count);
-        Assert.Equal("DNS1.NIC.ABOGADO 213.248.217.13 2a01:618:401:0:0:0:0:13", result.All("NameServers")[0]);
-        Assert.Equal("DNS2.NIC.ABOGADO 103.49.81.13 2401:fd80:401:0:0:0:0:13", result.All("NameServers")[1]);
-        Assert.Equal("DNS3.NIC.ABOGADO 213.248.221.13 2a01:618:405:0:0:0:0:13", result.All("NameServers")[2]);
-        Assert.Equal("DNS4.NIC.ABOGADO 2401:fd80:405:0:0:0:0:13 43.230.49.13", result.All("NameServers")[3]);
-        Assert.Equal("DNSA.NIC.ABOGADO 156.154.100.3 2001:502:ad09:0:0:0:0:3", result.All("NameServers")[4]);
-        Assert.Equal("DNSB.NIC.ABOGADO 156.154.101.3", result.All("NameServers")[5]);
-        Assert.Equal("DNSC.NIC.ABOGADO 156.154.102.3", result.All("NameServers")[6]);
-        Assert.Equal("DNSD.NIC.ABOGADO 156.154.103.3", result.All("NameServers")[7]);
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(8, nameServers.Count);
+        Assert.Equal("DNS1.NIC.ABOGADO 213.248.217.13 2a01:618:401:0:0:0:0:13", nameServers[0]);
+        Assert.Equal("DNS2.NIC.ABOGADO 103.49.81.13 2401:fd80:401:0:0:0:0:13", nameServers[1]);
+        Assert.Equal("DNS3.NIC.ABOGADO 213.248.221.13 2a01:618:405:0:0:0:0:13", nameServers[2]);
+        Assert.Equal("DNS4.NIC.ABOGADO 2401:fd80:405:0:0:0:0:13 43.230.49.13", nameServers[3]);
+        Assert.Equal("DNSA.NIC.ABOGADO 156.154.100.3 2001:502:ad09:0:0:0:0:3", nameServers[4]);
+        Assert.Equal("DNSB.NIC.ABOGADO 156.154.101.3", nameServers[5]);
+        Assert.Equal("DNSC.NIC.ABOGADO 156.154.102.3", nameServers[6]);
+        Assert.Equal("DNSD.NIC.ABOGADO 156.154.103.3", nameServers[7]);
 
-        Assert.Equal("whois.nic.abogado", result.First("Url"));
-        Assert.Equal("Registration information: http://mm-registry.com", result.First("Remarks"));
-        Assert.Equal("2014-07-10", result.First("Created"));
-        Assert.Equal("2018-06-29", result.First("Changed"));
-        Assert.Equal("Found", result.First("Status"));
+        Assert.Equal("whois.nic.abogado", result.Matches.First(m => string.Equals(m.Token.Name, "Url", StringComparison.Ordinal)).Value);
+        Assert.Equal("Registration information: http://mm-registry.com", result.Matches.First(m => string.Equals(m.Token.Name, "Remarks", StringComparison.Ordinal)).Value);
+        Assert.Equal("2014-07-10", result.Matches.First(m => string.Equals(m.Token.Name, "Created", StringComparison.Ordinal)).Value);
+        Assert.Equal("2018-06-29", result.Matches.First(m => string.Equals(m.Token.Name, "Changed", StringComparison.Ordinal)).Value);
+        Assert.Equal("Found", result.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -199,18 +209,18 @@ public class SampleTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
 
-        Assert.Equal("facebook.com", result.First("WhoisRedirect.Domain"));
-        Assert.Equal("whois.registrarsafe.com", result.First("WhoisRedirect.Url"));
-        Assert.Equal("http://www.registrarsafe.com", result.First("WhoisRedirect.ReferralUrl"));
-        Assert.Equal(new DateTime(2018, 07, 23, 18, 17, 13, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
-        Assert.Equal(new DateTime(1997, 03, 29, 05, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
-        Assert.Equal(new DateTime(2028, 03, 30, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
-        Assert.Equal("RegistrarSafe, LLC", result.First("WhoisRedirect.Registrar"));
+        Assert.Equal("facebook.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Domain", StringComparison.Ordinal)).Value);
+        Assert.Equal("whois.registrarsafe.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Url", StringComparison.Ordinal)).Value);
+        Assert.Equal("http://www.registrarsafe.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ReferralUrl", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2018, 07, 23, 18, 17, 13, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(1997, 03, 29, 05, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2028, 03, 30, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
+        Assert.Equal("RegistrarSafe, LLC", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Registrar", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(2, result.All("WhoisRedirect.NameServers").Count);
-        Assert.Equal("A.NS.FACEBOOK.COM", result.All("WhoisRedirect.NameServers")[0]);
-        Assert.Equal("B.NS.FACEBOOK.COM", result.All("WhoisRedirect.NameServers")[1]);
-
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "WhoisRedirect.NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(2, nameServers.Count);
+        Assert.Equal("A.NS.FACEBOOK.COM", nameServers[0]);
+        Assert.Equal("B.NS.FACEBOOK.COM", nameServers[1]);
     }
 
     [Fact]
@@ -234,18 +244,19 @@ public class SampleTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
 
-        Assert.Equal("sil.org", result.First("WhoisRedirect.Domain"));
-        Assert.Equal("whois.enom.com", result.First("WhoisRedirect.Url"));
-        Assert.Equal("http://www.enom.com", result.First("WhoisRedirect.ReferralUrl"));
-        Assert.Equal(new DateTime(2018, 03, 06, 00, 17, 46, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ModifiedDate"));
-        Assert.Equal(new DateTime(1991, 04, 15, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.CreatedDate"));
-        Assert.Equal(new DateTime(2020, 04, 16, 04, 00, 00, 000, DateTimeKind.Utc), result.First("WhoisRedirect.ExpirationDate"));
-        Assert.Equal("eNom, Inc.", result.First("WhoisRedirect.Registrar"));
+        Assert.Equal("sil.org", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Domain", StringComparison.Ordinal)).Value);
+        Assert.Equal("whois.enom.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Url", StringComparison.Ordinal)).Value);
+        Assert.Equal("http://www.enom.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ReferralUrl", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2018, 03, 06, 00, 17, 46, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(1991, 04, 15, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2020, 04, 16, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
+        Assert.Equal("eNom, Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Registrar", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(3, result.All("WhoisRedirect.NameServers").Count);
-        Assert.Equal("NSJ1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[0]);
-        Assert.Equal("NSC1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[1]);
-        Assert.Equal("NSD1.WSFO.ORG", result.All("WhoisRedirect.NameServers")[2]);
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "WhoisRedirect.NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(3, nameServers.Count);
+        Assert.Equal("NSJ1.WSFO.ORG", nameServers[0]);
+        Assert.Equal("NSC1.WSFO.ORG", nameServers[1]);
+        Assert.Equal("NSD1.WSFO.ORG", nameServers[2]);
     }
 
     [Fact]
@@ -266,14 +277,14 @@ public class SampleTests : TokenizerTestBase
             Assert.True(result.Success);
             Assert.Equal(11, result.Matches.Count);
 
-            Assert.Equal("amazon.co.jp", result.First("DomainName"));
-            Assert.Equal("Amazon, Inc.", result.First("Registrar.Name"));
-            Assert.Equal("JC076JP", result.First("AdminContact.Name"));
-            Assert.Equal("IK4644JP", result.First("TechnicalContact.Name"));
-            Assert.Equal(new DateTime(2002, 11, 21), result.First("Registered"));
-            Assert.Equal(new DateTime(2018, 12, 1), result.First("Updated"));
+            Assert.Equal("amazon.co.jp", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
+            Assert.Equal("Amazon, Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("JC076JP", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("IK4644JP", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2002, 11, 21), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2018, 12, 1), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
 
-            var nameServers = (List<object>)result.All("NameServers");
+            var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
 
             Assert.Equal("ns1.p31.dynect.net", nameServers[0]);
             Assert.Equal("ns2.p31.dynect.net", nameServers[1]);
@@ -337,7 +348,7 @@ public class SampleTests : TokenizerTestBase
         Assert.True(result.Success);
         Assert.Equal(22, result.Matches.Count);
 
-        var nameServers = result.All("NameServers");
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
 
         Assert.Equal(4, nameServers.Count);
         Assert.Equal("ns1.google.com", nameServers[0]);
@@ -358,9 +369,9 @@ public class SampleTests : TokenizerTestBase
         Assert.True(result.Success);
         Assert.Equal(58, result.Matches.Count);
 
-        Assert.Equal("google.co.za", result.First("DomainName"));
+        Assert.Equal("google.co.za", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
 
-        var nameServers = result.All("NameServers");
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
 
         Assert.Equal(4, nameServers.Count);
         Assert.Equal("ns1.google.com", nameServers[0]);
@@ -381,7 +392,7 @@ public class SampleTests : TokenizerTestBase
         Assert.True(result.Success);
         Assert.Equal(52, result.Matches.Count);
 
-        var nameServers = result.All("NameServers");
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
 
         Assert.Equal(4, nameServers.Count);
         Assert.Equal("ns1.google.com", nameServers[0]);
@@ -414,8 +425,8 @@ public class SampleTests : TokenizerTestBase
 
         var match = matcher.Match(input);
 
-        Assert.Equal(match.BestMatch!.First("DomainName"), "u34jedzcq.co.ca");
-        Assert.Equal(match.BestMatch.First("Status"), "NotFound");
+        Assert.Equal("u34jedzcq.co.ca", match.BestMatch!.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
+        Assert.Equal("NotFound", match.BestMatch.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -427,7 +438,7 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal(result.First("DomainName"), "google.eu.org");
+        Assert.Equal("google.eu.org", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -439,7 +450,7 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal(new DateTime(2001, 08, 23), result.First("Registered"));
+        Assert.Equal(new DateTime(2001, 08, 23), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -457,59 +468,64 @@ public class SampleTests : TokenizerTestBase
 
         try
         {
-            Assert.Equal("Rafael Perez", result.First("Registrant.Name"));
-            Assert.Equal("aloespa.com.ve-dom", result.First("Registrant.RegistryId"));
-            Assert.Equal("registro@tepuynet.com", result.First("Registrant.Email"));
+            Assert.Equal("Rafael Perez", result.Matches.First(m => string.Equals(m.Token.Name, "Registrant.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("aloespa.com.ve-dom", result.Matches.First(m => string.Equals(m.Token.Name, "Registrant.RegistryId", StringComparison.Ordinal)).Value);
+            Assert.Equal("registro@tepuynet.com", result.Matches.First(m => string.Equals(m.Token.Name, "Registrant.Email", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(3, result.All("Registrant.Address").Count);
-            Assert.Equal("Rafael Perez", result.All("Registrant.Address")[0]);
-            Assert.Equal("Caracas", result.All("Registrant.Address")[1]);
-            Assert.Equal("Caracas, D. Federal  VE", result.All("Registrant.Address")[2]);
+            var registrantAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "Registrant.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(3, registrantAddress.Count);
+            Assert.Equal("Rafael Perez", registrantAddress[0]);
+            Assert.Equal("Caracas", registrantAddress[1]);
+            Assert.Equal("Caracas, D. Federal  VE", registrantAddress[2]);
 
-            Assert.Equal("aloespa.com.ve", result.First("DomainName"));
-            Assert.Equal("Tepuynet", result.First("AdminContact.Name"));
-            Assert.Equal("aloespa.com.ve-adm", result.First("AdminContact.RegistryId"));
-            Assert.Equal("registro@tepuynet.com", result.First("AdminContact.Email"));
+            Assert.Equal("aloespa.com.ve", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
+            Assert.Equal("Tepuynet", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("aloespa.com.ve-adm", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.RegistryId", StringComparison.Ordinal)).Value);
+            Assert.Equal("registro@tepuynet.com", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Email", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(3, result.All("AdminContact.Address").Count);
-            Assert.Equal("Tepuynet C.A.", result.All("AdminContact.Address")[0]);
-            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("AdminContact.Address")[1]);
-            Assert.Equal("Valencia, Carabobo  VE", result.All("AdminContact.Address")[2]);
+            var adminAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "AdminContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(3, adminAddress.Count);
+            Assert.Equal("Tepuynet C.A.", adminAddress[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", adminAddress[1]);
+            Assert.Equal("Valencia, Carabobo  VE", adminAddress[2]);
 
-            Assert.Equal("2418246437", result.First("AdminContact.TelephoneNumber"));
-            Assert.Equal("2418246437", result.First("AdminContact.FaxNumber"));
-            Assert.Equal("Tepuynet", result.First("TechnicalContact.Name"));
-            Assert.Equal("aloespa.com.ve-tec", result.First("TechnicalContact.RegistryId"));
-            Assert.Equal("registro@tepuynet.com", result.First("TechnicalContact.Email"));
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.FaxNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal("Tepuynet", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("aloespa.com.ve-tec", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.RegistryId", StringComparison.Ordinal)).Value);
+            Assert.Equal("registro@tepuynet.com", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.Email", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(3, result.All("TechnicalContact.Address").Count);
-            Assert.Equal("Tepuynet C.A.", result.All("TechnicalContact.Address")[0]);
-            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("TechnicalContact.Address")[1]);
-            Assert.Equal("Valencia, Carabobo  VE", result.All("TechnicalContact.Address")[2]);
+            var techAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "TechnicalContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(3, techAddress.Count);
+            Assert.Equal("Tepuynet C.A.", techAddress[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", techAddress[1]);
+            Assert.Equal("Valencia, Carabobo  VE", techAddress[2]);
 
-            Assert.Equal("2418246437", result.First("TechnicalContact.TelephoneNumber"));
-            Assert.Equal("2418246437", result.First("TechnicalContact.FaxNumber"));
-            Assert.Equal("Tepuynet", result.First("BillingContact.Name"));
-            Assert.Equal("aloespa.com.ve-bil", result.First("BillingContact.RegistryId"));
-            Assert.Equal("registro@tepuynet.com", result.First("BillingContact.Email"));
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.FaxNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal("Tepuynet", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.Name", StringComparison.Ordinal)).Value);
+            Assert.Equal("aloespa.com.ve-bil", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.RegistryId", StringComparison.Ordinal)).Value);
+            Assert.Equal("registro@tepuynet.com", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.Email", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(3, result.All("BillingContact.Address").Count);
-            Assert.Equal("Tepuynet C.A.", result.All("BillingContact.Address")[0]);
-            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", result.All("BillingContact.Address")[1]);
-            Assert.Equal("Valencia, Carabobo  VE", result.All("BillingContact.Address")[2]);
+            var billingAddress = result.Matches.Where(m => string.Equals(m.Token.Name, "BillingContact.Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(3, billingAddress.Count);
+            Assert.Equal("Tepuynet C.A.", billingAddress[0]);
+            Assert.Equal("Av. Bolivar Norte Torre Banaven, Piso 9 Ofic. 9-9", billingAddress[1]);
+            Assert.Equal("Valencia, Carabobo  VE", billingAddress[2]);
 
-            Assert.Equal("2418246437", result.First("BillingContact.TelephoneNumber"));
-            Assert.Equal("2418246437", result.First("BillingContact.FaxNumber"));
-            Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
-            Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
-            Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
-            Assert.Equal("SUSPENDIDO", result.First("DomainStatus"));
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.TelephoneNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.FaxNumber", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+            Assert.Equal("SUSPENDIDO", result.Matches.First(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Value);
 
-            Assert.Equal(2, result.All("NameServers").Count);
-            Assert.Equal("ns10.tepuyserver.net", result.All("NameServers")[0]);
-            Assert.Equal("ns9.tepuyserver.net", result.All("NameServers")[1]);
+            var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+            Assert.Equal(2, nameServers.Count);
+            Assert.Equal("ns10.tepuyserver.net", nameServers[0]);
+            Assert.Equal("ns9.tepuyserver.net", nameServers[1]);
 
-            Assert.Equal("Found", result.First("Status"));
+            Assert.Equal("Found", result.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
         }
         catch
         {
@@ -549,9 +565,9 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Expiration"));
-        Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.First("Updated"));
-        Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.First("Registered"));
+        Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -563,45 +579,48 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal("5662D-COOP", result.First("RegistryDomainId"));
-        Assert.Equal("moscowfood.coop", result.First("DomainName"));
-        Assert.Equal(new DateTime(2013, 01, 30, 00, 00, 00, 000, DateTimeKind.Utc), result.First("Expiration"));
+        Assert.Equal("5662D-COOP", result.Matches.First(m => string.Equals(m.Token.Name, "RegistryDomainId", StringComparison.Ordinal)).Value);
+        Assert.Equal("moscowfood.coop", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2013, 01, 30, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(3, result.All("DomainStatus").Count);
-        Assert.Equal("clientDeleteProhibited", result.All("DomainStatus")[0]);
-        Assert.Equal("clientTransferProhibited", result.All("DomainStatus")[1]);
-        Assert.Equal("clientUpdateProhibited", result.All("DomainStatus")[2]);
+        var domainStatuses = result.Matches.Where(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(3, domainStatuses.Count);
+        Assert.Equal("clientDeleteProhibited", domainStatuses[0]);
+        Assert.Equal("clientTransferProhibited", domainStatuses[1]);
+        Assert.Equal("clientUpdateProhibited", domainStatuses[2]);
 
-        Assert.Equal("Domain Bank Inc.", result.First("Registrar.Name"));
-        Assert.Equal("31", result.First("Registrar.IanaId"));
-        Assert.Equal(new DateTime(2001, 10, 09, 04, 36, 36, 000, DateTimeKind.Utc), result.First("Registered"));
-        Assert.Equal("registrant", result.First("Type"));
-        Assert.Equal("71764C-COOP", result.First("Contact.Id"));
-        Assert.Equal("Kenna Eaton", result.First("Contact.Name"));
-        Assert.Equal("Moscow Food Co-op", result.First("Contact.Organization"));
+        Assert.Equal("Domain Bank Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("31", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.IanaId", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTime(2001, 10, 09, 04, 36, 36, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+        Assert.Equal("registrant", result.Matches.First(m => string.Equals(m.Token.Name, "Type", StringComparison.Ordinal)).Value);
+        Assert.Equal("71764C-COOP", result.Matches.First(m => string.Equals(m.Token.Name, "Contact.Id", StringComparison.Ordinal)).Value);
+        Assert.Equal("Kenna Eaton", result.Matches.First(m => string.Equals(m.Token.Name, "Contact.Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("Moscow Food Co-op", result.Matches.First(m => string.Equals(m.Token.Name, "Contact.Organization", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(5, result.All("Address").Count);
-        Assert.Equal("P. O. Box 9485", result.All("Address")[0]);
-        Assert.Equal("Moscow", result.All("Address")[1]);
-        Assert.Equal("ID", result.All("Address")[2]);
-        Assert.Equal("83843", result.All("Address")[3]);
-        Assert.Equal("United States", result.All("Address")[4]);
+        var address = result.Matches.Where(m => string.Equals(m.Token.Name, "Address", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(5, address.Count);
+        Assert.Equal("P. O. Box 9485", address[0]);
+        Assert.Equal("Moscow", address[1]);
+        Assert.Equal("ID", address[2]);
+        Assert.Equal("83843", address[3]);
+        Assert.Equal("United States", address[4]);
 
-        Assert.Equal("+1.2088828537", result.First("Phone"));
-        Assert.Equal("+1.2088828082", result.First("Fax"));
+        Assert.Equal("+1.2088828537", result.Matches.First(m => string.Equals(m.Token.Name, "Phone", StringComparison.Ordinal)).Value);
+        Assert.Equal("+1.2088828082", result.Matches.First(m => string.Equals(m.Token.Name, "Fax", StringComparison.Ordinal)).Value);
 
-        Assert.Equal(4, result.All("Email").Count);
-        Assert.Equal("kenna@moscowfood.coop", result.All("Email")[0]);
-        Assert.Equal("outreach@moscowfood.coop", result.All("Email")[1]);
-        Assert.Equal("payable@moscowfood.coop", result.All("Email")[2]);
-        Assert.Equal("joseph@moscowfood.coop", result.All("Email")[3]);
+        var emails = result.Matches.Where(m => string.Equals(m.Token.Name, "Email", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(4, emails.Count);
+        Assert.Equal("kenna@moscowfood.coop", emails[0]);
+        Assert.Equal("outreach@moscowfood.coop", emails[1]);
+        Assert.Equal("payable@moscowfood.coop", emails[2]);
+        Assert.Equal("joseph@moscowfood.coop", emails[3]);
 
+        var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
+        Assert.Equal(2, nameServers.Count);
+        Assert.Equal("ns2.west-datacenter.net", nameServers[0]);
+        Assert.Equal("ns1.west-datacenter.net", nameServers[1]);
 
-        Assert.Equal(2, result.All("NameServers").Count);
-        Assert.Equal("ns2.west-datacenter.net", result.All("NameServers")[0]);
-        Assert.Equal("ns1.west-datacenter.net", result.All("NameServers")[1]);
-
-        Assert.Equal("Found", result.First("Status"));
+        Assert.Equal("Found", result.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);
     }
 
     private static string ReadData(string name)

@@ -88,7 +88,7 @@ public class ContainsValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("Bob", result.First("Name"));
+        Assert.Equal("Bob", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     [Theory]

@@ -41,6 +41,6 @@ public class ListTests : TokenizerTestBase
         Assert.Equal("one.com", domains[0].Value);
         Assert.Equal("two.com", domains[1].Value);
         Assert.Equal("three.com", domains[2].Value);
-        Assert.Equal("secondary.com", results.First("SecondaryDomain"));
+        Assert.Equal("secondary.com", results.Matches.First(m => string.Equals(m.Token.Name, "SecondaryDomain", StringComparison.Ordinal)).Value);
     }
 }

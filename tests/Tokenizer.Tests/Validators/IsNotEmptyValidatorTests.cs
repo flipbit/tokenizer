@@ -63,6 +63,6 @@ public class IsNotEmptyValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("Charles", result.First("MiddleName"));
+        Assert.Equal("Charles", result.Matches.First(m => string.Equals(m.Token.Name, "MiddleName", StringComparison.Ordinal)).Value);
     }
 }

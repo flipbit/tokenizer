@@ -92,6 +92,6 @@ public class TokenizerOptionsRecordTests : TokenizerTestBase
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal("John", result.First("name"));
+        Assert.Equal("John", result.Matches.First(m => string.Equals(m.Token.Name, "name", StringComparison.Ordinal)).Value);
     }
 }

@@ -109,6 +109,6 @@ public class IsIntegerValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("42", result.First("Count"));
+        Assert.Equal("42", result.Matches.First(m => string.Equals(m.Token.Name, "Count", StringComparison.Ordinal)).Value);
     }
 }

@@ -76,6 +76,6 @@ public class IsEmailValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("hello@domain.com", result.First("Email"));
+        Assert.Equal("hello@domain.com", result.Matches.First(m => string.Equals(m.Token.Name, "Email", StringComparison.Ordinal)).Value);
     }
 }

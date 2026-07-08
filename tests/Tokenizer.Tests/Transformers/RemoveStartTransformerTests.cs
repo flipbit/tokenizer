@@ -92,7 +92,7 @@ public class RemoveStartTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("domain.com", result.First("DomainName"));
+        Assert.Equal("domain.com", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
     }
 
     [Theory]

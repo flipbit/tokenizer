@@ -109,6 +109,6 @@ public class IsIpAddressValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("10.0.0.1", result.First("Ip"));
+        Assert.Equal("10.0.0.1", result.Matches.First(m => string.Equals(m.Token.Name, "Ip", StringComparison.Ordinal)).Value);
     }
 }

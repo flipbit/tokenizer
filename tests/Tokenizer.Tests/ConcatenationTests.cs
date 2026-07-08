@@ -28,7 +28,7 @@ public class ConcatenationTests : TokenizerTestBase
 
         Assert.Single(result.Matches);
 
-        Assert.Equal("AliceBob", result.First("Name"));
+        Assert.Equal("AliceBob", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class ConcatenationTests : TokenizerTestBase
 
         Assert.Single(result.Matches);
 
-        Assert.Equal("Alice, Bob", result.First("Name"));
+        Assert.Equal("Alice, Bob", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class ConcatenationTests : TokenizerTestBase
 
         Assert.Single(result.Matches);
 
-        Assert.Equal($"Alice{Environment.NewLine}Bob", result.First("Name"));
+        Assert.Equal($"Alice{Environment.NewLine}Bob", result.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
     }
 
     [Fact]

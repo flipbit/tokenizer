@@ -102,6 +102,6 @@ public class IsDomainNameValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("www.flipbit.co.uk", result.First("Domain"));
+        Assert.Equal("www.flipbit.co.uk", result.Matches.First(m => string.Equals(m.Token.Name, "Domain", StringComparison.Ordinal)).Value);
     }
 }

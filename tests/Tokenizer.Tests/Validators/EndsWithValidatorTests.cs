@@ -88,7 +88,7 @@ public class EndsWithValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("bob@admin.com", result.First("AdminEmail"));
+        Assert.Equal("bob@admin.com", result.Matches.First(m => string.Equals(m.Token.Name, "AdminEmail", StringComparison.Ordinal)).Value);
     }
 
     [Theory]

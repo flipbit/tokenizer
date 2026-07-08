@@ -101,6 +101,6 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("555-1234", result.First("Phone"));
+        Assert.Equal("555-1234", result.Matches.First(m => string.Equals(m.Token.Name, "Phone", StringComparison.Ordinal)).Value);
     }
 }

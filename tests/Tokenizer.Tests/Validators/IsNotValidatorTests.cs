@@ -80,6 +80,6 @@ public class IsNotValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("10 Acacia Avenue", result.First("Address"));
+        Assert.Equal("10 Acacia Avenue", result.Matches.First(m => string.Equals(m.Token.Name, "Address", StringComparison.Ordinal)).Value);
     }
 }

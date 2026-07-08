@@ -669,7 +669,7 @@ public class TokenizerTests : TokenizerTestBase
         // Act
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
-        var date = result.First<DateTime>("Date");
+        var date = (DateTime)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
 
         // Assert
         Assert.Equal(new DateTime(2001, 1, 1), date);

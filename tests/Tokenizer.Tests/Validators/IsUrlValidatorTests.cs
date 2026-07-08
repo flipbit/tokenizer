@@ -89,6 +89,6 @@ public class IsUrlValidatorTests : TokenizerTestBase
         var result = _tok.Tokenize(compiled, input);
 
         // Assert
-        Assert.Equal("http://www.server.com", result.First("ServerUrl"));
+        Assert.Equal("http://www.server.com", result.Matches.First(m => string.Equals(m.Token.Name, "ServerUrl", StringComparison.Ordinal)).Value);
     }
 }

@@ -75,7 +75,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First("Date"));
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.False(result.Contains("Date"));
+        Assert.False(result.Matches.Any(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)));
     }
 
     [Fact]
@@ -133,6 +133,6 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.First<DateTime>("Date"));
+        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), (DateTime)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
     }
 }

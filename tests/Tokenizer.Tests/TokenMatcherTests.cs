@@ -216,8 +216,8 @@ public class TokenMatcherTests : TokenizerTestBase
 
         var match = result.BestMatch!;
 
-        Assert.Equal("Alice", match.First("Name"));
-        Assert.Equal("30", match.First("Age"));
+        Assert.Equal("Alice", match.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", match.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
         Assert.Equal("with-age", match.Template.Name);
     }
 
@@ -262,8 +262,8 @@ public class TokenMatcherTests : TokenizerTestBase
         var match = result.BestMatch!;
 
         Assert.Equal("template1", match.Template.Name);
-        Assert.Equal("Alice", match.First("Name"));
-        Assert.Equal("30", match.First("Age"));
+        Assert.Equal("Alice", match.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
+        Assert.Equal("30", match.Matches.First(m => string.Equals(m.Token.Name, "Age", StringComparison.Ordinal)).Value);
     }
 
     [Fact]

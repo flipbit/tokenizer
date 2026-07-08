@@ -17,7 +17,7 @@ namespace Tokens;
 /// </summary>
 public sealed class Tokenizer : ITokenizer
 {
-    private readonly TemplateCompiler _parser;
+    private readonly TemplateCompiler _compiler;
     private readonly ILogger<Tokenizer> _log;
     private readonly ITokenizationEngine _tokenizationEngine;
     private readonly IResultBuilder _resultBuilder;
@@ -48,7 +48,7 @@ public sealed class Tokenizer : ITokenizer
 
         Options = options with { };
         _log = loggerFactory.CreateLogger<Tokenizer>();
-        _parser = new TemplateCompiler(Options, loggerFactory);
+        _compiler = new TemplateCompiler(Options, loggerFactory);
         _tokenizationEngine = new TokenizationEngine(loggerFactory.CreateLogger<TokenizationEngine>());
         _resultBuilder = new ResultBuilder(loggerFactory.CreateLogger<ResultBuilder>());
     }
@@ -65,19 +65,19 @@ public sealed class Tokenizer : ITokenizer
     {
         Options = options.Value with { };
         _log = logger;
-        _parser = parser;
+        _compiler = parser;
         _tokenizationEngine = tokenizationEngine;
         _resultBuilder = resultBuilder;
     }
 
     /// <inheritdoc />
-    public CompilationResult Compile(string pattern) => _parser.Compile(pattern);
+    public CompilationResult Compile(string pattern) => _compiler.Compile(pattern);
 
     /// <inheritdoc />
     public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
         var content = await reader.ReadToEndBoundedAsync(Options.MaxTemplateLength, ct).ConfigureAwait(false);
-        return _parser.Compile(content);
+        return _compiler.Compile(content);
     }
 
     /// <inheritdoc />

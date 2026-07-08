@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Tokens.Exceptions;
@@ -9,9 +8,9 @@ namespace Tokens.Reflection;
 
 /// <summary>
 /// Sets property values on objects via dot-separated property paths, with automatic
-/// intermediate object creation and type-prefix stripping.
+/// intermediate object creation and type-prefix stripping. Type conversion of temporal
+/// types uses the provided <see cref="TokenizerOptions"/> for culture-aware parsing.
 /// </summary>
-[SuppressMessage("Meziantou.Analyzer", "MA0182", Justification = "Wired in Task 5 — class is used via instance in Assign<T>()")]
 internal sealed class PropertyPathSetter
 {
     private const int MaxDepth = 10;
@@ -19,10 +18,19 @@ internal sealed class PropertyPathSetter
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
     private static readonly ConcurrentDictionary<string, string[]> PathSegmentCache = new(StringComparer.Ordinal);
 
+    private readonly TokenizerOptions _options;
+
+    /// <summary>
+    /// Initializes a new instance with the given options, used for culture-aware type conversion.
+    /// </summary>
+    public PropertyPathSetter(TokenizerOptions options)
+    {
+        _options = options;
+    }
+
     /// <summary>
     /// Sets a scalar value at the given dot-separated property path.
     /// </summary>
-    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
     public void SetScalar(object root, string propertyPath, object value, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
@@ -46,7 +54,6 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Sets a collection of values at the given dot-separated property path.
     /// </summary>
-    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
     public void SetCollection(object root, string propertyPath, IReadOnlyList<object> values, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
@@ -70,8 +77,7 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Returns true if the property at the given path on <paramref name="rootType"/> is a supported collection type.
     /// </summary>
-    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
-    public bool IsCollectionProperty(Type rootType, string propertyPath, StringComparison comparison)
+    public static bool IsCollectionProperty(Type rootType, string propertyPath, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
         {
@@ -168,7 +174,7 @@ internal sealed class PropertyPathSetter
         }
     }
 
-    private static void AssignScalar(object owner, PropertyInfo prop, object value)
+    private void AssignScalar(object owner, PropertyInfo prop, object value)
     {
         if (!prop.CanWrite || prop.GetSetMethod() == null)
         {
@@ -176,11 +182,11 @@ internal sealed class PropertyPathSetter
                 $"Cannot set property '{prop.Name}' on type '{owner.GetType().Name}': property is read-only.");
         }
 
-        var converted = ConvertValue(value, prop.PropertyType);
+        var converted = ConvertValue(value, prop.PropertyType, _options);
         prop.SetValue(owner, converted, index: null);
     }
 
-    private static void AssignCollection(object owner, PropertyInfo prop, IReadOnlyList<object> values)
+    private void AssignCollection(object owner, PropertyInfo prop, IReadOnlyList<object> values)
     {
         var propertyType = prop.PropertyType;
         var elementType = GetCollectionElementType(propertyType);
@@ -192,7 +198,7 @@ internal sealed class PropertyPathSetter
                 "Supported types: List<T>, IList<T>, ICollection<T>, T[], HashSet<T>, ImmutableList<T>, ImmutableArray<T>.");
         }
 
-        var converted = ConvertElements(values, elementType);
+        var converted = ConvertElements(values, elementType, _options);
 
         if (propertyType.IsArray)
         {
@@ -251,13 +257,13 @@ internal sealed class PropertyPathSetter
                fullName == "System.Collections.Immutable.ImmutableArray`1";
     }
 
-    private static List<object> ConvertElements(IReadOnlyList<object> values, Type elementType)
+    private static List<object> ConvertElements(IReadOnlyList<object> values, Type elementType, TokenizerOptions options)
     {
         var result = new List<object>(values.Count);
 
         foreach (var value in values)
         {
-            result.Add(ConvertValue(value, elementType));
+            result.Add(ConvertValue(value, elementType, options));
         }
 
         return result;
@@ -370,7 +376,7 @@ internal sealed class PropertyPathSetter
 
     // ── Private: type helpers ────────────────────────────────────────────────
 
-    private static object ConvertValue(object value, Type targetType)
+    private static object ConvertValue(object value, Type targetType, TokenizerOptions options)
     {
         // 1. Pass-through
         if (targetType.IsInstanceOfType(value)) return value;
@@ -382,11 +388,11 @@ internal sealed class PropertyPathSetter
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
             var underlyingType = targetType.GetGenericArguments()[0];
-            return ConvertValue(value, underlyingType);
+            return ConvertValue(value, underlyingType, options);
         }
 
         // 4. Non-IConvertible structs
-        var nonConvertible = TryConvertNonIConvertible(value, targetType);
+        var nonConvertible = TryConvertNonIConvertible(value, targetType, options);
         if (nonConvertible != null) return nonConvertible;
 
         // 5. IConvertible primitives
@@ -417,7 +423,7 @@ internal sealed class PropertyPathSetter
         }
     }
 
-    private static object? TryConvertNonIConvertible(object value, Type targetType)
+    private static object? TryConvertNonIConvertible(object value, Type targetType, TokenizerOptions options)
     {
         var valueString = value.ToString();
         if (valueString == null) return null;
@@ -436,7 +442,6 @@ internal sealed class PropertyPathSetter
             // Auto-conversion from string to temporal types
             if (DateTimeProjection.IsTemporalType(targetType))
             {
-                var options = new TokenizerOptions();
                 if (TemporalParser.TryParse(valueString, formats: null, options, out var parsed))
                 {
                     return DateTimeProjection.Project(parsed, targetType);

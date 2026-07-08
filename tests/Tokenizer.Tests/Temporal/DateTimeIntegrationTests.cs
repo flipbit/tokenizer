@@ -179,4 +179,34 @@ public class DateTimeIntegrationTests : TokenizerTestBase
         Assert.True(result.Success, $"Failed for format {format} with value {dateValue}");
         Assert.IsType<DateTimeOffset>(result.Matches.First(m => m.Token.Name == "Date").Value);
     }
+
+    [Fact]
+    public void GivenCultureInOptions_WhenAutoConvertingWithoutTransformer_ThenUsesTemplateCulture()
+    {
+        // Arrange — a raw string value with a Spanish month name, no ToDateTime decorator;
+        // target property is DateTime, so auto-conversion must use the template's es-ES culture
+        var pattern = """
+                      ---
+                      culture: es-ES
+                      terminateOnNewLine: true
+                      ---
+                      Fecha: { Date }
+                      """;
+        var input = "Fecha: 15-mar-2024";
+
+        // Act
+        var tokenizer = CreateTokenizer();
+        var template = tokenizer.Compile(pattern).Template;
+        var result = tokenizer.Tokenize(template, input);
+
+        // Assert — "mar" is the Spanish abbreviation for March; would fail with InvariantCulture
+        var target = result.Assign<DateTarget>();
+        Assert.Equal(2024, target.Date.Year);
+        Assert.Equal(3, target.Date.Month);
+    }
+
+    private sealed class DateTarget
+    {
+        public DateTime Date { get; set; }
+    }
 }

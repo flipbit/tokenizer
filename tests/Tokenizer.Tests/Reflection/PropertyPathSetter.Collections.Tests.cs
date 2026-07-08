@@ -9,7 +9,7 @@ public class PropertyPathSetterCollectionsTests
 {
     // ── Shared state ────────────────────────────────────────────────────────────
 
-    private readonly PropertyPathSetter _setter = new();
+    private readonly PropertyPathSetter _setter = new(new TokenizerOptions());
 
     // ── Model classes ───────────────────────────────────────────────────────────
 
@@ -324,7 +324,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenListProp_WhenIsCollectionProperty_ThenTrue()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(CollectionTarget), "StringList", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(CollectionTarget), "StringList", StringComparison.Ordinal);
 
         // Assert
         Assert.True(result);
@@ -334,7 +334,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenArrayProp_WhenIsCollectionProperty_ThenTrue()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(CollectionTarget), "StringArray", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(CollectionTarget), "StringArray", StringComparison.Ordinal);
 
         // Assert
         Assert.True(result);
@@ -344,7 +344,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenHashSetProp_WhenIsCollectionProperty_ThenTrue()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(CollectionTarget), "StringHashSet", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(CollectionTarget), "StringHashSet", StringComparison.Ordinal);
 
         // Assert
         Assert.True(result);
@@ -354,7 +354,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenImmutableListProp_WhenIsCollectionProperty_ThenTrue()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(CollectionTarget), "StringImmutableList", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(CollectionTarget), "StringImmutableList", StringComparison.Ordinal);
 
         // Assert
         Assert.True(result);
@@ -364,7 +364,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenScalarProp_WhenIsCollectionProperty_ThenFalse()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(CollectionTarget), "Name", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(CollectionTarget), "Name", StringComparison.Ordinal);
 
         // Assert
         Assert.False(result);
@@ -374,7 +374,7 @@ public class PropertyPathSetterCollectionsTests
     public void GivenDictionaryProp_WhenIsCollectionProperty_ThenFalse()
     {
         // Arrange & Act
-        var result = _setter.IsCollectionProperty(typeof(UnsupportedCollectionTarget), "Dict", StringComparison.Ordinal);
+        var result = PropertyPathSetter.IsCollectionProperty(typeof(UnsupportedCollectionTarget), "Dict", StringComparison.Ordinal);
 
         // Assert
         Assert.False(result);

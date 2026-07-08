@@ -66,7 +66,7 @@ public class PropertyPathSetterTests
 
     // ── Tests ───────────────────────────────────────────────────────────────────
 
-    private readonly PropertyPathSetter _setter = new PropertyPathSetter();
+    private readonly PropertyPathSetter _setter = new PropertyPathSetter(new TokenizerOptions());
 
     [Fact]
     public void GivenFlatPath_WhenSetScalar_ThenPropertyIsAssigned()

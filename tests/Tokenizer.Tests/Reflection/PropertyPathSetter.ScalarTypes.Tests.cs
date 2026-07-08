@@ -9,7 +9,7 @@ public class PropertyPathSetterScalarTypesTests
 {
     // ── Shared state ────────────────────────────────────────────────────────────
 
-    private readonly PropertyPathSetter _setter = new();
+    private readonly PropertyPathSetter _setter = new(new TokenizerOptions());
 
     // ── Model classes ───────────────────────────────────────────────────────────
 

@@ -83,7 +83,7 @@ public sealed class TokenizeResult
     {
         var target = new T();
         var options = Template.Options;
-        var setter = new PropertyPathSetter();
+        var setter = new PropertyPathSetter(options);
         var errors = new List<Exception>();
 
         var groups = Matches.GroupBy(m => m.Token.Name, StringComparer.Ordinal);
@@ -95,7 +95,7 @@ public sealed class TokenizeResult
 
             try
             {
-                if (setter.IsCollectionProperty(typeof(T), path, StringComparison.Ordinal))
+                if (PropertyPathSetter.IsCollectionProperty(typeof(T), path, StringComparison.Ordinal))
                 {
                     setter.SetCollection(target, path, values, StringComparison.Ordinal);
                 }

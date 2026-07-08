@@ -192,12 +192,6 @@ internal sealed class PropertyPathSetter
             return value;
         }
 
-        // String-to-string passthrough (handles case where value is already a string and targetType is string)
-        if (targetType == typeof(string) && value is string)
-        {
-            return value;
-        }
-
         throw new NotImplementedException(
             $"ConvertValue does not yet support converting '{value?.GetType().Name}' to '{targetType.Name}'.");
     }

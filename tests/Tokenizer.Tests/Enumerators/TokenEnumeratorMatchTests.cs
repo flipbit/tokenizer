@@ -1,3 +1,4 @@
+using Tokens.Builders;
 using Xunit;
 
 namespace Tokens.Enumerators;
@@ -48,5 +49,47 @@ public class TokenEnumeratorMatchTests
         var enumerator = new TokenEnumerator("Name: Alice");
         Assert.True(enumerator.TryMatch("Name"));
         Assert.False(enumerator.TryMatch("name"));
+    }
+
+    [Fact]
+    public void GivenOutOfOrderMode_WhenMultipleNonOptionalTokens_ThenEvaluatesAllTokens()
+    {
+        // Arrange — input starts with "Name: " which matches the second token
+        var enumerator = new TokenEnumerator("Name: Alice");
+        var tokens = new[]
+        {
+            new TokenBuilder().WithName("Age").WithPreamble("Age: ").Build(),
+            new TokenBuilder().WithName("Name").WithPreamble("Name: ").Build(),
+            new TokenBuilder().WithName("City").WithPreamble("City: ").Build(),
+        };
+        var matches = new List<Token>();
+
+        // Act — out-of-order mode should scan all tokens, not break on first non-optional
+        var found = enumerator.TryMatch(tokens, outOfOrderTokens: true, matches);
+
+        // Assert
+        Assert.True(found);
+        Assert.Single(matches);
+        Assert.Equal("Name", matches[0].Name);
+    }
+
+    [Fact]
+    public void GivenSequentialMode_WhenFirstTokenIsNonOptional_ThenBreaksAfterFirstToken()
+    {
+        // Arrange — sequential mode should break after first non-optional token
+        var enumerator = new TokenEnumerator("Name: Alice");
+        var tokens = new[]
+        {
+            new TokenBuilder().WithName("Age").WithPreamble("Age: ").Build(),
+            new TokenBuilder().WithName("Name").WithPreamble("Name: ").Build(),
+        };
+        var matches = new List<Token>();
+
+        // Act — sequential mode breaks on first non-optional, so Name is never checked
+        var found = enumerator.TryMatch(tokens, outOfOrderTokens: false, matches);
+
+        // Assert
+        Assert.False(found);
+        Assert.Empty(matches);
     }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -84,6 +85,32 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
 
         // Act
         var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void GivenFrenchDate_WhenValidatingWithFrenchCulture_ThenReturnsTrue()
+    {
+        // Arrange
+        var options = new TokenizerOptions { Culture = CultureInfo.GetCultureInfo("fr-FR") };
+
+        // Act
+        var result = ((IOptionsAwareValidator)_validator).IsValid("15 mars 2024", ["dd MMM yyyy"], options);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenFrenchDate_WhenValidatingWithDefaultOptions_ThenReturnsFalse()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = ((IOptionsAwareValidator)_validator).IsValid("15 mars 2024", ["dd MMM yyyy"], options);
 
         // Assert
         Assert.False(result);

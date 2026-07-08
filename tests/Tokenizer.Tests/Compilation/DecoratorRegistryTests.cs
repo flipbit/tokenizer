@@ -32,7 +32,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(21, registry.Validators.Count);
+        Assert.Equal(23, registry.Validators.Count);
         Assert.Contains(typeof(IsNumericValidator), registry.Validators);
         Assert.Contains(typeof(IsEmailValidator), registry.Validators);
         Assert.Contains(typeof(MatchesRegexValidator), registry.Validators);
@@ -64,7 +64,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(22, registry.Validators.Count);
+        Assert.Equal(24, registry.Validators.Count);
         Assert.Contains(typeof(StubValidator), registry.Validators);
     }
 
@@ -93,7 +93,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(21, registry.Validators.Count);
+        Assert.Equal(23, registry.Validators.Count);
     }
 
     [Fact]

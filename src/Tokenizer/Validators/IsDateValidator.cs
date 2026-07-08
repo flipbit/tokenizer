@@ -1,12 +1,13 @@
+#if NET6_0_OR_GREATER
 using Tokens.Temporal;
 
 namespace Tokens.Validators;
 
 /// <summary>
-/// Validates that the token value is a parseable date/time string.
-/// Time is optional (defaults to midnight).
+/// Validates that the token value is a date-only string.
+/// Fails if a time component is present.
 /// </summary>
-public sealed class IsDateTimeValidator : IOptionsAwareValidator
+public sealed class IsDateValidator : IOptionsAwareValidator
 {
     /// <inheritdoc />
     public bool IsValid(object value, params string[] args)
@@ -22,6 +23,11 @@ public sealed class IsDateTimeValidator : IOptionsAwareValidator
         var valueString = value.ToString();
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        return TemporalParser.TryParse(valueString, args, options, out _);
+        if (!TemporalParser.TryParse(valueString, args, options, out var dto))
+            return false;
+
+        // Reject if time component is non-midnight
+        return dto.TimeOfDay == TimeSpan.Zero;
     }
 }
+#endif

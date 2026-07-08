@@ -3,14 +3,21 @@ using Tokens.Enumerators;
 
 namespace Tokens.Tokenization.Strategies;
 
+/// <summary>
+/// Hint strategy for asynchronous/streaming tokenization. Scans buffer contents
+/// incrementally via <see cref="OnBufferFilled"/> callbacks during tokenization,
+/// maintaining an overlap window to detect hints spanning chunk boundaries.
+/// </summary>
 internal sealed class StreamingHintStrategy : IHintStrategy
 {
     private Template? _currentTemplate;
     private int _maxHintLength;
+    private int _scanableHintCount;
     private char[]? _overlapBuffer;
     private int _overlapCount;
     private readonly HashSet<string> _foundHints = new(StringComparer.Ordinal);
 
+    /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
                            string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
     {
@@ -25,11 +32,16 @@ internal sealed class StreamingHintStrategy : IHintStrategy
         }
 
         _maxHintLength = 0;
+        _scanableHintCount = 0;
         foreach (var hint in template.Hints)
         {
-            if (!string.IsNullOrEmpty(hint.Text) && hint.Text.Length > _maxHintLength)
+            if (!string.IsNullOrEmpty(hint.Text))
             {
-                _maxHintLength = hint.Text.Length;
+                _scanableHintCount++;
+                if (hint.Text.Length > _maxHintLength)
+                {
+                    _maxHintLength = hint.Text.Length;
+                }
             }
         }
 
@@ -45,6 +57,7 @@ internal sealed class StreamingHintStrategy : IHintStrategy
         return false;
     }
 
+    /// <inheritdoc />
     public void OnBufferFilled(char[] buffer, int count)
     {
         if (_currentTemplate == null || _currentTemplate.Hints.Count == 0 || count == 0)
@@ -52,7 +65,8 @@ internal sealed class StreamingHintStrategy : IHintStrategy
             return;
         }
 
-        if (_foundHints.Count >= _currentTemplate.Hints.Count)
+        // All scanable hints (non-empty text) already found — skip scanning
+        if (_foundHints.Count >= _scanableHintCount)
         {
             return;
         }
@@ -69,6 +83,7 @@ internal sealed class StreamingHintStrategy : IHintStrategy
         }
     }
 
+    /// <inheritdoc />
     public bool PostProcess(TokenizeResult result)
     {
         if (_currentTemplate == null || _currentTemplate.Hints.Count == 0)

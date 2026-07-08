@@ -1,0 +1,120 @@
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Tokens.Validators;
+
+public class IsLooseUrlValidatorTests : TokenizerTestBase
+{
+    public IsLooseUrlValidatorTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    private readonly IsLooseUrlValidator _validator = new();
+
+    [Fact]
+    public void GivenHttpUrl_WhenValidating_ThenReturnsTrue()
+    {
+        // Arrange
+        var input = "http://github.com";
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenHttpsUrl_WhenValidating_ThenReturnsTrue()
+    {
+        // Arrange
+        var input = "https://github.com";
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenUrlWithoutProtocol_WhenValidating_ThenReturnsTrue()
+    {
+        // Arrange
+        var input = "github.com";
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenRelativeUrl_WhenValidating_ThenReturnsTrue()
+    {
+        // Arrange
+        var input = "/foo/bar.html";
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenInvalidUrl_WhenValidating_ThenReturnsFalse()
+    {
+        // Arrange
+        var input = "hello world";
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void GivenNullValue_WhenValidating_ThenReturnsFalse()
+    {
+        // Arrange
+        string input = null!;
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void GivenEmptyString_WhenValidating_ThenReturnsFalse()
+    {
+        // Arrange
+        var input = string.Empty;
+
+        // Act
+        var result = _validator.IsValid(input);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void GivenTemplateWithLooseUrlValidator_WhenInputHasInvalidThenValidUrl_ThenUsesValidUrl()
+    {
+        // Arrange
+        var template = "Server: { ServerUrl : IsLooseUrl, EOL }";
+        var input = "Server: Not specified\nServer: www.server.com";
+
+        // Act
+        var _tok = new Tokenizer();
+        var compiled = _tok.Compile(template).Template;
+        var result = _tok.Tokenize(compiled, input);
+
+        // Assert
+        Assert.Equal("www.server.com", result.Matches.First(m => string.Equals(m.Token.Name, "ServerUrl", StringComparison.Ordinal)).Value);
+    }
+}

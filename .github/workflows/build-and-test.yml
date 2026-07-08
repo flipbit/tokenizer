@@ -1,0 +1,45 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          10.0.x
+
+    - name: Restore
+      run: dotnet restore Tokenizer.sln
+
+    - name: Build
+      run: dotnet build Tokenizer.sln --no-restore
+
+    - name: Test
+      run: dotnet test ./tests/Tokenizer.Tests/Tokenizer.Tests.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+    - name: Generate Coverage Report
+      if: matrix.os == 'ubuntu-latest'
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      with:
+        reports: ./TestResults/**/coverage.cobertura.xml
+        targetdir: ./CoverageReport
+        reporttypes: MarkdownSummaryGithub
+
+    - name: Write Coverage to Job Summary
+      if: matrix.os == 'ubuntu-latest'
+      run: cat ./CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY

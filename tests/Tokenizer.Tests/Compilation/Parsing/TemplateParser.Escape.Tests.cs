@@ -1,0 +1,48 @@
+using Tokens.Exceptions;
+using Xunit;
+
+#pragma warning disable MA0048 // Scenario test: TemplateParser.Escape.Tests.cs
+namespace Tokens.Compilation.Parsing;
+
+/// <summary>
+/// Tests for escape sequence handling ({{ and }})
+/// </summary>
+public class TemplateParserEscapeTests
+{
+    private readonly ITemplateDefinitionParser _parser = new AstTemplateDefinitionParser();
+
+    [Fact]
+    public void GivenTokenWithEscapedBrackets_WhenParsing_ThenUnescapesBrackets()
+    {
+        // Arrange & Act
+        var template = _parser.Parse("This {{is}} the preamble{TokenName}");
+
+        // Assert
+        Assert.Single(template.Tokens);
+
+        var token = template.Tokens.First();
+
+        Assert.Equal("This {is} the preamble", token.Preamble);
+        Assert.Equal("TokenName", token.Name);
+        Assert.False(token.IsOptional);
+        Assert.False(token.TerminateOnNewLine);
+        Assert.False(token.IsRepeating);
+    }
+
+    [Fact]
+    public void GivenTokenWithUnescapedClosingBracket_WhenParsing_ThenThrowsParsingException()
+    {
+        // Arrange, Act & Assert
+        try
+        {
+            _parser.Parse("This {{is} the preamble{TokenName}");
+
+            Assert.Fail("Should of thrown.");
+        }
+        catch (ParsingException e)
+        {
+            Assert.Equal(1, e.Line);
+            Assert.Equal(10, e.Column);
+        }
+    }
+}

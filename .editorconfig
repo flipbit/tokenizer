@@ -1,0 +1,232 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+# Default all analyzer diagnostics to silent. Only rules explicitly set to
+# warning below will fire. This prevents Meziantou and AnalysisLevel defaults
+# from breaking the build with rules we haven't reviewed yet.
+dotnet_analyzer_diagnostic.severity = silent
+
+# Formatting
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# File-scoped namespace declarations
+csharp_style_namespace_declarations = file_scoped:warning
+dotnet_diagnostic.IDE0161.severity = warning
+
+# Remove unnecessary usings
+dotnet_diagnostic.IDE0005.severity = warning
+
+# Do not require 'this.' qualification
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
+
+# Require explicit accessibility modifiers
+dotnet_style_require_accessibility_modifiers = always:warning
+dotnet_diagnostic.IDE0040.severity = warning
+
+# Remove unused parameters
+dotnet_diagnostic.IDE0060.severity = warning
+
+# Formatting
+dotnet_diagnostic.IDE0055.severity = warning
+
+# Naming conventions
+dotnet_diagnostic.IDE1006.severity = warning
+
+# --- Naming rules (order matters: more specific rules first) ---
+
+# Constants: PascalCase
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_rule.constants.symbols = constant_symbols
+dotnet_naming_rule.constants.style = pascal_case
+dotnet_naming_rule.constants.severity = warning
+dotnet_naming_symbols.constant_symbols.applicable_kinds = field
+dotnet_naming_symbols.constant_symbols.required_modifiers = const
+
+# Static readonly fields: PascalCase
+dotnet_naming_rule.static_readonly.symbols = static_readonly_symbols
+dotnet_naming_rule.static_readonly.style = pascal_case
+dotnet_naming_rule.static_readonly.severity = warning
+dotnet_naming_symbols.static_readonly_symbols.applicable_kinds = field
+dotnet_naming_symbols.static_readonly_symbols.required_modifiers = static, readonly
+
+# Interfaces: IPascalCase
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+
+dotnet_naming_rule.interfaces.symbols = interface_symbols
+dotnet_naming_rule.interfaces.style = interface_style
+dotnet_naming_rule.interfaces.severity = warning
+dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
+dotnet_naming_symbols.interface_symbols.applicable_accessibilities = *
+
+# Public members: PascalCase
+dotnet_naming_rule.public_members.symbols = public_symbols
+dotnet_naming_rule.public_members.style = pascal_case
+dotnet_naming_rule.public_members.severity = warning
+dotnet_naming_symbols.public_symbols.applicable_kinds = property, method, event
+dotnet_naming_symbols.public_symbols.applicable_accessibilities = public
+
+# Private fields: _camelCase
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+dotnet_naming_rule.private_fields.symbols = private_field_symbols
+dotnet_naming_rule.private_fields.style = underscore_camel_case
+dotnet_naming_rule.private_fields.severity = warning
+dotnet_naming_symbols.private_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.private_field_symbols.applicable_accessibilities = private, protected, private_protected
+
+# --- Quality rules (CA) ---
+
+# Use nameof instead of string literals
+dotnet_diagnostic.CA1507.severity = warning
+
+# Avoid dead conditional code
+dotnet_diagnostic.CA1508.severity = warning
+
+# Avoid zero-length array allocations
+dotnet_diagnostic.CA1825.severity = warning
+
+# Forward CancellationToken
+dotnet_diagnostic.CA2016.severity = warning
+
+# Rethrow to preserve stack details
+dotnet_diagnostic.CA2200.severity = warning
+
+# Disposable fields should be disposed
+dotnet_diagnostic.CA2213.severity = warning
+
+# Mark members as static
+dotnet_diagnostic.CA1822.severity = warning
+
+# --- Meziantou Analyzer rules (MA*) ---
+
+# Use StringComparison overloads
+dotnet_diagnostic.MA0001.severity = warning
+
+# Use an overload that has a IEqualityComparer<string> or IComparer<string> parameter
+dotnet_diagnostic.MA0002.severity = warning
+
+# ArgumentException should include paramName
+dotnet_diagnostic.MA0003.severity = warning
+
+# Add trailing comma in multi-line initializers
+dotnet_diagnostic.MA0007.severity = warning
+
+# Log or default parameter
+dotnet_diagnostic.MA0009.severity = warning
+
+# Use an overload that has a IFormatProvider parameter
+dotnet_diagnostic.MA0011.severity = warning
+
+# Prefer using collection abstraction instead of implementation
+dotnet_diagnostic.MA0016.severity = warning
+
+# Abstract types should not have public or internal constructors
+dotnet_diagnostic.MA0017.severity = warning
+
+# Use direct methods instead of LINQ when possible
+dotnet_diagnostic.MA0020.severity = warning
+
+# Use StringComparer.GetHashCode instead of string.GetHashCode
+dotnet_diagnostic.MA0021.severity = warning
+
+# Add RegexOptions.ExplicitCapture to Regex with unnamed capture groups
+dotnet_diagnostic.MA0023.severity = warning
+
+# Optimize StringBuilder usage
+dotnet_diagnostic.MA0028.severity = warning
+
+# Combine LINQ methods
+dotnet_diagnostic.MA0029.severity = warning
+
+# Optimize Enumerable.Count() usage
+dotnet_diagnostic.MA0031.severity = warning
+
+# Remove empty statements
+dotnet_diagnostic.MA0037.severity = warning
+
+# Prefer using 'await using'
+dotnet_diagnostic.MA0042.severity = warning
+
+# File name must match type name
+dotnet_diagnostic.MA0048.severity = warning
+
+# Validate arguments correctly in iterator methods
+dotnet_diagnostic.MA0050.severity = warning
+
+# Method is too long (deferred — requires dedicated refactoring)
+dotnet_diagnostic.MA0051.severity = none
+
+# Make class sealed
+dotnet_diagnostic.MA0053.severity = warning
+
+# Redundant else clause
+dotnet_diagnostic.MA0071.severity = warning
+
+# Avoid comparing with boolean constants
+dotnet_diagnostic.MA0073.severity = warning
+
+# Avoid implicit culture-sensitive operations
+dotnet_diagnostic.MA0074.severity = warning
+
+# Do not use implicit culture-sensitive ToString in interpolated strings
+dotnet_diagnostic.MA0076.severity = warning
+
+# Use char overload instead of single-character string
+dotnet_diagnostic.MA0089.severity = warning
+
+# Use indexer instead of LINQ methods on indexable collections
+dotnet_diagnostic.MA0098.severity = warning
+
+# String contains an implicit end of line character
+dotnet_diagnostic.MA0101.severity = warning
+
+# Avoid closure allocation in ConcurrentDictionary.GetOrAdd
+dotnet_diagnostic.MA0106.severity = warning
+
+# Use the Regex source generator
+dotnet_diagnostic.MA0110.severity = warning
+
+# Both if and else branch have identical code
+dotnet_diagnostic.MA0140.severity = warning
+
+# Use <see langword="keyword"/> instead of <c>keyword</c> in XML docs
+dotnet_diagnostic.MA0154.severity = warning
+
+# Use System.Threading.Lock
+dotnet_diagnostic.MA0158.severity = warning
+
+# Use Order() instead of OrderBy(x => x)
+dotnet_diagnostic.MA0159.severity = warning
+
+# Internal type is apparently never used
+dotnet_diagnostic.MA0182.severity = warning
+
+# Interpolated string contains no interpolated expressions
+dotnet_diagnostic.MA0184.severity = warning
+
+# Use semicolon instead of empty braces for types with no body
+dotnet_diagnostic.MA0206.severity = warning
+
+# Namespace must match folder structure
+dotnet_style_namespace_match_folder = true
+dotnet_diagnostic.IDE0130.severity = warning
+
+[*.{xml,csproj,props}]
+indent_size = 2

@@ -12,7 +12,7 @@ internal sealed class ContainsHintStrategy : IHintStrategy
 {
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector)
+                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
     {
         if (template.Hints.Count == 0)
         {
@@ -60,7 +60,7 @@ internal sealed class ContainsHintStrategy : IHintStrategy
     }
 
     /// <inheritdoc />
-    public bool PostProcess(TokenizeResultBase result)
+    public bool PostProcess(TokenizeResult result)
     {
         return false;
     }

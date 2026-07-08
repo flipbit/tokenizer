@@ -14,7 +14,7 @@ internal static class FrontMatterProcessor
     /// </summary>
     public static void Process(
         Template template,
-        TokenizeResultBase result,
+        TokenizeResult result,
         DecoratorPipeline pipeline,
         FileLocation location)
     {

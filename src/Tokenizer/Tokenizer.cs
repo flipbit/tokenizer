@@ -99,7 +99,7 @@ public sealed class Tokenizer : ITokenizer
         return Tokenize(template, input).Assign<T>();
     }
 
-    private void Tokenize(TokenizeResultBase result, Template template, string input)
+    private void Tokenize(TokenizeResult result, Template template, string input)
     {
         // template.Options reflects merged instance + front matter overrides — intentionally
         // used instead of this.Options so per-template front matter settings take effect.
@@ -123,7 +123,7 @@ public sealed class Tokenizer : ITokenizer
     /// The raw input string. Drives length-dependent features: hint pre-filtering,
     /// input-length-based iteration cap, alignment rendering in diagnostics.
     /// </param>
-    private void TokenizeCore(TokenizeResultBase result, Template template, TextReader reader, string? rawInput)
+    private void TokenizeCore(TokenizeResult result, Template template, TextReader reader, string? rawInput)
     {
         var hintStrategy = new ContainsHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
@@ -200,7 +200,7 @@ public sealed class Tokenizer : ITokenizer
     }
 
     private void FinalizeTokenization(
-        TokenizeResultBase result, Template template,
+        TokenizeResult result, Template template,
         IDiagnosticCollector collector, string? rawInput)
     {
         _resultBuilder.BuildUnmatchedTokens(template, result, collector);
@@ -340,7 +340,7 @@ public sealed class Tokenizer : ITokenizer
         return await TokenizeAsync<T>(template, reader, ct).ConfigureAwait(false);
     }
 
-    private async Task TokenizeAsyncCore(TokenizeResultBase result, Template template, TextReader reader, CancellationToken ct)
+    private async Task TokenizeAsyncCore(TokenizeResult result, Template template, TextReader reader, CancellationToken ct)
     {
         var hintStrategy = new IntegratedHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)

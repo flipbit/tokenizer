@@ -165,8 +165,8 @@ public sealed class TokenMatcher : ITokenMatcher
     private TResult MatchCore<TResult>(
         string[]? tags,
         TResult results,
-        Func<Template, TokenizeResultBase> tokenize,
-        Action<TResult, TokenizeResultBase> addResult,
+        Func<Template, TokenizeResult> tokenize,
+        Action<TResult, TokenizeResult> addResult,
         Action<TResult> assignBestMatch)
     {
         tags ??= Array.Empty<string>();
@@ -364,7 +364,7 @@ public sealed class TokenMatcher : ITokenMatcher
         Func<TResult> createResult,
         Action<TResult, TTokenizeResult> addResult,
         Action<TResult> assignBestMatch)
-        where TTokenizeResult : TokenizeResultBase
+        where TTokenizeResult : TokenizeResult
     {
         tags ??= Array.Empty<string>();
         var results = createResult();

@@ -22,7 +22,7 @@ internal interface IHintStrategy
     // input is available. Async/streaming paths pass null and fall back to integrated
     // single-pass hint checking via OnTokenMatched callbacks.
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                    string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector);
+                    string? rawInput, TokenizeResult result, IDiagnosticCollector collector);
 
     /// <summary>
     /// Called by the engine when a token preamble matches during tokenization (for single-pass strategies).
@@ -36,5 +36,5 @@ internal interface IHintStrategy
     /// </summary>
     /// <param name="result">The result object containing tokenization results.</param>
     /// <returns>True if required hints are missing, false otherwise.</returns>
-    public bool PostProcess(TokenizeResultBase result);
+    public bool PostProcess(TokenizeResult result);
 }

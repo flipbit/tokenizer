@@ -61,7 +61,7 @@ internal sealed class ResultBuilder : IResultBuilder
         Token token,
         object assignedValue,
         FileLocation location,
-        TokenizeResultBase result)
+        TokenizeResult result)
     {
         ArgumentValidation.ThrowIfNull(token, nameof(token));
         ArgumentValidation.ThrowIfNull(assignedValue, nameof(assignedValue));
@@ -89,7 +89,7 @@ internal sealed class ResultBuilder : IResultBuilder
     /// <param name="result">The result object to add the miss to</param>
     public void AddTokenMiss(
         Token token,
-        TokenizeResultBase result)
+        TokenizeResult result)
     {
         ArgumentValidation.ThrowIfNull(token, nameof(token));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
@@ -113,7 +113,7 @@ internal sealed class ResultBuilder : IResultBuilder
     /// <param name="result">The result object to add the exception to</param>
     public void AddException(
         Exception exception,
-        TokenizeResultBase result)
+        TokenizeResult result)
     {
         ArgumentValidation.ThrowIfNull(exception, nameof(exception));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
@@ -130,7 +130,7 @@ internal sealed class ResultBuilder : IResultBuilder
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     public void BuildUnmatchedTokens(
         Template template,
-        TokenizeResultBase result,
+        TokenizeResult result,
         IDiagnosticCollector collector)
     {
         ArgumentValidation.ThrowIfNull(template, nameof(template));

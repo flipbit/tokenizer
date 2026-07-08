@@ -48,7 +48,7 @@ public class ImmutableCollectionsTests
     public void GivenTokenizeResultBase_WhenAccessingExceptions_ThenPropertyTypeIsIReadOnlyList()
     {
         // Arrange & Act
-        var propertyType = typeof(TokenizeResultBase).GetProperty("Exceptions")!.PropertyType;
+        var propertyType = typeof(TokenizeResult).GetProperty("Exceptions")!.PropertyType;
 
         // Assert
         Assert.Equal(typeof(IReadOnlyList<Exception>), propertyType);

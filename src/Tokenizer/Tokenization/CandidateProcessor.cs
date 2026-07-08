@@ -10,14 +10,14 @@ namespace Tokens.Tokenization;
 /// </summary>
 internal sealed class CandidateProcessor
 {
-    private readonly TokenizeResultBase _result;
+    private readonly TokenizeResult _result;
     private readonly Template _template;
     private readonly DecoratorPipeline _pipeline;
     private readonly IDiagnosticCollector _collector;
     private readonly ILogger _logger;
 
     public CandidateProcessor(
-        TokenizeResultBase result,
+        TokenizeResult result,
         Template template,
         DecoratorPipeline pipeline,
         IDiagnosticCollector collector,

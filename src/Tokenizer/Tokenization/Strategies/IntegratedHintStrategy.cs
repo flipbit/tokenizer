@@ -15,7 +15,7 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResultBase result, IDiagnosticCollector collector)
+                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
     {
         _currentTemplate = template;
         _matchedPreambles.Clear();
@@ -33,7 +33,7 @@ internal sealed class IntegratedHintStrategy : IHintStrategy
     }
 
     /// <inheritdoc />
-    public bool PostProcess(TokenizeResultBase result)
+    public bool PostProcess(TokenizeResult result)
     {
         if (_currentTemplate == null || _currentTemplate.Hints.Count == 0)
         {

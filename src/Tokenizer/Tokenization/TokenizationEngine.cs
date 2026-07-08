@@ -23,7 +23,7 @@ internal sealed class TokenizationEngine : ITokenizationEngine
 
     public TokenizationSession CreateSession(
         Template template,
-        TokenizeResultBase result,
+        TokenizeResult result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null)
     {

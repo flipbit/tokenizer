@@ -143,7 +143,7 @@ public class TokenizationSessionTests
     }
 
     private static TokenizationSession CreateSession(
-        Template template, TokenizeResultBase result,
+        Template template, TokenizeResult result,
         IDiagnosticCollector? collector = null)
     {
         return new TokenizationSession(

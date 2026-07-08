@@ -31,21 +31,21 @@ internal interface IResultBuilder
     /// <param name="assignedValue">The value that was assigned to the token</param>
     /// <param name="location">The location where the token was found</param>
     /// <param name="result">The result object to add the match to</param>
-    public void AddTokenMatch(Token token, object assignedValue, FileLocation location, TokenizeResultBase result);
+    public void AddTokenMatch(Token token, object assignedValue, FileLocation location, TokenizeResult result);
 
     /// <summary>
     /// Adds a token miss to the result for tokens that were not found.
     /// </summary>
     /// <param name="token">The token that was not found</param>
     /// <param name="result">The result object to add the miss to</param>
-    public void AddTokenMiss(Token token, TokenizeResultBase result);
+    public void AddTokenMiss(Token token, TokenizeResult result);
 
     /// <summary>
     /// Adds an exception to the result for errors that occurred during tokenization.
     /// </summary>
     /// <param name="exception">The exception that occurred</param>
     /// <param name="result">The result object to add the exception to</param>
-    public void AddException(Exception exception, TokenizeResultBase result);
+    public void AddException(Exception exception, TokenizeResult result);
 
     /// <summary>
     /// Builds the collection of unmatched tokens by comparing template tokens
@@ -54,5 +54,5 @@ internal interface IResultBuilder
     /// <param name="template">The template containing all token definitions</param>
     /// <param name="result">The result object to populate with unmatched tokens</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    public void BuildUnmatchedTokens(Template template, TokenizeResultBase result, IDiagnosticCollector collector);
+    public void BuildUnmatchedTokens(Template template, TokenizeResult result, IDiagnosticCollector collector);
 }

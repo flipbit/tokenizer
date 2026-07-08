@@ -13,7 +13,7 @@ namespace Tokens.Tokenization;
 internal sealed class TokenizationSession
 {
     private readonly Template _template;
-    private readonly TokenizeResultBase _result;
+    private readonly TokenizeResult _result;
     private readonly IDiagnosticCollector _collector;
     private readonly DecoratorPipeline _pipeline;
     private readonly TokenMatchRouter _router;
@@ -23,7 +23,7 @@ internal sealed class TokenizationSession
 
     public TokenizationSession(
         Template template,
-        TokenizeResultBase result,
+        TokenizeResult result,
         IDiagnosticCollector collector,
         IHintStrategy? hintStrategy,
         ILogger logger)

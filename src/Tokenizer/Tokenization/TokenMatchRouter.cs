@@ -11,18 +11,15 @@ internal sealed class TokenMatchRouter
     private readonly Template _template;
     private readonly CandidateProcessor _candidateProcessor;
     private readonly IDiagnosticCollector _collector;
-    private readonly IHintStrategy? _hintStrategy;
 
     public TokenMatchRouter(
         Template template,
         CandidateProcessor candidateProcessor,
-        IDiagnosticCollector collector,
-        IHintStrategy? hintStrategy)
+        IDiagnosticCollector collector)
     {
         _template = template;
         _candidateProcessor = candidateProcessor;
         _collector = collector;
-        _hintStrategy = hintStrategy;
     }
 
     /// <summary>
@@ -61,15 +58,6 @@ internal sealed class TokenMatchRouter
                 _collector.Record(DiagnosticEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
-            }
-
-            // Notify hint strategy of matched tokens
-            if (_hintStrategy != null)
-            {
-                foreach (var match in context.MatchBuffer)
-                {
-                    _hintStrategy.OnTokenMatched(match);
-                }
             }
 
             // First token found — prepare to read token value

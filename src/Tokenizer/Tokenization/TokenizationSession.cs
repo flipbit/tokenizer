@@ -18,6 +18,7 @@ internal sealed class TokenizationSession
     private readonly DecoratorPipeline _pipeline;
     private readonly TokenMatchRouter _router;
     private readonly CandidateProcessor _candidateProcessor;
+    private readonly IHintStrategy? _hintStrategy;
     private readonly bool _hasExplicitLimit;
     private int _iterationCount;
 
@@ -31,13 +32,13 @@ internal sealed class TokenizationSession
         _template = template;
         _result = result;
         _collector = collector;
+        _hintStrategy = hintStrategy;
         _hasExplicitLimit = _template.Options.MaxIterations > 0;
 
         _pipeline = new DecoratorPipeline(_template.Options, collector);
         _candidateProcessor = new CandidateProcessor(
             result, template, _pipeline, collector, logger);
-        _router = new TokenMatchRouter(
-            template, _candidateProcessor, collector, hintStrategy);
+        _router = new TokenMatchRouter(template, _candidateProcessor, collector);
     }
 
     /// <summary>
@@ -50,6 +51,7 @@ internal sealed class TokenizationSession
         do
         {
             context.Enumerator.FillBuffer();
+            _hintStrategy?.OnBufferFilled(context.Enumerator.StagingBuffer, context.Enumerator.LastReadCount);
 
             if (_template.Options.MaxInputLength > 0 &&
                 context.Enumerator.TotalCharactersSeen > _template.Options.MaxInputLength)
@@ -74,6 +76,7 @@ internal sealed class TokenizationSession
         do
         {
             await context.Enumerator.FillBufferAsync(ct).ConfigureAwait(false);
+            _hintStrategy?.OnBufferFilled(context.Enumerator.StagingBuffer, context.Enumerator.LastReadCount);
 
             if (_template.Options.MaxInputLength > 0 &&
                 context.Enumerator.TotalCharactersSeen > _template.Options.MaxInputLength)

@@ -127,7 +127,7 @@ public sealed class Tokenizer : ITokenizer
     /// </param>
     private void TokenizeCore(TokenizeResult result, Template template, TextReader reader, string? rawInput)
     {
-        var hintStrategy = new ContainsHintStrategy();
+        var hintStrategy = new UpfrontHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["TemplateName"] = template.Name,
@@ -345,7 +345,7 @@ public sealed class Tokenizer : ITokenizer
 
     private async Task TokenizeAsyncCore(TokenizeResult result, Template template, TextReader reader, CancellationToken ct)
     {
-        var hintStrategy = new IntegratedHintStrategy();
+        var hintStrategy = new StreamingHintStrategy();
         var scopeProperties = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             ["TemplateName"] = template.Name,
@@ -372,10 +372,14 @@ public sealed class Tokenizer : ITokenizer
 
             try
             {
-                // Async path uses IntegratedHintStrategy directly — it tracks hints via
-                // OnTokenMatched callbacks during single-pass tokenization, since the full
+                // Async path uses StreamingHintStrategy — it scans buffer contents via
+                // OnBufferFilled callbacks as each buffer is filled, since the full
                 // input string isn't available during streaming.
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput: null, result, collector);
+
+                // The enumerator's constructor pre-fills the first buffer; report it now
+                // so StreamingHintStrategy can scan for hints in the initial chunk.
+                hintStrategy.OnBufferFilled(context.Enumerator.StagingBuffer, context.Enumerator.LastReadCount);
 
                 if (hintsMissing)
                 {

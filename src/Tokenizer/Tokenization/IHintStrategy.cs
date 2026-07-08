@@ -18,8 +18,8 @@ internal interface IHintStrategy
     /// <param name="result">The result object to populate with hint matches and misses.</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if required hints are missing, false if all required hints are found.</returns>
-    bool PreProcess(Template template, TokenEnumerator enumerator,
-                    string? rawInput, TokenizeResult result, IDiagnosticCollector collector);
+    public bool PreProcess(Template template, TokenEnumerator enumerator,
+                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector);
 
     /// <summary>
     /// Called by the tokenization session after each buffer refill, passing the staging
@@ -27,7 +27,7 @@ internal interface IHintStrategy
     /// </summary>
     /// <param name="buffer">The staging buffer containing newly-read characters.</param>
     /// <param name="count">The number of valid characters in <paramref name="buffer"/>.</param>
-    void OnBufferFilled(char[] buffer, int count);
+    public void OnBufferFilled(char[] buffer, int count);
 
     /// <summary>
     /// Post-processes hints after tokenization completes.
@@ -35,5 +35,5 @@ internal interface IHintStrategy
     /// </summary>
     /// <param name="result">The result object containing tokenization results.</param>
     /// <returns>True if required hints are missing, false otherwise.</returns>
-    bool PostProcess(TokenizeResult result);
+    public bool PostProcess(TokenizeResult result);
 }

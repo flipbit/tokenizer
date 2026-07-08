@@ -8,7 +8,7 @@ namespace Tokens.Tokenization.Strategies;
 /// Does not touch the enumerator, so no reset is needed.
 /// Only used on the sync path where rawInput is always available.
 /// </summary>
-internal sealed class ContainsHintStrategy : IHintStrategy
+internal sealed class UpfrontHintStrategy : IHintStrategy
 {
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
@@ -21,7 +21,7 @@ internal sealed class ContainsHintStrategy : IHintStrategy
 
         if (rawInput == null)
         {
-            throw new ArgumentNullException(nameof(rawInput), "ContainsHintStrategy requires rawInput — use IntegratedHintStrategy for streaming inputs");
+            throw new ArgumentNullException(nameof(rawInput), "UpfrontHintStrategy requires rawInput — use StreamingHintStrategy for streaming inputs");
         }
 
         foreach (var hint in template.Hints)
@@ -54,9 +54,9 @@ internal sealed class ContainsHintStrategy : IHintStrategy
     }
 
     /// <inheritdoc />
-    public void OnTokenMatched(Token token)
+    public void OnBufferFilled(char[] buffer, int count)
     {
-        // ContainsHintStrategy uses upfront scanning, not per-token tracking — no-op
+        // UpfrontHintStrategy uses upfront scanning, not buffer-based tracking — no-op
     }
 
     /// <inheritdoc />

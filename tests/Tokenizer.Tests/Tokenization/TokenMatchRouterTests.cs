@@ -21,7 +21,7 @@ public class TokenMatchRouterTests
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, hintStrategy: null);
+            NullDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("x"));
@@ -47,7 +47,7 @@ public class TokenMatchRouterTests
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, hintStrategy: null);
+            NullDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -73,7 +73,7 @@ public class TokenMatchRouterTests
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, hintStrategy: null);
+            NullDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("A:helloB:world"));
@@ -102,7 +102,7 @@ public class TokenMatchRouterTests
             NullDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance, hintStrategy: null);
+            NullDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice\nOther: stuff"));

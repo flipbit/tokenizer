@@ -34,15 +34,15 @@ public class CompilationCacheBenchmarks
     }
 
     [Benchmark(Description = "Pre-compiled: small (3 tokens)", Baseline = true)]
-    public TokenizeResult<SmallRecord> PreCompiled_Small()
+    public SmallRecord? PreCompiled_Small()
         => _tokenizer.Tokenize<SmallRecord>(_precompiledSmall, _smallInput);
 
     [Benchmark(Description = "Pre-compiled: medium (12 tokens)")]
-    public TokenizeResult<MediumRecord> PreCompiled_Medium()
+    public MediumRecord? PreCompiled_Medium()
         => _tokenizer.Tokenize<MediumRecord>(_precompiledMedium, _mediumInput);
 
     [Benchmark(Description = "Pre-compiled: large (39 tokens)")]
-    public TokenizeResult<LargeRecord> PreCompiled_Large()
+    public LargeRecord? PreCompiled_Large()
         => _tokenizer.Tokenize<LargeRecord>(_precompiledLarge, _largeInput);
 
     [Benchmark(Description = "Concurrent tokenize: 8 threads, large")]

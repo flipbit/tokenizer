@@ -37,14 +37,14 @@ public class TokenizationBenchmarks
     }
 
     [Benchmark(Description = "Tokenize small (3 tokens)")]
-    public TokenizeResult<SmallRecord> TokenizeSmall()
+    public SmallRecord? TokenizeSmall()
         => _tokenizer.Tokenize<SmallRecord>(_smallTemplate, _smallInput);
 
     [Benchmark(Description = "Tokenize medium (12 tokens)")]
-    public TokenizeResult<MediumRecord> TokenizeMedium()
+    public MediumRecord? TokenizeMedium()
         => _tokenizer.Tokenize<MediumRecord>(_mediumTemplate, _mediumInput);
 
     [Benchmark(Description = "Tokenize large (39 tokens, front matter)")]
-    public TokenizeResult<LargeRecord> TokenizeLarge()
+    public LargeRecord? TokenizeLarge()
         => _tokenizer.Tokenize<LargeRecord>(_largeTemplate, _largeInput);
 }

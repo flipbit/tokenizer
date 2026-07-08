@@ -28,11 +28,11 @@ public class AsyncTokenizationBenchmarks
     }
 
     [Benchmark(Baseline = true, Description = "Tokenize sync (string)")]
-    public TokenizeResult<MediumRecord> Tokenize_Sync()
+    public MediumRecord? Tokenize_Sync()
         => _tokenizer.Tokenize<MediumRecord>(_mediumTemplate, _mediumInput);
 
     [Benchmark(Description = "TokenizeAsync (StringReader)")]
-    public async Task<TokenizeResult<MediumRecord>> TokenizeAsync_StringReader()
+    public async Task<MediumRecord?> TokenizeAsync_StringReader()
     {
         using var reader = new StringReader(_mediumInput);
         return await _tokenizer.TokenizeAsync<MediumRecord>(_mediumTemplate, reader);

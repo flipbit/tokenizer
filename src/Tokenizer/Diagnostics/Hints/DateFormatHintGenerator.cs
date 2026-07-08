@@ -43,8 +43,8 @@ internal sealed class DateFormatHintGenerator : IHintGenerator
 
         foreach (var format in CommonFormats)
         {
-            if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture,
-                                       DateTimeStyles.None, out _))
+            if (DateTimeOffset.TryParseExact(value, format, CultureInfo.InvariantCulture,
+                                             DateTimeStyles.None, out _))
             {
                 if (originalFormat != null)
                 {

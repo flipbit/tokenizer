@@ -244,7 +244,11 @@ public sealed class Tokenizer : ITokenizer
 
                 if (hintsMissing)
                 {
-                    _log.LogWarning("Required hints are missing, skipping tokenization");
+                    var missingHintNames = result.Hints.Misses
+                        .Where(h => !h.Optional)
+                        .Select(h => h.Text)
+                        .ToArray();
+                    _log.LogWarning("Required hints are missing, skipping tokenization: {MissingHints}", missingHintNames);
                 }
                 else
                 {
@@ -263,7 +267,11 @@ public sealed class Tokenizer : ITokenizer
 
                     if (hintStrategy.PostProcess(result))
                     {
-                        _log.LogWarning("Post-tokenization hint check failed");
+                        var failedHintNames = result.Hints.Misses
+                            .Where(h => !h.Optional)
+                            .Select(h => h.Text)
+                            .ToArray();
+                        _log.LogWarning("Post-tokenization hint check failed: {MissingHints}", failedHintNames);
                     }
                 }
 

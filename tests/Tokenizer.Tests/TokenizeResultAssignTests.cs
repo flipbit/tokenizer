@@ -142,45 +142,6 @@ public class TokenizeResultAssignTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenDictionaryTarget_WhenAssign_ThenSetsKeyValues()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithName("Key").Build();
-        var template = new TemplateBuilder().WithName("Test").WithTokens(token).WithDefaultOptions().Build();
-        var result = new TokenizeResultBuilder().WithTemplate(template)
-            .WithMatches(new TokenMatch(token, "Value", new FileLocation()))
-            .Build();
-
-        // Act
-        var typed = result.Assign<Dictionary<string, object>>();
-
-        // Assert
-        Assert.Equal("Value", typed.Value["Key"]);
-    }
-
-    [Fact]
-    public void GivenRepeatingTokenWithDictionaryTarget_WhenAssign_ThenBuildsListValue()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithName("Items").WithRepeating(true).Build();
-        var template = new TemplateBuilder().WithName("Test").WithTokens(token).WithDefaultOptions().Build();
-        var result = new TokenizeResultBuilder().WithTemplate(template)
-            .WithMatches(
-                new TokenMatch(token, "one", new FileLocation()),
-                new TokenMatch(token, "two", new FileLocation()))
-            .Build();
-
-        // Act
-        var typed = result.Assign<Dictionary<string, object>>();
-
-        // Assert
-        var list = Assert.IsType<List<object>>(typed.Value["Items"]);
-        Assert.Equal(2, list.Count);
-        Assert.Equal("one", list[0]);
-        Assert.Equal("two", list[1]);
-    }
-
-    [Fact]
     public void GivenResult_WhenAssignCalledTwice_ThenOriginalIsUnmodified()
     {
         // Arrange

@@ -34,45 +34,9 @@ public sealed class TokenizeResult : TokenizeResultBase
         var target = typed.Value;
         var options = Template.Options;
 
-        if (target is IDictionary<string, object> dictionary)
-        {
-            AssignToDictionary(dictionary, typed);
-        }
-        else
-        {
-            AssignToObject(target, options, typed);
-        }
+        AssignToObject(target, options, typed);
 
         return typed;
-    }
-
-    private static void AssignToDictionary(IDictionary<string, object> dictionary, TokenizeResultBase typed)
-    {
-        foreach (var match in typed.Tokens.Matches)
-        {
-            if (match.Token.IsRepeating)
-            {
-                List<object> list;
-                if (dictionary.ContainsKey(match.Token.Name))
-                {
-                    list = dictionary[match.Token.Name] as List<object> ?? new List<object> { dictionary[match.Token.Name] };
-                }
-                else
-                {
-                    list = new List<object>();
-                }
-                list.Add(match.Value);
-                dictionary[match.Token.Name] = list;
-            }
-            else if (dictionary.ContainsKey(match.Token.Name))
-            {
-                dictionary[match.Token.Name] = match.Value;
-            }
-            else
-            {
-                dictionary.Add(match.Token.Name, match.Value);
-            }
-        }
     }
 
     private static void AssignToObject(object target, TokenizerOptions options, TokenizeResultBase typed)

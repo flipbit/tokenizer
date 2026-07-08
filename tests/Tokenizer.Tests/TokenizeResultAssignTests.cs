@@ -151,4 +151,25 @@ public class TokenizeResultAssignTests : TokenizerTestBase
         Assert.Equal("Alice", second.Name);
         Assert.NotSame((object)first, second);
     }
+
+    [Fact]
+    public void GivenPartialAssignmentFailure_WhenAssign_ThenExceptionContainsPartialResult()
+    {
+        // Arrange
+        var nameToken = new TokenBuilder().WithName("Name").Build();
+        var scoreToken = new TokenBuilder().WithName("Score").Build();
+        var template = new TemplateBuilder().WithName("Test")
+            .WithTokens(nameToken, scoreToken).WithDefaultOptions().Build();
+        var result = new TokenizeResultBuilder().WithTemplate(template)
+            .WithMatches(
+                new TokenMatch(nameToken, "Alice", new FileLocation()),
+                new TokenMatch(scoreToken, "not-a-number", new FileLocation()))
+            .Build();
+
+        // Act & Assert
+        var ex = Assert.Throws<AssignmentFailedException>(() => result.Assign<Person>());
+        Assert.NotNull(ex.PartialResult);
+        var partial = Assert.IsType<Person>(ex.PartialResult);
+        Assert.Equal("Alice", partial.Name);
+    }
 }

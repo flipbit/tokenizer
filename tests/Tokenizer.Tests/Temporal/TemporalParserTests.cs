@@ -194,4 +194,61 @@ public class TemporalParserTests
         Assert.True(result);
         Assert.Equal(15, dto.Day);
     }
+
+    [Fact]
+    public void GivenFormatWithOffsetSpecifier_WhenParsingWithDefaultOffset_ThenParsedOffsetIsPreserved()
+    {
+        // Arrange
+        var options = new TokenizerOptions { DefaultOffset = TimeSpan.FromHours(2) };
+
+        // Act
+        var result = TemporalParser.TryParse("2024-01-15T14:30:00+05:00", ["yyyy-MM-ddTHH:mm:sszzz"], options, out var dto);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(TimeSpan.FromHours(5), dto.Offset);
+    }
+
+    [Fact]
+    public void GivenFormatWithKSpecifier_WhenParsingWithDefaultOffset_ThenParsedOffsetIsPreserved()
+    {
+        // Arrange
+        var options = new TokenizerOptions { DefaultOffset = TimeSpan.FromHours(2) };
+
+        // Act
+        var result = TemporalParser.TryParse("2024-01-15T14:30:00+05:00", ["yyyy-MM-ddTHH:mm:ssK"], options, out var dto);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(TimeSpan.FromHours(5), dto.Offset);
+    }
+
+    [Fact]
+    public void GivenValueWithLeadingAndTrailingWhitespace_WhenParsing_ThenTrimsAndParses()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = TemporalParser.TryParse("  2024-01-15  ", ["yyyy-MM-dd"], options, out var dto);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(2024, dto.Year);
+        Assert.Equal(1, dto.Month);
+        Assert.Equal(15, dto.Day);
+    }
+
+    [Fact]
+    public void GivenWhitespaceOnlyValue_WhenParsing_ThenReturnsFalse()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = TemporalParser.TryParse("   ", ["yyyy-MM-dd"], options, out _);
+
+        // Assert
+        Assert.False(result);
+    }
 }

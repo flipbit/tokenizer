@@ -21,4 +21,10 @@ public sealed class AssignmentFailedException : TokenizerException
     /// The individual exceptions that occurred during assignment.
     /// </summary>
     public IReadOnlyList<Exception> Errors { get; }
+
+    /// <summary>
+    /// The partially populated target object, if assignment was attempted.
+    /// Use this to retrieve successfully assigned values when handling the exception.
+    /// </summary>
+    public object? PartialResult { get; internal set; }
 }

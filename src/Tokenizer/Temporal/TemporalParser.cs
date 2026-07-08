@@ -43,9 +43,9 @@ internal static partial class TemporalParser
             return false;
         }
 
-        var valueString = rawString.SubstringBeforeNewLine();
+        var valueString = rawString.SubstringBeforeNewLine().Trim();
 
-        if (string.IsNullOrWhiteSpace(valueString))
+        if (valueString.Length == 0)
         {
             return false;
         }
@@ -84,10 +84,17 @@ internal static partial class TemporalParser
             // We replace "dd " or " dd" boundaries only, to avoid corrupting "ddd"/"dddd" patterns.
             var candidateFormats = BuildCandidateFormats(format, ordinalWasStripped);
 
+            // When the format contains an offset specifier, the parsed offset
+            // came from the data and must not be overridden by defaults.
+            var formatHasOffset = FormatContainsOffset(format);
+
             // Try exact format match
             if (DateTimeOffset.TryParseExact(valueToParse, candidateFormats, culture, DateTimeStyles.None, out result))
             {
-                result = ApplyDefaultOffset(result, valueToParse, options);
+                if (!formatHasOffset)
+                {
+                    result = ApplyDefaultOffset(result, valueToParse, options);
+                }
                 return true;
             }
 
@@ -97,7 +104,10 @@ internal static partial class TemporalParser
                 var expandedFormats = ExpandIso8601Formats(format);
                 if (DateTimeOffset.TryParseExact(valueToParse, expandedFormats, culture, DateTimeStyles.None, out result))
                 {
-                    result = ApplyDefaultOffset(result, valueToParse, options);
+                    if (!formatHasOffset)
+                    {
+                        result = ApplyDefaultOffset(result, valueToParse, options);
+                    }
                     return true;
                 }
             }
@@ -242,6 +252,31 @@ internal static partial class TemporalParser
                    lastSix[3] == ':' &&
                    char.IsDigit(lastSix[4]) &&
                    char.IsDigit(lastSix[5]);
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Returns true if the format string contains a timezone/offset specifier
+    /// (z, zz, zzz, or K), meaning the parsed value's offset came from the data.
+    /// </summary>
+    private static bool FormatContainsOffset(string format)
+    {
+        for (var i = 0; i < format.Length; i++)
+        {
+            var c = format[i];
+
+            // Skip quoted literals
+            if (c == '\'' || c == '"')
+            {
+                var quote = c;
+                i++;
+                while (i < format.Length && format[i] != quote) i++;
+                continue;
+            }
+
+            if (c == 'z' || c == 'K') return true;
         }
 
         return false;

@@ -33,4 +33,28 @@ public class AssignmentFailedExceptionTests
         // Assert
         Assert.IsAssignableFrom<TokenizerException>(exception);
     }
+
+    [Fact]
+    public void GivenPartialResult_WhenSet_ThenCanBeRetrieved()
+    {
+        // Arrange
+        var exception = new AssignmentFailedException("test", new List<Exception>());
+        var partial = new { Name = "Alice" };
+
+        // Act
+        exception.PartialResult = partial;
+
+        // Assert
+        Assert.Same(partial, exception.PartialResult);
+    }
+
+    [Fact]
+    public void GivenNewException_WhenCreated_ThenPartialResultIsNull()
+    {
+        // Arrange & Act
+        var exception = new AssignmentFailedException("test", new List<Exception>());
+
+        // Assert
+        Assert.Null(exception.PartialResult);
+    }
 }

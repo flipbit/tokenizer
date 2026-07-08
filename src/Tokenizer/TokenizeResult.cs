@@ -125,7 +125,11 @@ public sealed class TokenizeResult
         if (errors.Count > 0)
         {
             throw new AssignmentFailedException(
-                $"Failed to assign {errors.Count} value(s) to type '{typeof(T).Name}'.", errors);
+                $"Failed to assign {errors.Count} value(s) to type '{typeof(T).Name}'.",
+                errors)
+            {
+                PartialResult = target,
+            };
         }
 
         return target;

@@ -181,8 +181,190 @@ internal sealed class PropertyPathSetter
 
     private static void AssignCollection(object owner, PropertyInfo prop, IReadOnlyList<object> values)
     {
-        throw new NotImplementedException(
-            $"AssignCollection is not yet implemented (property '{prop.Name}' on '{owner.GetType().Name}', {values.Count} values).");
+        var propertyType = prop.PropertyType;
+        var elementType = GetCollectionElementType(propertyType);
+
+        if (elementType == null)
+        {
+            throw new InvalidOperationException(
+                $"Collection type '{propertyType.Name}' on property '{prop.Name}' is not supported. " +
+                "Supported types: List<T>, IList<T>, ICollection<T>, T[], HashSet<T>, ImmutableList<T>, ImmutableArray<T>.");
+        }
+
+        var converted = ConvertElements(values, elementType);
+
+        if (propertyType.IsArray)
+        {
+            AssignArray(owner, prop, converted, elementType);
+        }
+        else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(HashSet<>))
+        {
+            AssignHashSet(owner, prop, converted, elementType);
+        }
+        else if (IsImmutableCollectionType(propertyType))
+        {
+            AssignImmutableCollection(owner, prop, converted, elementType);
+        }
+        else
+        {
+            AssignList(owner, prop, converted, elementType);
+        }
+    }
+
+    private static Type? GetCollectionElementType(Type propertyType)
+    {
+        if (propertyType.IsArray)
+        {
+            return propertyType.GetElementType();
+        }
+
+        if (!propertyType.IsGenericType)
+        {
+            return null;
+        }
+
+        var def = propertyType.GetGenericTypeDefinition();
+
+        if (def == typeof(List<>) ||
+            def == typeof(IList<>) ||
+            def == typeof(ICollection<>) ||
+            def == typeof(HashSet<>))
+        {
+            return propertyType.GetGenericArguments()[0];
+        }
+
+        if (IsImmutableCollectionType(propertyType))
+        {
+            return propertyType.GetGenericArguments()[0];
+        }
+
+        return null;
+    }
+
+    private static bool IsImmutableCollectionType(Type type)
+    {
+        if (!type.IsGenericType) return false;
+
+        var fullName = type.GetGenericTypeDefinition().FullName;
+        return fullName == "System.Collections.Immutable.ImmutableList`1" ||
+               fullName == "System.Collections.Immutable.ImmutableArray`1";
+    }
+
+    private static List<object> ConvertElements(IReadOnlyList<object> values, Type elementType)
+    {
+        var result = new List<object>(values.Count);
+
+        foreach (var value in values)
+        {
+            result.Add(ConvertValue(value, elementType));
+        }
+
+        return result;
+    }
+
+    private static void AssignArray(object owner, PropertyInfo prop, List<object> elements, Type elementType)
+    {
+        ThrowIfReadOnly(owner, prop);
+
+        var array = Array.CreateInstance(elementType, elements.Count);
+
+        for (var i = 0; i < elements.Count; i++)
+        {
+            array.SetValue(elements[i], i);
+        }
+
+        prop.SetValue(owner, array, index: null);
+    }
+
+    private static void AssignHashSet(object owner, PropertyInfo prop, List<object> elements, Type elementType)
+    {
+        ThrowIfReadOnly(owner, prop);
+
+        var hashSetType = typeof(HashSet<>).MakeGenericType(elementType);
+        var hashSet = Activator.CreateInstance(hashSetType)!;
+        var addMethod = hashSetType.GetMethod("Add")!;
+
+        foreach (var element in elements)
+        {
+            var added = (bool)addMethod.Invoke(hashSet, new[] { element })!;
+            if (!added)
+            {
+                throw new InvalidOperationException(
+                    $"Duplicate value '{element}' encountered while assigning to HashSet property '{prop.Name}'.");
+            }
+        }
+
+        prop.SetValue(owner, hashSet, index: null);
+    }
+
+    private static void AssignImmutableCollection(object owner, PropertyInfo prop, List<object> elements, Type elementType)
+    {
+        ThrowIfReadOnly(owner, prop);
+
+        var immutableTypeName = prop.PropertyType.GetGenericTypeDefinition().FullName!;
+#pragma warning disable MA0001 // IndexOf(char) is inherently ordinal; no StringComparison overload exists
+        var backtickIndex = immutableTypeName.IndexOf('`');
+#pragma warning restore MA0001
+        var nonGenericTypeName = backtickIndex >= 0 ? immutableTypeName.Substring(0, backtickIndex) : immutableTypeName;
+        var immutableStaticType = prop.PropertyType.Assembly.GetType(nonGenericTypeName)
+            ?? throw new InvalidOperationException(
+                $"Could not find static type '{nonGenericTypeName}' for immutable collection assignment.");
+
+        var createRange = immutableStaticType
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .FirstOrDefault(m => m.Name == "CreateRange" && m.GetParameters().Length == 1)
+            ?? throw new InvalidOperationException(
+                $"Could not find CreateRange method on '{nonGenericTypeName}'.");
+
+        var genericCreateRange = createRange.MakeGenericMethod(elementType);
+
+        var arrayInstance = Array.CreateInstance(elementType, elements.Count);
+
+        for (var i = 0; i < elements.Count; i++)
+        {
+            arrayInstance.SetValue(elements[i], i);
+        }
+
+        var result = genericCreateRange.Invoke(null, new object[] { arrayInstance })!;
+        prop.SetValue(owner, result, index: null);
+    }
+
+    private static void AssignList(object owner, PropertyInfo prop, List<object> elements, Type elementType)
+    {
+        // Getter-only: add to existing IList instance
+        if (!prop.CanWrite || prop.GetSetMethod() == null)
+        {
+            var existing = prop.GetValue(owner, index: null) as System.Collections.IList
+                ?? throw new InvalidOperationException(
+                    $"Cannot set read-only property '{prop.Name}' on type '{owner.GetType().Name}': " +
+                    "property is read-only and does not implement IList.");
+
+            foreach (var element in elements)
+            {
+                existing.Add(element);
+            }
+
+            return;
+        }
+
+        var listType = typeof(List<>).MakeGenericType(elementType);
+        var list = (System.Collections.IList)Activator.CreateInstance(listType)!;
+
+        foreach (var element in elements)
+        {
+            list.Add(element);
+        }
+
+        prop.SetValue(owner, list, index: null);
+    }
+
+    private static void ThrowIfReadOnly(object owner, PropertyInfo prop)
+    {
+        if (!prop.CanWrite || prop.GetSetMethod() == null)
+        {
+            throw new InvalidOperationException(
+                $"Cannot set read-only property '{prop.Name}' on type '{owner.GetType().Name}'.");
+        }
     }
 
     // ── Private: type helpers ────────────────────────────────────────────────

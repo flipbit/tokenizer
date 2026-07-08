@@ -38,12 +38,13 @@ public class ConcatenationTests : TokenizerTestBase
         const string input = @"Name: Alice, Name: Bob";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Foo>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+        var foo = result.Assign<Foo>();
 
         Assert.Single(result.Tokens.Matches);
 
         Assert.Equal("AliceBob", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
-        Assert.Equal("AliceBob", result.Value.Name);
+        Assert.Equal("AliceBob", foo.Name);
     }
 
     [Fact]
@@ -67,12 +68,13 @@ public class ConcatenationTests : TokenizerTestBase
         const string input = @"Name: Alice, Name: Bob";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Foo>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+        var foo = result.Assign<Foo>();
 
         Assert.Single(result.Tokens.Matches);
 
         Assert.Equal("Alice, Bob", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
-        Assert.Equal("Alice, Bob", result.Value.Name);
+        Assert.Equal("Alice, Bob", foo.Name);
     }
 
     [Fact]
@@ -96,11 +98,12 @@ public class ConcatenationTests : TokenizerTestBase
         const string input = @"Name: Alice, Name: Bob";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Foo>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+        var foo = result.Assign<Foo>();
 
         Assert.Single(result.Tokens.Matches);
 
         Assert.Equal($"Alice{Environment.NewLine}Bob", result.Tokens.Matches.First(m => string.Equals(m.Token.Name, "Name", StringComparison.Ordinal)).Value);
-        Assert.Equal($"Alice{Environment.NewLine}Bob", result.Value.Name);
+        Assert.Equal($"Alice{Environment.NewLine}Bob", foo.Name);
     }
 }

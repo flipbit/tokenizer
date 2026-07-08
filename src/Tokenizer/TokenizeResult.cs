@@ -7,7 +7,7 @@ namespace Tokens;
 /// Holds the result of attempting to parse an input string against a
 /// <see cref="Template"/>.
 /// </summary>
-public class TokenizeResult
+public sealed class TokenizeResult
 {
     private readonly List<Exception> _exceptions;
 
@@ -20,18 +20,6 @@ public class TokenizeResult
         Hints = new HintResult();
         Tokens = new TokenResult();
         Template = template;
-    }
-
-    /// <summary>
-    /// Creates a projected result carrying forward state from a completed tokenization.
-    /// </summary>
-    internal TokenizeResult(Template template, TokenResult tokens, HintResult hints, Diagnostics.DiagnosticResult? diagnostics)
-    {
-        _exceptions = new List<Exception>();
-        Template = template;
-        Tokens = tokens;
-        Hints = hints;
-        Diagnostics = diagnostics;
     }
 
     /// <summary>
@@ -68,10 +56,10 @@ public class TokenizeResult
     /// <summary>
     /// Determines whether the matching process was successful.
     /// </summary>
-    public virtual bool Success => Tokens.HasMatches &&
-                                   !Tokens.HasMissingRequiredTokens &&
-                                   !Hints.HasMissingRequiredHints &&
-                                   (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
+    public bool Success => Tokens.HasMatches &&
+                           !Tokens.HasMissingRequiredTokens &&
+                           !Hints.HasMissingRequiredHints &&
+                           (Template.HasOnlyFrontMatterTokens || Tokens.Matches.Any(m => !m.Token.IsFrontMatterToken));
 
     /// <summary>
     /// A read-only list of values extracted from the input string.
@@ -83,26 +71,21 @@ public class TokenizeResult
         $"TokenizeResult('{Template.Name}': {Tokens.Matches.Count} matched, {Tokens.Misses.Count} missed)";
 
     /// <summary>
-    /// Projects this result onto a new instance of <typeparamref name="T"/>,
+    /// Projects matches onto a new instance of <typeparamref name="T"/>,
     /// assigning matched values to the object's properties via reflection.
-    /// The original result is not modified.
     /// </summary>
     /// <typeparam name="T">The type to populate with matched values.</typeparam>
-    /// <returns>A new <see cref="TokenizeResult{T}"/> with the populated object.</returns>
-    public TokenizeResult<T> Assign<T>() where T : class, new()
+    /// <returns>A new instance of <typeparamref name="T"/> with populated properties.</returns>
+    /// <exception cref="AssignmentFailedException">
+    /// Thrown when one or more matched values cannot be assigned to the target's properties.
+    /// </exception>
+    public T Assign<T>() where T : class, new()
     {
-        var typed = new TokenizeResult<T>(Template, Tokens, Hints, Diagnostics);
-        var target = typed.Value;
+        var target = new T();
         var options = Template.Options;
+        var errors = new List<Exception>();
 
-        AssignToObject(target, options, typed);
-
-        return typed;
-    }
-
-    private static void AssignToObject(object target, TokenizerOptions options, TokenizeResult typed)
-    {
-        foreach (var match in typed.Tokens.Matches)
+        foreach (var match in Matches)
         {
             try
             {
@@ -112,57 +95,30 @@ public class TokenizeResult
             {
                 if (!options.IgnoreMissingProperties)
                 {
-                    typed.AddException(new MissingMemberException(
+                    errors.Add(new MissingMemberException(
                         $"Property '{match.Token.Name}' not found on type '{target.GetType().Name}'."));
                 }
             }
             catch (TypeConversionException ex)
             {
-                typed.AddException(ex);
+                errors.Add(ex);
             }
             catch (TokenAssignmentException ex)
             {
-                typed.AddException(ex);
+                errors.Add(ex);
             }
             catch (ArgumentException ex)
             {
-                typed.AddException(ex);
+                errors.Add(ex);
             }
         }
+
+        if (errors.Count > 0)
+        {
+            throw new AssignmentFailedException(
+                $"Failed to assign {errors.Count} value(s) to type '{typeof(T).Name}'.", errors);
+        }
+
+        return target;
     }
-}
-
-/// <summary>
-/// Holds the result of attempting to parse an input string against a
-/// <see cref="Template"/> to generate an object of type <typeparamref name="T"/>.
-/// </summary>
-public sealed class TokenizeResult<T> : TokenizeResult where T : class, new()
-{
-    /// <summary>
-    ///  Creates a new instance of the <see cref="TokenizeResult{T}"/> class.
-    /// </summary>
-    public TokenizeResult(Template template) : base(template)
-    {
-        Value = new T();
-    }
-
-    /// <summary>
-    /// Creates a projected result carrying forward matching state from a completed tokenization.
-    /// Stage 1 exceptions are not copied — only assignment exceptions belong on typed results.
-    /// </summary>
-    internal TokenizeResult(Template template, TokenResult tokens, HintResult hints, Diagnostics.DiagnosticResult? diagnostics)
-        : base(template, tokens, hints, diagnostics)
-    {
-        Value = new T();
-    }
-
-    /// <summary>
-    /// An instance of <typeparamref name="T"/> populated with data from the input string.
-    /// </summary>
-    public T Value { get; init; }
-
-    /// <summary>
-    /// True when matching succeeded and no assignment errors occurred.
-    /// </summary>
-    public override bool Success => base.Success && Exceptions.Count == 0;
 }

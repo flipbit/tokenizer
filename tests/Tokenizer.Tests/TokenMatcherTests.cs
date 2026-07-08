@@ -24,9 +24,9 @@ public class TokenMatcherTests : TokenizerTestBase
     {
         _matcher.RegisterTemplate("Name: {Person.Name}", "Person");
 
-        var result = _matcher.Match<Person>("Name: Alice");
+        var result = _matcher.Match("Name: Alice");
 
-        var person = result.BestMatch!.Value;
+        var person = result.BestMatch!.Assign<Person>();
 
         Assert.Equal("Alice", person.Name);
     }
@@ -37,12 +37,13 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate("Name: {Person.Name}", "no-age");
         _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(30, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(30, person.Age);
         Assert.Equal("with-age", match.Template.Name);
     }
 
@@ -60,12 +61,13 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template1);
         _matcher.RegisterTemplate(template2);
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(0, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(0, person.Age);
         Assert.Equal("no-age", match.Template.Name);
     }
 
@@ -85,12 +87,13 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template1);
         _matcher.RegisterTemplate(template2);
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(30, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(30, person.Age);
         Assert.Equal("with-age", match.Template.Name);
     }
 
@@ -103,12 +106,13 @@ public class TokenMatcherTests : TokenizerTestBase
         matcherWithTransformer.RegisterTemplate("Name: {Person.Name:BlowsUp}", "no-age");
         matcherWithTransformer.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = matcherWithTransformer.Match<Person>("Name: Alice, Age: 30");
+        var result = matcherWithTransformer.Match("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(30, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(30, person.Age);
         Assert.Equal("with-age", match.Template.Name);
     }
 
@@ -118,14 +122,15 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}, Location: {Location!}", "with-age");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match("Name: Alice, Age: 30");
 
         Assert.True(result.Success);
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(0, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(0, person.Age);
         Assert.Equal("no-age", match.Template.Name);
     }
 
@@ -137,14 +142,15 @@ public class TokenMatcherTests : TokenizerTestBase
 
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["no-age"]);
+        var result = _matcher.Match("Name: Alice, Age: 30", ["no-age"]);
 
         Assert.True(result.Success);
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(0, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(0, person.Age);
         Assert.Equal("no-age", match.Template.Name);
     }
 
@@ -157,7 +163,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["Foo"]);
+        var result = _matcher.Match("Name: Alice, Age: 30", ["Foo"]);
 
         Assert.False(result.Success);
         Assert.Null(result.BestMatch);
@@ -171,13 +177,14 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30");
+        var result = _matcher.Match("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
         Assert.True(result.Success);
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(30, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(30, person.Age);
         Assert.Equal("with-age", match.Template.Name);
     }
 
@@ -192,14 +199,15 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
         _matcher.Templates.Get("with-age")!.AddTag("person");
 
-        var result = _matcher.Match<Person>("Name: Alice, Age: 30", ["person"]);
+        var result = _matcher.Match("Name: Alice, Age: 30", ["person"]);
 
         Assert.True(result.Success);
 
         var match = result.BestMatch!;
+        var person = match.Assign<Person>();
 
-        Assert.Equal("Alice", match.Value.Name);
-        Assert.Equal(30, match.Value.Age);
+        Assert.Equal("Alice", person.Name);
+        Assert.Equal(30, person.Age);
         Assert.Equal("with-age", match.Template.Name);
     }
 

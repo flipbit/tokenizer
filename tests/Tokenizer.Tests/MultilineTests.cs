@@ -52,15 +52,15 @@ public class MultilineTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize<Student>(template, input)!;
 
         // Assert
-        Assert.Equal("Alice", result.Value.FirstName);
-        Assert.Equal(3, result.Value.Classes.Count);
-        Assert.Equal("French", result.Value.Classes[0]);
-        Assert.Equal("History", result.Value.Classes[1]);
-        Assert.Equal("Maths", result.Value.Classes[2]);
-        Assert.Equal("Smith", result.Value.LastName);
+        Assert.Equal("Alice", result.FirstName);
+        Assert.Equal(3, result.Classes.Count);
+        Assert.Equal("French", result.Classes[0]);
+        Assert.Equal("History", result.Classes[1]);
+        Assert.Equal("Maths", result.Classes[2]);
+        Assert.Equal("Smith", result.LastName);
     }
 
     [Fact]
@@ -95,14 +95,14 @@ public class MultilineTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize<Student>(template, input)!;
 
         // Assert
-        Assert.Equal("Alice", result.Value.FirstName);
-        Assert.Equal(3, result.Value.Classes.Count);
-        Assert.Equal("ns1.rbsov.bbc.co.uk       212.58.241.67", result.Value.Classes[0]);
-        Assert.Equal("ns1.tcams.bbc.co.uk       212.72.49.3", result.Value.Classes[1]);
-        Assert.Equal("ns1.thdow.bbc.co.uk       212.58.240.163", result.Value.Classes[2]);
-        Assert.Equal("Smith", result.Value.LastName);
+        Assert.Equal("Alice", result.FirstName);
+        Assert.Equal(3, result.Classes.Count);
+        Assert.Equal("ns1.rbsov.bbc.co.uk       212.58.241.67", result.Classes[0]);
+        Assert.Equal("ns1.tcams.bbc.co.uk       212.72.49.3", result.Classes[1]);
+        Assert.Equal("ns1.thdow.bbc.co.uk       212.58.240.163", result.Classes[2]);
+        Assert.Equal("Smith", result.LastName);
     }
 }

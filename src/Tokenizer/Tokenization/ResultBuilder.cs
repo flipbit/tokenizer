@@ -38,19 +38,6 @@ internal sealed class ResultBuilder : IResultBuilder
     }
 
     /// <summary>
-    /// Creates a new TokenizeResult&lt;T&gt; instance for the given template.
-    /// </summary>
-    /// <typeparam name="T">The type of object to populate</typeparam>
-    /// <param name="template">The template used for tokenization</param>
-    /// <returns>A new TokenizeResult&lt;T&gt; instance</returns>
-    public TokenizeResult<T> CreateTokenizeResult<T>(Template template) where T : class, new()
-    {
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-
-        return new TokenizeResult<T>(template);
-    }
-
-    /// <summary>
     /// Adds a token match to the result with the assigned value and location.
     /// </summary>
     /// <param name="token">The token that was matched</param>

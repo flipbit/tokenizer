@@ -39,10 +39,11 @@ public class TokenizerOptionsTests : TokenizerTestBase
         var tokenizer = new Tokenizer();
 
         var template = tokenizer.Compile(content).Template;
-        var result = tokenizer.Tokenize<Person>(template, input);
+        var result = tokenizer.Tokenize(template, input);
+        var person = result.Assign<Person>();
 
-        Assert.Equal(30, result.Value.Age);
-        Assert.Equal("London", result.Value.Address);
+        Assert.Equal(30, person.Age);
+        Assert.Equal("London", person.Address);
         Assert.True(result.Template.Options.TerminateOnNewLine);
     }
 

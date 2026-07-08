@@ -33,10 +33,12 @@ public class HintTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+
+        var student = result.Assign<Student>();
 
         // Assert
-        Assert.Equal("Alice", result.Value.FirstName);
+        Assert.Equal("Alice", student.FirstName);
         Assert.Single(result.Hints.Matches);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
@@ -57,10 +59,10 @@ public class HintTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
 
-        // Assert
-        Assert.Null(result.Value.FirstName);
+        // Assert — hint miss means matching fails, so no tokens matched
+        Assert.False(result.Success);
         Assert.Empty(result.Hints.Matches);
         Assert.Single(result.Hints.Misses);
         Assert.Equal("Last Name", result.Hints.Misses[0].Text);
@@ -82,11 +84,12 @@ public class HintTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+        var student = result.Assign<Student>();
 
         // Assert
-        Assert.Equal("Alice", result.Value.FirstName);
-        Assert.Equal("Smith", result.Value.LastName);
+        Assert.Equal("Alice", student.FirstName);
+        Assert.Equal("Smith", student.LastName);
         Assert.Equal(2, result.Hints.Matches.Count);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
@@ -110,11 +113,12 @@ public class HintTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
+        var student = result.Assign<Student>();
 
         // Assert
-        Assert.Equal("Alice", result.Value.FirstName);
-        Assert.Equal("Smith", result.Value.LastName);
+        Assert.Equal("Alice", student.FirstName);
+        Assert.Equal("Smith", student.LastName);
         Assert.Single(result.Hints.Matches);
         Assert.Equal("First Name", result.Hints.Matches[0].Text);
         Assert.False(result.Hints.Matches[0].Optional);
@@ -132,7 +136,7 @@ public class HintTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var result = _tokenizer.Tokenize(template, input);
 
         // Assert
         Assert.True(result.Success);

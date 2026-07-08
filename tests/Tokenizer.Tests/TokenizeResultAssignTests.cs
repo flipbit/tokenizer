@@ -35,11 +35,10 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .Build();
 
         // Act
-        var typed = result.Assign<Person>();
+        var person = result.Assign<Person>();
 
         // Assert
-        Assert.Equal("Alice", typed.Value.Name);
-        Assert.True(typed.Success);
+        Assert.Equal("Alice", person.Name);
     }
 
     [Fact]
@@ -57,15 +56,15 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .Build();
 
         // Act
-        var typed = result.Assign<Person>();
+        var person = result.Assign<Person>();
 
         // Assert
-        Assert.Equal("Bob", typed.Value.Name);
-        Assert.Equal(30, typed.Value.Age);
+        Assert.Equal("Bob", person.Name);
+        Assert.Equal(30, person.Age);
     }
 
     [Fact]
-    public void GivenTypeConversionFailure_WhenAssign_ThenSuccessIsFalseAndExceptionRecorded()
+    public void GivenTypeConversionFailure_WhenAssign_ThenThrowsAssignmentFailedException()
     {
         // Arrange
         var token = new TokenBuilder().WithName("Score").Build();
@@ -74,17 +73,14 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .WithMatches(new TokenMatch(token, "not-a-number", new FileLocation()))
             .Build();
 
-        // Act
-        var typed = result.Assign<Person>();
-
-        // Assert
-        Assert.False(typed.Success);
-        Assert.Single(typed.Exceptions);
-        Assert.IsType<TypeConversionException>(typed.Exceptions[0]);
+        // Act & Assert
+        var ex = Assert.Throws<AssignmentFailedException>(() => result.Assign<Person>());
+        Assert.Single(ex.Errors);
+        Assert.IsType<TypeConversionException>(ex.Errors[0]);
     }
 
     [Fact]
-    public void GivenMissingPropertyWithIgnoreEnabled_WhenAssign_ThenSuccessIsTrue()
+    public void GivenMissingPropertyWithIgnoreEnabled_WhenAssign_ThenReturnsSuccessfully()
     {
         // Arrange
         var token = new TokenBuilder().WithName("NonExistent").Build();
@@ -95,15 +91,14 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .Build();
 
         // Act
-        var typed = result.Assign<Person>();
+        var person = result.Assign<Person>();
 
-        // Assert
-        Assert.True(typed.Success);
-        Assert.Empty(typed.Exceptions);
+        // Assert — no exception thrown, person has default values
+        Assert.NotNull(person);
     }
 
     [Fact]
-    public void GivenMissingPropertyWithIgnoreDisabled_WhenAssign_ThenSuccessIsFalseAndExceptionRecorded()
+    public void GivenMissingPropertyWithIgnoreDisabled_WhenAssign_ThenThrowsAssignmentFailedException()
     {
         // Arrange
         var token = new TokenBuilder().WithName("NonExistent").Build();
@@ -112,20 +107,16 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .WithMatches(new TokenMatch(token, "value", new FileLocation()))
             .Build();
 
-        // Act
-        var typed = result.Assign<Person>();
-
-        // Assert
-        Assert.False(typed.Success);
-        Assert.Single(typed.Exceptions);
-        Assert.IsType<MissingMemberException>(typed.Exceptions[0]);
+        // Act & Assert
+        var ex = Assert.Throws<AssignmentFailedException>(() => result.Assign<Person>());
+        Assert.Single(ex.Errors);
+        Assert.IsType<MissingMemberException>(ex.Errors[0]);
     }
 
     [Fact]
     public void GivenConcatenatableToken_WhenAssign_ThenSetsValue()
     {
-        // Arrange — concatenation is handled in Stage 1 (TokenResult.AddMatch),
-        // so the match list has a single pre-concatenated entry.
+        // Arrange
         var token = new TokenBuilder().WithName("Name").Build();
         token.CanConcatenate = true;
         token.ConcatenationString = ", ";
@@ -135,14 +126,14 @@ public class TokenizeResultAssignTests : TokenizerTestBase
             .Build();
 
         // Act
-        var typed = result.Assign<Person>();
+        var person = result.Assign<Person>();
 
         // Assert
-        Assert.Equal("Alice, Bob", typed.Value.Name);
+        Assert.Equal("Alice, Bob", person.Name);
     }
 
     [Fact]
-    public void GivenResult_WhenAssignCalledTwice_ThenOriginalIsUnmodified()
+    public void GivenResult_WhenAssignCalledTwice_ThenBothSucceed()
     {
         // Arrange
         var token = new TokenBuilder().WithName("Name").Build();
@@ -156,45 +147,8 @@ public class TokenizeResultAssignTests : TokenizerTestBase
         var second = result.Assign<PersonSummary>();
 
         // Assert
-        Assert.Equal("Alice", first.Value.Name);
-        Assert.Equal("Alice", second.Value.Name);
-        Assert.NotSame(first, second);
-    }
-
-    [Fact]
-    public void GivenResultWithStageOneExceptions_WhenAssign_ThenStageOneExceptionsNotCopied()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithName("Name").Build();
-        var template = new TemplateBuilder().WithName("Test").WithTokens(token).WithDefaultOptions().Build();
-        var result = new TokenizeResultBuilder().WithTemplate(template)
-            .WithMatches(new TokenMatch(token, "Alice", new FileLocation()))
-            .WithExceptions(new InvalidOperationException("stage 1 error"))
-            .Build();
-
-        // Act
-        var typed = result.Assign<Person>();
-
-        // Assert
-        Assert.Single(result.Exceptions);  // Stage 1 exception stays on original
-        Assert.Empty(typed.Exceptions);    // Not copied to typed result
-        Assert.True(typed.Success);
-    }
-
-    [Fact]
-    public void GivenSuccessfulResult_WhenAssignedWithTypeMismatch_ThenMatchingSuccessUnaffected()
-    {
-        // Arrange
-        var token = new TokenBuilder().WithName("Score").Build();
-        var template = new TemplateBuilder().WithName("Test").WithTokens(token).WithDefaultOptions().Build();
-        var result = new TokenizeResultBuilder().WithTemplate(template)
-            .WithMatches(new TokenMatch(token, "not-a-number", new FileLocation()))
-            .Build();
-
-        // Act & Assert
-        Assert.True(result.Success);  // Matching succeeded
-        var typed = result.Assign<Person>();
-        Assert.False(typed.Success);  // Assignment failed
-        Assert.True(result.Success);  // Original unchanged
+        Assert.Equal("Alice", first.Name);
+        Assert.Equal("Alice", second.Name);
+        Assert.NotSame((object)first, second);
     }
 }

@@ -28,23 +28,6 @@ public class ResultBuilder_Basic_Tests
     }
 
     [Fact]
-    public void GivenTemplate_WhenCreateTokenizeResultGeneric_ThenReturnsValidTypedResult()
-    {
-        // Arrange
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .Build();
-
-        // Act
-        var result = _builder.CreateTokenizeResult<TestClass>(template);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(template, result.Template);
-        Assert.NotNull(result.Value);
-    }
-
-    [Fact]
     public void GivenValidToken_WhenAddTokenMatch_ThenAddsMatch()
     {
         // Arrange
@@ -108,10 +91,5 @@ public class ResultBuilder_Basic_Tests
         return new TokenizeResultBuilder()
             .WithTemplate(template ?? CreateTemplate())
             .Build();
-    }
-
-    private sealed class TestClass
-    {
-        public string Name { get; set; } = null!;
     }
 }

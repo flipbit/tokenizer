@@ -12,11 +12,11 @@ public class TokenPropertyImmutabilityTests
 
         // Act
         var template = tokenizer.Compile("Name: {TestClass.Name}\nAge: {TestClass.Age}").Template;
-        var result = tokenizer.Tokenize<TestClass>(template, "Name: Alice\nAge: 30");
+        var target = tokenizer.Tokenize<TestClass>(template, "Name: Alice\nAge: 30");
 
         // Assert
-        Assert.True(result.Success);
-        Assert.Equal("Alice", result.Value.Name);
+        Assert.NotNull(target);
+        Assert.Equal("Alice", target.Name);
     }
 
     [Fact]

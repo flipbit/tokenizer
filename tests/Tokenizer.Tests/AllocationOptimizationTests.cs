@@ -39,12 +39,12 @@ public class AllocationOptimizationTests : TokenizerTestBase
     {
         // Arrange / Act
         var template = _tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}").Template;
-        var result = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 30");
+        var target = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 30");
 
         // Assert
-        Assert.True(result.Success);
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.Equal("30", result.Value.Age);
+        Assert.NotNull(target);
+        Assert.Equal("Alice", target.Name);
+        Assert.Equal("30", target.Age);
     }
 
     [Fact]
@@ -52,11 +52,11 @@ public class AllocationOptimizationTests : TokenizerTestBase
     {
         // Arrange / Act
         var template = _tokenizer.Compile("Name: {SimpleTarget.Name}").Template;
-        var result = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob");
+        var target = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob");
 
         // Assert
-        Assert.True(result.Success);
-        Assert.Equal("Bob", result.Value.Name);
+        Assert.NotNull(target);
+        Assert.Equal("Bob", target.Name);
     }
 
     [Fact]
@@ -64,17 +64,17 @@ public class AllocationOptimizationTests : TokenizerTestBase
     {
         // Arrange / Act
         var template = _tokenizer.Compile("Name: {SimpleTarget.Name}\nAge: {SimpleTarget.Age}").Template;
-        var result1 = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 25");
-        var result2 = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob\nAge: 30");
+        var target1 = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Alice\nAge: 25");
+        var target2 = _tokenizer.Tokenize<SimpleTarget>(template, "Name: Bob\nAge: 30");
 
         // Assert
-        Assert.True(result1.Success);
-        Assert.Equal("Alice", result1.Value.Name);
-        Assert.Equal("25", result1.Value.Age);
+        Assert.NotNull(target1);
+        Assert.Equal("Alice", target1.Name);
+        Assert.Equal("25", target1.Age);
 
-        Assert.True(result2.Success);
-        Assert.Equal("Bob", result2.Value.Name);
-        Assert.Equal("30", result2.Value.Age);
+        Assert.NotNull(target2);
+        Assert.Equal("Bob", target2.Name);
+        Assert.Equal("30", target2.Age);
     }
 
     public class SimpleTarget

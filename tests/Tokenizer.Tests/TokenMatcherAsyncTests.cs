@@ -32,17 +32,18 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenTextReader_WhenMatchAsyncGeneric_ThenPopulatesObject()
+    public async Task GivenTextReader_WhenMatchAsyncAndAssign_ThenPopulatesObject()
     {
         var matcher = new TokenMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         using var reader = new StringReader("Name: Bob, Age: 25");
 
-        var result = await matcher.MatchAsync<Person>(reader);
+        var result = await matcher.MatchAsync(reader);
 
         Assert.NotNull(result.BestMatch);
-        Assert.Equal("Bob", result.BestMatch.Value.Name);
-        Assert.Equal(25, result.BestMatch.Value.Age);
+        var person = result.BestMatch.Assign<Person>();
+        Assert.Equal("Bob", person.Name);
+        Assert.Equal(25, person.Age);
     }
 
     [Fact]
@@ -128,7 +129,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenTemplatesWithTags_WhenMatchAsyncGenericWithTags_ThenFiltersCorrectly()
+    public async Task GivenTemplatesWithTags_WhenMatchAsyncWithTagsAndAssign_ThenFiltersCorrectly()
     {
         // Arrange
         var matcher = new TokenMatcher();
@@ -140,12 +141,13 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var reader = new StringReader("Name: Alice, Age: 30");
 
         // Act
-        var result = await matcher.MatchAsync<Person>(reader, new[] { "no-age" });
+        var result = await matcher.MatchAsync(reader, new[] { "no-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
         Assert.Equal("no-age", result.BestMatch.Template.Name);
-        Assert.Equal("Alice", result.BestMatch.Value.Name);
+        var person = result.BestMatch.Assign<Person>();
+        Assert.Equal("Alice", person.Name);
     }
 
     [Fact]
@@ -185,7 +187,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenStreamWithTags_WhenMatchAsyncGeneric_ThenFiltersCorrectly()
+    public async Task GivenStreamWithTags_WhenMatchAsyncAndAssign_ThenFiltersCorrectly()
     {
         // Arrange
         var matcher = new TokenMatcher();
@@ -198,12 +200,13 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var stream = new MemoryStream(bytes);
 
         // Act — filter to only "no-age" tag
-        var result = await matcher.MatchAsync<Person>(stream, Encoding.UTF8, new[] { "no-age" });
+        var result = await matcher.MatchAsync(stream, Encoding.UTF8, new[] { "no-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
         Assert.Equal("no-age", result.BestMatch.Template.Name);
-        Assert.Equal("Alice", result.BestMatch.Value.Name);
+        var person = result.BestMatch.Assign<Person>();
+        Assert.Equal("Alice", person.Name);
     }
 
     [Fact]

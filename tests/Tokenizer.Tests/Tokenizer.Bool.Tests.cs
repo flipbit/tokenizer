@@ -29,8 +29,8 @@ public class BoolTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize<Student>(template, input);
 
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.True(result.Value.Enrolled);
+        Assert.Equal("Alice", result!.Name);
+        Assert.True(result!.Enrolled);
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class BoolTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize<Student>(template, input);
 
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.True(result.Value.Enrolled);
+        Assert.Equal("Alice", result!.Name);
+        Assert.True(result!.Enrolled);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class BoolTests : TokenizerTestBase
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize<Student>(template, input);
 
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.False(result.Value.Enrolled);
+        Assert.Equal("Alice", result!.Name);
+        Assert.False(result!.Enrolled);
     }
 }

@@ -34,10 +34,10 @@ public class EnumTests : TokenizerTestBase
         const string input = @"Name: Alice, Grade: GradeB";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var student = _tokenizer.Tokenize<Student>(template, input);
 
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.Equal(Grade.GradeB, result.Value.Grade);
+        Assert.Equal("Alice", student!.Name);
+        Assert.Equal(Grade.GradeB, student.Grade);
     }
 
     [Fact]
@@ -47,10 +47,10 @@ public class EnumTests : TokenizerTestBase
         const string input = @"Name: Alice, Grade: Gradec";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
+        var student = _tokenizer.Tokenize<Student>(template, input);
 
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.Equal(Grade.GradeC, result.Value.Grade);
+        Assert.Equal("Alice", student!.Name);
+        Assert.Equal(Grade.GradeC, student.Grade);
     }
 
     [Fact]
@@ -60,10 +60,7 @@ public class EnumTests : TokenizerTestBase
         const string input = @"Name: Alice, Grade: GradeE";
 
         var template = _tokenizer.Compile(pattern).Template;
-        var result = _tokenizer.Tokenize<Student>(template, input);
-
-        Assert.Equal("Alice", result.Value.Name);
-        Assert.Equal(Grade.GradeA, result.Value.Grade);
-        Assert.Single(result.Exceptions);
+        var ex = Assert.Throws<Exceptions.AssignmentFailedException>(() => _tokenizer.Tokenize<Student>(template, input));
+        Assert.Single(ex.Errors);
     }
 }

@@ -26,8 +26,7 @@ public class SplitTests : TokenizerTestBase
 
         // Act
         var template = _tokenizer.Compile(pattern).Template;
-        var results = _tokenizer.Tokenize<Foo>(template, input);
-        var foo = results.Value;
+        var foo = _tokenizer.Tokenize<Foo>(template, input)!;
 
         // Assert
         Assert.Equal(3, foo.Names.Count);

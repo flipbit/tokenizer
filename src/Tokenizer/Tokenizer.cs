@@ -93,10 +93,12 @@ public sealed class Tokenizer : ITokenizer
     /// <typeparam name="T">The type to populate with extracted values.</typeparam>
     /// <param name="template">The compiled template to match against.</param>
     /// <param name="input">The input text to extract values from.</param>
-    /// <returns>A <see cref="TokenizeResult{T}"/> with the populated object and match details.</returns>
-    public TokenizeResult<T> Tokenize<T>(Template template, string input) where T : class, new()
+    /// <returns>A new instance of <typeparamref name="T"/> with populated properties, or null if matching fails.</returns>
+    public T? Tokenize<T>(Template template, string input) where T : class, new()
     {
-        return Tokenize(template, input).Assign<T>();
+        var result = Tokenize(template, input);
+        if (!result.Success) return null;
+        return result.Assign<T>();
     }
 
     private void Tokenize(TokenizeResult result, Template template, string input)
@@ -304,9 +306,10 @@ public sealed class Tokenizer : ITokenizer
     /// searching the full input. Hints referencing text that only appears in extracted values
     /// (not preambles) may not be detected.
     /// </remarks>
-    public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
+    public async Task<T?> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
     {
         var result = await TokenizeAsync(template, input, ct).ConfigureAwait(false);
+        if (!result.Success) return null;
         return result.Assign<T>();
     }
 
@@ -333,7 +336,7 @@ public sealed class Tokenizer : ITokenizer
     /// searching the full input. Hints referencing text that only appears in extracted values
     /// (not preambles) may not be detected.
     /// </remarks>
-    public async Task<TokenizeResult<T>> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
+    public async Task<T?> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
     {
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
             bufferSize: 1024, leaveOpen: true);

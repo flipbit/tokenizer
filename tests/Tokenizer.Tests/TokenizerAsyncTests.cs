@@ -39,12 +39,12 @@ public class TokenizerAsyncTests : TokenizerTestBase
         using var reader = new StringReader("Name: Bob, Age: 25");
 
         // Act
-        var result = await _tokenizer.TokenizeAsync<Person>(template, reader);
+        var person = await _tokenizer.TokenizeAsync<Person>(template, reader);
 
         // Assert
-        Assert.True(result.Success);
-        Assert.Equal("Bob", result.Value.Name);
-        Assert.Equal(25, result.Value.Age);
+        Assert.NotNull(person);
+        Assert.Equal("Bob", person.Name);
+        Assert.Equal(25, person.Age);
     }
 
     [Fact]
@@ -106,11 +106,11 @@ public class TokenizerAsyncTests : TokenizerTestBase
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Diana"));
 
         // Act
-        var result = await _tokenizer.TokenizeAsync<Person>(template, stream, Encoding.UTF8);
+        var person = await _tokenizer.TokenizeAsync<Person>(template, stream, Encoding.UTF8);
 
         // Assert
-        Assert.True(result.Success);
-        Assert.Equal("Diana", result.Value.Name);
+        Assert.NotNull(person);
+        Assert.Equal("Diana", person.Name);
     }
 
     [Fact]

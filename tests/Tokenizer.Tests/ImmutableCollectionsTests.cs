@@ -45,7 +45,7 @@ public class ImmutableCollectionsTests
     }
 
     [Fact]
-    public void GivenTokenizeResultBase_WhenAccessingExceptions_ThenPropertyTypeIsIReadOnlyList()
+    public void GivenTokenizeResult_WhenAccessingExceptions_ThenPropertyTypeIsIReadOnlyList()
     {
         // Arrange & Act
         var propertyType = typeof(TokenizeResult).GetProperty("Exceptions")!.PropertyType;
@@ -62,16 +62,6 @@ public class ImmutableCollectionsTests
 
         // Assert
         Assert.Equal(typeof(IReadOnlyList<TokenizeResult>), propertyType);
-    }
-
-    [Fact]
-    public void GivenGenericTokenMatcherResult_WhenAccessingResults_ThenPropertyTypeIsIReadOnlyList()
-    {
-        // Arrange & Act
-        var propertyType = typeof(TokenMatcherResult<TestClass>).GetProperty("Results")!.PropertyType;
-
-        // Assert
-        Assert.Equal(typeof(IReadOnlyList<TokenizeResult<TestClass>>), propertyType);
     }
 
     [Fact]
@@ -123,6 +113,4 @@ public class ImmutableCollectionsTests
         // Assert
         Assert.Equal(typeof(IReadOnlyList<TokenMatch>), propertyType);
     }
-
-    private sealed class TestClass;
 }

@@ -248,7 +248,7 @@ public sealed class Tokenizer : ITokenizer
     /// <inheritdoc />
     public async Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default)
     {
-        var content = await ReadToEndAsync(reader, ct, Options.MaxTemplateLength).ConfigureAwait(false);
+        var content = await reader.ReadToEndBoundedAsync(Options.MaxTemplateLength, ct).ConfigureAwait(false);
         return _parser.Compile(content);
     }
 
@@ -258,29 +258,6 @@ public sealed class Tokenizer : ITokenizer
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,
             bufferSize: 1024, leaveOpen: true);
         return await CompileAsync(reader, ct).ConfigureAwait(false);
-    }
-
-    private static async Task<string> ReadToEndAsync(TextReader reader, CancellationToken ct, int maxLength = 0)
-    {
-        var sb = new StringBuilder();
-        var buffer = new char[4096];
-        int read;
-#if NET8_0_OR_GREATER
-        while ((read = await reader.ReadAsync(buffer.AsMemory(), ct).ConfigureAwait(false)) > 0)
-#else
-        while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-#endif
-        {
-            ct.ThrowIfCancellationRequested();
-            sb.Append(buffer, 0, read);
-            if (maxLength > 0 && sb.Length > maxLength)
-            {
-                throw new TokenizerException(
-                    $"Template length {sb.Length.ToInvariant("N0")} exceeds maximum allowed length of {maxLength.ToInvariant("N0")}. " +
-                    "Increase TokenizerOptions.MaxTemplateLength to allow larger templates.");
-            }
-        }
-        return sb.ToString();
     }
 
     /// <summary>

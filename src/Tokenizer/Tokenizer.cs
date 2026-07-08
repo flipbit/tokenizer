@@ -294,6 +294,12 @@ public sealed class Tokenizer : ITokenizer
                     template.Name, ex.Message);
                 throw;
             }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Unexpected error during tokenization for template {TemplateName}: {Message}",
+                    template.Name, ex.Message);
+                throw;
+            }
         }
     }
 

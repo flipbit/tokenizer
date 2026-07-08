@@ -100,4 +100,5 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             ./artifacts/*.nupkg \
             --title "${{ github.ref_name }}" \
-            --generate-notes
+            --generate-notes \
+            ${{ contains(github.ref_name, '-') && '--prerelease' || '' }}

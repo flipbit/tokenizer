@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
+using Tokens.Exceptions;
 
 namespace Tokens.Reflection;
 
@@ -187,13 +189,72 @@ internal sealed class PropertyPathSetter
 
     private static object ConvertValue(object value, Type targetType)
     {
-        if (targetType.IsInstanceOfType(value))
+        // 1. Pass-through
+        if (targetType.IsInstanceOfType(value)) return value;
+
+        // 2. Enum
+        if (targetType.IsEnum) return ConvertToEnum(value, targetType);
+
+        // 3. Nullable<T> — unwrap and recurse
+        if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
-            return value;
+            var underlyingType = targetType.GetGenericArguments()[0];
+            return ConvertValue(value, underlyingType);
         }
 
-        throw new NotImplementedException(
-            $"ConvertValue does not yet support converting '{value?.GetType().Name}' to '{targetType.Name}'.");
+        // 4. Non-IConvertible structs
+        var nonConvertible = TryConvertNonIConvertible(value, targetType);
+        if (nonConvertible != null) return nonConvertible;
+
+        // 5. IConvertible primitives
+        try
+        {
+            return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+        }
+        catch (Exception ex) when (ex is InvalidCastException or FormatException or OverflowException)
+        {
+            throw new TypeConversionException(
+                $"Unable to convert '{value}' to type {targetType.Name}", value, targetType, ex);
+        }
+    }
+
+    private static object ConvertToEnum(object value, Type enumType)
+    {
+        if (value.GetType() == enumType) return value;
+
+        var valueString = value.ToString()
+            ?? throw new TypeConversionException(
+                $"Cannot convert null string to enum type {enumType.Name}", value, enumType);
+
+        try { return Enum.Parse(enumType, valueString, ignoreCase: true); }
+        catch (ArgumentException ex)
+        {
+            throw new TypeConversionException(
+                $"Unable to convert '{valueString}' to enum type {enumType.Name}", value, enumType, ex);
+        }
+    }
+
+    private static object? TryConvertNonIConvertible(object value, Type targetType)
+    {
+        var valueString = value.ToString();
+        if (valueString == null) return null;
+
+        try
+        {
+            if (targetType == typeof(Guid)) return Guid.Parse(valueString);
+            if (targetType == typeof(TimeSpan)) return TimeSpan.Parse(valueString, CultureInfo.InvariantCulture);
+            if (targetType == typeof(DateTimeOffset)) return DateTimeOffset.Parse(valueString, CultureInfo.InvariantCulture);
+#if NET6_0_OR_GREATER
+            if (targetType == typeof(DateOnly)) return DateOnly.Parse(valueString, CultureInfo.InvariantCulture);
+            if (targetType == typeof(TimeOnly)) return TimeOnly.Parse(valueString, CultureInfo.InvariantCulture);
+#endif
+            return null;
+        }
+        catch (FormatException ex)
+        {
+            throw new TypeConversionException(
+                $"Unable to convert '{value}' to type {targetType.Name}", value, targetType, ex);
+        }
     }
 
     private static bool IsCollectionType(Type type)

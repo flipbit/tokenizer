@@ -29,9 +29,10 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match, StringComparison.Ordinal))
+            var index = value.IndexOf(match, StringComparison.Ordinal);
+            if (index != -1)
             {
-                result = value.Substring(value.IndexOf(match, StringComparison.Ordinal) + match.Length);
+                result = value.Substring(index + match.Length);
             }
         }
 
@@ -52,9 +53,10 @@ public static partial class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match, StringComparison.Ordinal))
+                var index = value.IndexOf(match, StringComparison.Ordinal);
+                if (index != -1)
                 {
-                    result = value.SubstringAfterString(match);
+                    result = value.Substring(index + match.Length);
 
                     break;
                 }
@@ -78,9 +80,10 @@ public static partial class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match, StringComparison.Ordinal))
+                var index = value.LastIndexOf(match, StringComparison.Ordinal);
+                if (index != -1)
                 {
-                    result = value.SubstringAfterLastString(match);
+                    result = value.Substring(index + match.Length);
 
                     break;
                 }
@@ -103,9 +106,10 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match, StringComparison.Ordinal))
+            var index = value.LastIndexOf(match, StringComparison.Ordinal);
+            if (index != -1)
             {
-                result = value.Substring(value.LastIndexOf(match, StringComparison.Ordinal) + match.Length);
+                result = value.Substring(index + match.Length);
             }
         }
 
@@ -124,9 +128,10 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match, StringComparison.Ordinal))
+            var index = value.IndexOf(match, StringComparison.Ordinal);
+            if (index != -1)
             {
-                result = value.Substring(0, value.IndexOf(match, StringComparison.Ordinal));
+                result = value.Substring(0, index);
             }
         }
 
@@ -145,9 +150,10 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(match))
         {
-            if (value.Contains(match, StringComparison.Ordinal))
+            var index = value.LastIndexOf(match, StringComparison.Ordinal);
+            if (index != -1)
             {
-                result = value.Substring(0, value.LastIndexOf(match, StringComparison.Ordinal));
+                result = value.Substring(0, index);
             }
         }
 
@@ -168,9 +174,10 @@ public static partial class StringExtensions
         {
             foreach (var match in matches)
             {
-                if (value.Contains(match, StringComparison.Ordinal))
+                var index = value.IndexOf(match, StringComparison.Ordinal);
+                if (index != -1)
                 {
-                    result = value.SubstringBeforeString(match);
+                    result = value.Substring(0, index);
 
                     break;
                 }

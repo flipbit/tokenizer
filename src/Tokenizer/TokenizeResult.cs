@@ -1,5 +1,5 @@
 using Tokens.Exceptions;
-using Tokens.Extensions;
+using Tokens.Reflection;
 
 namespace Tokens;
 
@@ -83,31 +83,40 @@ public sealed class TokenizeResult
     {
         var target = new T();
         var options = Template.Options;
+        var setter = new PropertyPathSetter();
         var errors = new List<Exception>();
 
-        foreach (var match in Matches)
+        var groups = Matches.GroupBy(m => m.Token.Name, StringComparer.Ordinal);
+
+        foreach (var group in groups)
         {
+            var path = group.Key;
+            var values = FlattenMatchValues(group);
+
             try
             {
-                target.SetValue(match.Token.Name, match.Value, StringComparison.Ordinal);
+                if (setter.IsCollectionProperty(typeof(T), path, StringComparison.Ordinal))
+                {
+                    setter.SetCollection(target, path, values, StringComparison.Ordinal);
+                }
+                else
+                {
+                    setter.SetScalar(target, path, values[values.Count - 1], StringComparison.Ordinal);
+                }
             }
             catch (MissingMemberException)
             {
                 if (!options.IgnoreMissingProperties)
                 {
                     errors.Add(new MissingMemberException(
-                        $"Property '{match.Token.Name}' not found on type '{target.GetType().Name}'."));
+                        $"Property '{path}' not found on type '{typeof(T).Name}'."));
                 }
             }
             catch (TypeConversionException ex)
             {
                 errors.Add(ex);
             }
-            catch (TokenAssignmentException ex)
-            {
-                errors.Add(ex);
-            }
-            catch (ArgumentException ex)
+            catch (InvalidOperationException ex)
             {
                 errors.Add(ex);
             }
@@ -120,5 +129,30 @@ public sealed class TokenizeResult
         }
 
         return target;
+    }
+
+    // Expands match values so that a transformer-produced IEnumerable<string>
+    // (e.g. from SplitTransformer) is treated as multiple individual values
+    // rather than a single collection-typed value.
+    private static List<object> FlattenMatchValues(IEnumerable<TokenMatch> matches)
+    {
+        var result = new List<object>();
+
+        foreach (var match in matches)
+        {
+            if (match.Value is IEnumerable<string> enumerable)
+            {
+                foreach (var item in enumerable)
+                {
+                    result.Add(item);
+                }
+            }
+            else
+            {
+                result.Add(match.Value);
+            }
+        }
+
+        return result;
     }
 }

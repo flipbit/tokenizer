@@ -16,7 +16,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(23, registry.Transformers.Count);
+        Assert.Equal(25, registry.Transformers.Count);
         Assert.Contains(typeof(ToDateTimeTransformer), registry.Transformers);
         Assert.Contains(typeof(ToUpperTransformer), registry.Transformers);
         Assert.Contains(typeof(SetTransformer), registry.Transformers);
@@ -49,7 +49,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(24, registry.Transformers.Count);
+        Assert.Equal(26, registry.Transformers.Count);
         Assert.Contains(typeof(StubTransformer), registry.Transformers);
     }
 
@@ -79,7 +79,7 @@ public class DecoratorRegistryTests
         var registry = new DecoratorRegistry(options);
 
         // Assert
-        Assert.Equal(23, registry.Transformers.Count);
+        Assert.Equal(25, registry.Transformers.Count);
     }
 
     [Fact]

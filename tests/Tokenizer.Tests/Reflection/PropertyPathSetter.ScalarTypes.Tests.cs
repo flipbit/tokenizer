@@ -1,6 +1,8 @@
 using Tokens.Exceptions;
 using Xunit;
 
+#pragma warning disable MA0048 // Scenario test: PropertyPathSetter.ScalarTypes.Tests.cs
+
 namespace Tokens.Reflection;
 
 public class PropertyPathSetterScalarTypesTests

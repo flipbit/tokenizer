@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Tokens.Reflection;
@@ -7,9 +8,8 @@ namespace Tokens.Reflection;
 /// Sets property values on objects via dot-separated property paths, with automatic
 /// intermediate object creation and type-prefix stripping.
 /// </summary>
-#pragma warning disable MA0182 // Internal type is apparently never used — will be wired in Task 5
+[SuppressMessage("Meziantou.Analyzer", "MA0182", Justification = "Wired in Task 5 — class is used via instance in Assign<T>()")]
 internal sealed class PropertyPathSetter
-#pragma warning restore MA0182
 {
     private const int MaxDepth = 10;
 
@@ -19,7 +19,8 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Sets a scalar value at the given dot-separated property path.
     /// </summary>
-    public static void SetScalar(object root, string propertyPath, object value, StringComparison comparison)
+    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
+    public void SetScalar(object root, string propertyPath, object value, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
         {
@@ -27,8 +28,9 @@ internal sealed class PropertyPathSetter
         }
 
         var segments = ParseSegments(propertyPath);
+        var startDepth = StripTypePrefix(root, segments, comparison) ? 1 : 0;
 
-        if (segments.Length > MaxDepth)
+        if (segments.Length - startDepth > MaxDepth)
         {
             throw new InvalidOperationException(
                 $"Property path '{propertyPath}' exceeds the maximum allowed depth of {MaxDepth}.");
@@ -41,7 +43,8 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Sets a collection of values at the given dot-separated property path.
     /// </summary>
-    public static void SetCollection(object root, string propertyPath, IReadOnlyList<object> values, StringComparison comparison)
+    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
+    public void SetCollection(object root, string propertyPath, IReadOnlyList<object> values, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
         {
@@ -49,8 +52,9 @@ internal sealed class PropertyPathSetter
         }
 
         var segments = ParseSegments(propertyPath);
+        var startDepth = StripTypePrefix(root, segments, comparison) ? 1 : 0;
 
-        if (segments.Length > MaxDepth)
+        if (segments.Length - startDepth > MaxDepth)
         {
             throw new InvalidOperationException(
                 $"Property path '{propertyPath}' exceeds the maximum allowed depth of {MaxDepth}.");
@@ -63,7 +67,8 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Returns true if the property at the given path on <paramref name="rootType"/> is a supported collection type.
     /// </summary>
-    public static bool IsCollectionProperty(Type rootType, string propertyPath, StringComparison comparison)
+    [SuppressMessage("Performance", "CA1822", Justification = "Instance method — will access instance state when options are added in Task 5")]
+    public bool IsCollectionProperty(Type rootType, string propertyPath, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
         {
@@ -71,8 +76,21 @@ internal sealed class PropertyPathSetter
         }
 
         var segments = ParseSegments(propertyPath);
-        var prop = FindProperty(rootType, segments[segments.Length - 1], comparison);
+        var startIndex = segments.Length > 1 && string.Equals(rootType.Name, segments[0], comparison) ? 1 : 0;
 
+        var currentType = rootType;
+        for (var i = startIndex; i < segments.Length - 1; i++)
+        {
+            var intermediate = FindProperty(currentType, segments[i], comparison);
+            if (intermediate == null)
+            {
+                return false;
+            }
+
+            currentType = intermediate.PropertyType;
+        }
+
+        var prop = FindProperty(currentType, segments[segments.Length - 1], comparison);
         return prop != null && IsCollectionType(prop.PropertyType);
     }
 
@@ -195,10 +213,16 @@ internal sealed class PropertyPathSetter
             if (def == typeof(IList<>)) return true;
             if (def == typeof(ICollection<>)) return true;
             if (def == typeof(HashSet<>)) return true;
+
+            var fullName = def.FullName;
+            if (fullName == "System.Collections.Immutable.ImmutableList`1" ||
+                fullName == "System.Collections.Immutable.ImmutableArray`1")
+            {
+                return true;
+            }
         }
 
-        var fullName = type.FullName ?? string.Empty;
-        return fullName.StartsWith("System.Collections.Immutable.", StringComparison.Ordinal);
+        return false;
     }
 
     // ── Private: caching helpers ─────────────────────────────────────────────

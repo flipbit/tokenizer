@@ -66,6 +66,8 @@ public class PropertyPathSetterTests
 
     // ── Tests ───────────────────────────────────────────────────────────────────
 
+    private readonly PropertyPathSetter _setter = new PropertyPathSetter();
+
     [Fact]
     public void GivenFlatPath_WhenSetScalar_ThenPropertyIsAssigned()
     {
@@ -73,7 +75,7 @@ public class PropertyPathSetterTests
         var person = new Person();
 
         // Act
-        PropertyPathSetter.SetScalar(person, "Name", "Alice", StringComparison.Ordinal);
+        _setter.SetScalar(person, "Name", "Alice", StringComparison.Ordinal);
 
         // Assert
         Assert.Equal("Alice", person.Name);
@@ -86,7 +88,7 @@ public class PropertyPathSetterTests
         var person = new Person();
 
         // Act
-        PropertyPathSetter.SetScalar(person, "Person.Name", "Bob", StringComparison.Ordinal);
+        _setter.SetScalar(person, "Person.Name", "Bob", StringComparison.Ordinal);
 
         // Assert
         Assert.Equal("Bob", person.Name);
@@ -99,7 +101,7 @@ public class PropertyPathSetterTests
         var person = new Person();
 
         // Act
-        PropertyPathSetter.SetScalar(person, "Address.City", "London", StringComparison.Ordinal);
+        _setter.SetScalar(person, "Address.City", "London", StringComparison.Ordinal);
 
         // Assert
         Assert.Equal("London", person.Address.City);
@@ -112,7 +114,7 @@ public class PropertyPathSetterTests
         var person = new Person();
 
         // Act
-        PropertyPathSetter.SetScalar(person, "Address.Region.Code", "SW1", StringComparison.Ordinal);
+        _setter.SetScalar(person, "Address.Region.Code", "SW1", StringComparison.Ordinal);
 
         // Assert
         Assert.Equal("SW1", person.Address.Region.Code);
@@ -125,7 +127,7 @@ public class PropertyPathSetterTests
         var person = new Person();
 
         // Act
-        PropertyPathSetter.SetScalar(person, "name", "Carol", StringComparison.OrdinalIgnoreCase);
+        _setter.SetScalar(person, "name", "Carol", StringComparison.OrdinalIgnoreCase);
 
         // Assert
         Assert.Equal("Carol", person.Name);
@@ -139,7 +141,7 @@ public class PropertyPathSetterTests
 
         // Act & Assert
         Assert.Throws<MissingMemberException>(() =>
-            PropertyPathSetter.SetScalar(person, "NonExistent", "value", StringComparison.Ordinal));
+            _setter.SetScalar(person, "NonExistent", "value", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -152,7 +154,7 @@ public class PropertyPathSetterTests
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() =>
-            PropertyPathSetter.SetScalar(person, deepPath, "value", StringComparison.Ordinal));
+            _setter.SetScalar(person, deepPath, "value", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -163,7 +165,7 @@ public class PropertyPathSetterTests
 
         // Act
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            PropertyPathSetter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
+            _setter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
 
         // Assert
         Assert.Contains("Value type", ex.Message, StringComparison.Ordinal);
@@ -177,7 +179,7 @@ public class PropertyPathSetterTests
 
         // Act
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            PropertyPathSetter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
+            _setter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
 
         // Assert
         Assert.Contains("interface", ex.Message, StringComparison.OrdinalIgnoreCase);
@@ -191,7 +193,7 @@ public class PropertyPathSetterTests
 
         // Act
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            PropertyPathSetter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
+            _setter.SetScalar(obj, "Mid.Value", "x", StringComparison.Ordinal));
 
         // Assert
         Assert.Contains("abstract", ex.Message, StringComparison.OrdinalIgnoreCase);
@@ -205,7 +207,7 @@ public class PropertyPathSetterTests
 
         // Act
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            PropertyPathSetter.SetScalar(obj, "ReadOnlyProp", "new value", StringComparison.Ordinal));
+            _setter.SetScalar(obj, "ReadOnlyProp", "new value", StringComparison.Ordinal));
 
         // Assert
         Assert.Contains("read-only", ex.Message, StringComparison.OrdinalIgnoreCase);
@@ -219,9 +221,9 @@ public class PropertyPathSetterTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            PropertyPathSetter.SetScalar(person, null!, "value", StringComparison.Ordinal));
+            _setter.SetScalar(person, null!, "value", StringComparison.Ordinal));
         Assert.Throws<ArgumentNullException>(() =>
-            PropertyPathSetter.SetScalar(person, "", "value", StringComparison.Ordinal));
+            _setter.SetScalar(person, "", "value", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -232,7 +234,7 @@ public class PropertyPathSetterTests
         var originalAddress = obj.Address;
 
         // Act
-        PropertyPathSetter.SetScalar(obj, "Address.City", "Paris", StringComparison.Ordinal);
+        _setter.SetScalar(obj, "Address.City", "Paris", StringComparison.Ordinal);
 
         // Assert
         Assert.Same(originalAddress, obj.Address);

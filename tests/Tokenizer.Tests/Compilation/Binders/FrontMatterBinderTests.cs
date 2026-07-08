@@ -207,4 +207,96 @@ public class FrontMatterBinderTests : TokenizerTestBase
         var token = template.Tokens.First(t => string.Equals(t.Name, "Name", StringComparison.Ordinal));
         Assert.StartsWith("   ", token.Preamble, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void GivenTemplateWithCultureFrontMatter_WhenCompiled_ThenOptionsCultureIsSet()
+    {
+        // Arrange
+        var pattern = """
+                      ---
+                      culture: pt-BR
+                      ---
+                      Name: { Name }
+                      """;
+
+        // Act
+        var tokenizer = new Tokenizer();
+        var result = tokenizer.Compile(pattern);
+
+        // Assert
+        Assert.Equal("pt-BR", result.Template.Options.Culture!.Name);
+    }
+
+    [Fact]
+    public void GivenTemplateWithInvalidCulture_WhenCompiled_ThenThrowsParsingException()
+    {
+        // Arrange
+        var pattern = """
+                      ---
+                      culture: not-a-real-culture
+                      ---
+                      Name: { Name }
+                      """;
+
+        // Act / Assert
+        var tokenizer = new Tokenizer();
+        Assert.Throws<Tokens.Exceptions.ParsingException>(() => tokenizer.Compile(pattern));
+    }
+
+    [Fact]
+    public void GivenTemplateWithDefaultOffsetFrontMatter_WhenCompiled_ThenOptionsDefaultOffsetIsSet()
+    {
+        // Arrange
+        var pattern = """
+                      ---
+                      defaultOffset: +02:00
+                      ---
+                      Name: { Name }
+                      """;
+
+        // Act
+        var tokenizer = new Tokenizer();
+        var result = tokenizer.Compile(pattern);
+
+        // Assert
+        Assert.Equal(TimeSpan.FromHours(2), result.Template.Options.DefaultOffset);
+    }
+
+    [Fact]
+    public void GivenTemplateWithNegativeDefaultOffset_WhenCompiled_ThenOptionsDefaultOffsetIsSet()
+    {
+        // Arrange
+        var pattern = """
+                      ---
+                      defaultOffset: -05:00
+                      ---
+                      Name: { Name }
+                      """;
+
+        // Act
+        var tokenizer = new Tokenizer();
+        var result = tokenizer.Compile(pattern);
+
+        // Assert
+        Assert.Equal(TimeSpan.FromHours(-5), result.Template.Options.DefaultOffset);
+    }
+
+    [Fact]
+    public void GivenTemplateWithDefaultTimezoneFrontMatter_WhenCompiled_ThenOptionsDefaultTimezoneIsSet()
+    {
+        // Arrange
+        var pattern = """
+                      ---
+                      defaultTimezone: Europe/Berlin
+                      ---
+                      Name: { Name }
+                      """;
+
+        // Act
+        var tokenizer = new Tokenizer();
+        var result = tokenizer.Compile(pattern);
+
+        // Assert
+        Assert.Equal("Europe/Berlin", result.Template.Options.DefaultTimezone);
+    }
 }

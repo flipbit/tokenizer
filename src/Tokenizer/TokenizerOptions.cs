@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -14,6 +15,7 @@ public record class TokenizerOptions
 {
     private readonly List<Type> _transformers = new List<Type>();
     private readonly List<Type> _validators = new List<Type>();
+    private readonly Dictionary<string, TimeSpan> _timezoneAbbreviations = new Dictionary<string, TimeSpan>(StringComparer.Ordinal);
 
     /// <summary>
     /// Copy constructor used by the record's <c>with</c> expression. Deep-copies the
@@ -36,6 +38,10 @@ public record class TokenizerOptions
         AllowStreamBuffering = original.AllowStreamBuffering;
         _transformers = new List<Type>(original._transformers);
         _validators = new List<Type>(original._validators);
+        Culture = original.Culture;
+        DefaultOffset = original.DefaultOffset;
+        DefaultTimezone = original.DefaultTimezone;
+        _timezoneAbbreviations = new Dictionary<string, TimeSpan>(original._timezoneAbbreviations, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -115,6 +121,43 @@ public record class TokenizerOptions
     public bool AllowStreamBuffering { get; init; }
 
     /// <summary>
+    /// The culture to use for parsing date/time values (month names, day names).
+    /// When null, <see cref="CultureInfo.InvariantCulture"/> is used.
+    /// </summary>
+    public CultureInfo? Culture { get; init; }
+
+    /// <summary>
+    /// A static UTC offset applied to date/time values that have no offset information.
+    /// Takes precedence over <see cref="DefaultTimezone"/> when both are set.
+    /// Ignored when the input value already contains an offset.
+    /// </summary>
+    public TimeSpan? DefaultOffset { get; init; }
+
+    /// <summary>
+    /// An IANA or Windows timezone ID (e.g. "Europe/Berlin") applied to date/time values
+    /// that have no offset information. Uses <see cref="TimeZoneInfo"/> for DST-aware resolution.
+    /// Ignored when <see cref="DefaultOffset"/> is set or when the input already contains an offset.
+    /// </summary>
+    public string? DefaultTimezone { get; init; }
+
+    /// <summary>
+    /// Custom timezone abbreviation-to-offset mappings registered on this options instance.
+    /// These are merged with (and can override) the built-in defaults during timezone normalization.
+    /// </summary>
+    public IReadOnlyDictionary<string, TimeSpan> TimezoneAbbreviations =>
+        new System.Collections.ObjectModel.ReadOnlyDictionary<string, TimeSpan>(_timezoneAbbreviations);
+
+    /// <summary>
+    /// Returns a new <see cref="TokenizerOptions"/> instance with the given timezone abbreviation added.
+    /// </summary>
+    public TokenizerOptions WithTimezoneAbbreviation(string abbreviation, TimeSpan offset)
+    {
+        var copy = this with { };
+        copy._timezoneAbbreviations[abbreviation] = offset;
+        return copy;
+    }
+
+    /// <summary>
     /// Custom transformer types registered on this options instance.
     /// These are added after the default transformers when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
@@ -169,7 +212,10 @@ public record class TokenizerOptions
             && MaxTemplateLength == other.MaxTemplateLength
             && MaxTokenCount == other.MaxTokenCount
             && MaxIterations == other.MaxIterations
-            && AllowStreamBuffering == other.AllowStreamBuffering;
+            && AllowStreamBuffering == other.AllowStreamBuffering
+            && Equals(Culture, other.Culture)
+            && DefaultOffset == other.DefaultOffset
+            && DefaultTimezone == other.DefaultTimezone;
     }
 
     /// <inheritdoc />
@@ -191,6 +237,9 @@ public record class TokenizerOptions
             hash = hash * 31 + MaxTokenCount.GetHashCode();
             hash = hash * 31 + MaxIterations.GetHashCode();
             hash = hash * 31 + AllowStreamBuffering.GetHashCode();
+            hash = hash * 31 + (Culture?.GetHashCode() ?? 0);
+            hash = hash * 31 + (DefaultOffset?.GetHashCode() ?? 0);
+            hash = hash * 31 + (DefaultTimezone != null ? StringComparer.Ordinal.GetHashCode(DefaultTimezone) : 0);
             return hash;
         }
     }

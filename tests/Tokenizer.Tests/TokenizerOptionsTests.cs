@@ -1,3 +1,4 @@
+using System.Globalization;
 using Tokens.Compilation;
 using Xunit;
 using Xunit.Abstractions;
@@ -102,5 +103,112 @@ public class TokenizerOptionsTests : TokenizerTestBase
         Assert.Equal(2, template.Tokens.Count);
         Assert.Equal("Preamble: ", template.Tokens.ElementAt(0).Preamble);
         Assert.False(template.Options.TerminateOnNewLine);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenAccessingCulture_ThenDefaultsToNull()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions();
+
+        // Assert
+        Assert.Null(options.Culture);
+    }
+
+    [Fact]
+    public void GivenOptions_WhenSettingCulture_ThenCultureIsPreserved()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions { Culture = CultureInfo.GetCultureInfo("pt-BR") };
+
+        // Assert
+        Assert.Equal("pt-BR", options.Culture!.Name);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenAccessingDefaultOffset_ThenDefaultsToNull()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions();
+
+        // Assert
+        Assert.Null(options.DefaultOffset);
+    }
+
+    [Fact]
+    public void GivenOptions_WhenSettingDefaultOffset_ThenOffsetIsPreserved()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions { DefaultOffset = TimeSpan.FromHours(2) };
+
+        // Assert
+        Assert.Equal(TimeSpan.FromHours(2), options.DefaultOffset);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenAccessingDefaultTimezone_ThenDefaultsToNull()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions();
+
+        // Assert
+        Assert.Null(options.DefaultTimezone);
+    }
+
+    [Fact]
+    public void GivenOptions_WhenSettingDefaultTimezone_ThenTimezoneIsPreserved()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions { DefaultTimezone = "Europe/Berlin" };
+
+        // Assert
+        Assert.Equal("Europe/Berlin", options.DefaultTimezone);
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenAccessingTimezoneAbbreviations_ThenReturnsEmptyDictionary()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions();
+
+        // Assert
+        Assert.Empty(options.TimezoneAbbreviations);
+    }
+
+    [Fact]
+    public void GivenOptions_WhenAddingTimezoneAbbreviation_ThenAbbreviationIsStored()
+    {
+        // Arrange / Act
+        var options = new TokenizerOptions()
+            .WithTimezoneAbbreviation("PST", TimeSpan.FromHours(-8));
+
+        // Assert
+        Assert.Single(options.TimezoneAbbreviations);
+        Assert.Equal(TimeSpan.FromHours(-8), options.TimezoneAbbreviations["PST"]);
+    }
+
+    [Fact]
+    public void GivenOptions_WhenCopiedWithWith_ThenNewPropertiesAreDeepCopied()
+    {
+        // Arrange
+        var original = new TokenizerOptions
+        {
+            Culture = CultureInfo.GetCultureInfo("fr-FR"),
+            DefaultOffset = TimeSpan.FromHours(1),
+            DefaultTimezone = "Europe/Paris",
+        };
+        original = original.WithTimezoneAbbreviation("CET", TimeSpan.FromHours(1));
+
+        // Act
+        var copy = original with { DefaultOffset = TimeSpan.FromHours(2) };
+
+        // Assert
+        Assert.Equal(TimeSpan.FromHours(2), copy.DefaultOffset);
+        Assert.Equal("fr-FR", copy.Culture!.Name);
+        Assert.Single(copy.TimezoneAbbreviations);
+        // Verify independence
+        copy = copy.WithTimezoneAbbreviation("CEST", TimeSpan.FromHours(2));
+        Assert.Single(original.TimezoneAbbreviations);
+        Assert.Equal(2, copy.TimezoneAbbreviations.Count);
     }
 }

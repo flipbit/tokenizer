@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Tokens.Exceptions;
+using Tokens.Temporal;
 
 namespace Tokens.Reflection;
 
@@ -426,14 +427,30 @@ internal sealed class PropertyPathSetter
             if (targetType == typeof(Guid)) return Guid.Parse(valueString);
             if (targetType == typeof(TimeSpan)) return TimeSpan.Parse(valueString, CultureInfo.InvariantCulture);
 
-            // DateTimeOffset value assigned to a DateTime property: extract local DateTime
-            if (targetType == typeof(DateTime) && value is DateTimeOffset dto) return dto.DateTime;
+            // DateTimeOffset projection — if value is already DateTimeOffset, project to target
+            if (value is DateTimeOffset dto && DateTimeProjection.IsTemporalType(targetType))
+            {
+                return DateTimeProjection.Project(dto, targetType);
+            }
 
-            if (targetType == typeof(DateTimeOffset)) return DateTimeOffset.Parse(valueString, CultureInfo.InvariantCulture);
+            // Auto-conversion from string to temporal types
+            if (DateTimeProjection.IsTemporalType(targetType))
+            {
+                var options = new TokenizerOptions();
+                if (TemporalParser.TryParse(valueString, formats: null, options, out var parsed))
+                {
+                    return DateTimeProjection.Project(parsed, targetType);
+                }
+
 #if NET6_0_OR_GREATER
-            if (targetType == typeof(DateOnly)) return DateOnly.Parse(valueString, CultureInfo.InvariantCulture);
-            if (targetType == typeof(TimeOnly)) return TimeOnly.Parse(valueString, CultureInfo.InvariantCulture);
+                // TemporalParser does not handle bare time strings — fall back to TimeOnly.Parse
+                if (targetType == typeof(TimeOnly))
+                {
+                    return TimeOnly.Parse(valueString, CultureInfo.InvariantCulture);
+                }
 #endif
+            }
+
             return null;
         }
         catch (FormatException ex)

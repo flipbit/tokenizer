@@ -240,4 +240,108 @@ public class PropertyPathSetterTests
         Assert.Same(originalAddress, obj.Address);
         Assert.Equal("Paris", obj.Address.City);
     }
+
+    // ── Temporal auto-conversion ────────────────────────────────────────────────
+
+    private sealed class WithDateTime
+    {
+        public DateTime Timestamp { get; set; }
+    }
+
+    private sealed class WithDateTimeOffset
+    {
+        public DateTimeOffset Timestamp { get; set; }
+    }
+
+    [Fact]
+    public void GivenDateTimeOffsetValue_WhenSettingDateTimeProperty_ThenProjectsUtcKind()
+    {
+        // Arrange
+        var obj = new WithDateTime();
+        var source = new DateTimeOffset(2024, 6, 15, 10, 0, 0, TimeSpan.Zero);
+
+        // Act
+        _setter.SetScalar(obj, "Timestamp", source, StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(DateTimeKind.Utc, obj.Timestamp.Kind);
+        Assert.Equal(10, obj.Timestamp.Hour);
+    }
+
+    [Fact]
+    public void GivenDateTimeOffsetValue_WhenSettingDateTimeOffsetProperty_ThenAssignsDirect()
+    {
+        // Arrange
+        var obj = new WithDateTimeOffset();
+        var source = new DateTimeOffset(2024, 6, 15, 10, 0, 0, TimeSpan.FromHours(3));
+
+        // Act
+        _setter.SetScalar(obj, "Timestamp", source, StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(source, obj.Timestamp);
+    }
+
+    [Fact]
+    public void GivenDateString_WhenSettingDateTimeProperty_ThenParsesAndAssigns()
+    {
+        // Arrange
+        var obj = new WithDateTime();
+
+        // Act
+        _setter.SetScalar(obj, "Timestamp", "2024-06-15", StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(2024, obj.Timestamp.Year);
+        Assert.Equal(6, obj.Timestamp.Month);
+        Assert.Equal(15, obj.Timestamp.Day);
+    }
+
+    [Fact]
+    public void GivenDateString_WhenSettingDateTimeOffsetProperty_ThenParsesAndAssigns()
+    {
+        // Arrange
+        var obj = new WithDateTimeOffset();
+
+        // Act
+        _setter.SetScalar(obj, "Timestamp", "2024-06-15T10:30:00Z", StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(2024, obj.Timestamp.Year);
+        Assert.Equal(10, obj.Timestamp.Hour);
+    }
+
+#if NET6_0_OR_GREATER
+    private sealed class WithDateOnly
+    {
+        public DateOnly Date { get; set; }
+    }
+
+    [Fact]
+    public void GivenDateTimeOffsetValue_WhenSettingDateOnlyProperty_ThenProjectsDate()
+    {
+        // Arrange
+        var obj = new WithDateOnly();
+        var source = new DateTimeOffset(2024, 6, 15, 14, 30, 0, TimeSpan.FromHours(2));
+
+        // Act
+        _setter.SetScalar(obj, "Date", source, StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(new DateOnly(2024, 6, 15), obj.Date);
+    }
+
+    [Fact]
+    public void GivenDateString_WhenSettingDateOnlyProperty_ThenParsesAndAssigns()
+    {
+        // Arrange
+        var obj = new WithDateOnly();
+
+        // Act
+        _setter.SetScalar(obj, "Date", "2024-06-15", StringComparison.Ordinal);
+
+        // Assert
+        Assert.Equal(new DateOnly(2024, 6, 15), obj.Date);
+    }
+#endif
 }

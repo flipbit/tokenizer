@@ -9,21 +9,32 @@ namespace Tokens.Compilation;
 /// </summary>
 internal sealed class DecoratorRegistry
 {
+    private static readonly Lazy<(Type[] transformerTypes, Type[] validatorTypes)> BuiltInTypes = new(() =>
+    {
+        var assembly = typeof(ITokenTransformer).Assembly;
+        var types = assembly.GetTypes();
+
+        var transformers = types
+            .Where(t => !t.IsAbstract && !t.IsInterface && typeof(ITokenTransformer).IsAssignableFrom(t))
+            .ToArray();
+
+        var validators = types
+            .Where(t => !t.IsAbstract && !t.IsInterface && typeof(ITokenValidator).IsAssignableFrom(t))
+            .ToArray();
+
+        return (transformers, validators);
+    });
+
     public IReadOnlyList<Type> Transformers { get; }
 
     public IReadOnlyList<Type> Validators { get; }
 
     public DecoratorRegistry(TokenizerOptions options)
     {
-        var assembly = typeof(ITokenTransformer).Assembly;
+        var (builtInTransformers, builtInValidators) = BuiltInTypes.Value;
 
-        var transformers = assembly.GetTypes()
-            .Where(t => !t.IsAbstract && !t.IsInterface && typeof(ITokenTransformer).IsAssignableFrom(t))
-            .ToList();
-
-        var validators = assembly.GetTypes()
-            .Where(t => !t.IsAbstract && !t.IsInterface && typeof(ITokenValidator).IsAssignableFrom(t))
-            .ToList();
+        var transformers = new List<Type>(builtInTransformers);
+        var validators = new List<Type>(builtInValidators);
 
         foreach (var t in options.Transformers)
         {

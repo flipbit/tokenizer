@@ -7,11 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokenizer", "src\Tokenizer\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokenizer.Tests", "tests\Tokenizer.Tests\Tokenizer.Tests.csproj", "{FDE2BD45-D224-47C7-A04D-37C0D6D882C4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{03008BA1-74FF-4DD9-BE0A-71AD03C4F969}"
-	ProjectSection(SolutionItems) = preProject
-		Appveyor.yml = Appveyor.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{66320409-64EC-F7C5-3DEF-65E7510DAAD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokenizer.Benchmarks", "benchmarks\Tokenizer.Benchmarks\Tokenizer.Benchmarks.csproj", "{571DB818-E1A2-4B57-80D6-74509B87791D}"

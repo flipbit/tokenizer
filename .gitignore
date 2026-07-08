@@ -40,3 +40,8 @@ packages
 .claude
 BenchmarkDotNet.Artifacts/
 .superpowers/
+
+# Development artifacts
+benchmark-results/
+debug_token_app/
+*.DotSettings.user

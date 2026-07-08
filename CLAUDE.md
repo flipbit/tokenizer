@@ -117,3 +117,4 @@ dotnet build ./Tokenizer.sln 2>&1 | grep "CA1507"
 - **Builders**: Fluent test data builders in `tests/Tokenizer.Tests/Builders/` (e.g., `TokenBuilder`, `TemplateBuilder`)
 - **Helpers**: Use `Expect[Object][State]` pattern for mock setup methods, placed at end of test class
 - **Logging in tests**: Serilog with `Serilog.Sinks.XUnit` for test output
+- **File naming**: Test file matches production class: `{ClassName}Tests.cs`. If a single test fixture is too crowded, split into `{ClassName}.{Scenario}.Tests.cs`

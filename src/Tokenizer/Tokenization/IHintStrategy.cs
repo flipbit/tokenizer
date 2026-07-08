@@ -18,23 +18,22 @@ internal interface IHintStrategy
     /// <param name="result">The result object to populate with hint matches and misses.</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if required hints are missing, false if all required hints are found.</returns>
-    // rawInput enables fast string-based hint pre-filtering on sync paths where the full
-    // input is available. Async/streaming paths pass null and fall back to integrated
-    // single-pass hint checking via OnTokenMatched callbacks.
-    public bool PreProcess(Template template, TokenEnumerator enumerator,
+    bool PreProcess(Template template, TokenEnumerator enumerator,
                     string? rawInput, TokenizeResult result, IDiagnosticCollector collector);
 
     /// <summary>
-    /// Called by the engine when a token preamble matches during tokenization (for single-pass strategies).
+    /// Called by the tokenization session after each buffer refill, passing the staging
+    /// buffer contents before they are copied into the ring buffer.
     /// </summary>
-    /// <param name="token">The token whose preamble matched.</param>
-    public void OnTokenMatched(Token token);
+    /// <param name="buffer">The staging buffer containing newly-read characters.</param>
+    /// <param name="count">The number of valid characters in <paramref name="buffer"/>.</param>
+    void OnBufferFilled(char[] buffer, int count);
 
     /// <summary>
     /// Post-processes hints after tokenization completes.
-    /// Returns true if required hints are missing (for single-pass strategies).
+    /// Returns true if required hints are missing.
     /// </summary>
     /// <param name="result">The result object containing tokenization results.</param>
     /// <returns>True if required hints are missing, false otherwise.</returns>
-    public bool PostProcess(TokenizeResult result);
+    bool PostProcess(TokenizeResult result);
 }

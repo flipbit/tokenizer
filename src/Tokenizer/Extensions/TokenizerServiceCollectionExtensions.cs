@@ -88,11 +88,11 @@ public static class TokenizerServiceCollectionExtensions
 
         services.TryAddSingleton<Tokenizer>(sp => (Tokenizer)sp.GetRequiredService<ITokenizer>());
 
-        services.TryAddSingleton<ITokenMatcher>(sp =>
+        services.TryAddSingleton<ITemplateMatcher>(sp =>
         {
             var tokenizer = sp.GetRequiredService<ITokenizer>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            return new TokenMatcher(tokenizer, loggerFactory);
+            return new TemplateMatcher(tokenizer, loggerFactory);
         });
     }
 }

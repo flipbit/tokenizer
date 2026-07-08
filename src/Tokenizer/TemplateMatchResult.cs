@@ -1,28 +1,28 @@
 namespace Tokens;
 
 /// <summary>
-/// Contains the result of running a match against multiple <see cref="Template"/>
-/// objects against an input string with the <see cref="TokenMatcher"/>. 
+/// Contains the result of running a tokenization against multiple registered
+/// templates with the <see cref="TemplateMatcher"/>.
 /// </summary>
-public sealed class TokenMatcherResult
+public sealed class TemplateMatchResult
 {
     private readonly List<TokenizeResult> _results;
 
     /// <summary>
-    /// Initializes a new, empty <see cref="TokenMatcherResult"/>.
+    /// Initializes a new, empty <see cref="TemplateMatchResult"/>.
     /// </summary>
-    public TokenMatcherResult()
+    public TemplateMatchResult()
     {
         _results = new List<TokenizeResult>();
     }
 
     /// <summary>
-    /// Contains the result of processing each <see cref="Template"/> against the input text.
+    /// Contains the result of processing each template against the input text.
     /// </summary>
     public IReadOnlyList<TokenizeResult> Results => _results;
 
     /// <summary>
-    /// Returns the best matching result
+    /// Returns the best matching result.
     /// </summary>
     public TokenizeResult? BestMatch { get; internal set; }
 

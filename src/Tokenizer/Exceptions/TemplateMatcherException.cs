@@ -3,14 +3,14 @@ namespace Tokens.Exceptions;
 /// <summary>
 /// Thrown when a fatal error occurs while matching a template against input text.
 /// </summary>
-public class TokenMatcherException : TokenizerException
+public class TemplateMatcherException : TokenizerException
 {
     /// <summary>
     /// Initializes a new instance with the given error message and the template that triggered it.
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="template">The template that was being matched when the error occurred.</param>
-    public TokenMatcherException(string message, Template template) : base(message)
+    public TemplateMatcherException(string message, Template template) : base(message)
     {
         Template = template;
     }
@@ -21,7 +21,7 @@ public class TokenMatcherException : TokenizerException
     /// <param name="message">The error message.</param>
     /// <param name="template">The template that was being matched when the error occurred.</param>
     /// <param name="innerException">The exception that caused this exception.</param>
-    public TokenMatcherException(string message, Template template, Exception innerException) : base(message, innerException)
+    public TemplateMatcherException(string message, Template template, Exception innerException) : base(message, innerException)
     {
         Template = template;
     }

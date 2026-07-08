@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenMatcherAsyncTests : TokenizerTestBase
+public class TemplateMatcherAsyncTests : TokenizerTestBase
 {
     private sealed class Person
     {
@@ -13,32 +13,32 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         public int Age { get; set; }
     }
 
-    public TokenMatcherAsyncTests(ITestOutputHelper output) : base(output)
+    public TemplateMatcherAsyncTests(ITestOutputHelper output) : base(output)
     {
     }
 
     [Fact]
-    public async Task GivenTextReader_WhenMatchAsync_ThenFindsBestMatch()
+    public async Task GivenTextReader_WhenTokenizeAsync_ThenFindsBestMatch()
     {
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         using var reader = new StringReader("Name: Alice, Age: 30");
 
-        var result = await matcher.MatchAsync(reader);
+        var result = await matcher.TokenizeAsync(reader);
 
         Assert.NotNull(result.BestMatch);
         Assert.Equal("with-age", result.BestMatch.Template.Name);
     }
 
     [Fact]
-    public async Task GivenTextReader_WhenMatchAsyncAndAssign_ThenPopulatesObject()
+    public async Task GivenTextReader_WhenTokenizeAsyncAndAssign_ThenPopulatesObject()
     {
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         using var reader = new StringReader("Name: Bob, Age: 25");
 
-        var result = await matcher.MatchAsync(reader);
+        var result = await matcher.TokenizeAsync(reader);
 
         Assert.NotNull(result.BestMatch);
         var person = result.BestMatch.Assign<Person>();
@@ -47,14 +47,14 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenSeekableStream_WhenMatchAsync_ThenRewindsBetweenTemplates()
+    public async Task GivenSeekableStream_WhenTokenizeAsync_ThenRewindsBetweenTemplates()
     {
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Charlie, Age: 35"));
 
-        var result = await matcher.MatchAsync(stream, Encoding.UTF8);
+        var result = await matcher.TokenizeAsync(stream, Encoding.UTF8);
 
         Assert.True(result.Results.Count >= 2);
         Assert.NotNull(result.BestMatch);
@@ -62,13 +62,13 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenSeekableStream_WhenMatchAsyncCompletes_ThenStreamIsNotDisposed()
+    public async Task GivenSeekableStream_WhenTokenizeAsyncCompletes_ThenStreamIsNotDisposed()
     {
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
         var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Dave"));
 
-        await matcher.MatchAsync(stream, Encoding.UTF8);
+        await matcher.TokenizeAsync(stream, Encoding.UTF8);
 
         Assert.True(stream.CanRead);
         await stream.DisposeAsync();
@@ -77,22 +77,22 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     [Fact]
     public async Task GivenNonSeekableStream_WhenAllowStreamBufferingFalse_ThenThrows()
     {
-        var matcher = new TokenMatcher(new TokenizerOptions { AllowStreamBuffering = false });
+        var matcher = new TemplateMatcher(new TokenizerOptions { AllowStreamBuffering = false });
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
         using var stream = new NonSeekableStream(Encoding.UTF8.GetBytes("Name: Eve"));
 
         await Assert.ThrowsAsync<TokenizerException>(
-            () => matcher.MatchAsync(stream, Encoding.UTF8));
+            () => matcher.TokenizeAsync(stream, Encoding.UTF8));
     }
 
     [Fact]
     public async Task GivenNonSeekableStream_WhenAllowStreamBufferingTrue_ThenBuffersAndMatches()
     {
-        var matcher = new TokenMatcher(new TokenizerOptions { AllowStreamBuffering = true });
+        var matcher = new TemplateMatcher(new TokenizerOptions { AllowStreamBuffering = true });
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
         using var stream = new NonSeekableStream(Encoding.UTF8.GetBytes("Name: Frank"));
 
-        var result = await matcher.MatchAsync(stream, Encoding.UTF8);
+        var result = await matcher.TokenizeAsync(stream, Encoding.UTF8);
 
         Assert.NotNull(result.BestMatch);
     }
@@ -100,7 +100,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     [Fact]
     public async Task GivenTextReader_WhenRegisterTemplateAsync_ThenTemplateIsRegistered()
     {
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         using var reader = new StringReader("Name: {Name}");
 
         await matcher.RegisterTemplateAsync(reader);
@@ -109,10 +109,10 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenTemplatesWithTags_WhenMatchAsyncWithTags_ThenFiltersCorrectly()
+    public async Task GivenTemplatesWithTags_WhenTokenizeAsyncWithTags_ThenFiltersCorrectly()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         matcher.Templates.Get("no-age")!.AddTag("no-age");
@@ -121,7 +121,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var reader = new StringReader("Name: Alice, Age: 30");
 
         // Act — filter to only "with-age" tag
-        var result = await matcher.MatchAsync(reader, new[] { "with-age" });
+        var result = await matcher.TokenizeAsync(reader, new[] { "with-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
@@ -129,10 +129,10 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenTemplatesWithTags_WhenMatchAsyncWithTagsAndAssign_ThenFiltersCorrectly()
+    public async Task GivenTemplatesWithTags_WhenTokenizeAsyncWithTagsAndAssign_ThenFiltersCorrectly()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         matcher.Templates.Get("no-age")!.AddTag("no-age");
@@ -141,7 +141,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var reader = new StringReader("Name: Alice, Age: 30");
 
         // Act
-        var result = await matcher.MatchAsync(reader, new[] { "no-age" });
+        var result = await matcher.TokenizeAsync(reader, new[] { "no-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
@@ -154,7 +154,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     public async Task GivenStream_WhenRegisterTemplateAsync_ThenTemplateIsRegistered()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         var bytes = Encoding.UTF8.GetBytes("Name: {Name}");
         using var stream = new MemoryStream(bytes);
 
@@ -166,10 +166,10 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenStreamWithTags_WhenMatchAsync_ThenFiltersCorrectly()
+    public async Task GivenStreamWithTags_WhenTokenizeAsync_ThenFiltersCorrectly()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         matcher.Templates.Get("no-age")!.AddTag("no-age");
@@ -179,7 +179,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var stream = new MemoryStream(bytes);
 
         // Act — filter to only "with-age" tag
-        var result = await matcher.MatchAsync(stream, Encoding.UTF8, new[] { "with-age" });
+        var result = await matcher.TokenizeAsync(stream, Encoding.UTF8, new[] { "with-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
@@ -187,10 +187,10 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenStreamWithTags_WhenMatchAsyncAndAssign_ThenFiltersCorrectly()
+    public async Task GivenStreamWithTags_WhenTokenizeAsyncAndAssign_ThenFiltersCorrectly()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
         matcher.Templates.Get("no-age")!.AddTag("no-age");
@@ -200,7 +200,7 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
         using var stream = new MemoryStream(bytes);
 
         // Act — filter to only "no-age" tag
-        var result = await matcher.MatchAsync(stream, Encoding.UTF8, new[] { "no-age" });
+        var result = await matcher.TokenizeAsync(stream, Encoding.UTF8, new[] { "no-age" });
 
         // Assert
         Assert.NotNull(result.BestMatch);
@@ -210,16 +210,16 @@ public class TokenMatcherAsyncTests : TokenizerTestBase
     }
 
     [Fact]
-    public async Task GivenUnicodeEncodedStream_WhenMatchAsync_ThenDecodesCorrectly()
+    public async Task GivenUnicodeEncodedStream_WhenTokenizeAsync_ThenDecodesCorrectly()
     {
         // Arrange — UTF-16 encoded stream
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Name}", "name-only");
         var bytes = Encoding.Unicode.GetBytes("Name: Alice");
         using var stream = new MemoryStream(bytes);
 
         // Act
-        var result = await matcher.MatchAsync(stream, Encoding.Unicode);
+        var result = await matcher.TokenizeAsync(stream, Encoding.Unicode);
 
         // Assert
         Assert.NotNull(result.BestMatch);

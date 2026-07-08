@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Tokens.Exceptions;
 
-public class TokenMatcherExceptionTests
+public class TemplateMatcherExceptionTests
 {
     [Fact]
     public void GivenMessageAndTemplate_WhenConstructed_ThenTemplatePropertyIsSet()
@@ -12,7 +12,7 @@ public class TokenMatcherExceptionTests
         var template = tokenizer.Compile("Hello {Name}").Template;
 
         // Act
-        var exception = new TokenMatcherException("match failed", template);
+        var exception = new TemplateMatcherException("match failed", template);
 
         // Assert
         Assert.Same(template, exception.Template);
@@ -28,7 +28,7 @@ public class TokenMatcherExceptionTests
         var inner = new InvalidOperationException("inner");
 
         // Act
-        var exception = new TokenMatcherException("match failed", template, inner);
+        var exception = new TemplateMatcherException("match failed", template, inner);
 
         // Assert
         Assert.Same(template, exception.Template);
@@ -37,14 +37,14 @@ public class TokenMatcherExceptionTests
     }
 
     [Fact]
-    public void GivenTokenMatcherException_WhenCheckedForInheritance_ThenInheritsFromTokenizerException()
+    public void GivenTemplateMatcherException_WhenCheckedForInheritance_ThenInheritsFromTokenizerException()
     {
         // Arrange
         var tokenizer = new Tokenizer();
         var template = tokenizer.Compile("Hello {Name}").Template;
 
         // Act
-        var exception = new TokenMatcherException("test", template);
+        var exception = new TemplateMatcherException("test", template);
 
         // Assert
         Assert.IsAssignableFrom<TokenizerException>(exception);

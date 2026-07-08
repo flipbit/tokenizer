@@ -14,8 +14,8 @@ public class SealedClassTests
     [InlineData(typeof(TokenResult))]
     [InlineData(typeof(HintResult))]
     [InlineData(typeof(TokenizeResult))]
-    [InlineData(typeof(TokenMatcherResult))]
-    [InlineData(typeof(TokenMatcher))]
+    [InlineData(typeof(TemplateMatchResult))]
+    [InlineData(typeof(TemplateMatcher))]
     [InlineData(typeof(TokenDecoratorContext))]
     public void GivenPublicClass_WhenChecked_ThenIsSealed(Type type)
     {

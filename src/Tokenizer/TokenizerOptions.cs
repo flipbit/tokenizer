@@ -108,7 +108,7 @@ public record class TokenizerOptions
 
     /// <summary>
     /// When true, allows non-seekable streams (e.g. NetworkStream) to be buffered into memory
-    /// for operations that require re-reading the input (such as TokenMatcher matching against
+    /// for operations that require re-reading the input (such as TemplateMatcher matching against
     /// multiple templates). Default: false.
     /// When false, passing a non-seekable stream to such operations throws a TokenizerException.
     /// </summary>

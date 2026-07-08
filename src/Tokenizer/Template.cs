@@ -36,14 +36,14 @@ public sealed class Template
 
     /// <summary>
     /// Contains the hints associated with this <see cref="Template"/>.
-    /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TokenMatcher"/> based
+    /// A <see cref="Hint"/> is used to select the best matching template by the <see cref="TemplateMatcher"/> based
     /// on text found within the input string.
     /// </summary>
     public IReadOnlyList<Hint> Hints => _hints;
 
     /// <summary>
     /// Contains the tags associated with this <see cref="Template"/>.
-    /// A tag is used to select the best matching template by the <see cref="TokenMatcher"/> based on tags passed
+    /// A tag is used to select the best matching template by the <see cref="TemplateMatcher"/> based on tags passed
     /// in with the input string.
     /// </summary>
     public IReadOnlyList<string> Tags => _tags;

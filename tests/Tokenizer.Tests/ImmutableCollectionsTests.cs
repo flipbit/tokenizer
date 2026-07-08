@@ -55,10 +55,10 @@ public class ImmutableCollectionsTests
     }
 
     [Fact]
-    public void GivenTokenMatcherResult_WhenAccessingResults_ThenPropertyTypeIsIReadOnlyList()
+    public void GivenTemplateMatchResult_WhenAccessingResults_ThenPropertyTypeIsIReadOnlyList()
     {
         // Arrange & Act
-        var propertyType = typeof(TokenMatcherResult).GetProperty("Results")!.PropertyType;
+        var propertyType = typeof(TemplateMatchResult).GetProperty("Results")!.PropertyType;
 
         // Assert
         Assert.Equal(typeof(IReadOnlyList<TokenizeResult>), propertyType);

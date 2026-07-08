@@ -10,55 +10,55 @@ namespace Tokens;
 /// Matcher class that can hold multiple <see cref="Template"/> objects, and use
 /// the best match to populate an object from an input string.
 /// </summary>
-public sealed class TokenMatcher : ITokenMatcher
+public sealed class TemplateMatcher : ITemplateMatcher
 {
     private readonly ITokenizer _tokenizer;
-    private readonly ILogger<TokenMatcher> _log;
+    private readonly ILogger<TemplateMatcher> _log;
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with default options.
+    /// Initializes a new instance of <see cref="TemplateMatcher"/> with default options.
     /// </summary>
-    public TokenMatcher() : this(new TokenizerOptions())
+    public TemplateMatcher() : this(new TokenizerOptions())
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified options.
+    /// Initializes a new instance of <see cref="TemplateMatcher"/> with the specified options.
     /// </summary>
     /// <param name="options">The tokenizer options to apply during matching.</param>
-    public TokenMatcher(TokenizerOptions options) : this(new Tokenizer(options))
+    public TemplateMatcher(TokenizerOptions options) : this(new Tokenizer(options))
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified options and logger factory.
+    /// Initializes a new instance of <see cref="TemplateMatcher"/> with the specified options and logger factory.
     /// </summary>
     /// <param name="options">The tokenizer options to apply during matching.</param>
     /// <param name="loggerFactory">The logger factory to use for diagnostic output, or <see langword="null"/> to suppress logging.</param>
-    public TokenMatcher(TokenizerOptions options, ILoggerFactory? loggerFactory)
+    public TemplateMatcher(TokenizerOptions options, ILoggerFactory? loggerFactory)
         : this(new Tokenizer(options, loggerFactory), loggerFactory)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified _tokenizer.
+    /// Initializes a new instance of <see cref="TemplateMatcher"/> with the specified tokenizer.
     /// </summary>
     /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
-    public TokenMatcher(ITokenizer tokenizer) : this(tokenizer, loggerFactory: null)
+    public TemplateMatcher(ITokenizer tokenizer) : this(tokenizer, loggerFactory: null)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="TokenMatcher"/> with the specified tokenizer and logger factory.
+    /// Initializes a new instance of <see cref="TemplateMatcher"/> with the specified tokenizer and logger factory.
     /// </summary>
     /// <param name="tokenizer">The tokenizer to use for compiling templates and tokenizing input.</param>
     /// <param name="loggerFactory">The logger factory to use for diagnostic output, or <see langword="null"/> to suppress logging.</param>
-    public TokenMatcher(ITokenizer tokenizer, ILoggerFactory? loggerFactory)
+    public TemplateMatcher(ITokenizer tokenizer, ILoggerFactory? loggerFactory)
     {
         loggerFactory ??= NullLoggerFactory.Instance;
 
         _tokenizer = tokenizer;
-        _log = loggerFactory.CreateLogger<TokenMatcher>();
+        _log = loggerFactory.CreateLogger<TemplateMatcher>();
         Templates = new TemplateCollection();
     }
 
@@ -68,29 +68,59 @@ public sealed class TokenMatcher : ITokenMatcher
     public TemplateCollection Templates { get; }
 
     /// <summary>
-    /// Matches the input string against all registered templates and returns the results.
+    /// Tokenizes the input against all registered templates and returns the results.
     /// </summary>
-    /// <param name="input">The input string to match.</param>
-    /// <returns>A <see cref="TokenMatcherResult"/> containing results for each template, including the best match.</returns>
-    public TokenMatcherResult Match(string input)
+    /// <param name="input">The input string to tokenize.</param>
+    /// <returns>A <see cref="TemplateMatchResult"/> containing results for each template, including the best match.</returns>
+    public TemplateMatchResult Tokenize(string input)
     {
-        return Match(input, tags: null);
+        return Tokenize(input, tags: null);
     }
 
     /// <summary>
-    /// Matches the input string against all registered templates that have the specified tags, and returns the results.
+    /// Tokenizes the input against all registered templates that have the specified tags, and returns the results.
     /// </summary>
-    /// <param name="input">The input string to match.</param>
+    /// <param name="input">The input string to tokenize.</param>
     /// <param name="tags">Tags used to filter which templates are considered. Pass <see langword="null"/> or an empty array to consider all templates.</param>
-    /// <returns>A <see cref="TokenMatcherResult"/> containing results for each matched template, including the best match.</returns>
-    public TokenMatcherResult Match(string input, string[]? tags)
+    /// <returns>A <see cref="TemplateMatchResult"/> containing results for each matched template, including the best match.</returns>
+    public TemplateMatchResult Tokenize(string input, string[]? tags)
     {
-        var results = new TokenMatcherResult();
-        return MatchCore(
-            tags, results,
-            template => _tokenizer.Tokenize(template, input),
-            (r, result) => r.AddResult((TokenizeResult)result),
-            r => r.BestMatch = r.GetBestMatch());
+        var results = new TemplateMatchResult();
+        tags ??= Array.Empty<string>();
+
+        foreach (var template in Templates)
+        {
+            if (!CheckTemplateTags(template, tags)) continue;
+
+            try
+            {
+                var result = _tokenizer.Tokenize(template, input);
+                results.AddResult(result);
+            }
+            catch (Exception e)
+            {
+                var exception = new TemplateMatcherException(e.Message, template, e);
+                _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
+                throw exception;
+            }
+        }
+
+        results.BestMatch = results.GetBestMatch();
+        return results;
+    }
+
+    /// <inheritdoc />
+    public T? Tokenize<T>(string input) where T : class, new()
+    {
+        return Tokenize<T>(input, tags: null);
+    }
+
+    /// <inheritdoc />
+    public T? Tokenize<T>(string input, string[]? tags) where T : class, new()
+    {
+        var results = Tokenize(input, tags);
+        if (results.BestMatch == null) return null;
+        return results.BestMatch.Assign<T>();
     }
 
     /// <summary>
@@ -98,8 +128,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// The template name is derived from its front matter, if present.
     /// </summary>
     /// <param name="content">The raw template pattern string to compile.</param>
-    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
-    public ITokenMatcher RegisterTemplate(string content)
+    /// <returns>This <see cref="ITemplateMatcher"/> instance, to allow method chaining.</returns>
+    public ITemplateMatcher RegisterTemplate(string content)
     {
         var result = _tokenizer.Compile(content);
         Templates.Add(result.Template);
@@ -111,8 +141,8 @@ public sealed class TokenMatcher : ITokenMatcher
     /// </summary>
     /// <param name="content">The raw template pattern string to compile.</param>
     /// <param name="name">The name to assign to the template.</param>
-    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
-    public ITokenMatcher RegisterTemplate(string content, string name)
+    /// <returns>This <see cref="ITemplateMatcher"/> instance, to allow method chaining.</returns>
+    public ITemplateMatcher RegisterTemplate(string content, string name)
     {
         var result = _tokenizer.Compile(content);
         result.Template.Name = name;
@@ -124,46 +154,16 @@ public sealed class TokenMatcher : ITokenMatcher
     /// Registers a pre-compiled template.
     /// </summary>
     /// <param name="template">The compiled template to register.</param>
-    /// <returns>This <see cref="ITokenMatcher"/> instance, to allow method chaining.</returns>
-    public ITokenMatcher RegisterTemplate(Template template)
+    /// <returns>This <see cref="ITemplateMatcher"/> instance, to allow method chaining.</returns>
+    public ITemplateMatcher RegisterTemplate(Template template)
     {
         Templates.Add(template);
 
         return this;
     }
 
-    private TResult MatchCore<TResult>(
-        string[]? tags,
-        TResult results,
-        Func<Template, TokenizeResult> tokenize,
-        Action<TResult, TokenizeResult> addResult,
-        Action<TResult> assignBestMatch)
-    {
-        tags ??= Array.Empty<string>();
-
-        foreach (var template in Templates)
-        {
-            if (!CheckTemplateTags(template, tags)) continue;
-
-            try
-            {
-                var result = tokenize(template);
-                addResult(results, result);
-            }
-            catch (Exception e)
-            {
-                var exception = new TokenMatcherException(e.Message, template, e);
-                _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
-                throw exception;
-            }
-        }
-
-        assignBestMatch(results);
-        return results;
-    }
-
     /// <inheritdoc />
-    public async Task<ITokenMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default)
+    public async Task<ITemplateMatcher> RegisterTemplateAsync(TextReader reader, CancellationToken ct = default)
     {
         var result = await _tokenizer.CompileAsync(reader, ct).ConfigureAwait(false);
         Templates.Add(result.Template);
@@ -171,7 +171,7 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     /// <inheritdoc />
-    public async Task<ITokenMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+    public async Task<ITemplateMatcher> RegisterTemplateAsync(Stream input, Encoding encoding, CancellationToken ct = default)
     {
         var result = await _tokenizer.CompileAsync(input, encoding, ct).ConfigureAwait(false);
         Templates.Add(result.Template);
@@ -179,39 +179,55 @@ public sealed class TokenMatcher : ITokenMatcher
     }
 
     /// <inheritdoc />
-    public Task<TokenMatcherResult> MatchAsync(TextReader input, CancellationToken ct = default)
-        => MatchAsync(input, tags: null, ct);
+    public Task<TemplateMatchResult> TokenizeAsync(TextReader input, CancellationToken ct = default)
+        => TokenizeAsync(input, tags: null, ct);
 
     /// <inheritdoc />
-    public async Task<TokenMatcherResult> MatchAsync(TextReader input, string[]? tags, CancellationToken ct = default)
+    public async Task<TemplateMatchResult> TokenizeAsync(TextReader input, string[]? tags, CancellationToken ct = default)
     {
 #if NETSTANDARD2_0
         using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
 #else
         await using var stream = await BufferTextReaderAsync(input, ct).ConfigureAwait(false);
 #endif
-        return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
-            stream, Encoding.UTF8, tags, ct,
-            (template, reader, token) => _tokenizer.TokenizeAsync(template, reader, token),
-            () => new TokenMatcherResult(),
-            (r, result) => r.AddResult(result),
-            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+        return await TokenizeAsyncFromSeekableStream(
+            stream, Encoding.UTF8, tags, ct).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, CancellationToken ct = default)
-        => MatchAsync(input, encoding, tags: null, ct);
+    public Task<TemplateMatchResult> TokenizeAsync(Stream input, Encoding encoding, CancellationToken ct = default)
+        => TokenizeAsync(input, encoding, tags: null, ct);
 
     /// <inheritdoc />
-    public async Task<TokenMatcherResult> MatchAsync(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default)
+    public async Task<TemplateMatchResult> TokenizeAsync(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default)
     {
         var seekable = await EnsureSeekableAsync(input, ct).ConfigureAwait(false);
-        return await MatchAsyncFromSeekableStream<TokenMatcherResult, TokenizeResult>(
-            seekable, encoding, tags, ct,
-            (template, reader, token) => _tokenizer.TokenizeAsync(template, reader, token),
-            () => new TokenMatcherResult(),
-            (r, result) => r.AddResult(result),
-            r => r.BestMatch = r.GetBestMatch()).ConfigureAwait(false);
+        return await TokenizeAsyncFromSeekableStream(
+            seekable, encoding, tags, ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<T?> TokenizeAsync<T>(TextReader input, CancellationToken ct = default) where T : class, new()
+        => await TokenizeAsync<T>(input, tags: null, ct).ConfigureAwait(false);
+
+    /// <inheritdoc />
+    public async Task<T?> TokenizeAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
+    {
+        var results = await TokenizeAsync(input, tags, ct).ConfigureAwait(false);
+        if (results.BestMatch == null) return null;
+        return results.BestMatch.Assign<T>();
+    }
+
+    /// <inheritdoc />
+    public async Task<T?> TokenizeAsync<T>(Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
+        => await TokenizeAsync<T>(input, encoding, tags: null, ct).ConfigureAwait(false);
+
+    /// <inheritdoc />
+    public async Task<T?> TokenizeAsync<T>(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default) where T : class, new()
+    {
+        var results = await TokenizeAsync(input, encoding, tags, ct).ConfigureAwait(false);
+        if (results.BestMatch == null) return null;
+        return results.BestMatch.Assign<T>();
     }
 
     // AllowStreamBuffering is intentionally not checked here. Unlike Stream (which can be
@@ -289,18 +305,14 @@ public sealed class TokenMatcher : ITokenMatcher
         return buffer;
     }
 
-    private async Task<TResult> MatchAsyncFromSeekableStream<TResult, TTokenizeResult>(
+    private async Task<TemplateMatchResult> TokenizeAsyncFromSeekableStream(
         Stream stream,
         Encoding encoding,
         string[]? tags,
-        CancellationToken ct,
-        Func<Template, TextReader, CancellationToken, Task<TTokenizeResult>> tokenizeAsync,
-        Func<TResult> createResult,
-        Action<TResult, TTokenizeResult> addResult,
-        Action<TResult> assignBestMatch)
+        CancellationToken ct)
     {
         tags ??= Array.Empty<string>();
-        var results = createResult();
+        var results = new TemplateMatchResult();
         var startPos = stream.Position;
 
         foreach (var template in Templates)
@@ -313,18 +325,18 @@ public sealed class TokenMatcher : ITokenMatcher
 
             try
             {
-                var result = await tokenizeAsync(template, reader, ct).ConfigureAwait(false);
-                addResult(results, result);
+                var result = await _tokenizer.TokenizeAsync(template, reader, ct).ConfigureAwait(false);
+                results.AddResult(result);
             }
             catch (Exception e)
             {
-                var exception = new TokenMatcherException(e.Message, template, e);
+                var exception = new TemplateMatcherException(e.Message, template, e);
                 _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
                 throw exception;
             }
         }
 
-        assignBestMatch(results);
+        results.BestMatch = results.GetBestMatch();
         return results;
     }
 

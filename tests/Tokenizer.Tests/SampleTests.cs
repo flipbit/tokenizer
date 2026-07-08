@@ -402,7 +402,7 @@ public class SampleTests : TokenizerTestBase
     }
 
     [Fact]
-    public void TestTokenMatcherCom()
+    public void TestTemplateMatcherCom()
     {
         var template = ReadTemplate("whois.iana");
         var input = ReadData("com");
@@ -414,16 +414,16 @@ public class SampleTests : TokenizerTestBase
     }
 
     [Fact]
-    public void TestTokenMatcherCoCa()
+    public void TestTemplateMatcherCoCa()
     {
         var template = ReadTemplate("whois.co.ca");
         var input = ReadData("available.co.ca");
 
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
 
         matcher.RegisterTemplate(template);
 
-        var match = matcher.Match(input);
+        var match = matcher.Tokenize(input);
 
         Assert.Equal("u34jedzcq.co.ca", match.BestMatch!.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
         Assert.Equal("NotFound", match.BestMatch.Matches.First(m => string.Equals(m.Token.Name, "Status", StringComparison.Ordinal)).Value);

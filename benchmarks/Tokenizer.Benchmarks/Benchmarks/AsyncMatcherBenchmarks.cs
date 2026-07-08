@@ -7,7 +7,7 @@ using Tokens.Data;
 namespace Tokens.Benchmarks;
 
 /// <summary>
-/// Measures TokenMatcher async matching performance with seekable streams,
+/// Measures TemplateMatcher async tokenization performance with seekable streams,
 /// comparing against sync string matching at different template counts.
 /// </summary>
 [Config(typeof(BenchmarkConfig))]
@@ -16,7 +16,7 @@ public class AsyncMatcherBenchmarks
     [Params(5, 15, 50)]
     public int TemplateCount { get; set; }
 
-    private TokenMatcher _matcher = null!;
+    private TemplateMatcher _matcher = null!;
     private string _mediumInput = null!;
     private byte[] _mediumBytes = null!;
 
@@ -26,7 +26,7 @@ public class AsyncMatcherBenchmarks
         _mediumInput = WorkloadGenerator.MediumInput();
         _mediumBytes = Encoding.UTF8.GetBytes(_mediumInput);
 
-        _matcher = new TokenMatcher();
+        _matcher = new TemplateMatcher();
         _matcher.RegisterTemplate(WorkloadGenerator.MediumTemplate(), "matching");
         for (var i = 1; i < TemplateCount; i++)
         {
@@ -36,21 +36,21 @@ public class AsyncMatcherBenchmarks
         }
     }
 
-    [Benchmark(Baseline = true, Description = "Match sync (string)")]
-    public TokenMatcherResult<MediumRecord> Match_Sync()
-        => _matcher.Match<MediumRecord>(_mediumInput);
+    [Benchmark(Baseline = true, Description = "Tokenize sync (string)")]
+    public MediumRecord? Tokenize_Sync()
+        => _matcher.Tokenize<MediumRecord>(_mediumInput);
 
-    [Benchmark(Description = "MatchAsync (TextReader)")]
-    public async Task<TokenMatcherResult<MediumRecord>> MatchAsync_TextReader()
+    [Benchmark(Description = "TokenizeAsync (TextReader)")]
+    public async Task<MediumRecord?> TokenizeAsync_TextReader()
     {
         using var reader = new StringReader(_mediumInput);
-        return await _matcher.MatchAsync<MediumRecord>(reader);
+        return await _matcher.TokenizeAsync<MediumRecord>(reader);
     }
 
-    [Benchmark(Description = "MatchAsync (seekable Stream)")]
-    public async Task<TokenMatcherResult<MediumRecord>> MatchAsync_SeekableStream()
+    [Benchmark(Description = "TokenizeAsync (seekable Stream)")]
+    public async Task<MediumRecord?> TokenizeAsync_SeekableStream()
     {
         using var stream = new MemoryStream(_mediumBytes);
-        return await _matcher.MatchAsync<MediumRecord>(stream, Encoding.UTF8);
+        return await _matcher.TokenizeAsync<MediumRecord>(stream, Encoding.UTF8);
     }
 }

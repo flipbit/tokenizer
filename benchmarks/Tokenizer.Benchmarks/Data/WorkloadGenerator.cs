@@ -190,7 +190,7 @@ public static class WorkloadGenerator
 
     /// <summary>
     /// Generates a non-matching template with a unique hint that won't
-    /// appear in the medium input. Used to fill TokenMatcher with
+    /// appear in the medium input. Used to fill TemplateMatcher with
     /// templates that fail hint filtering quickly.
     /// </summary>
     public static string NonMatchingTemplate(int index) =>

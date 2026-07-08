@@ -20,7 +20,7 @@ public class ConcurrencyBenchmarks
 
     // Shared instances
     private Tokenizer _sharedTokenizer = null!;
-    private TokenMatcher _sharedMatcher = null!;
+    private TemplateMatcher _sharedMatcher = null!;
 
     // Pre-compiled template and input
     private Template _mediumTemplate = null!;
@@ -37,7 +37,7 @@ public class ConcurrencyBenchmarks
         _mediumTemplate = parser.Compile(_mediumTemplateString).Template;
         _mediumInput = WorkloadGenerator.MediumInput();
 
-        _sharedMatcher = new TokenMatcher();
+        _sharedMatcher = new TemplateMatcher();
         _sharedMatcher.RegisterTemplate(_mediumTemplateString, "matching");
         for (var i = 1; i <= 10; i++)
         {
@@ -67,22 +67,22 @@ public class ConcurrencyBenchmarks
             });
     }
 
-    [Benchmark(Description = "Parallel match - shared TokenMatcher instance")]
-    public void ParallelMatch_SharedInstance()
+    [Benchmark(Description = "Parallel tokenize - shared TemplateMatcher instance")]
+    public void ParallelTokenize_SharedMatcher()
     {
         Parallel.For(0, ThreadCount * OperationsPerThread,
             new ParallelOptions { MaxDegreeOfParallelism = ThreadCount },
-            _ => _sharedMatcher.Match<MediumRecord>(_mediumInput));
+            _ => _sharedMatcher.Tokenize<MediumRecord>(_mediumInput));
     }
 
-    [Benchmark(Description = "Parallel match - instance per thread")]
-    public void ParallelMatch_InstancePerThread()
+    [Benchmark(Description = "Parallel tokenize - TemplateMatcher per thread")]
+    public void ParallelTokenize_MatcherPerThread()
     {
         Parallel.For(0, ThreadCount * OperationsPerThread,
             new ParallelOptions { MaxDegreeOfParallelism = ThreadCount },
             _ =>
             {
-                var matcher = new TokenMatcher();
+                var matcher = new TemplateMatcher();
                 matcher.RegisterTemplate(_mediumTemplateString, "matching");
                 for (var i = 1; i <= 10; i++)
                 {
@@ -90,7 +90,7 @@ public class ConcurrencyBenchmarks
                         WorkloadGenerator.NonMatchingTemplate(i),
                         $"non-matching-{i.ToString(CultureInfo.InvariantCulture)}");
                 }
-                matcher.Match<MediumRecord>(_mediumInput);
+                matcher.Tokenize<MediumRecord>(_mediumInput);
             });
     }
 
@@ -106,14 +106,14 @@ public class ConcurrencyBenchmarks
         await Task.WhenAll(tasks);
     }
 
-    [Benchmark(Description = "Parallel match async - shared TokenMatcher instance")]
-    public async Task ParallelMatchAsync_SharedInstance()
+    [Benchmark(Description = "Parallel tokenize async - shared TemplateMatcher instance")]
+    public async Task ParallelTokenizeAsync_SharedMatcher()
     {
         var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
             .Select(_ =>
             {
                 var reader = new StringReader(_mediumInput);
-                return _sharedMatcher.MatchAsync<MediumRecord>(reader);
+                return _sharedMatcher.TokenizeAsync<MediumRecord>(reader);
             });
         await Task.WhenAll(tasks);
     }

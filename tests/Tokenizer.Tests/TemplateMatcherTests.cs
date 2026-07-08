@@ -4,9 +4,9 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenMatcherTests : TokenizerTestBase
+public class TemplateMatcherTests : TokenizerTestBase
 {
-    private readonly ITokenMatcher _matcher;
+    private readonly ITemplateMatcher _matcher;
 
     private sealed class Person
     {
@@ -14,9 +14,9 @@ public class TokenMatcherTests : TokenizerTestBase
         public int Age { get; set; }
     }
 
-    public TokenMatcherTests(ITestOutputHelper output) : base(output)
+    public TemplateMatcherTests(ITestOutputHelper output) : base(output)
     {
-        _matcher = new TokenMatcher();
+        _matcher = new TemplateMatcher();
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class TokenMatcherTests : TokenizerTestBase
     {
         _matcher.RegisterTemplate("Name: {Person.Name}", "Person");
 
-        var result = _matcher.Match("Name: Alice");
+        var result = _matcher.Tokenize("Name: Alice");
 
         var person = result.BestMatch!.Assign<Person>();
 
@@ -37,7 +37,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate("Name: {Person.Name}", "no-age");
         _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = _matcher.Match("Name: Alice, Age: 30");
+        var result = _matcher.Tokenize("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
         var person = match.Assign<Person>();
@@ -61,7 +61,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template1);
         _matcher.RegisterTemplate(template2);
 
-        var result = _matcher.Match("Name: Alice, Age: 30");
+        var result = _matcher.Tokenize("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
         var person = match.Assign<Person>();
@@ -87,7 +87,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template1);
         _matcher.RegisterTemplate(template2);
 
-        var result = _matcher.Match("Name: Alice, Age: 30");
+        var result = _matcher.Tokenize("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
         var person = match.Assign<Person>();
@@ -101,12 +101,12 @@ public class TokenMatcherTests : TokenizerTestBase
     public void TestParseTwoPatternsContinuesOnError()
     {
         var options = new TokenizerOptions().WithTransformer<BlowsUpTransformer>();
-        var matcherWithTransformer = new TokenMatcher(options);
+        var matcherWithTransformer = new TemplateMatcher(options);
 
         matcherWithTransformer.RegisterTemplate("Name: {Person.Name:BlowsUp}", "no-age");
         matcherWithTransformer.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}", "with-age");
 
-        var result = matcherWithTransformer.Match("Name: Alice, Age: 30");
+        var result = matcherWithTransformer.Tokenize("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
         var person = match.Assign<Person>();
@@ -122,7 +122,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate("Name: {Person.Name: SubstringBefore(',')}", "no-age");
         _matcher.RegisterTemplate("Name: {Person.Name}, Age: {Person.Age}, Location: {Location!}", "with-age");
 
-        var result = _matcher.Match("Name: Alice, Age: 30");
+        var result = _matcher.Tokenize("Name: Alice, Age: 30");
 
         Assert.True(result.Success);
 
@@ -142,7 +142,7 @@ public class TokenMatcherTests : TokenizerTestBase
 
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
 
-        var result = _matcher.Match("Name: Alice, Age: 30", ["no-age"]);
+        var result = _matcher.Tokenize("Name: Alice, Age: 30", ["no-age"]);
 
         Assert.True(result.Success);
 
@@ -163,7 +163,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = _matcher.Match("Name: Alice, Age: 30", ["Foo"]);
+        var result = _matcher.Tokenize("Name: Alice, Age: 30", ["Foo"]);
 
         Assert.False(result.Success);
         Assert.Null(result.BestMatch);
@@ -177,7 +177,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("no-age")!.AddTag("no-age");
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
 
-        var result = _matcher.Match("Name: Alice, Age: 30");
+        var result = _matcher.Tokenize("Name: Alice, Age: 30");
 
         var match = result.BestMatch!;
         var person = match.Assign<Person>();
@@ -199,7 +199,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.Templates.Get("with-age")!.AddTag("with-age");
         _matcher.Templates.Get("with-age")!.AddTag("person");
 
-        var result = _matcher.Match("Name: Alice, Age: 30", ["person"]);
+        var result = _matcher.Tokenize("Name: Alice, Age: 30", ["person"]);
 
         Assert.True(result.Success);
 
@@ -218,7 +218,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }", "with-age");
         _matcher.RegisterTemplate("Name: { Name $ }Age: { Age $ }Location { Location $ }", "with-location");
 
-        var result = _matcher.Match("Name: Alice\nAge: 30");
+        var result = _matcher.Tokenize("Name: Alice\nAge: 30");
 
         Assert.True(result.Success);
 
@@ -265,7 +265,7 @@ public class TokenMatcherTests : TokenizerTestBase
                     """;
 
 
-        var result = _matcher.Match(input, ["standard"]);
+        var result = _matcher.Tokenize(input, ["standard"]);
 
         var match = result.BestMatch!;
 
@@ -290,7 +290,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template);
 
         // Act
-        var result = _matcher.Match("This input matches nothing in the template");
+        var result = _matcher.Tokenize("This input matches nothing in the template");
 
         // Assert
         Assert.False(result.Success);
@@ -313,7 +313,7 @@ public class TokenMatcherTests : TokenizerTestBase
         _matcher.RegisterTemplate(template);
 
         // Act
-        var result = _matcher.Match("not found...");
+        var result = _matcher.Tokenize("not found...");
 
         // Assert
         Assert.True(result.Success);

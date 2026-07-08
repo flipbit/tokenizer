@@ -3,9 +3,9 @@ using Xunit.Abstractions;
 
 namespace Tokens;
 
-public class TokenMatcherResultTests : TokenizerTestBase
+public class TemplateMatchResultTests : TokenizerTestBase
 {
-    public TokenMatcherResultTests(ITestOutputHelper output) : base(output)
+    public TemplateMatchResultTests(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -14,7 +14,7 @@ public class TokenMatcherResultTests : TokenizerTestBase
     {
         // Arrange
         var tokenizer = CreateTokenizer();
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
 
         var templateWithHint = tokenizer.Compile("Name: {Name: SubstringBefore(',') }").Template;
         templateWithHint.Name = "with-hint";
@@ -27,7 +27,7 @@ public class TokenMatcherResultTests : TokenizerTestBase
         matcher.RegisterTemplate(templateWithoutHint);
 
         // Act
-        var result = matcher.Match("Name: Alice, Age: 30");
+        var result = matcher.Tokenize("Name: Alice, Age: 30");
 
         // Assert
         Assert.True(result.Success);
@@ -39,11 +39,11 @@ public class TokenMatcherResultTests : TokenizerTestBase
     public void GivenNoSuccessfulMatches_WhenBestMatchAccessed_ThenReturnsNullAndSuccessIsFalse()
     {
         // Arrange
-        var matcher = new TokenMatcher();
+        var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Prefix: {Value}", "test");
 
         // Act
-        var result = matcher.Match("completely unrelated input");
+        var result = matcher.Tokenize("completely unrelated input");
 
         // Assert
         Assert.Null(result.BestMatch);

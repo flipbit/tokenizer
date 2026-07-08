@@ -20,6 +20,7 @@ public sealed class TokenEnumerator
 
     private bool _readerExhausted;
     private bool _resetNextLine;
+    private int _lastReadCount;
 
     /// <summary>
     /// Initializes a new instance of <see cref="TokenEnumerator"/> over the specified <see cref="TextReader"/>.
@@ -99,6 +100,18 @@ public sealed class TokenEnumerator
     public bool NeedsRefill => _bufferedCount < RefillWatermark && !_readerExhausted;
 
     /// <summary>
+    /// Gets the staging buffer used during <see cref="FillBuffer"/> and <see cref="FillBufferAsync"/>.
+    /// Callers should only read the first <see cref="LastReadCount"/> characters.
+    /// </summary>
+    internal char[] StagingBuffer => _stagingBuffer;
+
+    /// <summary>
+    /// Gets the number of characters read during the most recent
+    /// <see cref="FillBuffer"/> or <see cref="FillBufferAsync"/> call.
+    /// </summary>
+    internal int LastReadCount => _lastReadCount;
+
+    /// <summary>
     /// Reads a bulk chunk from the underlying reader into the ring _buffer (synchronous path).
     /// </summary>
     public void FillBuffer()
@@ -113,10 +126,12 @@ public sealed class TokenEnumerator
         var read = _reader.Read(staging, 0, available);
         if (read == 0)
         {
+            _lastReadCount = 0;
             _readerExhausted = true;
             return;
         }
 
+        _lastReadCount = read;
         CopyToRingBuffer(staging, read);
     }
 
@@ -141,10 +156,12 @@ public sealed class TokenEnumerator
 #endif
         if (read == 0)
         {
+            _lastReadCount = 0;
             _readerExhausted = true;
             return;
         }
 
+        _lastReadCount = read;
         CopyToRingBuffer(staging, read);
     }
 

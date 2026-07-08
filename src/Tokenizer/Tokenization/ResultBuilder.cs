@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Diagnostics;
-using Tokens.Enumerators;
 
 namespace Tokens.Tokenization;
 
@@ -23,89 +22,6 @@ internal sealed class ResultBuilder : IResultBuilder
     public ResultBuilder(ILogger<ResultBuilder>? logger)
     {
         _log = logger ?? NullLogger<ResultBuilder>.Instance;
-    }
-
-    /// <summary>
-    /// Creates a new TokenizeResult instance for the given template.
-    /// </summary>
-    /// <param name="template">The template used for tokenization</param>
-    /// <returns>A new TokenizeResult instance</returns>
-    public TokenizeResult CreateTokenizeResult(Template template)
-    {
-        ArgumentValidation.ThrowIfNull(template, nameof(template));
-
-        return new TokenizeResult(template);
-    }
-
-    /// <summary>
-    /// Adds a token match to the result with the assigned value and location.
-    /// </summary>
-    /// <param name="token">The token that was matched</param>
-    /// <param name="assignedValue">The value that was assigned to the token</param>
-    /// <param name="location">The location where the token was found</param>
-    /// <param name="result">The result object to add the match to</param>
-    public void AddTokenMatch(
-        Token token,
-        object assignedValue,
-        FileLocation location,
-        TokenizeResult result)
-    {
-        ArgumentValidation.ThrowIfNull(token, nameof(token));
-        ArgumentValidation.ThrowIfNull(assignedValue, nameof(assignedValue));
-        ArgumentValidation.ThrowIfNull(location, nameof(location));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-
-        if (_log.IsEnabled(LogLevel.Trace))
-        {
-            _log.LogTrace(
-                "Adding token match: TokenId={TokenId}, TokenName={TokenName}, Value={Value}, Line={Line}, Column={Column}",
-                token.Id,
-                token.Name,
-                assignedValue,
-                location.Line,
-                location.Column);
-        }
-
-        result.Tokens.AddMatch(token, assignedValue, location);
-    }
-
-    /// <summary>
-    /// Adds a token miss to the result for tokens that were not found.
-    /// </summary>
-    /// <param name="token">The token that was not found</param>
-    /// <param name="result">The result object to add the miss to</param>
-    public void AddTokenMiss(
-        Token token,
-        TokenizeResult result)
-    {
-        ArgumentValidation.ThrowIfNull(token, nameof(token));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-
-        if (_log.IsEnabled(LogLevel.Trace))
-        {
-            _log.LogTrace(
-                "Adding token miss: TokenId={TokenId}, TokenName={TokenName}, Required={Required}",
-                token.Id,
-                token.Name,
-                token.IsRequired);
-        }
-
-        result.Tokens.AddMiss(token);
-    }
-
-    /// <summary>
-    /// Adds an exception to the result for errors that occurred during tokenization.
-    /// </summary>
-    /// <param name="exception">The exception that occurred</param>
-    /// <param name="result">The result object to add the exception to</param>
-    public void AddException(
-        Exception exception,
-        TokenizeResult result)
-    {
-        ArgumentValidation.ThrowIfNull(exception, nameof(exception));
-        ArgumentValidation.ThrowIfNull(result, nameof(result));
-
-        result.AddException(exception);
     }
 
     /// <summary>

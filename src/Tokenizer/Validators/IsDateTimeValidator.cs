@@ -1,9 +1,9 @@
-using Tokens.Transformers;
+using Tokens.Temporal;
 
 namespace Tokens.Validators;
 
 /// <summary>
-/// Validator to determine if a token value is a date time string 
+/// Validator to determine if a token value is a date time string
 /// </summary>
 public sealed class IsDateTimeValidator : ITokenValidator
 {
@@ -18,6 +18,6 @@ public sealed class IsDateTimeValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        return ToDateTimeTransformer.TryParseDateTime(valueString, args, out _);
+        return TemporalParser.TryParse(valueString, args, new TokenizerOptions(), out _);
     }
 }

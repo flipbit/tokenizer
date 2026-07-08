@@ -150,10 +150,10 @@ internal static class DatePatternRecognizer
             "dd-MMM-yyyy",
             requiresCulture: true),
 
-        // 14. Day monthname year (short abbrev, 3 chars): 15 Mar 2024
+        // 14. Day monthname year (short abbrev, 3 chars): 15 Mar 2024 or 1 May 2019
         new(
-            @"^\d{2}\s+[A-Za-z]{3}\s+\d{4}$",
-            "dd MMM yyyy",
+            @"^\d{1,2}\s+[A-Za-z]{3}\s+\d{4}$",
+            ["dd MMM yyyy", "d MMM yyyy"],
             requiresCulture: true),
 
         // 15. Day-fullmonth-year (4+ chars): 15-March-2024

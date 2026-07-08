@@ -1,3 +1,4 @@
+#pragma warning disable CS0612, CS0618 // ToDateTimeUtcTransformer is obsolete
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +13,7 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
     private readonly ToDateTimeUtcTransformer _transformer = new();
 
     [Fact]
-    public void GivenValidDateString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
+    public void GivenValidDateString_WhenTransforming_ThenReturnsDateTimeOffsetWithUtcOffset()
     {
         // Arrange
         var input = "2014-01-01";
@@ -20,16 +21,18 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var result = _transformer.TryTransform(input, [format], out var t);
-        var dateTime = (DateTime)t;
+        var dto = (DateTimeOffset)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2014, 1, 1), t);
-        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+        Assert.Equal(2014, dto.Year);
+        Assert.Equal(1, dto.Month);
+        Assert.Equal(1, dto.Day);
+        Assert.Equal(TimeSpan.Zero, dto.Offset);
     }
 
     [Fact]
-    public void GivenValidDateTimeString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
+    public void GivenValidDateTimeString_WhenTransforming_ThenReturnsDateTimeOffsetWithUtcOffset()
     {
         // Arrange
         var input = "2014-01-01 10:00:00";
@@ -37,16 +40,19 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var result = _transformer.TryTransform(input, [format], out var t);
-        var dateTime = (DateTime)t;
+        var dto = (DateTimeOffset)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
-        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+        Assert.Equal(2014, dto.Year);
+        Assert.Equal(1, dto.Month);
+        Assert.Equal(1, dto.Day);
+        Assert.Equal(10, dto.Hour);
+        Assert.Equal(TimeSpan.Zero, dto.Offset);
     }
 
     [Fact]
-    public void GivenIsoFormatDateTimeString_WhenTransforming_ThenReturnsDateTimeWithUtcKind()
+    public void GivenIsoFormatDateTimeString_WhenTransforming_ThenReturnsDateTimeOffsetWithUtcOffset()
     {
         // Arrange
         var input = "2014-01-01T10:00:00Z";
@@ -54,16 +60,19 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
 
         // Act
         var result = _transformer.TryTransform(input, [format], out var t);
-        var dateTime = (DateTime)t;
+        var dto = (DateTimeOffset)t;
 
         // Assert
         Assert.True(result);
-        Assert.Equal(new DateTime(2014, 1, 1, 10, 0, 0), dateTime);
-        Assert.Equal(DateTimeKind.Utc, dateTime.Kind);
+        Assert.Equal(2014, dto.Year);
+        Assert.Equal(1, dto.Month);
+        Assert.Equal(1, dto.Day);
+        Assert.Equal(10, dto.Hour);
+        Assert.Equal(TimeSpan.Zero, dto.Offset);
     }
 
     [Fact]
-    public void GivenDateWithUtcSuffix_WhenTokenizing_ThenTrimsUtcAndReturnsDateTime()
+    public void GivenDateWithUtcSuffix_WhenTokenizing_ThenTrimsUtcAndReturnsDateTimeOffset()
     {
         // Arrange
         var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
@@ -75,11 +84,15 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
+        var matchValue = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
+        Assert.Equal(2000, matchValue.Year);
+        Assert.Equal(1, matchValue.Month);
+        Assert.Equal(1, matchValue.Day);
+        Assert.Equal(TimeSpan.Zero, matchValue.Offset);
     }
 
     [Fact]
-    public void GivenDateWithUtcInBrackets_WhenTokenizing_ThenTrimsUtcAndReturnsDateTime()
+    public void GivenDateWithUtcInBrackets_WhenTokenizing_ThenTrimsUtcAndReturnsDateTimeOffset()
     {
         // Arrange
         var pattern = @"Date: { Date : ToDateTimeUtc('yyyy-MM-dd') }";
@@ -91,7 +104,11 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
+        var matchValue = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
+        Assert.Equal(2000, matchValue.Year);
+        Assert.Equal(1, matchValue.Month);
+        Assert.Equal(1, matchValue.Day);
+        Assert.Equal(TimeSpan.Zero, matchValue.Offset);
     }
 
     [Fact]
@@ -133,6 +150,11 @@ public class ToDateTimeUtcTransformerTests : TokenizerTestBase
         var result = _tok.Tokenize(template, input);
 
         // Assert
-        Assert.Equal(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), (DateTime)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value);
+        var matchValue = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
+        Assert.Equal(2000, matchValue.Year);
+        Assert.Equal(1, matchValue.Month);
+        Assert.Equal(1, matchValue.Day);
+        Assert.Equal(TimeSpan.Zero, matchValue.Offset);
     }
 }
+#pragma warning restore CS0612, CS0618

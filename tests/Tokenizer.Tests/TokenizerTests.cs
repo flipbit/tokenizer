@@ -668,10 +668,12 @@ public class TokenizerTests : TokenizerTestBase
         // Act
         var template = _tokenizer.Compile(pattern).Template;
         var result = _tokenizer.Tokenize(template, input);
-        var date = (DateTime)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
+        var date = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Date", StringComparison.Ordinal)).Value;
 
-        // Assert
-        Assert.Equal(new DateTime(2001, 1, 1), date);
+        // Assert — compare date components only; offset is machine-local for date-only input with no explicit offset
+        Assert.Equal(2001, date.Year);
+        Assert.Equal(1, date.Month);
+        Assert.Equal(1, date.Day);
         Assert.Single(result.Matches);
     }
 }

@@ -43,9 +43,9 @@ public class SampleTests : TokenizerTestBase
 
             Assert.Equal("British Broadcasting Corporation [Tag = BBC]", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
             Assert.Equal("http://www.bbc.co.uk", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Url", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(1996, 08, 01, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2014, 12, 13, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2014, 06, 12, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(1996, 08, 01, 00, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(2014, 12, 13, 00, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(2014, 06, 12, 00, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
             Assert.Equal("Registered until expiry date.", result.Matches.First(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Value);
 
             var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
@@ -212,9 +212,9 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("facebook.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Domain", StringComparison.Ordinal)).Value);
         Assert.Equal("whois.registrarsafe.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Url", StringComparison.Ordinal)).Value);
         Assert.Equal("http://www.registrarsafe.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ReferralUrl", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2018, 07, 23, 18, 17, 13, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(1997, 03, 29, 05, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2028, 03, 30, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2018, 07, 23, 18, 17, 13, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(1997, 03, 29, 05, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2028, 03, 30, 04, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
         Assert.Equal("RegistrarSafe, LLC", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Registrar", StringComparison.Ordinal)).Value);
 
         var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "WhoisRedirect.NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
@@ -247,9 +247,9 @@ public class SampleTests : TokenizerTestBase
         Assert.Equal("sil.org", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Domain", StringComparison.Ordinal)).Value);
         Assert.Equal("whois.enom.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Url", StringComparison.Ordinal)).Value);
         Assert.Equal("http://www.enom.com", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ReferralUrl", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2018, 03, 06, 00, 17, 46, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(1991, 04, 15, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2020, 04, 16, 04, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2018, 03, 06, 00, 17, 46, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ModifiedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(1991, 04, 15, 04, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.CreatedDate", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2020, 04, 16, 04, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.ExpirationDate", StringComparison.Ordinal)).Value);
         Assert.Equal("eNom, Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "WhoisRedirect.Registrar", StringComparison.Ordinal)).Value);
 
         var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "WhoisRedirect.NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
@@ -281,8 +281,10 @@ public class SampleTests : TokenizerTestBase
             Assert.Equal("Amazon, Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
             Assert.Equal("JC076JP", result.Matches.First(m => string.Equals(m.Token.Name, "AdminContact.Name", StringComparison.Ordinal)).Value);
             Assert.Equal("IK4644JP", result.Matches.First(m => string.Equals(m.Token.Name, "TechnicalContact.Name", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2002, 11, 21), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2018, 12, 1), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+            var registered = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value;
+            Assert.Equal(2002, registered.Year); Assert.Equal(11, registered.Month); Assert.Equal(21, registered.Day);
+            var updated = (DateTimeOffset)result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value;
+            Assert.Equal(2018, updated.Year); Assert.Equal(12, updated.Month); Assert.Equal(1, updated.Day);
 
             var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
 
@@ -450,7 +452,7 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal(new DateTime(2001, 08, 23), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2001, 08, 23, 0, 0, 0, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -515,9 +517,9 @@ public class SampleTests : TokenizerTestBase
 
             Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.TelephoneNumber", StringComparison.Ordinal)).Value);
             Assert.Equal("2418246437", result.Matches.First(m => string.Equals(m.Token.Name, "BillingContact.FaxNumber", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
-            Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(2010, 11, 21, 15, 21, 32, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(2006, 06, 08, 21, 54, 41, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+            Assert.Equal(new DateTimeOffset(2005, 11, 21, 15, 21, 32, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
             Assert.Equal("SUSPENDIDO", result.Matches.First(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Value);
 
             var nameServers = result.Matches.Where(m => string.Equals(m.Token.Name, "NameServers", StringComparison.Ordinal)).Select(m => m.Value).ToList();
@@ -565,9 +567,9 @@ public class SampleTests : TokenizerTestBase
         var compiled = _tokenizer.Compile(template).Template;
         var result = _tokenizer.Tokenize(compiled, input);
 
-        Assert.Equal(new DateTime(2010, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2006, 06, 08, 21, 54, 41, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2005, 11, 21, 15, 21, 32, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2010, 11, 21, 15, 21, 32, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2006, 06, 08, 21, 54, 41, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Updated", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2005, 11, 21, 15, 21, 32, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
     }
 
     [Fact]
@@ -581,7 +583,7 @@ public class SampleTests : TokenizerTestBase
 
         Assert.Equal("5662D-COOP", result.Matches.First(m => string.Equals(m.Token.Name, "RegistryDomainId", StringComparison.Ordinal)).Value);
         Assert.Equal("moscowfood.coop", result.Matches.First(m => string.Equals(m.Token.Name, "DomainName", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2013, 01, 30, 00, 00, 00, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2013, 01, 30, 00, 00, 00, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Expiration", StringComparison.Ordinal)).Value);
 
         var domainStatuses = result.Matches.Where(m => string.Equals(m.Token.Name, "DomainStatus", StringComparison.Ordinal)).Select(m => m.Value).ToList();
         Assert.Equal(3, domainStatuses.Count);
@@ -591,7 +593,7 @@ public class SampleTests : TokenizerTestBase
 
         Assert.Equal("Domain Bank Inc.", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.Name", StringComparison.Ordinal)).Value);
         Assert.Equal("31", result.Matches.First(m => string.Equals(m.Token.Name, "Registrar.IanaId", StringComparison.Ordinal)).Value);
-        Assert.Equal(new DateTime(2001, 10, 09, 04, 36, 36, 000, DateTimeKind.Utc), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
+        Assert.Equal(new DateTimeOffset(2001, 10, 09, 04, 36, 36, TimeSpan.Zero), result.Matches.First(m => string.Equals(m.Token.Name, "Registered", StringComparison.Ordinal)).Value);
         Assert.Equal("registrant", result.Matches.First(m => string.Equals(m.Token.Name, "Type", StringComparison.Ordinal)).Value);
         Assert.Equal("71764C-COOP", result.Matches.First(m => string.Equals(m.Token.Name, "Contact.Id", StringComparison.Ordinal)).Value);
         Assert.Equal("Kenna Eaton", result.Matches.First(m => string.Equals(m.Token.Name, "Contact.Name", StringComparison.Ordinal)).Value);

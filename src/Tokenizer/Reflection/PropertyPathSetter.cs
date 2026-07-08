@@ -425,6 +425,10 @@ internal sealed class PropertyPathSetter
         {
             if (targetType == typeof(Guid)) return Guid.Parse(valueString);
             if (targetType == typeof(TimeSpan)) return TimeSpan.Parse(valueString, CultureInfo.InvariantCulture);
+
+            // DateTimeOffset value assigned to a DateTime property: extract local DateTime
+            if (targetType == typeof(DateTime) && value is DateTimeOffset dto) return dto.DateTime;
+
             if (targetType == typeof(DateTimeOffset)) return DateTimeOffset.Parse(valueString, CultureInfo.InvariantCulture);
 #if NET6_0_OR_GREATER
             if (targetType == typeof(DateOnly)) return DateOnly.Parse(valueString, CultureInfo.InvariantCulture);

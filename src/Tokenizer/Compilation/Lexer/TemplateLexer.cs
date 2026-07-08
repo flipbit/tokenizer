@@ -34,6 +34,9 @@ namespace Tokens.Compilation.Lexer;
 /// </example>
 public sealed class TemplateLexer
 {
+    private static readonly char[] StructuralChars = { '{', '}', ':', '=', ',', '(', ')' };
+    private static readonly char[] ModifierChars = { '?', '*', '!', '$', '#' };
+
     private readonly ILogger<TemplateLexer> _log;
 
     /// <summary>
@@ -499,7 +502,7 @@ public sealed class TemplateLexer
     {
         token = null;
         var peek = reader.PeekChar();
-        if (peek != '{' && peek != '}' && peek != ':' && peek != '=' && peek != ',' && peek != '(' && peek != ')') return false;
+        if (System.Array.IndexOf(StructuralChars, (char)peek) < 0) return false;
         var tokenLocation = location.Clone();
         var ch = (char)reader.ReadChar(); location.Increment(ch); absolutePosition++;
         var kind = ch == '{' ? LexerTokenKind.OpenBrace :
@@ -517,7 +520,7 @@ public sealed class TemplateLexer
     {
         token = null;
         var peek = reader.PeekChar();
-        if (peek != '?' && peek != '*' && peek != '!' && peek != '$' && peek != '#') return false;
+        if (System.Array.IndexOf(ModifierChars, (char)peek) < 0) return false;
         var tokenLocation = location.Clone();
         var ch = (char)reader.ReadChar(); location.Increment(ch); absolutePosition++;
         var kind = ch == '?' ? LexerTokenKind.Question :
@@ -554,8 +557,8 @@ public sealed class TemplateLexer
         {
             var p = reader.PeekChar(); if (p == -1) break; var c = (char)p;
             if (c == '\r' || c == '\n' || c == ' ' || c == '\t') break;
-            if (c == '{' || c == '}' || c == ':' || c == '=' || c == ',' || c == '(' || c == ')') break;
-            if (c == '?' || c == '*' || c == '!' || c == '$' || c == '#') break;
+            if (System.Array.IndexOf(StructuralChars, c) >= 0) break;
+            if (System.Array.IndexOf(ModifierChars, c) >= 0) break;
             if (IsIdentifierChar(c)) break;
             var ch = (char)reader.ReadChar(); sb.Append(ch); location.Increment(ch); absolutePosition++;
         }

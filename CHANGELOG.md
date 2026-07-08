@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.0.0] - Unreleased
+## [3.0.0-beta.1] - 2026-08-08
 
 ### Added
 
@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - .NET 10.0 target
 - XML IntelliSense documentation in NuGet package
 - NuGet package icon
+- `AssignmentFailedException.PartialResult` property for retrieving partially assigned objects on failure
+- `TemporalParser` format offset detection to preserve parsed timezone offsets
 
 ### Changed
 
@@ -44,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Converted to file-scoped namespaces
 - Replaced `Tokenizer.Create()` static factories with public constructors
 - Target frameworks: netstandard2.0 + net8.0 + net10.0 (was netstandard2.0 + net6.0)
+- `TemporalParser` trims whitespace from input values before parsing
+- `TemporalParser` preserves parsed timezone offset when format contains offset specifier (z, zz, zzz, K)
 
 ### Fixed
 
@@ -65,6 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Duplicate test files
 - Stale `#if DOTNET35` and `NET6_0_OR_GREATER` preprocessor guards
 - AppVeyor CI configuration
+- Development-only debug console app
+- AI-generated specs and plans (development artifacts)
 
 ## [2.2.1] - 2019-10-01
 

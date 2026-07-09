@@ -211,4 +211,40 @@ public class TokenizerOptionsTests : TokenizerTestBase
         Assert.Single(original.TimezoneAbbreviations);
         Assert.Equal(2, copy.TimezoneAbbreviations.Count);
     }
+
+    [Fact]
+    public void GivenDefaultOptions_WhenCheckingMaxRegexTimeout_ThenDefaultsToOneSecond()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var timeout = options.MaxRegexTimeout;
+
+        // Assert
+        Assert.Equal(TimeSpan.FromSeconds(1), timeout);
+    }
+
+    [Fact]
+    public void GivenCustomTimeout_WhenCreatingOptions_ThenTimeoutIsPreserved()
+    {
+        // Arrange & Act
+        var options = new TokenizerOptions { MaxRegexTimeout = TimeSpan.FromMilliseconds(250) };
+
+        // Assert
+        Assert.Equal(TimeSpan.FromMilliseconds(250), options.MaxRegexTimeout);
+    }
+
+    [Fact]
+    public void GivenOptionsWithCustomTimeout_WhenCopying_ThenCopyPreservesTimeout()
+    {
+        // Arrange
+        var original = new TokenizerOptions { MaxRegexTimeout = TimeSpan.FromMilliseconds(500) };
+
+        // Act
+        var copy = original with { };
+
+        // Assert
+        Assert.Equal(TimeSpan.FromMilliseconds(500), copy.MaxRegexTimeout);
+    }
 }

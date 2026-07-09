@@ -386,6 +386,12 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed overview of the compilatio
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on building, testing, and submitting changes.
 
+## Security
+
+For guidance on processing untrusted input (e.g. in a playground or SaaS feature), see [SECURITY.md](SECURITY.md).
+
+To report a security vulnerability, please use [GitHub Security Advisories](https://github.com/flipbit/tokenizer/security/advisories/new).
+
 ## License
 
 MIT. See [LICENSE.txt](LICENSE.txt).

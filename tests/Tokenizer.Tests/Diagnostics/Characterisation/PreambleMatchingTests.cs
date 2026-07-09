@@ -272,14 +272,4 @@ public class PreambleMatchingTests : TokenizerTestBase
         Output.WriteLine(result.Diagnostics!.RenderAlignment());
         return result;
     }
-
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input, TokenizerOptions options)
-    {
-        options = options with { EnableDiagnostics = true };
-        var tokenizer = CreateTokenizer(options);
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

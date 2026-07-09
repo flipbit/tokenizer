@@ -348,7 +348,7 @@ public class TemplateLexerTests
     {
         // Arrange
         var lexer = CreateLexer();
-        var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests/Tokenizer.Tests/Samples/Patterns");
+        var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
         if (!Directory.Exists(sampleDir)) return; // skip if not available in this run context
 
         foreach (var file in Directory.EnumerateFiles(sampleDir, "*.txt"))
@@ -497,12 +497,15 @@ public class TemplateLexerTests
         var dir = AppContext.BaseDirectory;
         for (int i = 0; i < 6; i++)
         {
+            // CodeQL cs/path-combine: relativePath is always relative (never rooted), so
+            // Path.Combine will not silently drop earlier arguments
             var candidate = Path.Combine(dir, relativePath);
             if (File.Exists(candidate)) return candidate;
             var parent = Directory.GetParent(dir);
             if (parent == null) break;
             dir = parent.FullName;
         }
+        // CodeQL cs/path-combine: relativePath is always relative (never rooted)
         return Path.Combine(AppContext.BaseDirectory, relativePath);
     }
 

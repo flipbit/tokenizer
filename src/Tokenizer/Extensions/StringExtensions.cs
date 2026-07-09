@@ -172,6 +172,7 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && matches != null)
         {
+            // CodeQL cs/linq/missed-select: this is a find-first-match pattern with early exit, not a mapping operation
             foreach (var match in matches)
             {
                 var index = value.IndexOf(match, StringComparison.Ordinal);

@@ -351,6 +351,7 @@ public class TemplateLexerTests
         var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
         if (!Directory.Exists(sampleDir)) return; // skip if not available in this run context
 
+        // CodeQL cs/linq/missed-select: loop body has side effects (file I/O + assertions), not a pure mapping
         foreach (var file in Directory.EnumerateFiles(sampleDir, "*.txt"))
         {
             var text = File.ReadAllText(file);

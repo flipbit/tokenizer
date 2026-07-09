@@ -29,6 +29,7 @@ public class TemplateParserPhase1Tests
         var sampleDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
         if (!System.IO.Directory.Exists(sampleDir)) return; // skip if not available
 
+        // CodeQL cs/linq/missed-select: loop body has side effects (file I/O + assertions), not a pure mapping
         foreach (var file in System.IO.Directory.EnumerateFiles(sampleDir, "*.txt"))
         {
             var text = System.IO.File.ReadAllText(file);

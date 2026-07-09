@@ -61,6 +61,7 @@ public class HintMatchTests
         var match = new HintMatch("test", optional: false, new FileLocation());
 
         // Act & Assert
+        // CodeQL cs/null-argument-to-equals: intentionally testing Equals(null) returns false
 #pragma warning disable CA1508 // Avoid dead conditional code — testing Equals(null) behavior
         Assert.False(match.Equals(obj: null));
 #pragma warning restore CA1508

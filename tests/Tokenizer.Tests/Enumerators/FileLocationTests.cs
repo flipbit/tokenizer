@@ -59,6 +59,7 @@ public class FileLocationTests
         var location = new FileLocation();
 
         // Act & Assert
+        // CodeQL cs/null-argument-to-equals: intentionally testing Equals(null) returns false
 #pragma warning disable CA1508 // Avoid dead conditional code — testing Equals(null) behavior
         Assert.False(location.Equals(obj: null));
 #pragma warning restore CA1508

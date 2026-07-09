@@ -43,7 +43,9 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         // Assert
         Output.WriteLine(alignment);
         Assert.True(alignment.Contains("Matched Tokens", StringComparison.Ordinal));
-        // Document: which sections appear and what they contain
+        Assert.True(alignment.Contains("Unmatched Tokens", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Matched: 2", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Missed: 1", StringComparison.Ordinal));
         Assert.NotEmpty(alignment);
     }
 

@@ -62,6 +62,9 @@ public class HintTests : TokenizerTestBase
         Output.WriteLine($"HintMatched: {hintMatched}, HintMissing: {hintMissing}");
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.False(hintMatched);
+        Assert.True(hintMissing);
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

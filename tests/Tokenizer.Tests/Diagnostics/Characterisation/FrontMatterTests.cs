@@ -48,6 +48,13 @@ public class FrontMatterTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(frontMatterEvents,
+            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed
+              && string.Equals(e.TokenName, "MyDate", StringComparison.Ordinal));
+        Assert.DoesNotContain(frontMatterEvents,
+            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
+              && string.Equals(e.TokenName, "MyDate", StringComparison.Ordinal));
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

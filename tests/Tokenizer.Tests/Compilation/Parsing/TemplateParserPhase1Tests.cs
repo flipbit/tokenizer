@@ -26,7 +26,7 @@ public class TemplateParserPhase1Tests
     {
         // Arrange
         var parser = new TemplateParser();
-        var sampleDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
+        var sampleDir = System.IO.Path.Join(System.AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
         if (!System.IO.Directory.Exists(sampleDir)) return; // skip if not available
 
         // CodeQL cs/linq/missed-select: loop body has side effects (file I/O + assertions), not a pure mapping

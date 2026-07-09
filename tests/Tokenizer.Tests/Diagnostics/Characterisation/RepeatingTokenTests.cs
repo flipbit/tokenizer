@@ -26,7 +26,7 @@ public class RepeatingTokenTests : TokenizerTestBase
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
-        Assert.True(assigned.Count >= 1);
+        Assert.Equal(3, assigned.Count);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class RepeatingTokenTests : TokenizerTestBase
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
-        Assert.True(assigned.Count >= 1);
+        Assert.Equal(1, assigned.Count);
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
     }
 

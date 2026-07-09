@@ -26,7 +26,7 @@ public sealed class IsEmailValidator : ITokenValidator
 
             return string.Equals(address.Address, valueString, StringComparison.Ordinal);
         }
-        catch
+        catch (FormatException)
         {
             return false;
         }

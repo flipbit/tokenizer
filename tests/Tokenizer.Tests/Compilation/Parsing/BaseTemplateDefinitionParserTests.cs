@@ -140,40 +140,18 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
     public void GivenTokenWithRequiredAndOptionalCharacter_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        try
-        {
-            Parser.Parse("This is the preamble{TokenName!?}");
-
-            Assert.Fail("No exception thrown.");
-        }
-        catch (ParsingException e)
-        {
-            testOutputHelper.WriteLine(e.Message);
-        }
-        catch (Exception e)
-        {
-            Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
-        }
+        var e = Assert.Throws<ParsingException>(() =>
+            Parser.Parse("This is the preamble{TokenName!?}"));
+        testOutputHelper.WriteLine(e.Message);
     }
 
     [Fact]
     public void GivenTokenWithOptionalAndRequiredCharacter_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        try
-        {
-            Parser.Parse("This is the preamble{TokenName?!}");
-
-            Assert.Fail("No exception thrown.");
-        }
-        catch (ParsingException e)
-        {
-            testOutputHelper.WriteLine(e.Message);
-        }
-        catch (Exception e)
-        {
-            Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
-        }
+        var e = Assert.Throws<ParsingException>(() =>
+            Parser.Parse("This is the preamble{TokenName?!}"));
+        testOutputHelper.WriteLine(e.Message);
     }
 
     [Fact]

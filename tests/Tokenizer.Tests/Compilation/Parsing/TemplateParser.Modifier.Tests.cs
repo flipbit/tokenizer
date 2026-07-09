@@ -82,40 +82,18 @@ public class TemplateParserModifierTests
     public void GivenTokenWithRequiredAndOptionalCharacter_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        try
-        {
-            _parser.Parse("This is the preamble{TokenName!?}");
-
-            Assert.Fail("No exception thrown.");
-        }
-        catch (ParsingException e)
-        {
-            _output.WriteLine(e.Message);
-        }
-        catch (Exception e)
-        {
-            Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
-        }
+        var e = Assert.Throws<ParsingException>(() =>
+            _parser.Parse("This is the preamble{TokenName!?}"));
+        _output.WriteLine(e.Message);
     }
 
     [Fact]
     public void GivenTokenWithOptionalAndRequiredCharacter_WhenParsing_ThenThrowsParsingException()
     {
         // Arrange, Act & Assert
-        try
-        {
-            _parser.Parse("This is the preamble{TokenName?!}");
-
-            Assert.Fail("No exception thrown.");
-        }
-        catch (ParsingException e)
-        {
-            _output.WriteLine(e.Message);
-        }
-        catch (Exception e)
-        {
-            Assert.Fail($"Incorrect Exception Thrown: {e.GetType().Name}");
-        }
+        var e = Assert.Throws<ParsingException>(() =>
+            _parser.Parse("This is the preamble{TokenName?!}"));
+        _output.WriteLine(e.Message);
     }
 
     [Fact]

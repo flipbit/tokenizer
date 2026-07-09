@@ -97,7 +97,12 @@ public sealed class TemplateMatcher : ITemplateMatcher
                 var result = _tokenizer.Tokenize(template, input);
                 results.AddResult(result);
             }
+            // Intentional catch-all: wraps any exception from Tokenize() with template context
+            // before rethrowing as TemplateMatcherException. User-extensible pipeline means
+            // arbitrary exception types are possible.
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031
             {
                 var exception = new TemplateMatcherException(e.Message, template, e);
                 _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
@@ -328,7 +333,12 @@ public sealed class TemplateMatcher : ITemplateMatcher
                 var result = await _tokenizer.TokenizeAsync(template, reader, ct).ConfigureAwait(false);
                 results.AddResult(result);
             }
+            // Intentional catch-all: wraps any exception from Tokenize() with template context
+            // before rethrowing as TemplateMatcherException. User-extensible pipeline means
+            // arbitrary exception types are possible.
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031
             {
                 var exception = new TemplateMatcherException(e.Message, template, e);
                 _log.LogError(e, "Error processing template: {TemplateName}", template.Name);

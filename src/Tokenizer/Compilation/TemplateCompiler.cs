@@ -66,7 +66,12 @@ internal sealed class TemplateCompiler
             ex.Data["DiagnosticResult"] = collector.GetResult();
             throw;
         }
+        // Intentional catch-all: compilation boundary that wraps unexpected exceptions
+        // (after TokenizerException is already caught above) into TokenizerException
+        // with diagnostic context attached.
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
+#pragma warning restore CA1031
         {
             _log.LogError(ex, "Unexpected error during template compilation: {Message}", ex.Message);
             throw new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);

@@ -114,7 +114,6 @@ public class TokenizationEngineStateTests
     public void GivenFileLocation_WhenTrackingPosition_ThenUpdatesLineAndColumn()
     {
         // Arrange
-        var location = new FileLocation();
         var enumerator = new TokenEnumerator("Line1\nLine2\nLine3");
 
         // Act - Enumerate through newlines

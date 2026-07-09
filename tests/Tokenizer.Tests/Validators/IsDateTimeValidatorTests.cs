@@ -97,7 +97,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var options = new TokenizerOptions { Culture = CultureInfo.GetCultureInfo("fr-FR") };
 
         // Act
-        var result = ((IOptionsAwareValidator)_validator).IsValid("15 mars 2024", ["dd MMM yyyy"], options);
+        var result = _validator.IsValid("15 mars 2024", ["dd MMM yyyy"], options);
 
         // Assert
         Assert.True(result);
@@ -110,7 +110,7 @@ public class IsDateTimeValidatorTests : TokenizerTestBase
         var options = new TokenizerOptions();
 
         // Act
-        var result = ((IOptionsAwareValidator)_validator).IsValid("15 mars 2024", ["dd MMM yyyy"], options);
+        var result = _validator.IsValid("15 mars 2024", ["dd MMM yyyy"], options);
 
         // Assert
         Assert.False(result);

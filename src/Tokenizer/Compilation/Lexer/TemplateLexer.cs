@@ -420,7 +420,7 @@ public sealed class TemplateLexer
         var peek = reader.PeekChar();
         if (peek != '\r' && peek != '\n') return false;
         var tokenLocation = location.Clone();
-        var raw = string.Empty;
+        string raw;
         if (peek == '\r')
         {
             reader.ReadChar(); raw = "\r"; absolutePosition++;

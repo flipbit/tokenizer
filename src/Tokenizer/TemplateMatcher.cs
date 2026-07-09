@@ -374,7 +374,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         // Check template has tags
         if (template.Tags.Any())
         {
-            if (!template.HasTags(tags, out var missing))
+            if (!template.HasTags(tags, out _))
             {
                 return false;
             }

@@ -236,10 +236,10 @@ public record class TokenizerOptions
             hash = hash * 31 + OutOfOrderTokens.GetHashCode();
             hash = hash * 31 + TokenStringComparison.GetHashCode();
             hash = hash * 31 + TerminateOnNewLine.GetHashCode();
-            hash = hash * 31 + MaxInputLength.GetHashCode();
-            hash = hash * 31 + MaxTemplateLength.GetHashCode();
-            hash = hash * 31 + MaxTokenCount.GetHashCode();
-            hash = hash * 31 + MaxIterations.GetHashCode();
+            hash = hash * 31 + MaxInputLength;
+            hash = hash * 31 + MaxTemplateLength;
+            hash = hash * 31 + MaxTokenCount;
+            hash = hash * 31 + MaxIterations;
             hash = hash * 31 + AllowStreamBuffering.GetHashCode();
             hash = hash * 31 + (Culture?.GetHashCode() ?? 0);
             hash = hash * 31 + (DefaultOffset?.GetHashCode() ?? 0);

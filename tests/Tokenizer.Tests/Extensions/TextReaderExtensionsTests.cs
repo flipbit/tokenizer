@@ -64,7 +64,7 @@ public class TextReaderExtensionsTests
         // Arrange
         var longInput = new string('x', 10_000);
         using var reader = new StringReader(longInput);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
         // Act & Assert

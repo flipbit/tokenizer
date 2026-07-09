@@ -112,7 +112,7 @@ public class TokenizationSessionTests
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
 
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
         // Act & Assert

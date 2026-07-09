@@ -66,12 +66,11 @@ public class TemplateMatcherAsyncTests : TokenizerTestBase
     {
         var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Dave"));
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Dave"));
 
         await matcher.TokenizeAsync(stream, Encoding.UTF8);
 
         Assert.True(stream.CanRead);
-        await stream.DisposeAsync();
     }
 
     [Fact]
@@ -253,6 +252,13 @@ public class TemplateMatcherAsyncTests : TokenizerTestBase
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
         public override void SetLength(long value) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        protected override void Dispose(bool disposing) { if (disposing) _inner.Dispose(); base.Dispose(disposing); }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _inner.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

@@ -8,14 +8,9 @@ public sealed class ToUpperTransformer : ITokenTransformer
     /// <inheritdoc />
     public bool TryTransform(object value, string[] args, out object transformed)
     {
-        if (value?.ToString() is not { Length: > 0 } valueString)
-        {
-            transformed = string.Empty;
-        }
-        else
-        {
-            transformed = valueString.ToUpperInvariant();
-        }
+        transformed = value?.ToString() is not { Length: > 0 } valueString
+            ? string.Empty
+            : valueString.ToUpperInvariant();
 
         return true;
     }

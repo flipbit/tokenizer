@@ -14,7 +14,7 @@ public class ValidationExceptionTests
     [Fact]
     public void GivenValidationException_WhenCaughtAsTokenizerException_ThenIsCaught()
     {
-        TokenizerException? caught = null;
+        TokenizerException? caught;
 
         try
         {

@@ -17,14 +17,7 @@ public sealed class SplitTransformer : ITokenTransformer
         if (args == null || args.Length != 1) throw new ArgumentException($"Split(value): missing arguments processing: {value}", nameof(args));
 
         var valueArray = valueString.Split(new[] { args[0] }, StringSplitOptions.RemoveEmptyEntries);
-        if (valueArray.Length > 1)
-        {
-            transformed = valueArray;
-        }
-        else
-        {
-            transformed = value;
-        }
+        transformed = valueArray.Length > 1 ? valueArray : value;
 
         return true;
     }

@@ -348,9 +348,10 @@ public class TemplateLexerTests
     {
         // Arrange
         var lexer = CreateLexer();
-        var sampleDir = Path.Combine(AppContext.BaseDirectory, "tests/Tokenizer.Tests/Samples/Patterns");
+        var sampleDir = Path.Join(AppContext.BaseDirectory, "tests", "Tokenizer.Tests", "Samples", "Patterns");
         if (!Directory.Exists(sampleDir)) return; // skip if not available in this run context
 
+        // CodeQL cs/linq/missed-select: loop body has side effects (file I/O + assertions), not a pure mapping
         foreach (var file in Directory.EnumerateFiles(sampleDir, "*.txt"))
         {
             var text = File.ReadAllText(file);
@@ -497,13 +498,13 @@ public class TemplateLexerTests
         var dir = AppContext.BaseDirectory;
         for (int i = 0; i < 6; i++)
         {
-            var candidate = Path.Combine(dir, relativePath);
+            var candidate = Path.Join(dir, relativePath);
             if (File.Exists(candidate)) return candidate;
             var parent = Directory.GetParent(dir);
             if (parent == null) break;
             dir = parent.FullName;
         }
-        return Path.Combine(AppContext.BaseDirectory, relativePath);
+        return Path.Join(AppContext.BaseDirectory, relativePath);
     }
 
     private sealed class CountingTextReader : TextReader

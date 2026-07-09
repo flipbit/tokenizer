@@ -230,7 +230,7 @@ public class CandidateTokenListTests : TokenizerTestBase
         var value = new StringBuilder("hello");
 
         // Act
-        var result = list.TryEvaluate(value, DefaultPipeline, NoLocation, out var evaluated, out var evaluatedValue);
+        var result = list.TryEvaluate(value, DefaultPipeline, NoLocation, out var evaluated, out _);
 
         // Assert
         Assert.False(result);

@@ -59,15 +59,20 @@ Style and quality rules are enforced via `.editorconfig` and Roslyn analyzers. `
 - `Meziantou.Analyzer` (shared via `Directory.Build.props`, all rules silent by default)
 
 **Enforced rules:**
+- `IDE0004` -- Remove unnecessary cast
 - `IDE0005` -- No unused usings
 - `IDE0040` -- Explicit accessibility modifiers required
+- `IDE0044` -- Make field readonly
 - `IDE0055` -- Formatting
+- `IDE0059` -- Remove unnecessary value assignment
 - `IDE0060` -- No unused parameters
 - `IDE0161` -- File-scoped namespace declarations
 - `IDE1006` -- Naming conventions enforced
+- `CA1031` -- Do not catch general exception types
 - `CA1507` -- Use `nameof` over string literals
 - `CA1508` -- Avoid dead conditional code
 - `CA1825` -- Use `Array.Empty<T>()` over zero-length allocations
+- `CA2000` -- Dispose objects before losing scope
 - `CA2016` -- Forward CancellationToken
 - `CA2200` -- Rethrow to preserve stack traces
 - `CA2213` -- Disposable fields should be disposed

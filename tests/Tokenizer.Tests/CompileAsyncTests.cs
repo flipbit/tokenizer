@@ -46,7 +46,7 @@ public class CompileAsyncTests : TokenizerTestBase
     {
         // Arrange
         using var reader = new StringReader("Name: {Name}");
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
         // Act & Assert

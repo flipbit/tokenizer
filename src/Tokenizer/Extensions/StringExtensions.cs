@@ -172,6 +172,7 @@ public static partial class StringExtensions
 
         if (!string.IsNullOrEmpty(value) && matches != null)
         {
+            // CodeQL cs/linq/missed-select: this is a find-first-match pattern with early exit, not a mapping operation
             foreach (var match in matches)
             {
                 var index = value.IndexOf(match, StringComparison.Ordinal);
@@ -211,6 +212,7 @@ public static partial class StringExtensions
     {
         if (!string.IsNullOrEmpty(value))
         {
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var character in value)
             {
                 if (character != ' ')
@@ -267,6 +269,7 @@ public static partial class StringExtensions
         {
             var allowed = new HashSet<char>(keepTheseCharacters);
 
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var character in value)
             {
                 if (!allowed.Contains(character)) continue;

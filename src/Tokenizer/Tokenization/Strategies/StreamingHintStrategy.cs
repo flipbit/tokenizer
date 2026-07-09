@@ -33,6 +33,7 @@ internal sealed class StreamingHintStrategy : IHintStrategy
 
         _maxHintLength = 0;
         _scanableHintCount = 0;
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var hint in template.Hints)
         {
             if (!string.IsNullOrEmpty(hint.Text))
@@ -130,6 +131,8 @@ internal sealed class StreamingHintStrategy : IHintStrategy
 
     private bool ScanChunk(char[] buffer, int count, string hintText)
     {
+        // CodeQL cs/nested-if-statements: outer if is a guard for overlap state,
+        // inner if is the scan action — hot path, kept separate for readability
         if (_overlapCount > 0 && _maxHintLength > 1)
         {
             if (ScanOverlap(buffer, count, hintText))

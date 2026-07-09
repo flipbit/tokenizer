@@ -90,6 +90,7 @@ internal static class AlignmentRenderer
             return 0;
 
         var count = 1;
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var c in content!)
         {
             if (c == '\n')

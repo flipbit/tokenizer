@@ -37,8 +37,17 @@ dotnet_style_qualification_for_event = false:warning
 dotnet_style_require_accessibility_modifiers = always:warning
 dotnet_diagnostic.IDE0040.severity = warning
 
+# Remove unnecessary cast
+dotnet_diagnostic.IDE0004.severity = warning
+
 # Remove unused parameters
 dotnet_diagnostic.IDE0060.severity = warning
+
+# Remove unnecessary value assignment
+dotnet_diagnostic.IDE0059.severity = warning
+
+# Make field readonly
+dotnet_diagnostic.IDE0044.severity = warning
 
 # Formatting
 dotnet_diagnostic.IDE0055.severity = warning
@@ -113,6 +122,12 @@ dotnet_diagnostic.CA2213.severity = warning
 
 # Mark members as static
 dotnet_diagnostic.CA1822.severity = warning
+
+# Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = warning
+
+# Dispose objects before losing scope
+dotnet_diagnostic.CA2000.severity = warning
 
 # --- Meziantou Analyzer rules (MA*) ---
 

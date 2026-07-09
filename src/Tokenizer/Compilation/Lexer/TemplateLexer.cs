@@ -55,7 +55,7 @@ public sealed class TemplateLexer
     {
         private readonly TextReader _inner;
 #if NET8_0_OR_GREATER
-        private char[] _buffer;
+        private readonly char[] _buffer;
         private int _startIndex;
         private int _length;
 #else
@@ -266,15 +266,11 @@ public sealed class TemplateLexer
         // Core streaming scanning loop; tokens are yielded lazily.
         while (!reader.IsEof)
         {
-            var currentPosition = absolutePosition;
             var peek = reader.PeekChar();
-            if (peek != -1)
+            if (peek != -1 && _log.IsEnabled(LogLevel.Trace))
             {
-                if (_log.IsEnabled(LogLevel.Trace))
-                {
-                    _log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
-                        (char)peek, absolutePosition, location.Line, location.Column);
-                }
+                _log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
+                    (char)peek, absolutePosition, location.Line, location.Column);
             }
 
             if (TryReadNewline(reader, location, ref absolutePosition, out var nl))
@@ -424,7 +420,7 @@ public sealed class TemplateLexer
         var peek = reader.PeekChar();
         if (peek != '\r' && peek != '\n') return false;
         var tokenLocation = location.Clone();
-        var raw = string.Empty;
+        string raw;
         if (peek == '\r')
         {
             reader.ReadChar(); raw = "\r"; absolutePosition++;

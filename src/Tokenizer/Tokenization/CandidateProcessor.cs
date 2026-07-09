@@ -75,7 +75,12 @@ internal sealed class CandidateProcessor
 
             return false;
         }
+        // Intentional catch-all: TryEvaluate runs user-supplied validators and transformers
+        // that can throw arbitrary exceptions. We log, record, and continue processing
+        // remaining candidates rather than aborting the entire tokenization.
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception e)
+#pragma warning restore CA1031
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {
@@ -176,6 +181,8 @@ internal sealed class CandidateProcessor
                 location: location);
         }
 
+        // CodeQL cs/nested-if-statements: three-level nesting checks distinct conditions
+        // (token ID match, then line gap) — combining into one expression would hurt readability
         if (firstToken.IsRepeating &&
             string.IsNullOrWhiteSpace(context.Candidates.Preamble) &&
             _result.Tokens.HasMatches)

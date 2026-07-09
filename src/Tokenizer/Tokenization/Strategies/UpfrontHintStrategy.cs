@@ -43,6 +43,7 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
             }
         }
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var hint in template.Hints)
         {
             if (result.Hints.TryAddMiss(hint) && !hint.Optional)

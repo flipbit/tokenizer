@@ -16,6 +16,7 @@ public sealed class IsAlphanumericValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var c in valueString)
         {
             if (!char.IsLetterOrDigit(c)) return false;

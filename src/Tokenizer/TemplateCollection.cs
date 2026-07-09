@@ -49,6 +49,7 @@ public sealed class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool TryGet(string name, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Template? template)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var candidate in _templates.Values)
         {
             if (string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase))
@@ -84,6 +85,7 @@ public sealed class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool ContainsTag(string tag)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in this)
         {
             if (template.HasTag(tag))
@@ -100,6 +102,7 @@ public sealed class TemplateCollection : IReadOnlyCollection<Template>
     /// </summary>
     public bool ContainsAllTags(params string[] tags)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in this)
         {
             if (template.HasTags(tags))

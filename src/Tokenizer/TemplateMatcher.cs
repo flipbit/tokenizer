@@ -88,6 +88,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         var results = new TemplateMatchResult();
         tags ??= Array.Empty<string>();
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in Templates)
         {
             if (!CheckTemplateTags(template, tags)) continue;
@@ -97,7 +98,12 @@ public sealed class TemplateMatcher : ITemplateMatcher
                 var result = _tokenizer.Tokenize(template, input);
                 results.AddResult(result);
             }
+            // Intentional catch-all: wraps any exception from Tokenize() with template context
+            // before rethrowing as TemplateMatcherException. User-extensible pipeline means
+            // arbitrary exception types are possible.
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031
             {
                 var exception = new TemplateMatcherException(e.Message, template, e);
                 _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
@@ -238,36 +244,43 @@ public sealed class TemplateMatcher : ITemplateMatcher
         var maxInputLength = _tokenizer.Options.MaxInputLength;
         long totalChars = 0;
         var buffer = new MemoryStream();
-#if NETSTANDARD2_0
-        using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
-#else
-        await using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
-#endif
-        var charBuf = new char[4096];
-        int read;
-        while ((read = await reader.ReadAsync(charBuf, 0, charBuf.Length).ConfigureAwait(false)) > 0)
+        try
         {
-            ct.ThrowIfCancellationRequested();
-            totalChars += read;
-            if (maxInputLength > 0 && totalChars > maxInputLength)
-            {
-#if NET8_0_OR_GREATER
-                await buffer.DisposeAsync().ConfigureAwait(false);
-#else
-                buffer.Dispose();
-#endif
-                throw new TokenizerException(
-                    $"Input exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during TextReader buffering.");
-            }
-            await writer.WriteAsync(charBuf, 0, read).ConfigureAwait(false);
-        }
 #if NETSTANDARD2_0
-        await writer.FlushAsync().ConfigureAwait(false);
+            using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
 #else
-        await writer.FlushAsync(ct).ConfigureAwait(false);
+            await using var writer = new StreamWriter(buffer, Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
 #endif
-        buffer.Position = 0;
-        return buffer;
+            var charBuf = new char[4096];
+            int read;
+            while ((read = await reader.ReadAsync(charBuf, 0, charBuf.Length).ConfigureAwait(false)) > 0)
+            {
+                ct.ThrowIfCancellationRequested();
+                totalChars += read;
+                if (maxInputLength > 0 && totalChars > maxInputLength)
+                {
+                    throw new TokenizerException(
+                        $"Input exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during TextReader buffering.");
+                }
+                await writer.WriteAsync(charBuf, 0, read).ConfigureAwait(false);
+            }
+#if NETSTANDARD2_0
+            await writer.FlushAsync().ConfigureAwait(false);
+#else
+            await writer.FlushAsync(ct).ConfigureAwait(false);
+#endif
+            buffer.Position = 0;
+            return buffer;
+        }
+        catch
+        {
+#if NET8_0_OR_GREATER
+            await buffer.DisposeAsync().ConfigureAwait(false);
+#else
+            buffer.Dispose();
+#endif
+            throw;
+        }
     }
 
     private async Task<Stream> EnsureSeekableAsync(Stream input, CancellationToken ct)
@@ -283,26 +296,33 @@ public sealed class TemplateMatcher : ITemplateMatcher
 
         var maxInputLength = _tokenizer.Options.MaxInputLength;
         var buffer = new MemoryStream();
-        var copyBuf = new byte[81920];
-        long totalBytes = 0;
-        int read;
-        while ((read = await input.ReadAsync(copyBuf, 0, copyBuf.Length, ct).ConfigureAwait(false)) > 0)
+        try
         {
-            totalBytes += read;
-            if (maxInputLength > 0 && totalBytes > maxInputLength)
+            var copyBuf = new byte[81920];
+            long totalBytes = 0;
+            int read;
+            while ((read = await input.ReadAsync(copyBuf, 0, copyBuf.Length, ct).ConfigureAwait(false)) > 0)
             {
-#if NET8_0_OR_GREATER
-                await buffer.DisposeAsync().ConfigureAwait(false);
-#else
-                buffer.Dispose();
-#endif
-                throw new TokenizerException(
-                    $"Input stream exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during buffering.");
+                totalBytes += read;
+                if (maxInputLength > 0 && totalBytes > maxInputLength)
+                {
+                    throw new TokenizerException(
+                        $"Input stream exceeds MaxInputLength ({maxInputLength.ToInvariant()}) during buffering.");
+                }
+                await buffer.WriteAsync(copyBuf, 0, read, ct).ConfigureAwait(false);
             }
-            await buffer.WriteAsync(copyBuf, 0, read, ct).ConfigureAwait(false);
+            buffer.Position = 0;
+            return buffer;
         }
-        buffer.Position = 0;
-        return buffer;
+        catch
+        {
+#if NET8_0_OR_GREATER
+            await buffer.DisposeAsync().ConfigureAwait(false);
+#else
+            buffer.Dispose();
+#endif
+            throw;
+        }
     }
 
     private async Task<TemplateMatchResult> TokenizeAsyncFromSeekableStream(
@@ -315,6 +335,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         var results = new TemplateMatchResult();
         var startPos = stream.Position;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in Templates)
         {
             if (!CheckTemplateTags(template, tags)) continue;
@@ -328,7 +349,12 @@ public sealed class TemplateMatcher : ITemplateMatcher
                 var result = await _tokenizer.TokenizeAsync(template, reader, ct).ConfigureAwait(false);
                 results.AddResult(result);
             }
+            // Intentional catch-all: wraps any exception from Tokenize() with template context
+            // before rethrowing as TemplateMatcherException. User-extensible pipeline means
+            // arbitrary exception types are possible.
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031
             {
                 var exception = new TemplateMatcherException(e.Message, template, e);
                 _log.LogError(e, "Error processing template: {TemplateName}", template.Name);
@@ -348,7 +374,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         // Check template has tags
         if (template.Tags.Any())
         {
-            if (!template.HasTags(tags, out var missing))
+            if (!template.HasTags(tags, out _))
             {
                 return false;
             }

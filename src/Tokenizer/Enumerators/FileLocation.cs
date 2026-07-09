@@ -53,12 +53,9 @@ public sealed class FileLocation : IEquatable<FileLocation>
     /// </summary>
     internal void NewLine()
     {
-        if (Column == 1)
+        if (Column == 1 && _newLineCounter == 1)
         {
-            if (_newLineCounter == 1)
-            {
-                Paragraph++;
-            }
+            Paragraph++;
         }
 
         Column = 1;

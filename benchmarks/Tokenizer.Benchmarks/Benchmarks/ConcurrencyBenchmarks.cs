@@ -110,10 +110,10 @@ public class ConcurrencyBenchmarks
     public async Task ParallelTokenizeAsync_SharedMatcher()
     {
         var tasks = Enumerable.Range(0, ThreadCount * OperationsPerThread)
-            .Select(_ =>
+            .Select(async _ =>
             {
-                var reader = new StringReader(_mediumInput);
-                return _sharedMatcher.TokenizeAsync<MediumRecord>(reader);
+                using var reader = new StringReader(_mediumInput);
+                return await _sharedMatcher.TokenizeAsync<MediumRecord>(reader);
             });
         await Task.WhenAll(tasks);
     }

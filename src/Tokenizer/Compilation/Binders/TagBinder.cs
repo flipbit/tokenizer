@@ -10,6 +10,7 @@ internal static class TagBinder
 {
     public static void Bind(TemplateDefinition definition, Template template, IDiagnosticCollector collector)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var tag in definition.Tags)
         {
             if (template.Tags.Any(t => string.Equals(t, tag, StringComparison.Ordinal)))

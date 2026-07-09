@@ -28,7 +28,7 @@ public class TokenizationEngineErrorTests
         var context = new TokenizationContext();
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => context.Initialize((System.IO.TextReader)null!));
+        Assert.Throws<ArgumentNullException>(() => context.Initialize(null!));
     }
 
     [Fact]

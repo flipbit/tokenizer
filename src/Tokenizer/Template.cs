@@ -84,6 +84,7 @@ public sealed class Template
     {
         if (string.IsNullOrEmpty(tag)) return false;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var candidate in _tags)
         {
             if (string.Equals(candidate, tag, StringComparison.InvariantCultureIgnoreCase))
@@ -102,6 +103,7 @@ public sealed class Template
     {
         if (tags == null) return false;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var tag in tags)
         {
             if (!HasTag(tag)) return false;
@@ -122,6 +124,7 @@ public sealed class Template
             return false;
         }
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var tag in tags)
         {
             if (!HasTag(tag))
@@ -137,6 +140,7 @@ public sealed class Template
     {
         get
         {
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var token in _tokens)
             {
                 if (!string.IsNullOrWhiteSpace(token.Name) && !token.IsFrontMatterToken)
@@ -185,6 +189,7 @@ public sealed class Template
         buffer.Clear();
         idBuffer.Clear();
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in _tokens)
         {
             if (token.IsFrontMatterToken) continue;
@@ -202,6 +207,7 @@ public sealed class Template
     {
         exclusionBuffer.Clear();
         foreach (var id in matchIds) exclusionBuffer.Add(id);
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in candidates.Tokens)
         {
             if (!token.IsRepeating) exclusionBuffer.Add(token.Id);

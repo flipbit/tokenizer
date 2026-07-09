@@ -71,6 +71,7 @@ internal sealed class CandidateTokenList
 
         var valueString = value.ToString();
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in _tokens)
         {
             if (pipeline.Evaluate(token, valueString, location, out evaluatedValue))
@@ -91,6 +92,7 @@ internal sealed class CandidateTokenList
     /// <returns><see langword="true"/> if any candidate token can accept the value; otherwise <see langword="false"/>.</returns>
     public bool CanAnyEvaluate(string value, DecoratorPipeline pipeline)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in _tokens)
         {
             if (pipeline.CanEvaluate(token, value))

@@ -16,7 +16,7 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
     private static partial Regex WhitespaceRegex();
 #pragma warning restore MA0009
 #else
-    private static readonly Regex WhitespaceRegexInstance = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(-1));
+    private static readonly Regex WhitespaceRegexInstance = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static Regex WhitespaceRegex() => WhitespaceRegexInstance;
 #endif
 

@@ -21,7 +21,7 @@ internal static partial class TemporalParser
 #else
     private static readonly Regex OrdinalSuffixRegexInstance =
         new(@"\b(?<digits>\d+)(?:st|nd|rd|th)\b", RegexOptions.Compiled | RegexOptions.ExplicitCapture,
-            TimeSpan.FromMilliseconds(-1));
+            TimeSpan.FromSeconds(1));
 
     private static Regex OrdinalSuffixRegex() => OrdinalSuffixRegexInstance;
 #endif

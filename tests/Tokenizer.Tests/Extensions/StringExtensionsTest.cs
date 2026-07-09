@@ -97,7 +97,9 @@ public class StringExtensionsTest
     [Fact]
     public void TestSplitWithNullValues()
     {
+#pragma warning disable IDE0004 // Cast is required for extension method resolution on null
         var result = ((string)null!).ToLines().ToList();
+#pragma warning restore IDE0004
 
         Assert.Empty(result);
     }
@@ -129,7 +131,9 @@ public class StringExtensionsTest
     [Fact]
     public void TestKeepCharactersWhenInputNull()
     {
+#pragma warning disable IDE0004 // Cast is required for extension method resolution on null
         var result = ((string)null!).Keep("789");
+#pragma warning restore IDE0004
 
         Assert.Equal("", result);
     }
@@ -249,7 +253,9 @@ public class StringExtensionsTest
     [Fact]
     public void TestSubstringBeforeNewLineWhenNull()
     {
+#pragma warning disable IDE0004 // Cast is required for extension method resolution on null
         var result = ((string)null!).SubstringBeforeNewLine();
+#pragma warning restore IDE0004
 
         Assert.Null(result);
     }
@@ -281,7 +287,9 @@ public class StringExtensionsTest
     [Fact]
     public void TestEndsWithNewLineWhenNull()
     {
+#pragma warning disable IDE0004 // Cast is required for extension method resolution on null
         Assert.False(((string)null!).EndsWithNewLine());
+#pragma warning restore IDE0004
     }
 
     [Fact]
@@ -317,7 +325,9 @@ public class StringExtensionsTest
     [Fact]
     public void TestTrimTrailingNewLineWhenNull()
     {
+#pragma warning disable IDE0004 // Cast is required for extension method resolution on null
         Assert.Null(((string)null!).TrimTrailingNewLine());
+#pragma warning restore IDE0004
     }
 
     [Fact]

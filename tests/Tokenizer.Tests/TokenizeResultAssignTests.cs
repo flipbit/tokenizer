@@ -149,7 +149,7 @@ public class TokenizeResultAssignTests : TokenizerTestBase
         // Assert
         Assert.Equal("Alice", first.Name);
         Assert.Equal("Alice", second.Name);
-        Assert.NotSame((object)first, second);
+        Assert.NotSame(first, second);
     }
 
     [Fact]

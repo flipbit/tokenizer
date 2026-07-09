@@ -178,90 +178,24 @@ Replaced by `DiagnosticResult.Verdict` (string) and `TokenDiagnostic.Issues` (pe
 
 ### Phase 0: Characterisation Test Suite
 
-Write an exhaustive end-to-end test fixture (`DiagnosticCharacterisationTests.cs`) that tokenizes real templates against real input and asserts on diagnostic output. Documents current behaviour. Tests are updated as each phase changes expected output.
+Exhaustive end-to-end test fixtures that tokenize real templates against real input and assert on diagnostic output. Documents current behaviour. Tests are updated as each phase changes expected output.
 
-**61 test cases across these categories:**
+**61 test cases split across 10 fixture files in `tests/Tokenizer.Tests/Diagnostics/Characterisation/`:**
 
-**Preamble Matching (12 tests)**
-1. Simple match — happy path
-2. All tokens match
-3. Preamble not found at all
-4. Preamble case mismatch — expects near-miss hint
-5. Preamble whitespace mismatch
-6. Preamble partial match (e.g. "Username:" vs "User:")
-7. Out-of-order tokens (test with OutOfOrder both on and off)
-8. Multiple tokens sharing same preamble prefix
-9. Preamble appears multiple times in input
-10. Empty preamble (token at start of input)
-11. Preamble with special characters
-12. Preamble found but value is empty
+| File | Tests | Category |
+|------|-------|----------|
+| `PreambleMatchingTests.cs` | 12 | Preamble found/not found/near-miss scenarios |
+| `ValidatorRejectionTests.cs` | 10 | Validator accepts/rejects, misleading message cases |
+| `TransformerFailureTests.cs` | 6 | Transformer pass/fail, chained decorators |
+| `RepeatingTokenTests.cs` | 5 | Repeating token match/cut-short/disabled |
+| `HintTests.cs` | 3 | Required hint present/missing/case-mismatch |
+| `FrontMatterTests.cs` | 2 | Front matter token matched/failed |
+| `MultiTokenInteractionTests.cs` | 5 | Cascading failures, backtracking, ordering |
+| `EdgeCaseTests.cs` | 9 | Empty/whitespace input, unicode, long values, optional tokens |
+| `AttemptCountingTests.cs` | 3 | Token consideration/rejection history |
+| `DiagnosticOutputFormatTests.cs` | 6 | RenderAlignment output, verdict strings |
 
-**Validator Rejections (10 tests)**
-13. IsEmail rejects invalid value
-14. IsEmail accepts valid value
-15. IsNumeric rejects text
-16. IsPhoneNumber rejects gibberish
-17. IsDomainName rejects invalid
-18. Validator rejects but preamble was found — must NOT say "preamble never found"
-19. Multiple validators on one token — first passes, second rejects
-20. Same token (repeating) rejected at some occurrences, accepted at others
-21. Validator rejects every occurrence — token ends up missed
-22. Validator rejects with null/empty value
-
-**Transformer Failures (6 tests)**
-23. ToDateTime with wrong format
-24. ToDateTime with correct format
-25. ToDateTime — hint suggests matching format
-26. Transformer fails but preamble was found — must NOT say preamble not found
-27. Chained transformer + validator — transformer succeeds, validator fails
-28. Chained transformers — first succeeds, second fails
-
-**Repeating Tokens (5 tests)**
-29. Repeating token — all match
-30. Repeating token cut short by validator
-31. Repeating token cut short by line gap
-32. Repeating token — zero matches (preamble never found)
-33. Repeating token — one match then disabled
-
-**Hints (3 tests)**
-34. Required hint present
-35. Required hint missing
-36. Hint case mismatch
-
-**Front Matter (2 tests)**
-37. Front matter token matched
-38. Front matter token failed
-
-**Multi-Token Interaction (5 tests)**
-39. First token fails, second would match
-40. First token's validator fails, second token matches
-41. All tokens fail
-42. Middle token fails, others match
-43. Token matched after backtracking
-
-**Edge Cases (9 tests)**
-44. Empty input
-45. Whitespace-only input
-46. Single character input
-47. Very long value
-48. Value contains preamble text of another token
-49. Unicode in preamble and value
-50. Newline-terminated token
-51. Single-use token fails and is removed
-52. Optional token not present — no issue raised
-
-**Attempt Counting (3 tests)**
-53. Token considered 3 times, rejected twice, matched once
-54. Token considered multiple times, never matched
-55. Token with multiple candidates at same position
-
-**Diagnostic Output Format (6 tests)**
-56. RenderAlignment for clean match
-57. RenderAlignment for mixed results
-58. RenderAlignment for validator rejection — says "validator rejected"
-59. Verdict string for full match
-60. Verdict string for partial match
-61. Verdict string for zero matches
+See individual test case listings in `docs/superpowers/specs/diagnostic-redesign/scenarios/`.
 
 ### Phase 1: Separate Compilation from Runtime Diagnostics
 

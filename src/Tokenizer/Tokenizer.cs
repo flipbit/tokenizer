@@ -96,21 +96,7 @@ public sealed class Tokenizer : ITokenizer
     /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
     public TokenizeResult Tokenize(Template template, string input)
     {
-        var result = new TokenizeResult(template);
-
-        // template.Options reflects merged instance + front matter overrides — intentionally
-        // used instead of this.Options so per-template front matter settings take effect.
-        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
-        {
-            throw new TokenizerException(
-                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
-                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
-        }
-
-        RunCoreAsync(result, template, new StringReader(input), input, CancellationToken.None)
-            .GetAwaiter().GetResult();
-
-        return result;
+        return Tokenize(template, input, CancellationToken.None);
     }
 
     /// <summary>
@@ -124,6 +110,40 @@ public sealed class Tokenizer : ITokenizer
     public T? Tokenize<T>(Template template, string input) where T : class, new()
     {
         var result = Tokenize(template, input);
+        if (!result.Success) return null;
+        return result.Assign<T>();
+    }
+
+    /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>
+    /// with cancellation support.
+    /// </summary>
+    public TokenizeResult Tokenize(Template template, string input, CancellationToken cancellationToken)
+    {
+        var result = new TokenizeResult(template);
+
+        // template.Options reflects merged instance + front matter overrides — intentionally
+        // used instead of this.Options so per-template front matter settings take effect.
+        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
+        {
+            throw new TokenizerException(
+                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
+                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+        }
+
+        RunCoreAsync(result, template, new StringReader(input), input, cancellationToken)
+            .GetAwaiter().GetResult();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>
+    /// with cancellation support, mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// </summary>
+    public T? Tokenize<T>(Template template, string input, CancellationToken cancellationToken) where T : class, new()
+    {
+        var result = Tokenize(template, input, cancellationToken);
         if (!result.Success) return null;
         return result.Assign<T>();
     }
@@ -214,6 +234,8 @@ public sealed class Tokenizer : ITokenizer
         {
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 if (_log.IsEnabled(LogLevel.Debug))
                 {
                     _log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);
@@ -331,10 +353,10 @@ public sealed class Tokenizer : ITokenizer
             }
             foreach (var issue in result.Diagnostics.Summary.Issues)
             {
-                _log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
                 if (issue.Hint != null)
                 {
-                    _log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                    _log.LogDebug("  → Hint: {Hint}", issue.Hint);
                 }
             }
             if (rawInput != null && _log.IsEnabled(LogLevel.Debug))

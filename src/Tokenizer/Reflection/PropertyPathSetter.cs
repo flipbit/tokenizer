@@ -16,7 +16,6 @@ internal sealed class PropertyPathSetter
     private const int MaxDepth = 10;
 
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
-    private static readonly ConcurrentDictionary<string, string[]> PathSegmentCache = new(StringComparer.Ordinal);
 
     private readonly TokenizerOptions _options;
 
@@ -494,7 +493,7 @@ internal sealed class PropertyPathSetter
 
     private static string[] ParseSegments(string path)
     {
-        return PathSegmentCache.GetOrAdd(path, static p => p.Split('.'));
+        return path.Split('.');
     }
 
     private static PropertyInfo? FindProperty(Type type, string name, StringComparison comparison)

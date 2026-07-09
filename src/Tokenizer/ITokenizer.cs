@@ -27,6 +27,17 @@ public interface ITokenizer
     public T? Tokenize<T>(Template template, string input) where T : class, new();
 
     /// <summary>
+    /// Tokenizes the input string using a pre-compiled template with cancellation support.
+    /// </summary>
+    public TokenizeResult Tokenize(Template template, string input, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Tokenizes the input using a pre-compiled template with cancellation support,
+    /// mapping values onto a new <typeparamref name="T"/>. Returns null if matching fails.
+    /// </summary>
+    public T? Tokenize<T>(Template template, string input, CancellationToken cancellationToken) where T : class, new();
+
+    /// <summary>
     /// Asynchronously compiles a template from a <see cref="TextReader"/>.
     /// </summary>
     public Task<CompilationResult> CompileAsync(TextReader reader, CancellationToken ct = default);

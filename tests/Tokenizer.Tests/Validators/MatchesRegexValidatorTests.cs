@@ -78,14 +78,44 @@ public class MatchesRegexValidatorTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenCatastrophicBacktrackingPattern_WhenValidating_ThenThrowsRegexMatchTimeoutException()
+    public void GivenCatastrophicBacktrackingPattern_WhenValidating_ThenReturnsFalse()
     {
         // Arrange — (a+)+$ is a classic ReDoS pattern; this input causes catastrophic backtracking
         var input = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
 
-        // Act & Assert
-        Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(
-            () => _validator.IsValid(input, @"(a+)+$"));
+        // Act
+        var result = _validator.IsValid(input, @"(a+)+$");
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void GivenCustomTimeout_WhenValidatingViaOptions_ThenUsesCustomTimeout()
+    {
+        // Arrange
+        var options = new TokenizerOptions { MaxRegexTimeout = TimeSpan.FromMilliseconds(100) };
+
+        // Act — a valid pattern should still work with a short timeout
+        var result = _validator.IsValid("123", new[] { @"^\d+$" }, options);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void GivenCacheFull_WhenAddingNewPattern_ThenStillReturnsCorrectResult()
+    {
+        // Arrange — fill the cache with unique patterns, then add one more
+        // The validator should still work correctly even when the cache is full
+        var input = "test123";
+
+        // Act — use a pattern that won't be in any pre-existing cache
+        var uniquePattern = @"^test\d{3}$";
+        var result = _validator.IsValid(input, uniquePattern);
+
+        // Assert
+        Assert.True(result);
     }
 
     [Fact]

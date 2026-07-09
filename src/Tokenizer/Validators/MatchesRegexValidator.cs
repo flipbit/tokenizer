@@ -6,17 +6,26 @@ namespace Tokens.Validators;
 /// <summary>
 /// Validator to determine if a token value matches a regular expression pattern.
 /// Patterns are cached for performance. The cache is bounded to <see cref="MaxCacheSize"/>
-/// entries; patterns should be finite and developer-controlled (not user input).
+/// entries; when full, new patterns are evaluated without caching.
 /// </summary>
-public sealed class MatchesRegexValidator : ITokenValidator
+public sealed class MatchesRegexValidator : IOptionsAwareValidator
 {
     private const int MaxCacheSize = 1024;
-    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<(string Pattern, TimeSpan Timeout), Regex> RegexCache = new();
 
     /// <summary>
     /// Determines whether the specified token is valid.
+    /// Uses the default 1-second regex timeout.
     /// </summary>
     public bool IsValid(object value, params string[] args)
+    {
+        return IsValid(value, args, new TokenizerOptions());
+    }
+
+    /// <summary>
+    /// Determines whether the specified token is valid, using the timeout from options.
+    /// </summary>
+    public bool IsValid(object value, string[] args, TokenizerOptions options)
     {
         if (args == null || args.Length == 0)
         {
@@ -29,14 +38,26 @@ public sealed class MatchesRegexValidator : ITokenValidator
 
         if (string.IsNullOrEmpty(valueString)) return false;
 
-        if (RegexCache.Count >= MaxCacheSize)
+        var timeout = options.MaxRegexTimeout;
+        var cacheKey = (args[0], timeout);
+
+        if (!RegexCache.TryGetValue(cacheKey, out var regex))
         {
-            RegexCache.Clear();
+            regex = new Regex(args[0], RegexOptions.None, timeout);
+
+            if (RegexCache.Count < MaxCacheSize)
+            {
+                RegexCache.TryAdd(cacheKey, regex);
+            }
         }
 
-        var regex = RegexCache.GetOrAdd(args[0],
-            pattern => new Regex(pattern, RegexOptions.Compiled, TimeSpan.FromSeconds(1)));
-
-        return regex.IsMatch(valueString);
+        try
+        {
+            return regex.IsMatch(valueString);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
     }
 }

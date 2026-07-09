@@ -84,7 +84,14 @@ internal sealed class CandidateProcessor
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning(e, "Error Assigning Value: {Message}", e.Message);
+                var tokenNames = string.Join(", ", context.Candidates.Tokens.Select(t => t.Name));
+                _logger.LogWarning("Error assigning value for token(s) '{TokenNames}': {ExceptionType}",
+                    tokenNames, e.GetType().Name);
+            }
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug(e, "Assignment error detail: {Message}", e.Message);
             }
             _result.AddException(e);
             return false;

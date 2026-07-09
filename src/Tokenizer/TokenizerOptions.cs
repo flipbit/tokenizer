@@ -35,6 +35,7 @@ public record class TokenizerOptions
         MaxTemplateLength = original.MaxTemplateLength;
         MaxTokenCount = original.MaxTokenCount;
         MaxIterations = original.MaxIterations;
+        MaxRegexTimeout = original.MaxRegexTimeout;
         AllowStreamBuffering = original.AllowStreamBuffering;
         _transformers = new List<Type>(original._transformers);
         _validators = new List<Type>(original._validators);
@@ -115,6 +116,13 @@ public record class TokenizerOptions
     /// Set to a positive value to override.
     /// </summary>
     public int MaxIterations { get; init; }
+
+    /// <summary>
+    /// Maximum time allowed for a single regex evaluation in user-supplied patterns
+    /// (MatchesRegex validator, RegexReplace transformer). Default: 1 second.
+    /// Reduce for untrusted input (e.g. 250ms).
+    /// </summary>
+    public TimeSpan MaxRegexTimeout { get; init; } = TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// When true, allows non-seekable streams (e.g. NetworkStream) to be buffered into memory
@@ -216,6 +224,7 @@ public record class TokenizerOptions
             && MaxTemplateLength == other.MaxTemplateLength
             && MaxTokenCount == other.MaxTokenCount
             && MaxIterations == other.MaxIterations
+            && MaxRegexTimeout == other.MaxRegexTimeout
             && AllowStreamBuffering == other.AllowStreamBuffering
             && Equals(Culture, other.Culture)
             && DefaultOffset == other.DefaultOffset
@@ -240,6 +249,7 @@ public record class TokenizerOptions
             hash = hash * 31 + MaxTemplateLength;
             hash = hash * 31 + MaxTokenCount;
             hash = hash * 31 + MaxIterations;
+            hash = hash * 31 + MaxRegexTimeout.GetHashCode();
             hash = hash * 31 + AllowStreamBuffering.GetHashCode();
             hash = hash * 31 + (Culture?.GetHashCode() ?? 0);
             hash = hash * 31 + (DefaultOffset?.GetHashCode() ?? 0);

@@ -30,6 +30,8 @@ internal sealed class TokenMatchRouter
         var next = context.Enumerator.Peek();
 
         // Check for repeated current token
+        // CodeQL cs/nested-if-statements: outer if tests preconditions (candidates + preamble match),
+        // inner if acts on the result of HandleRepeat — distinct concerns that read better separated
         if (context.Candidates.HasCandidates &&
             context.Enumerator.TryMatch(context.Candidates.Preamble) &&
             context.Candidates.Preamble.Length > 0)

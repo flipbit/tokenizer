@@ -181,6 +181,8 @@ internal sealed class CandidateProcessor
                 location: location);
         }
 
+        // CodeQL cs/nested-if-statements: three-level nesting checks distinct conditions
+        // (token ID match, then line gap) — combining into one expression would hurt readability
         if (firstToken.IsRepeating &&
             string.IsNullOrWhiteSpace(context.Candidates.Preamble) &&
             _result.Tokens.HasMatches)

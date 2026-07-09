@@ -440,6 +440,8 @@ internal sealed class PropertyPathSetter
             }
 
             // Auto-conversion from string to temporal types
+            // CodeQL cs/nested-if-statements: nested structure is required — fallback code
+            // (TimeOnly parse) must only execute when IsTemporalType is true but TryParse fails
             if (DateTimeProjection.IsTemporalType(targetType))
             {
                 if (TemporalParser.TryParse(valueString, formats: null, options, out var parsed))

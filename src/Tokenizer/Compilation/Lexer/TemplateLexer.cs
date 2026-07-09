@@ -267,13 +267,10 @@ public sealed class TemplateLexer
         while (!reader.IsEof)
         {
             var peek = reader.PeekChar();
-            if (peek != -1)
+            if (peek != -1 && _log.IsEnabled(LogLevel.Trace))
             {
-                if (_log.IsEnabled(LogLevel.Trace))
-                {
-                    _log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
-                        (char)peek, absolutePosition, location.Line, location.Column);
-                }
+                _log.LogTrace("Character consumed: Char='{Char}', Position={Position}, Line={Line}, Column={Column}",
+                    (char)peek, absolutePosition, location.Line, location.Column);
             }
 
             if (TryReadNewline(reader, location, ref absolutePosition, out var nl))

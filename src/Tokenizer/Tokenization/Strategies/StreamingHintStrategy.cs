@@ -130,6 +130,8 @@ internal sealed class StreamingHintStrategy : IHintStrategy
 
     private bool ScanChunk(char[] buffer, int count, string hintText)
     {
+        // CodeQL cs/nested-if-statements: outer if is a guard for overlap state,
+        // inner if is the scan action — hot path, kept separate for readability
         if (_overlapCount > 0 && _maxHintLength > 1)
         {
             if (ScanOverlap(buffer, count, hintText))

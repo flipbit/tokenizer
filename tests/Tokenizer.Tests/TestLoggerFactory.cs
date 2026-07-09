@@ -23,7 +23,7 @@ public static class TestLoggerFactory
             .WriteTo.TestOutput(output)
             .CreateLogger();
 
-        var loggerFactory = new SerilogLoggerFactory(serilogLogger);
+        using var loggerFactory = new SerilogLoggerFactory(serilogLogger);
         return loggerFactory.CreateLogger<T>();
     }
 

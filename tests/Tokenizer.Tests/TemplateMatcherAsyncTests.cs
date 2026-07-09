@@ -66,12 +66,11 @@ public class TemplateMatcherAsyncTests : TokenizerTestBase
     {
         var matcher = new TemplateMatcher();
         matcher.RegisterTemplate("Name: {Person.Name}", "name-only");
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Dave"));
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name: Dave"));
 
         await matcher.TokenizeAsync(stream, Encoding.UTF8);
 
         Assert.True(stream.CanRead);
-        await stream.DisposeAsync();
     }
 
     [Fact]

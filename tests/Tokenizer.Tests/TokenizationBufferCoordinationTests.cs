@@ -214,7 +214,7 @@ public class TokenizationBufferCoordinationTests : TokenizerTestBase
         var template = _tokenizer.Compile("Name: {Name}").Template;
         var input = "Name: " + new string('x', 2000);
         using var reader = new ChunkedTextReader(input, chunkSize: 500);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
         // Act & Assert

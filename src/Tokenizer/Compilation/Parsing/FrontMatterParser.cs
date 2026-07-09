@@ -50,7 +50,7 @@ internal static class FrontMatterParser
             if (next.Kind == LexerTokenKind.FrontMatterDelimiter)
             {
                 // Must be followed by newline to close
-                var closeDelim = reader.Consume();
+                reader.Consume();
                 var after = reader.Peek(0);
                 if (after.Kind != LexerTokenKind.Newline)
                 {

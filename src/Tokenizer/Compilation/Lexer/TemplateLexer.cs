@@ -266,7 +266,6 @@ public sealed class TemplateLexer
         // Core streaming scanning loop; tokens are yielded lazily.
         while (!reader.IsEof)
         {
-            var currentPosition = absolutePosition;
             var peek = reader.PeekChar();
             if (peek != -1)
             {

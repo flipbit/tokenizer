@@ -26,7 +26,7 @@ public class TrimTransformerTests
         var input = string.Empty;
 
         // Act
-        var result = _transformer.TryTransform(input, null!, out var t);
+        _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);
@@ -39,7 +39,7 @@ public class TrimTransformerTests
         string input = null!;
 
         // Act
-        var result = _transformer.TryTransform(input, null!, out var t);
+        _transformer.TryTransform(input, null!, out var t);
 
         // Assert
         Assert.Equal(string.Empty, t);

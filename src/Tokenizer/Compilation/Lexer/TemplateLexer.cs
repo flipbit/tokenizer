@@ -55,7 +55,7 @@ public sealed class TemplateLexer
     {
         private readonly TextReader _inner;
 #if NET8_0_OR_GREATER
-        private char[] _buffer;
+        private readonly char[] _buffer;
         private int _startIndex;
         private int _length;
 #else

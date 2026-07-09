@@ -331,10 +331,10 @@ public sealed class Tokenizer : ITokenizer
             }
             foreach (var issue in result.Diagnostics.Summary.Issues)
             {
-                _log.LogWarning("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
                 if (issue.Hint != null)
                 {
-                    _log.LogWarning("  → Hint: {Hint}", issue.Hint);
+                    _log.LogDebug("  → Hint: {Hint}", issue.Hint);
                 }
             }
             if (rawInput != null && _log.IsEnabled(LogLevel.Debug))

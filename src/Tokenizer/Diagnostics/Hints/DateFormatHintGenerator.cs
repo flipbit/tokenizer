@@ -41,6 +41,7 @@ internal sealed class DateFormatHintGenerator : IHintGenerator
             ? sourceEvent.DecoratorArgs[0]
             : null;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var format in CommonFormats)
         {
             if (DateTimeOffset.TryParseExact(value, format, CultureInfo.InvariantCulture,

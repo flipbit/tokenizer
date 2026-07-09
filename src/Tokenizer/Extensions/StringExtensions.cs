@@ -211,6 +211,7 @@ public static partial class StringExtensions
     {
         if (!string.IsNullOrEmpty(value))
         {
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var character in value)
             {
                 if (character != ' ')
@@ -267,6 +268,7 @@ public static partial class StringExtensions
         {
             var allowed = new HashSet<char>(keepTheseCharacters);
 
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var character in value)
             {
                 if (!allowed.Contains(character)) continue;

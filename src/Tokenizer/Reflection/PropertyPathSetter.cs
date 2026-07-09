@@ -501,6 +501,7 @@ internal sealed class PropertyPathSetter
     {
         var properties = PropertyCache.GetOrAdd(type, static t => t.GetProperties());
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var prop in properties)
         {
             if (string.Equals(prop.Name, name, comparison))

@@ -18,6 +18,7 @@ internal static class FrontMatterProcessor
         DecoratorPipeline pipeline,
         FileLocation location)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in template.Tokens)
         {
             if (!token.IsFrontMatterToken) continue;

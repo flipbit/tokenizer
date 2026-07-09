@@ -273,6 +273,7 @@ internal static class DatePatternRecognizer
             return true;
         }
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var recognizer in StaticRecognizers)
         {
             if (recognizer.Regex.IsMatch(value))

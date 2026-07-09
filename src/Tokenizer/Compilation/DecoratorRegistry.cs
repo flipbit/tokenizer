@@ -36,6 +36,7 @@ internal sealed class DecoratorRegistry
         var transformers = new List<Type>(builtInTransformers);
         var validators = new List<Type>(builtInValidators);
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var t in options.Transformers)
         {
             if (!transformers.Contains(t))
@@ -44,6 +45,7 @@ internal sealed class DecoratorRegistry
             }
         }
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var v in options.Validators)
         {
             if (!validators.Contains(v))

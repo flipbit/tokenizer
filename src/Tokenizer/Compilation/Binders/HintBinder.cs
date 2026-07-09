@@ -10,6 +10,7 @@ internal static class HintBinder
 {
     public static void Bind(TemplateDefinition definition, Template template, IDiagnosticCollector collector)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var hint in definition.Hints)
         {
             if (template.Hints.Any(h => h == hint))

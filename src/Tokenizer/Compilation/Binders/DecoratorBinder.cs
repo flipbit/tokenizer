@@ -30,6 +30,7 @@ internal static class DecoratorBinder
             }
         }
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var decorator in definition.Decorators)
         {
             if (TryApplyConcatenation(definition.Name ?? string.Empty, decorator, token, collector))
@@ -78,6 +79,7 @@ internal static class DecoratorBinder
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
         IDiagnosticCollector collector)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var transformerType in registry.Transformers)
         {
             if (string.Equals(decorator.Name, transformerType.Name, StringComparison.InvariantCultureIgnoreCase) ||
@@ -115,6 +117,7 @@ internal static class DecoratorBinder
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
         IDiagnosticCollector collector)
     {
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var validatorType in registry.Validators)
         {
             if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||

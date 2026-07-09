@@ -88,6 +88,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         var results = new TemplateMatchResult();
         tags ??= Array.Empty<string>();
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in Templates)
         {
             if (!CheckTemplateTags(template, tags)) continue;
@@ -334,6 +335,7 @@ public sealed class TemplateMatcher : ITemplateMatcher
         var results = new TemplateMatchResult();
         var startPos = stream.Position;
 
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var template in Templates)
         {
             if (!CheckTemplateTags(template, tags)) continue;

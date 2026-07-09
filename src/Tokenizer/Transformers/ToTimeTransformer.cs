@@ -26,6 +26,7 @@ public sealed class ToTimeTransformer : IOptionsAwareTransformer
         {
             if (args is { Length: > 0 } && !string.IsNullOrWhiteSpace(args[0]))
             {
+                // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
                 foreach (var format in args)
                 {
                     if (TimeOnly.TryParseExact(str, format, culture, DateTimeStyles.None, out var time))

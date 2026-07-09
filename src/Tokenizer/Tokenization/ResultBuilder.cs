@@ -46,6 +46,7 @@ internal sealed class ResultBuilder : IResultBuilder
 
         var matchedIds = new HashSet<int>(result.Tokens.Matches.Select(m => m.Token.Id));
         var unmatchedCount = 0;
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var token in template.Tokens)
         {
             if (!matchedIds.Contains(token.Id))

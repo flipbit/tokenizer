@@ -37,6 +37,7 @@ public class TemplateParserPhase1Tests
 
             // Assert: should produce a content list and not throw; token names (if any) should be non-empty strings
             Assert.NotNull(doc.Content);
+            // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
             foreach (var node in doc.Content)
             {
                 if (node is TokenNode tn)

@@ -110,6 +110,7 @@ internal static class DiagnosticSummaryBuilder
         }
 
         // 3. Missed tokens with no prior transformer/validator failure (preamble never found)
+        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.TokenMissed))
         {
             if (evt.TokenName == null || tokensWithFailures.Contains(evt.TokenName))

@@ -151,6 +151,13 @@ public class ValidatorRejectionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.DecoratorName} on value '{evt.Value}'");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.ValidatorPassed
+              && string.Equals(e.DecoratorName, "IsNumericValidator", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.ValidatorFailed
+              && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -177,6 +184,9 @@ public class ValidatorRejectionTests : TokenizerTestBase
         Output.WriteLine($"ValidatorFailed count: {validatorFailed.Count}");
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.Equal(3, validatorPassed.Count);
+        Assert.Equal(1, validatorFailed.Count);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
     }
 
     [Fact]
@@ -201,6 +211,10 @@ public class ValidatorRejectionTests : TokenizerTestBase
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal(2, diagnostics.Summary.Issues.Count(i =>
+            i.Type == DiagnosticIssueType.ValidatorRejection
+            && string.Equals(i.TokenName, "Email", StringComparison.Ordinal)));
     }
 
     [Fact]
@@ -222,6 +236,13 @@ public class ValidatorRejectionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.DecoratorName} on value '{evt.Value}'");
         }
         Assert.NotNull(diagnostics);
+        // Empty value after preamble results in preamble-never-found (token not matched at all)
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.ValidatorFailed);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.ValidatorPassed);
+        Assert.Contains(diagnostics.Summary.Issues,
+            i => i.Type == DiagnosticIssueType.PreambleNeverFound
+              && string.Equals(i.TokenName, "Name", StringComparison.Ordinal));
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

@@ -95,6 +95,15 @@ public class EdgeCaseTests : TokenizerTestBase
         }
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
+              && string.Equals(e.Value, "Age: 30", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "Age", StringComparison.Ordinal)
+              && string.Equals(e.Value, "25", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -157,6 +166,14 @@ public class EdgeCaseTests : TokenizerTestBase
         Output.WriteLine($"SingleUseTokenRemoved events: {removed.Count}");
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.Equal(0, removed.Count);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.ValidatorFailed
+              && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -183,6 +200,9 @@ public class EdgeCaseTests : TokenizerTestBase
         Output.WriteLine($"Nickname missed event: {nicknameMissed}, in summary issues: {nicknameInIssues}");
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.True(nicknameMissed);
+        Assert.True(nicknameInIssues);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

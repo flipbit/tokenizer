@@ -45,6 +45,10 @@ public class AttemptCountingTests : TokenizerTestBase
 
         // Document the counts — this is what Phase 4 will aggregate into TokenAttempts
         Assert.NotNull(diagnostics);
+        Assert.Equal(1, preambleMatches.Count);
+        Assert.Equal(2, validatorFailed.Count);
+        Assert.Equal(1, validatorPassed.Count);
+        Assert.Equal(1, assigned.Count);
     }
 
     [Fact]
@@ -105,6 +109,11 @@ public class AttemptCountingTests : TokenizerTestBase
             Output.WriteLine($"  Assigned: {evt.TokenName} = '{evt.Value}'");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal(2, attempted.Count);
+        Assert.Equal(2, assigned.Count);
+        Assert.Contains(assigned, e => string.Equals(e.TokenName, "FirstName", StringComparison.Ordinal));
+        Assert.Contains(assigned, e => string.Equals(e.TokenName, "LastName", StringComparison.Ordinal));
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

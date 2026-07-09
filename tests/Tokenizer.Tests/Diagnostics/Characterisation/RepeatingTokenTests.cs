@@ -53,6 +53,11 @@ public class RepeatingTokenTests : TokenizerTestBase
             .ToList();
         Output.WriteLine($"RepeatingTokenDisabled events: {disabled.Count}");
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Equal(0, disabled.Count);
+        Assert.Contains(diagnostics.Summary.Issues,
+            i => i.Type == DiagnosticIssueType.ValidatorRejection
+              && string.Equals(i.TokenName, "Item", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -74,6 +79,8 @@ public class RepeatingTokenTests : TokenizerTestBase
         Output.WriteLine($"Matched {assigned.Count} occurrences");
         Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
         Assert.NotNull(diagnostics);
+        Assert.Equal(2, assigned.Count);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
     }
 
     [Fact]

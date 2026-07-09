@@ -141,6 +141,10 @@ public class PreambleMatchingTests : TokenizerTestBase
         // At minimum, verify diagnostics are populated
         Assert.NotNull(diagnostics);
         Assert.True(diagnostics.Events.Count > 0);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Summary.Issues,
+            i => i.Type == DiagnosticIssueType.PreambleNeverFound
+              && string.Equals(i.TokenName, "B", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -182,6 +186,11 @@ public class PreambleMatchingTests : TokenizerTestBase
             Output.WriteLine($"Assigned: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "Email", StringComparison.Ordinal)
+              && string.Equals(e.Value, "a@b.com", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -244,6 +253,15 @@ public class PreambleMatchingTests : TokenizerTestBase
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "A", StringComparison.Ordinal)
+              && string.Equals(e.Value, string.Empty, StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "B", StringComparison.Ordinal)
+              && string.Equals(e.Value, "hello", StringComparison.Ordinal));
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

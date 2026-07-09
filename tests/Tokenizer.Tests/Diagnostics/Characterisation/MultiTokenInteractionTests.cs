@@ -28,6 +28,13 @@ public class MultiTokenInteractionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 0 of 2 tokens (2 missed).", diagnostics.Summary.Verdict);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenMissed
+              && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenMissed
+              && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -118,6 +125,16 @@ public class MultiTokenInteractionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Equal(0, backtracks.Count);
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "Label", StringComparison.Ordinal)
+              && string.Equals(e.Value, "Name: fake", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Events,
+            e => e.Type == DiagnosticEventType.TokenAssigned
+              && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
+              && string.Equals(e.Value, "real", StringComparison.Ordinal));
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

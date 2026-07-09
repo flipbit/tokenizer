@@ -96,21 +96,7 @@ public sealed class Tokenizer : ITokenizer
     /// <returns>A <see cref="TokenizeResult"/> containing the matched and unmatched tokens.</returns>
     public TokenizeResult Tokenize(Template template, string input)
     {
-        var result = new TokenizeResult(template);
-
-        // template.Options reflects merged instance + front matter overrides — intentionally
-        // used instead of this.Options so per-template front matter settings take effect.
-        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
-        {
-            throw new TokenizerException(
-                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
-                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
-        }
-
-        RunCoreAsync(result, template, new StringReader(input), input, CancellationToken.None)
-            .GetAwaiter().GetResult();
-
-        return result;
+        return Tokenize(template, input, CancellationToken.None);
     }
 
     /// <summary>
@@ -136,6 +122,8 @@ public sealed class Tokenizer : ITokenizer
     {
         var result = new TokenizeResult(template);
 
+        // template.Options reflects merged instance + front matter overrides — intentionally
+        // used instead of this.Options so per-template front matter settings take effect.
         if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
         {
             throw new TokenizerException(

@@ -132,14 +132,9 @@ public sealed class TokenDecoratorContext
 
         bool result;
 
-        if (instance is IOptionsAwareValidator optionsAware)
-        {
-            result = optionsAware.IsValid(value, GetParameterArray(), options);
-        }
-        else
-        {
-            result = instance.IsValid(value, GetParameterArray());
-        }
+        result = instance is IOptionsAwareValidator optionsAware
+            ? optionsAware.IsValid(value, GetParameterArray(), options)
+            : instance.IsValid(value, GetParameterArray());
 
         return IsNotValidator ? !result : result;
     }

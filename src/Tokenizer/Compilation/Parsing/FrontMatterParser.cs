@@ -161,7 +161,15 @@ internal static class FrontMatterParser
         var i = 0;
         while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
 
-        // Name
+        var name = ParseSetDirectiveName(tokens, ref i);
+        var value = ParseSetDirectiveValue(tokens, ref i);
+        var decorators = ParseSetDirectiveDecorators(tokens, ref i);
+
+        return new SetTokenDirective(startLoc, start, length, name, value, decorators);
+    }
+
+    private static string ParseSetDirectiveName(List<LexerToken> tokens, ref int i)
+    {
         var nameSb = new System.Text.StringBuilder();
         for (; i < tokens.Count; i++)
         {
@@ -181,45 +189,50 @@ internal static class FrontMatterParser
         {
             throw new ParsingException("Expected token name after 'set:' in front matter.", new FileLocation());
         }
+        return name;
+    }
 
-        // Optional value
+    private static string? ParseSetDirectiveValue(List<LexerToken> tokens, ref int i)
+    {
         string? value = null;
         while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
-        if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Equals)
-        {
-            i++; // consume '='
-            while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
-            if (i < tokens.Count)
-            {
-                if (tokens[i].Kind == LexerTokenKind.QuotedString)
-                {
-                    value = tokens[i].Value;
-                    i++;
-                }
-                else
-                {
-                    var valSb = new System.Text.StringBuilder();
-                    var lastWasSpace = false;
-                    for (; i < tokens.Count; i++)
-                    {
-                        var t = tokens[i];
-                        if (t.Kind == LexerTokenKind.Colon || t.Kind == LexerTokenKind.Newline) break;
-                        if (t.Kind == LexerTokenKind.Whitespace)
-                        {
-                            if (!lastWasSpace && valSb.Length > 0) { valSb.Append(' '); lastWasSpace = true; }
-                            continue;
-                        }
-                        valSb.Append(t.Value);
-                        lastWasSpace = false;
-                    }
-                    value = valSb.ToString().Trim();
-                }
-            }
-            while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
-        }
+        if (i >= tokens.Count || tokens[i].Kind != LexerTokenKind.Equals) return value;
 
-        // Optional decorators chain
-        var decorators = new System.Collections.Generic.List<SetDecorator>();
+        i++; // consume '='
+        while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
+        if (i < tokens.Count)
+        {
+            if (tokens[i].Kind == LexerTokenKind.QuotedString)
+            {
+                value = tokens[i].Value;
+                i++;
+            }
+            else
+            {
+                var valSb = new System.Text.StringBuilder();
+                var lastWasSpace = false;
+                for (; i < tokens.Count; i++)
+                {
+                    var t = tokens[i];
+                    if (t.Kind == LexerTokenKind.Colon || t.Kind == LexerTokenKind.Newline) break;
+                    if (t.Kind == LexerTokenKind.Whitespace)
+                    {
+                        if (!lastWasSpace && valSb.Length > 0) { valSb.Append(' '); lastWasSpace = true; }
+                        continue;
+                    }
+                    valSb.Append(t.Value);
+                    lastWasSpace = false;
+                }
+                value = valSb.ToString().Trim();
+            }
+        }
+        while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
+        return value;
+    }
+
+    private static List<SetDecorator> ParseSetDirectiveDecorators(List<LexerToken> tokens, ref int i)
+    {
+        var decorators = new List<SetDecorator>();
         while (i < tokens.Count)
         {
             while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
@@ -227,58 +240,65 @@ internal static class FrontMatterParser
             i++; // consume ':'
             while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
 
-            // Decorator name
-            var dnameSb = new System.Text.StringBuilder();
-            for (; i < tokens.Count; i++)
-            {
-                var t = tokens[i];
-                if (t.Kind == LexerTokenKind.OpenParen || t.Kind == LexerTokenKind.Colon || t.Kind == LexerTokenKind.Newline) break;
-                if (t.Kind == LexerTokenKind.Whitespace) { continue; }
-                dnameSb.Append(t.Value);
-            }
-            var dname = dnameSb.ToString().Trim();
-            var args = new System.Collections.Generic.List<string>();
-
-            while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
-            if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.OpenParen)
-            {
-                i++; // consume '('
-                while (i < tokens.Count)
-                {
-                    while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
-                    if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.CloseParen) { i++; break; }
-                    if (i >= tokens.Count) break;
-
-                    if (tokens[i].Kind == LexerTokenKind.QuotedString)
-                    {
-                        args.Add(tokens[i].Value);
-                        i++;
-                    }
-                    else
-                    {
-                        var asb = new System.Text.StringBuilder();
-                        for (; i < tokens.Count; i++)
-                        {
-                            var t = tokens[i];
-                            if (t.Kind == LexerTokenKind.Comma || t.Kind == LexerTokenKind.CloseParen || t.Kind == LexerTokenKind.Newline) break;
-                            if (t.Kind == LexerTokenKind.Whitespace)
-                            {
-                                if (asb.Length > 0) asb.Append(' ');
-                                continue;
-                            }
-                            asb.Append(t.Value);
-                        }
-                        args.Add(asb.ToString().Trim());
-                    }
-
-                    if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Comma) { i++; continue; }
-                }
-            }
+            var dname = ParseDecoratorName(tokens, ref i);
+            var args = ParseDecoratorArgs(tokens, ref i);
 
             decorators.Add(new SetDecorator(dname, args));
         }
+        return decorators;
+    }
 
-        return new SetTokenDirective(startLoc, start, length, name, value, decorators);
+    private static string ParseDecoratorName(List<LexerToken> tokens, ref int i)
+    {
+        var dnameSb = new System.Text.StringBuilder();
+        for (; i < tokens.Count; i++)
+        {
+            var t = tokens[i];
+            if (t.Kind == LexerTokenKind.OpenParen || t.Kind == LexerTokenKind.Colon || t.Kind == LexerTokenKind.Newline) break;
+            if (t.Kind == LexerTokenKind.Whitespace) { continue; }
+            dnameSb.Append(t.Value);
+        }
+        return dnameSb.ToString().Trim();
+    }
+
+    private static List<string> ParseDecoratorArgs(List<LexerToken> tokens, ref int i)
+    {
+        var args = new List<string>();
+        while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
+        if (i >= tokens.Count || tokens[i].Kind != LexerTokenKind.OpenParen) return args;
+
+        i++; // consume '('
+        while (i < tokens.Count)
+        {
+            while (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Whitespace) i++;
+            if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.CloseParen) { i++; break; }
+            if (i >= tokens.Count) break;
+
+            if (tokens[i].Kind == LexerTokenKind.QuotedString)
+            {
+                args.Add(tokens[i].Value);
+                i++;
+            }
+            else
+            {
+                var asb = new System.Text.StringBuilder();
+                for (; i < tokens.Count; i++)
+                {
+                    var t = tokens[i];
+                    if (t.Kind == LexerTokenKind.Comma || t.Kind == LexerTokenKind.CloseParen || t.Kind == LexerTokenKind.Newline) break;
+                    if (t.Kind == LexerTokenKind.Whitespace)
+                    {
+                        if (asb.Length > 0) asb.Append(' ');
+                        continue;
+                    }
+                    asb.Append(t.Value);
+                }
+                args.Add(asb.ToString().Trim());
+            }
+
+            if (i < tokens.Count && tokens[i].Kind == LexerTokenKind.Comma) { i++; continue; }
+        }
+        return args;
     }
 
     private static string NormalizeFrontMatterValue(List<LexerToken> tokens)

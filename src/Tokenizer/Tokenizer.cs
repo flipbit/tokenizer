@@ -129,6 +129,38 @@ public sealed class Tokenizer : ITokenizer
     }
 
     /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>
+    /// with cancellation support.
+    /// </summary>
+    public TokenizeResult Tokenize(Template template, string input, CancellationToken cancellationToken)
+    {
+        var result = new TokenizeResult(template);
+
+        if (template.Options.MaxInputLength > 0 && input.Length > template.Options.MaxInputLength)
+        {
+            throw new TokenizerException(
+                $"Input length {input.Length.ToInvariant("N0")} exceeds maximum allowed length of {template.Options.MaxInputLength.ToInvariant("N0")}. " +
+                "Increase TokenizerOptions.MaxInputLength to allow larger inputs.");
+        }
+
+        RunCoreAsync(result, template, new StringReader(input), input, cancellationToken)
+            .GetAwaiter().GetResult();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>
+    /// with cancellation support, mapping extracted values onto a new instance of <typeparamref name="T"/>.
+    /// </summary>
+    public T? Tokenize<T>(Template template, string input, CancellationToken cancellationToken) where T : class, new()
+    {
+        var result = Tokenize(template, input, cancellationToken);
+        if (!result.Success) return null;
+        return result.Assign<T>();
+    }
+
+    /// <summary>
     /// Asynchronously tokenizes input from a <see cref="TextReader"/> using a pre-compiled template.
     /// </summary>
     /// <remarks>
@@ -214,6 +246,8 @@ public sealed class Tokenizer : ITokenizer
         {
             try
             {
+                ct.ThrowIfCancellationRequested();
+
                 if (_log.IsEnabled(LogLevel.Debug))
                 {
                     _log.LogDebug("Starting tokenization for template {TemplateName}", template.Name);

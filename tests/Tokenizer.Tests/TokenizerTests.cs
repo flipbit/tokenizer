@@ -676,4 +676,34 @@ public class TokenizerTests : TokenizerTestBase
         Assert.Equal(1, date.Day);
         Assert.Single(result.Matches);
     }
+
+    [Fact]
+    public void GivenCancelledToken_WhenTokenizing_ThenThrowsOperationCanceledException()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var compiled = tokenizer.Compile("Name: {Name}").Template;
+        var input = "Name: Alice";
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        Assert.Throws<OperationCanceledException>(
+            () => tokenizer.Tokenize(compiled, input, cts.Token));
+    }
+
+    [Fact]
+    public void GivenValidToken_WhenTokenizingWithCancellation_ThenReturnsResult()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer();
+        var compiled = tokenizer.Compile("Name: {Name}").Template;
+        var input = "Name: Alice";
+
+        // Act
+        var result = tokenizer.Tokenize(compiled, input, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Success);
+    }
 }

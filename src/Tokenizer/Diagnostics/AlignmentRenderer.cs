@@ -10,10 +10,29 @@ internal static class AlignmentRenderer
         var sb = new StringBuilder();
         var tokens = diagnostics.Tokens;
 
-        var matchedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Matched).ToList();
-        var rejectedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Rejected).ToList();
-        var neverFoundTokens = tokens.Where(t => t.Outcome == TokenOutcome.NeverFound).ToList();
-        var blockedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Blocked).ToList();
+        var matchedTokens = new List<TokenDiagnostic>();
+        var rejectedTokens = new List<TokenDiagnostic>();
+        var neverFoundTokens = new List<TokenDiagnostic>();
+        var blockedTokens = new List<TokenDiagnostic>();
+
+        foreach (var token in tokens)
+        {
+            switch (token.Outcome)
+            {
+                case TokenOutcome.Matched:
+                    matchedTokens.Add(token);
+                    break;
+                case TokenOutcome.Rejected:
+                    rejectedTokens.Add(token);
+                    break;
+                case TokenOutcome.NeverFound:
+                    neverFoundTokens.Add(token);
+                    break;
+                case TokenOutcome.Blocked:
+                    blockedTokens.Add(token);
+                    break;
+            }
+        }
 
         var inputLineCount = CountLines(inputContent);
         var totalTokens = matchedTokens.Count + rejectedTokens.Count + neverFoundTokens.Count + blockedTokens.Count;

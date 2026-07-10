@@ -89,7 +89,6 @@ public class TransformerFailureTests : TokenizerTestBase
         Assert.Contains(diagnostics.Events,
             e => e.Type == DiagnosticEventType.TransformerFailed);
 
-        // BUG: AlignmentRenderer says "preamble never found" for this case (same bug as test 18)
         var issues = diagnostics.Summary.Issues;
         Assert.Contains(issues, i => i.Type == DiagnosticIssueType.TransformerFailure);
         Assert.DoesNotContain(issues, i => i.Type == DiagnosticIssueType.PreambleNeverFound);

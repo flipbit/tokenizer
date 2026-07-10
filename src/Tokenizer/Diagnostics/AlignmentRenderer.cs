@@ -64,11 +64,20 @@ internal static class AlignmentRenderer
         // Unmatched tokens
         if (missedEvents.Count > 0)
         {
+            var tokensWithFailures = new HashSet<string>(
+                failureEvents
+                    .Where(e => e.TokenName != null)
+                    .Select(e => e.TokenName!),
+                StringComparer.Ordinal);
+
             sb.AppendLine();
             sb.AppendLine("── Unmatched Tokens ──");
             foreach (var evt in missedEvents)
             {
-                sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
+                if (evt.TokenName != null && tokensWithFailures.Contains(evt.TokenName))
+                    sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — value rejected by decorator");
+                else
+                    sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
 
                 var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal));
                 if (issue?.Hint != null)

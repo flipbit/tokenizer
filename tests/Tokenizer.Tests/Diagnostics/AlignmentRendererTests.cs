@@ -68,7 +68,7 @@ public class AlignmentRendererTests
     }
 
     [Fact]
-    public void GivenValidatorFailure_WhenRendering_ThenShowsFailureWithHint()
+    public void GivenValidatorFailure_WhenRendering_ThenShowsRejectedNotPreambleNeverFound()
     {
         // Arrange
         var collector = new DiagnosticCollector("Email: notanemail");
@@ -85,7 +85,8 @@ public class AlignmentRendererTests
 
         // Assert
         Assert.Contains("Email", output, StringComparison.Ordinal);
-        Assert.Contains("✗", output, StringComparison.Ordinal);
+        Assert.Contains("rejected", output, StringComparison.Ordinal);
+        Assert.DoesNotContain("preamble never found", output, StringComparison.Ordinal);
     }
 
     [Fact]

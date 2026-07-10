@@ -14,7 +14,7 @@ internal static class TokenDiagnosticBuilder
         new RepeatingTokenHintGenerator(),
     };
 
-    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict) Build(DiagnosticResult diagnostics)
+    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics)
     {
         var events = diagnostics.RawEvents;
         var attempts = new Dictionary<string, List<TokenAttempt>>(StringComparer.Ordinal);
@@ -195,7 +195,7 @@ internal static class TokenDiagnosticBuilder
         var totalCount = matchedCount + missedCount;
         var verdict = BuildVerdict(matchedCount, totalCount, missedCount);
 
-        return (result, verdict);
+        return (result, verdict, matchedCount, missedCount, totalCount);
     }
 
     private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames)

@@ -38,11 +38,11 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
             return null;
 
         var normalizedPreamble = NormalizeWhitespace(preamble);
-        var lines = inputContent!.Split(new[] { '\n', '\r' }, StringSplitOptions.None);
+        var lines = inputContent!.Split('\n');
 
         for (var i = 0; i < lines.Length; i++)
         {
-            var line = lines[i];
+            var line = lines[i].TrimEnd('\r');
             var normalizedLine = NormalizeWhitespace(line);
             var lineNumber = i + 1;
 

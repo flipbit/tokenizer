@@ -18,7 +18,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Single(tokens);
@@ -41,7 +41,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Single(tokens);
@@ -69,7 +69,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Single(tokens);
@@ -97,7 +97,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Single(tokens);
@@ -129,7 +129,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Single(tokens);
@@ -152,7 +152,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, verdict) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, verdict, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         Assert.Equal(2, tokens.Count);
@@ -170,7 +170,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
 
         // Assert
         // Hint missing is a global issue, not per-token — it produces a TokenDiagnostic

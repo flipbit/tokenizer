@@ -5,6 +5,10 @@ namespace Tokens.Diagnostics;
 /// The primary API is <see cref="Tokens"/> which provides per-token narratives.
 /// <see cref="RawEvents"/> retains the full event trace for power users.
 /// </summary>
+/// <remarks>
+/// Thread safety: this type is not thread-safe. Designed for single-threaded
+/// access after tokenization completes.
+/// </remarks>
 public sealed class DiagnosticResult
 {
     private readonly List<DiagnosticEvent> _events;
@@ -13,6 +17,9 @@ public sealed class DiagnosticResult
     private string? _verdict;
     private string? _alignment;
     private string? _processingOrder;
+    private int _matchedCount;
+    private int _missedCount;
+    private int _totalCount;
 
     internal DiagnosticResult(string? inputContent)
     {
@@ -65,6 +72,21 @@ public sealed class DiagnosticResult
     }
 
     /// <summary>
+    /// Number of tokens that were successfully matched.
+    /// </summary>
+    public int MatchedCount { get { EnsureBuilt(); return _matchedCount; } }
+
+    /// <summary>
+    /// Number of tokens that were missed (not matched).
+    /// </summary>
+    public int MissedCount { get { EnsureBuilt(); return _missedCount; } }
+
+    /// <summary>
+    /// Total number of tokens in the template.
+    /// </summary>
+    public int TotalCount { get { EnsureBuilt(); return _totalCount; } }
+
+    /// <summary>
     /// All events recorded during this tokenization call, in the order they occurred.
     /// This is the raw event trace for power users and engine debugging.
     /// For most use cases, prefer <see cref="Tokens"/> instead.
@@ -98,8 +120,11 @@ public sealed class DiagnosticResult
         if (_tokens != null)
             return;
 
-        var (tokens, verdict) = TokenDiagnosticBuilder.Build(this);
+        var (tokens, verdict, matchedCount, missedCount, totalCount) = TokenDiagnosticBuilder.Build(this);
         _tokens = tokens;
         _verdict = verdict;
+        _matchedCount = matchedCount;
+        _missedCount = missedCount;
+        _totalCount = totalCount;
     }
 }

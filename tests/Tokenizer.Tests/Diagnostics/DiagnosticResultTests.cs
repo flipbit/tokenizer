@@ -1,9 +1,14 @@
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Diagnostics;
 
-public class DiagnosticResultTests
+public class DiagnosticResultTests : TokenizerTestBase
 {
+    public DiagnosticResultTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Fact]
     public void GivenMatchedAndMissedTokens_WhenTokensAccessed_ThenPerTokenDiagnosticsAvailable()
     {
@@ -55,5 +60,39 @@ public class DiagnosticResultTests
 
         // Assert
         Assert.Equal("Matched 1 of 2 tokens (1 missed).", result.Verdict);
+    }
+
+    [Fact]
+    public void GivenFullMatch_WhenCheckingCounts_ThenMatchedCountEqualsTotal()
+    {
+        // Arrange
+        var tokenizer = CreateDiagnosticTokenizer();
+        var compiled = tokenizer.Compile("Name: { Name }").Template;
+
+        // Act
+        var result = tokenizer.Tokenize(compiled, "Name: Alice");
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
+        Assert.Equal(1, diagnostics.TotalCount);
+    }
+
+    [Fact]
+    public void GivenPartialMatch_WhenCheckingCounts_ThenMissedCountReflectsMisses()
+    {
+        // Arrange
+        var tokenizer = CreateDiagnosticTokenizer();
+        var compiled = tokenizer.Compile("A: { A }\nB: { B }").Template;
+
+        // Act
+        var result = tokenizer.Tokenize(compiled, "A: one");
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
+        Assert.Equal(2, diagnostics.TotalCount);
     }
 }

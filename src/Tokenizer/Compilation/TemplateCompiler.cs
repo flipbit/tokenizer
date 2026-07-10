@@ -31,7 +31,7 @@ internal sealed class TemplateCompiler
     public CompilationResult Compile(string content)
     {
         IDiagnosticCollector collector = Options.EnableDiagnostics
-            ? new DiagnosticCollector()
+            ? new CompilationDiagnosticCollector()
             : NullDiagnosticCollector.Instance;
 
         TemplateLengthValidator.Validate(content, Options);

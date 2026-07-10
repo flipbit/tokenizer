@@ -254,7 +254,7 @@ public sealed class Tokenizer : ITokenizer
                 context.Initialize(reader);
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new DiagnosticCollector(rawInput)
+                    ? new RuntimeDiagnosticCollector(rawInput)
                     : NullDiagnosticCollector.Instance;
 
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);

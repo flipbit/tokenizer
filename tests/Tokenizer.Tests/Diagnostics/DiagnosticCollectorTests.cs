@@ -20,10 +20,10 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenActiveCollector_WhenRecordingEvent_ThenEventIsStored()
+    public void GivenRuntimeCollector_WhenRecordingEvent_ThenEventIsStored()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
+        var collector = new RuntimeDiagnosticCollector("input");
 
         // Act
         collector.Record(DiagnosticEventType.TokenAssigned,
@@ -40,10 +40,10 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenActiveCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
+    public void GivenRuntimeCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
+        var collector = new RuntimeDiagnosticCollector("input");
 
         // Act
         collector.Record(DiagnosticEventType.TokenizationStarted);
@@ -57,5 +57,48 @@ public class DiagnosticCollectorTests
         Assert.Equal(4, result!.RawEvents.Count);
         Assert.Equal(DiagnosticEventType.TokenizationStarted, result.RawEvents[0].Type);
         Assert.Equal(DiagnosticEventType.TokenizationCompleted, result.RawEvents[3].Type);
+    }
+
+    [Fact]
+    public void GivenRuntimeCollector_WhenGettingCompilationResult_ThenReturnsNull()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("input");
+
+        // Act
+        var result = collector.GetCompilationResult();
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void GivenCompilationCollector_WhenRecordingEvent_ThenEventIsStored()
+    {
+        // Arrange
+        var collector = new CompilationDiagnosticCollector();
+
+        // Act
+        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "DomainName", tokenId: 1);
+        var result = collector.GetCompilationResult();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result!.Events);
+        Assert.Equal(DiagnosticEventType.TokenAssigned, result.Events[0].Type);
+        Assert.Equal("DomainName", result.Events[0].TokenName);
+    }
+
+    [Fact]
+    public void GivenCompilationCollector_WhenGettingResult_ThenReturnsNull()
+    {
+        // Arrange
+        var collector = new CompilationDiagnosticCollector();
+
+        // Act
+        var result = collector.GetResult();
+
+        // Assert
+        Assert.Null(result);
     }
 }

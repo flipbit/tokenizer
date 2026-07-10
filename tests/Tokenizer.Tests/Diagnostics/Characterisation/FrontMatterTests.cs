@@ -21,7 +21,7 @@ public class FrontMatterTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
               && string.Equals(e.TokenName, "MyToken", StringComparison.Ordinal));
     }
@@ -38,8 +38,8 @@ public class FrontMatterTests : TokenizerTestBase
 
         // Assert — characterise: what events are produced when a Set token's transformer fails?
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        var frontMatterEvents = diagnostics.Events
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        var frontMatterEvents = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
                      || e.Type == DiagnosticEventType.FrontMatterTokenFailed)
             .ToList();
@@ -48,7 +48,7 @@ public class FrontMatterTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
         Assert.Contains(frontMatterEvents,
             e => e.Type == DiagnosticEventType.FrontMatterTokenFailed
               && string.Equals(e.TokenName, "MyDate", StringComparison.Ordinal));

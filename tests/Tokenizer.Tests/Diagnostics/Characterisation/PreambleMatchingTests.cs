@@ -22,13 +22,13 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
-        Assert.DoesNotContain(diagnostics.Events,
+        Assert.DoesNotContain(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed);
-        Assert.Empty(diagnostics.Summary.Issues);
-        Assert.Equal("Matched 1 of 1 tokens.", diagnostics.Summary.Verdict);
+        Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
+        Assert.Equal("Matched 1 of 1 tokens.", diagnostics.Verdict);
     }
 
     [Fact]
@@ -43,8 +43,8 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
-        Assert.Empty(diagnostics.Summary.Issues);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
 
     [Fact]
@@ -59,13 +59,13 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "Name", StringComparison.Ordinal));
-        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Verdict);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var issue = Assert.Single(diagnostics.Summary.Issues);
+        var issue = Assert.Single(diagnostics.Tokens.SelectMany(t => t.Issues));
         Assert.Equal(DiagnosticIssueType.PreambleNeverFound, issue.Type);
         // Near-miss hint generator should suggest the case difference
         Assert.NotNull(issue.Hint);
@@ -98,7 +98,7 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "Name", StringComparison.Ordinal));
     }
@@ -115,7 +115,7 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "User", StringComparison.Ordinal));
     }
@@ -133,16 +133,16 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert — characterise actual behaviour
         var diagnostics = result.Diagnostics!;
         // Document: which tokens match and which are missed when input order differs
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        foreach (var issue in diagnostics.Summary.Issues)
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        foreach (var issue in diagnostics.Tokens.SelectMany(t => t.Issues))
         {
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
         }
         // At minimum, verify diagnostics are populated
         Assert.NotNull(diagnostics);
-        Assert.True(diagnostics.Events.Count > 0);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.True(diagnostics.RawEvents.Count > 0);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "B", StringComparison.Ordinal));
     }
@@ -159,13 +159,13 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
-        Assert.Empty(diagnostics.Summary.Issues);
+        Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
 
     [Fact]
@@ -180,14 +180,14 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert — characterise which token matches
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        foreach (var evt in diagnostics.Events.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Events,
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal)
               && string.Equals(e.Value, "a@b.com", StringComparison.Ordinal));
@@ -205,7 +205,7 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var assigned = diagnostics.Events
+        var assigned = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Name", StringComparison.Ordinal))
             .ToList();
@@ -226,7 +226,7 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
@@ -243,22 +243,22 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert — characterise: does A match with empty value? Is an issue raised?
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        foreach (var evt in diagnostics.Events.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = \"{evt.Value}\"");
         }
-        foreach (var issue in diagnostics.Summary.Issues)
+        foreach (var issue in diagnostics.Tokens.SelectMany(t => t.Issues))
         {
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Events,
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal)
               && string.Equals(e.Value, string.Empty, StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal)
               && string.Equals(e.Value, "hello", StringComparison.Ordinal));

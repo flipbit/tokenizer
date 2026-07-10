@@ -5,57 +5,32 @@ namespace Tokens.Diagnostics;
 public class DiagnosticResultTests
 {
     [Fact]
-    public void GivenMixedEvents_WhenFailuresAccessed_ThenOnlyFailureTypesReturned()
+    public void GivenMatchedAndMissedTokens_WhenTokensAccessed_ThenPerTokenDiagnosticsAvailable()
+    {
+        // Arrange
+        var result = new DiagnosticResult(inputContent: null);
+        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name", Value = "John" });
+        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Age" });
+
+        // Act
+        var tokens = result.Tokens;
+
+        // Assert
+        Assert.Equal(2, tokens.Count);
+        Assert.Equal(TokenOutcome.Matched, tokens[0].Outcome);
+        Assert.Equal(TokenOutcome.NeverFound, tokens[1].Outcome);
+    }
+
+    [Fact]
+    public void GivenEvents_WhenRawEventsAccessed_ThenAllEventsAvailable()
     {
         // Arrange
         var result = new DiagnosticResult(inputContent: null);
         result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name" });
         result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Age" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.ValidatorFailed, TokenName = "Email" });
 
-        // Act
-        var failures = result.Failures.ToList();
-
-        // Assert
-        Assert.Equal(2, failures.Count);
-        Assert.Contains(failures, e => e.Type == DiagnosticEventType.TokenMissed);
-        Assert.Contains(failures, e => e.Type == DiagnosticEventType.ValidatorFailed);
-        Assert.DoesNotContain(failures, e => e.Type == DiagnosticEventType.TokenAssigned);
-    }
-
-    [Fact]
-    public void GivenEvents_WhenForTokenCalled_ThenOnlyMatchingEventsReturned()
-    {
-        // Arrange
-        var result = new DiagnosticResult(inputContent: null);
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Age" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Name" });
-
-        // Act
-        var nameEvents = result.ForToken("Name").ToList();
-
-        // Assert
-        Assert.Equal(2, nameEvents.Count);
-        Assert.All(nameEvents, e => Assert.Equal("Name", e.TokenName));
-    }
-
-    [Fact]
-    public void GivenFailure_WhenFirstFailureAccessed_ThenReturnsFirstFailureEvent()
-    {
-        // Arrange
-        var result = new DiagnosticResult(inputContent: null);
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Age" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.ValidatorFailed, TokenName = "Email" });
-
-        // Act
-        var firstFailure = result.FirstFailure;
-
-        // Assert
-        Assert.NotNull(firstFailure);
-        Assert.Equal(DiagnosticEventType.TokenMissed, firstFailure!.Type);
-        Assert.Equal("Age", firstFailure.TokenName);
+        // Act & Assert
+        Assert.Equal(2, result.RawEvents.Count);
     }
 
     [Fact]
@@ -65,8 +40,20 @@ public class DiagnosticResultTests
         var result = new DiagnosticResult(inputContent: null);
 
         // Act & Assert
-        Assert.Empty(result.Events);
-        Assert.Empty(result.Failures);
-        Assert.Null(result.FirstFailure);
+        Assert.Empty(result.RawEvents);
+        Assert.Empty(result.Tokens);
+        Assert.Equal("Matched 0 of 0 tokens.", result.Verdict);
+    }
+
+    [Fact]
+    public void GivenResult_WhenVerdictAccessed_ThenReturnsVerdictString()
+    {
+        // Arrange
+        var result = new DiagnosticResult(inputContent: null);
+        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "First" });
+        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Second" });
+
+        // Assert
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", result.Verdict);
     }
 }

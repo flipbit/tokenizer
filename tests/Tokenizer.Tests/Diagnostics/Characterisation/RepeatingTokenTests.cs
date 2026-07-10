@@ -21,7 +21,7 @@ public class RepeatingTokenTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var assigned = diagnostics.Events
+        var assigned = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
@@ -41,21 +41,21 @@ public class RepeatingTokenTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        foreach (var issue in diagnostics.Summary.Issues)
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        foreach (var issue in diagnostics.Tokens.SelectMany(t => t.Issues))
         {
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
             if (issue.Hint != null) Output.WriteLine($"  Hint: {issue.Hint}");
         }
         // Document: is RepeatingTokenDisabled event raised?
-        var disabled = diagnostics.Events
+        var disabled = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.RepeatingTokenDisabled)
             .ToList();
         Output.WriteLine($"RepeatingTokenDisabled events: {disabled.Count}");
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
         Assert.Equal(0, disabled.Count);
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.ValidatorRejection
               && string.Equals(i.TokenName, "Item", StringComparison.Ordinal));
     }
@@ -72,15 +72,15 @@ public class RepeatingTokenTests : TokenizerTestBase
 
         // Assert — characterise: does a line gap disable repeating?
         var diagnostics = result.Diagnostics!;
-        var assigned = diagnostics.Events
+        var assigned = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.Equal(2, assigned.Count);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
     }
 
     [Fact]
@@ -95,11 +95,11 @@ public class RepeatingTokenTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "Item", StringComparison.Ordinal));
         // No RepeatingTokenDisabled — it was never started
-        Assert.DoesNotContain(diagnostics.Events,
+        Assert.DoesNotContain(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.RepeatingTokenDisabled
               && string.Equals(e.TokenName, "Item", StringComparison.Ordinal));
     }
@@ -116,13 +116,13 @@ public class RepeatingTokenTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var assigned = diagnostics.Events
+        var assigned = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
         Assert.Equal(1, assigned.Count);
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

@@ -21,7 +21,7 @@ public class DiagnosticLoggingTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.NotEmpty(result.Diagnostics!.Summary.Verdict);
+        Assert.NotEmpty(result.Diagnostics!.Verdict);
     }
 
     [Fact]
@@ -36,6 +36,6 @@ public class DiagnosticLoggingTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.NotEmpty(result.Diagnostics!.Summary.Issues);
+        Assert.NotEmpty(result.Diagnostics!.Tokens.SelectMany(t => t.Issues));
     }
 }

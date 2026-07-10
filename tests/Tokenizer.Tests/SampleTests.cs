@@ -62,12 +62,15 @@ public class SampleTests : TokenizerTestBase
             {
                 Output.WriteLine(result.Diagnostics.RenderAlignment());
                 Output.WriteLine("---");
-                Output.WriteLine(result.Diagnostics.Summary.Verdict);
-                foreach (var issue in result.Diagnostics.Summary.Issues)
+                Output.WriteLine(result.Diagnostics.Verdict);
+                foreach (var token in result.Diagnostics.Tokens)
                 {
-                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
-                    if (issue.Hint != null)
-                        Output.WriteLine($"    Hint: {issue.Hint}");
+                    foreach (var issue in token.Issues)
+                    {
+                        Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                        if (issue.Hint != null)
+                            Output.WriteLine($"    Hint: {issue.Hint}");
+                    }
                 }
             }
             throw;
@@ -299,12 +302,15 @@ public class SampleTests : TokenizerTestBase
             {
                 Output.WriteLine(result.Diagnostics.RenderAlignment());
                 Output.WriteLine("---");
-                Output.WriteLine(result.Diagnostics.Summary.Verdict);
-                foreach (var issue in result.Diagnostics.Summary.Issues)
+                Output.WriteLine(result.Diagnostics.Verdict);
+                foreach (var token in result.Diagnostics.Tokens)
                 {
-                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
-                    if (issue.Hint != null)
-                        Output.WriteLine($"    Hint: {issue.Hint}");
+                    foreach (var issue in token.Issues)
+                    {
+                        Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                        if (issue.Hint != null)
+                            Output.WriteLine($"    Hint: {issue.Hint}");
+                    }
                 }
             }
             throw;
@@ -535,12 +541,15 @@ public class SampleTests : TokenizerTestBase
             {
                 Output.WriteLine(result.Diagnostics.RenderAlignment());
                 Output.WriteLine("---");
-                Output.WriteLine(result.Diagnostics.Summary.Verdict);
-                foreach (var issue in result.Diagnostics.Summary.Issues)
+                Output.WriteLine(result.Diagnostics.Verdict);
+                foreach (var token in result.Diagnostics.Tokens)
                 {
-                    Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
-                    if (issue.Hint != null)
-                        Output.WriteLine($"    Hint: {issue.Hint}");
+                    foreach (var issue in token.Issues)
+                    {
+                        Output.WriteLine($"  {issue.Type}: {issue.TokenName} — {issue.Description}");
+                        if (issue.Hint != null)
+                            Output.WriteLine($"    Hint: {issue.Hint}");
+                    }
                 }
             }
             throw;

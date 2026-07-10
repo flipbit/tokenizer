@@ -21,18 +21,18 @@ public class MultiTokenInteractionTests : TokenizerTestBase
 
         // Assert — characterise: does B match despite A being missed?
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        foreach (var evt in diagnostics.Events.Where(e =>
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        foreach (var evt in diagnostics.RawEvents.Where(e =>
             e.Type == DiagnosticEventType.TokenAssigned || e.Type == DiagnosticEventType.TokenMissed))
         {
             Output.WriteLine($"{evt.Type}: {evt.TokenName}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 0 of 2 tokens (2 missed).", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Events,
+        Assert.Equal("Matched 0 of 2 tokens (2 missed).", diagnostics.Verdict);
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
@@ -50,11 +50,11 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         // Email should fail validation ("Alice" is not an email)
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.ValidatorFailed
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal));
         // Name should still match
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
@@ -71,11 +71,11 @@ public class MultiTokenInteractionTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var missed = diagnostics.Events
+        var missed = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.TokenMissed)
             .ToList();
         Assert.Equal(3, missed.Count);
-        Assert.Equal("Matched 0 of 3 tokens (3 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 0 of 3 tokens (3 missed).", diagnostics.Verdict);
     }
 
     [Fact]
@@ -90,16 +90,16 @@ public class MultiTokenInteractionTests : TokenizerTestBase
 
         // Assert — characterise: A consumes to end despite later preambles in input
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "C", StringComparison.Ordinal));
-        Assert.Equal("Matched 1 of 3 tokens (2 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 1 of 3 tokens (2 missed).", diagnostics.Verdict);
     }
 
     [Fact]
@@ -114,24 +114,24 @@ public class MultiTokenInteractionTests : TokenizerTestBase
 
         // Assert — characterise backtracking behaviour
         var diagnostics = result.Diagnostics!;
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
-        var backtracks = diagnostics.Events
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        var backtracks = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.BacktrackStarted)
             .ToList();
         Output.WriteLine($"Backtrack events: {backtracks.Count}");
-        foreach (var evt in diagnostics.Events.Where(e =>
+        foreach (var evt in diagnostics.RawEvents.Where(e =>
             e.Type == DiagnosticEventType.TokenAssigned || e.Type == DiagnosticEventType.TokenMissed))
         {
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
         Assert.Equal(0, backtracks.Count);
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Label", StringComparison.Ordinal)
               && string.Equals(e.Value, "Name: fake", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
               && string.Equals(e.Value, "real", StringComparison.Ordinal));

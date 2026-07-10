@@ -185,6 +185,12 @@ internal static class TokenDiagnosticBuilder
 
     private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, DiagnosticResult diagnostics)
     {
+        // ValueMismatch detection: before building TokenDiagnostic objects, check if any
+        // matched token's value contains the preamble of a missed/rejected token.
+        // We add issues to data.Issues BEFORE construction so there's no need to downcast
+        // the IReadOnlyList<DiagnosticIssue> after the fact.
+        ApplyValueMismatchIssues(data, diagnostics);
+
         var result = new List<TokenDiagnostic>();
 
         foreach (var tokenName in data.TokenOrder)
@@ -220,18 +226,14 @@ internal static class TokenDiagnosticBuilder
             });
         }
 
-        ApplyValueMismatchIssues(data, result, diagnostics);
-
         return result;
     }
 
-    private static void ApplyValueMismatchIssues(CollectedEventData data, List<TokenDiagnostic> tokens, DiagnosticResult diagnostics)
+    private static void ApplyValueMismatchIssues(CollectedEventData data, DiagnosticResult diagnostics)
     {
-        // Only check when there are missed/rejected tokens with known preambles
         if (data.PreambleTexts.Count == 0)
             return;
 
-        // Only preambles for tokens that are missed or rejected are relevant
         var missedOrRejected = new HashSet<string>(StringComparer.Ordinal);
         foreach (var name in data.MissedTokenNames)
             missedOrRejected.Add(name);
@@ -244,11 +246,13 @@ internal static class TokenDiagnosticBuilder
         if (missedOrRejected.Count == 0)
             return;
 
-        for (var idx = 0; idx < tokens.Count; idx++)
+        foreach (var tokenName in data.TokenOrder)
         {
-            var token = tokens[idx];
-            var assignedValue = token.AssignedValue;
-            if (token.Outcome != TokenOutcome.Matched || string.IsNullOrEmpty(assignedValue))
+            if (!data.AssignedTokens.ContainsKey(tokenName))
+                continue;
+
+            var assignedValue = data.AssignedTokens[tokenName].value;
+            if (string.IsNullOrEmpty(assignedValue))
                 continue;
 
             foreach (var missedName in missedOrRejected)
@@ -260,9 +264,13 @@ internal static class TokenDiagnosticBuilder
 
                 if (assignedValue!.IndexOf(preamble, StringComparison.Ordinal) >= 0)
                 {
-                    var issue = IssueFactory.CreateValueMismatch(token.TokenName, missedName, diagnostics);
-                    ((List<DiagnosticIssue>)token.Issues).Add(issue);
-                    break; // One ValueMismatch issue per token is enough
+                    if (!data.Issues.TryGetValue(tokenName, out var issues))
+                    {
+                        issues = new List<DiagnosticIssue>();
+                        data.Issues[tokenName] = issues;
+                    }
+                    issues.Add(IssueFactory.CreateValueMismatch(tokenName, missedName, diagnostics));
+                    break;
                 }
             }
         }

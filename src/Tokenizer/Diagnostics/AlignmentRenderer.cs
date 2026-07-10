@@ -13,9 +13,10 @@ internal static class AlignmentRenderer
         var matchedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Matched).ToList();
         var rejectedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Rejected).ToList();
         var neverFoundTokens = tokens.Where(t => t.Outcome == TokenOutcome.NeverFound).ToList();
+        var blockedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Blocked).ToList();
 
         var inputLineCount = CountLines(inputContent);
-        var totalTokens = matchedTokens.Count + rejectedTokens.Count + neverFoundTokens.Count;
+        var totalTokens = matchedTokens.Count + rejectedTokens.Count + neverFoundTokens.Count + blockedTokens.Count;
 
         // Header
         sb.AppendLine("═══ Tokenization Alignment ═══");
@@ -71,10 +72,30 @@ internal static class AlignmentRenderer
             }
         }
 
+        // Blocked tokens (not searched because a prior non-optional token was missing)
+        if (blockedTokens.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("── Blocked Tokens ──");
+            foreach (var token in blockedTokens)
+            {
+                sb.Append("  ⊘ ").Append(token.TokenName).Append(" — blocked by '").Append(token.BlockedBy).AppendLine("'");
+
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
+            }
+        }
+
         // Summary
         sb.AppendLine();
         sb.AppendLine("═══ Summary ═══");
-        sb.Append("  Matched: ").Append(matchedTokens.Count).Append(" | Missed: ").Append(rejectedTokens.Count + neverFoundTokens.Count).Append(" | Failures: ").Append(rejectedTokens.Sum(t => t.Attempts.Count));
+        sb.Append("  Matched: ").Append(matchedTokens.Count)
+            .Append(" | Missed: ").Append(rejectedTokens.Count + neverFoundTokens.Count)
+            .Append(" | Blocked: ").Append(blockedTokens.Count)
+            .Append(" | Failures: ").Append(rejectedTokens.Sum(t => t.Attempts.Count));
 
         return sb.ToString();
     }

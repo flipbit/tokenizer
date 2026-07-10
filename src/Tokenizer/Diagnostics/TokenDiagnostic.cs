@@ -38,6 +38,13 @@ public sealed class TokenDiagnostic
     public FileLocation? AssignedLocation { get; init; }
 
     /// <summary>
+    /// The name of the token that blocked this one from being searched,
+    /// or null if this token was not blocked. Only populated when
+    /// <see cref="Outcome"/> is <see cref="TokenOutcome.Blocked"/>.
+    /// </summary>
+    public string? BlockedBy { get; init; }
+
+    /// <summary>
     /// Issues identified for this token (with adaptive hints).
     /// </summary>
     public IReadOnlyList<DiagnosticIssue> Issues { get; init; } = [];

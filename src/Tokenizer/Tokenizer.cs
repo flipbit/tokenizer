@@ -347,6 +347,14 @@ public sealed class Tokenizer : ITokenizer
 
         if (result.Diagnostics != null)
         {
+            result.Diagnostics.OutOfOrderTokens = template.Options.OutOfOrderTokens;
+            result.Diagnostics.OptionalTokenNames = new HashSet<string>(
+                template.Tokens.Where(t => t.IsOptional).Select(t => t.Name),
+                StringComparer.Ordinal);
+        }
+
+        if (result.Diagnostics != null)
+        {
             if (_log.IsEnabled(LogLevel.Debug))
             {
                 _log.LogDebug("{Verdict}", result.Diagnostics.Verdict);

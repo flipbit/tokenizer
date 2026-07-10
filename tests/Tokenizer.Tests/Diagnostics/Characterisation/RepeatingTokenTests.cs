@@ -126,6 +126,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         Assert.Equal(1, assigned.Count);
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
     }
 
     [Fact]

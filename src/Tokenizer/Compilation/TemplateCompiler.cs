@@ -51,7 +51,7 @@ internal sealed class TemplateCompiler
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.CompilationCompleted,
+                collector.RecordCompilation(CompilationEventType.CompilationCompleted,
                     detail: $"Template '{template.Name}' compiled with {template.Tokens.Count} token(s)");
             }
 
@@ -74,7 +74,9 @@ internal sealed class TemplateCompiler
 #pragma warning restore CA1031
         {
             _log.LogError(ex, "Unexpected error during template compilation: {Message}", ex.Message);
-            throw new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
+            var wrapped = new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
+            wrapped.Data["CompilationDiagnostics"] = collector.GetCompilationResult();
+            throw wrapped;
         }
     }
 }

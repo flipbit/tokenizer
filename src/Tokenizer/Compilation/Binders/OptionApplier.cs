@@ -15,7 +15,7 @@ internal static class OptionApplier
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.OptionApplied,
+                collector.RecordCompilation(CompilationEventType.OptionApplied,
                     tokenName: token.Name,
                     detail: "OutOfOrderTokens: marked as optional");
             }
@@ -27,7 +27,7 @@ internal static class OptionApplier
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.OptionApplied,
+                collector.RecordCompilation(CompilationEventType.OptionApplied,
                     tokenName: token.Name,
                     detail: "TerminateOnNewLine: applied from global option");
             }

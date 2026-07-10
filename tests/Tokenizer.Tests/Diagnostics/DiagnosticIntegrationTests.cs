@@ -134,15 +134,10 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
-        // Assert
+        // Assert: runtime diagnostics contain only DiagnosticEvent (runtime) types,
+        // not CompilationEvent types — separation is enforced by the type system.
         var diagnostics = result.Diagnostics!;
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenCreated);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.DecoratorApplied);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.OptionApplied);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.ConcatenationApplied);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TagAdded);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.HintAdded);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.RepeatingTokenLinked);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.CompilationCompleted);
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationStarted);
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationCompleted);
     }
 }

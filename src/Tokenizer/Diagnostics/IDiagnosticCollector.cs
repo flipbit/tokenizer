@@ -18,9 +18,17 @@ internal interface IDiagnosticCollector
 
     /// <summary>
     /// Records a diagnostic event. Implementations may discard the event
-    /// (NullDiagnosticCollector) or store it (DiagnosticCollector).
+    /// (NullDiagnosticCollector) or store it (RuntimeDiagnosticCollector).
     /// </summary>
     public void Record(DiagnosticEventType type, string? tokenName = null, int? tokenId = null,
+                FileLocation? location = null, string? value = null, string? detail = null,
+                string? decoratorName = null, string[]? decoratorArgs = null);
+
+    /// <summary>
+    /// Records a compilation diagnostic event. Implementations may discard the event
+    /// (NullDiagnosticCollector, RuntimeDiagnosticCollector) or store it (CompilationDiagnosticCollector).
+    /// </summary>
+    public void RecordCompilation(CompilationEventType type, string? tokenName = null, int? tokenId = null,
                 FileLocation? location = null, string? value = null, string? detail = null,
                 string? decoratorName = null, string[]? decoratorArgs = null);
 

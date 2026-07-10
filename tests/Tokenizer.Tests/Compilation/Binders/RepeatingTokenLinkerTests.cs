@@ -96,6 +96,6 @@ public class RepeatingTokenLinkerTests
 
         var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
-        Assert.Equal(DiagnosticEventType.RepeatingTokenLinked, diagnostics.Events[0].Type);
+        Assert.Equal(CompilationEventType.RepeatingTokenLinked, diagnostics.Events[0].Type);
     }
 }

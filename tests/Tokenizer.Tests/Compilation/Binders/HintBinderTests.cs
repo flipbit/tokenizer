@@ -58,6 +58,6 @@ public class HintBinderTests
 
         var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
-        Assert.Equal(DiagnosticEventType.HintAdded, diagnostics.Events[0].Type);
+        Assert.Equal(CompilationEventType.HintAdded, diagnostics.Events[0].Type);
     }
 }

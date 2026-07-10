@@ -6,17 +6,17 @@ namespace Tokens.Diagnostics;
 /// </summary>
 public sealed class CompilationDiagnostics
 {
-    private readonly List<DiagnosticEvent> _events;
+    private readonly List<CompilationEvent> _events;
 
     internal CompilationDiagnostics()
     {
-        _events = new List<DiagnosticEvent>();
+        _events = new List<CompilationEvent>();
     }
 
     /// <summary>
     /// All events recorded during compilation, in the order they occurred.
     /// </summary>
-    public IReadOnlyList<DiagnosticEvent> Events => _events;
+    public IReadOnlyList<CompilationEvent> Events => _events;
 
-    internal void AddEvent(DiagnosticEvent evt) => _events.Add(evt);
+    internal void AddEvent(CompilationEvent evt) => _events.Add(evt);
 }

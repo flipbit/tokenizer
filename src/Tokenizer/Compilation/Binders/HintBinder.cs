@@ -20,7 +20,7 @@ internal static class HintBinder
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.HintAdded, detail: hint.Text);
+                collector.RecordCompilation(CompilationEventType.HintAdded, detail: hint.Text);
             }
         }
     }

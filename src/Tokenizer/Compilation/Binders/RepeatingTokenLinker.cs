@@ -21,7 +21,7 @@ internal static class RepeatingTokenLinker
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.RepeatingTokenLinked,
+                collector.RecordCompilation(CompilationEventType.RepeatingTokenLinked,
                     tokenName: token.Name,
                     tokenId: token.Id,
                     detail: $"Linked to token {previous.Id.ToInvariant()}");

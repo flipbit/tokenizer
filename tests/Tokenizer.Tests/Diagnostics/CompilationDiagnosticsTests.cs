@@ -22,7 +22,7 @@ public class CompilationDiagnosticsTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.True(result.Diagnostics!.Events.Count > 0);
         Assert.Contains(result.Diagnostics.Events,
-            e => e.Type == DiagnosticEventType.CompilationCompleted);
+            e => e.Type == CompilationEventType.CompilationCompleted);
     }
 
     [Fact]
@@ -50,12 +50,8 @@ public class CompilationDiagnosticsTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         // Should contain compilation events
-        Assert.Contains(diagnostics.Events, e => e.Type == DiagnosticEventType.TokenCreated);
-        Assert.Contains(diagnostics.Events, e => e.Type == DiagnosticEventType.DecoratorApplied);
-        Assert.Contains(diagnostics.Events, e => e.Type == DiagnosticEventType.CompilationCompleted);
-        // Should NOT contain runtime events
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TokenizationStarted);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.PreambleMatched);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TokenAssigned);
+        Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.TokenCreated);
+        Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.DecoratorApplied);
+        Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.CompilationCompleted);
     }
 }

@@ -74,6 +74,6 @@ public class OptionApplierTests
         OptionApplier.Apply(token, options, collector);
 
         var diagnostics = collector.GetCompilationResult()!;
-        Assert.Contains(diagnostics.Events, e => e.Type == DiagnosticEventType.OptionApplied);
+        Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.OptionApplied);
     }
 }

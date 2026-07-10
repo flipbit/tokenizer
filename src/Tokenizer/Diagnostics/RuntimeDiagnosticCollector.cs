@@ -43,6 +43,13 @@ internal sealed class RuntimeDiagnosticCollector : IDiagnosticCollector
     }
 
     /// <inheritdoc />
+    public void RecordCompilation(CompilationEventType type, string? tokenName = null, int? tokenId = null,
+                       FileLocation? location = null, string? value = null, string? detail = null,
+                       string? decoratorName = null, string[]? decoratorArgs = null)
+    {
+    }
+
+    /// <inheritdoc />
     public DiagnosticResult? GetResult() => _diagnostics;
 
     /// <inheritdoc />

@@ -113,15 +113,8 @@ public class AttemptCountingTests : TokenizerTestBase
         Assert.Equal(2, assigned.Count);
         Assert.Contains(assigned, e => string.Equals(e.TokenName, "FirstName", StringComparison.Ordinal));
         Assert.Contains(assigned, e => string.Equals(e.TokenName, "LastName", StringComparison.Ordinal));
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

@@ -64,15 +64,8 @@ public class HintTests : TokenizerTestBase
         Assert.NotNull(diagnostics);
         Assert.False(hintMatched);
         Assert.True(hintMissing);
-        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(0, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

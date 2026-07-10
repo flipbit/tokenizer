@@ -131,16 +131,27 @@ public class CausalityChainTests : TokenizerTestBase
         var tokenC = diagnostics.Tokens.First(t => string.Equals(t.TokenName, "C", StringComparison.Ordinal));
         Assert.Equal(TokenOutcome.Blocked, tokenC.Outcome);
         var issue = Assert.Single(tokenC.Issues);
+        Assert.Equal("TK008", issue.Code);
         Assert.NotNull(issue.Hint);
         Assert.True(issue.Hint!.Contains("B", StringComparison.Ordinal));
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
+    [Fact]
+    public void GivenBlockedAndOptionalInterleaved_WhenNonOptionalMissing_ThenSubsequentBlocked()
     {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
+        // Arrange — A matches, B is optional and missed, C is non-optional and missed, D should be blocked by C
+        var template = "A: { A }\nB: { B? }\nC: { C }\nD: { D }";
+        var input = "A: one";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var tokenD = diagnostics.Tokens.First(t => string.Equals(t.TokenName, "D", StringComparison.Ordinal));
+        Assert.Equal(TokenOutcome.Blocked, tokenD.Outcome);
+        var tokenC = diagnostics.Tokens.First(t => string.Equals(t.TokenName, "C", StringComparison.Ordinal));
+        Assert.NotEqual(TokenOutcome.Blocked, tokenC.Outcome);
     }
+
 }

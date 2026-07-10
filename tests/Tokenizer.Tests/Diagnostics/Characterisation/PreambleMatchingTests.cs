@@ -28,7 +28,8 @@ public class PreambleMatchingTests : TokenizerTestBase
         Assert.DoesNotContain(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed);
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
-        Assert.Equal("Matched 1 of 1 tokens.", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
     }
 
     [Fact]
@@ -43,7 +44,8 @@ public class PreambleMatchingTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
 
@@ -65,7 +67,8 @@ public class PreambleMatchingTests : TokenizerTestBase
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "Name", StringComparison.Ordinal));
-        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(0, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
     }
 
     [Fact]
@@ -82,8 +85,10 @@ public class PreambleMatchingTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         var issue = Assert.Single(diagnostics.Tokens.SelectMany(t => t.Issues));
         Assert.Equal(DiagnosticIssueType.PreambleNeverFound, issue.Type);
+        Assert.Equal("TK001", issue.Code);
         // Near-miss hint generator should suggest the case difference
         Assert.NotNull(issue.Hint);
+        Assert.Contains("case", issue.Hint, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -141,7 +146,8 @@ public class PreambleMatchingTests : TokenizerTestBase
         // At minimum, verify diagnostics are populated
         Assert.NotNull(diagnostics);
         Assert.True(diagnostics.RawEvents.Count > 0);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "B", StringComparison.Ordinal));
@@ -186,7 +192,8 @@ public class PreambleMatchingTests : TokenizerTestBase
             Output.WriteLine($"Assigned: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal)
@@ -253,7 +260,8 @@ public class PreambleMatchingTests : TokenizerTestBase
             Output.WriteLine($"Issue: {issue.Type} — {issue.TokenName}: {issue.Description}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal)
@@ -264,12 +272,4 @@ public class PreambleMatchingTests : TokenizerTestBase
               && string.Equals(e.Value, "hello", StringComparison.Ordinal));
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

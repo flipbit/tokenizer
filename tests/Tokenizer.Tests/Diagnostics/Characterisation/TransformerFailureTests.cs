@@ -64,7 +64,10 @@ public class TransformerFailureTests : TokenizerTestBase
             .FirstOrDefault(i => i.Type == DiagnosticIssueType.TransformerFailure
                               && string.Equals(i.TokenName, "Date", StringComparison.Ordinal));
         Assert.NotNull(issue);
-        // DateFormatHintGenerator should produce a hint
+        Assert.Equal("TK003", issue!.Code);
+        // DateFormatHintGenerator should produce a hint containing the detected format
+        Assert.NotNull(issue!.Hint);
+        Assert.Contains("MM/dd/yyyy", issue!.Hint, StringComparison.Ordinal);
         Output.WriteLine($"Hint: {issue!.Hint ?? "(none)"}");
     }
 
@@ -135,12 +138,22 @@ public class TransformerFailureTests : TokenizerTestBase
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
+    [Fact]
+    public void GivenChainedTransformers_WhenFirstFails_ThenSecondNeverReached()
     {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
+        // Arrange
+        var template = "Val: { Val : ToDateTime('yyyy-MM-dd'), ToUpper }";
+        var input = "Val: bad";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TransformerFailed);
+        Assert.DoesNotContain(diagnostics.RawEvents,
+            e => e.Type == DiagnosticEventType.TransformerSucceeded
+              && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
+
 }

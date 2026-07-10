@@ -65,6 +65,24 @@ public class IssueFactoryTests
         Assert.Contains("B", issue.Hint, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void GivenValueMismatch_WhenCreatingIssue_ThenTypeIsValueMismatchAndDescriptionContainsMissedToken()
+    {
+        // Arrange
+        var factory = new IssueFactory(new IHintGenerator[] { new ValueMismatchHintGenerator() });
+        var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
+
+        // Act
+        var issue = factory.CreateValueMismatch("Description", "Price", diagnostics);
+
+        // Assert
+        Assert.Equal(DiagnosticIssueType.ValueMismatch, issue.Type);
+        Assert.Equal("Description", issue.TokenName);
+        Assert.Contains("Price", issue.Description, StringComparison.Ordinal);
+        Assert.NotNull(issue.Hint);
+        Assert.Contains("Price", issue.Hint, StringComparison.Ordinal);
+    }
+
     /// <summary>
     /// Test double that always returns a fixed hint string.
     /// </summary>

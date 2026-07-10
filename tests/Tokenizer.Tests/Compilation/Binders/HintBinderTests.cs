@@ -52,11 +52,11 @@ public class HintBinderTests
         var definition = new TemplateDefinition();
         definition.Hints.Add(new Hint("invoice", Optional: false));
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new DiagnosticCollector();
 
         HintBinder.Bind(definition, template, collector);
 
-        var diagnostics = collector.GetResult()!;
+        var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
         Assert.Equal(DiagnosticEventType.HintAdded, diagnostics.Events[0].Type);
     }

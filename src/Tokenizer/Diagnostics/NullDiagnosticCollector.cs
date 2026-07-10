@@ -32,4 +32,7 @@ internal sealed class NullDiagnosticCollector : IDiagnosticCollector
     {
         return null;
     }
+
+    /// <inheritdoc />
+    public CompilationDiagnostics? GetCompilationResult() => null;
 }

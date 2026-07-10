@@ -8,15 +8,24 @@ namespace Tokens.Diagnostics;
 /// </summary>
 internal sealed class DiagnosticCollector : IDiagnosticCollector
 {
-    private readonly DiagnosticResult _diagnostics;
+    private readonly DiagnosticResult? _diagnostics;
+    private readonly CompilationDiagnostics? _compilationDiagnostics;
 
     /// <summary>
-    /// Initialises a new collector for a single tokenization call.
+    /// Initialises a collector for runtime tokenization.
     /// </summary>
     /// <param name="inputContent">The input text being tokenized.</param>
     public DiagnosticCollector(string? inputContent)
     {
         _diagnostics = new DiagnosticResult(inputContent);
+    }
+
+    /// <summary>
+    /// Initialises a collector for compilation.
+    /// </summary>
+    public DiagnosticCollector()
+    {
+        _compilationDiagnostics = new CompilationDiagnostics();
     }
 
     /// <inheritdoc />
@@ -39,12 +48,15 @@ internal sealed class DiagnosticCollector : IDiagnosticCollector
             DecoratorArgs = decoratorArgs,
         };
 
-        _diagnostics.AddEvent(evt);
+        if (_diagnostics != null)
+            _diagnostics.AddEvent(evt);
+        else
+            _compilationDiagnostics!.AddEvent(evt);
     }
 
     /// <inheritdoc />
-    public DiagnosticResult? GetResult()
-    {
-        return _diagnostics;
-    }
+    public DiagnosticResult? GetResult() => _diagnostics;
+
+    /// <inheritdoc />
+    public CompilationDiagnostics? GetCompilationResult() => _compilationDiagnostics;
 }

@@ -20,7 +20,7 @@ internal static class TagBinder
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.TagAdded, detail: tag);
+                collector.RecordCompilation(CompilationEventType.TagAdded, detail: tag);
             }
         }
     }

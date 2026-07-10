@@ -26,7 +26,7 @@ internal static class TokenFactory
 
         if (collector.IsEnabled)
         {
-            collector.Record(DiagnosticEventType.TokenCreated,
+            collector.RecordCompilation(CompilationEventType.TokenCreated,
                 tokenName: token.Name,
                 tokenId: definition.Id,
                 detail: $"Content={definition.Content}, Optional={token.IsOptional}, Repeating={token.IsRepeating}");

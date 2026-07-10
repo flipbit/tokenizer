@@ -26,7 +26,14 @@ internal sealed class CompilationDiagnosticCollector : IDiagnosticCollector
                        FileLocation? location = null, string? value = null, string? detail = null,
                        string? decoratorName = null, string[]? decoratorArgs = null)
     {
-        _compilationDiagnostics.AddEvent(new DiagnosticEvent
+    }
+
+    /// <inheritdoc />
+    public void RecordCompilation(CompilationEventType type, string? tokenName = null, int? tokenId = null,
+                       FileLocation? location = null, string? value = null, string? detail = null,
+                       string? decoratorName = null, string[]? decoratorArgs = null)
+    {
+        _compilationDiagnostics.AddEvent(new CompilationEvent
         {
             Type = type,
             TokenName = tokenName,

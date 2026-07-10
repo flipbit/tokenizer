@@ -58,6 +58,6 @@ public class TagBinderTests
 
         var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
-        Assert.Equal(DiagnosticEventType.TagAdded, diagnostics.Events[0].Type);
+        Assert.Equal(CompilationEventType.TagAdded, diagnostics.Events[0].Type);
     }
 }

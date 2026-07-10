@@ -73,7 +73,24 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenCompilationCollector_WhenRecordingEvent_ThenEventIsStored()
+    public void GivenCompilationCollector_WhenRecordingCompilationEvent_ThenEventIsStored()
+    {
+        // Arrange
+        var collector = new CompilationDiagnosticCollector();
+
+        // Act
+        collector.RecordCompilation(CompilationEventType.TokenCreated, tokenName: "DomainName", tokenId: 1);
+        var result = collector.GetCompilationResult();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result!.Events);
+        Assert.Equal(CompilationEventType.TokenCreated, result.Events[0].Type);
+        Assert.Equal("DomainName", result.Events[0].TokenName);
+    }
+
+    [Fact]
+    public void GivenCompilationCollector_WhenRecordingRuntimeEvent_ThenEventIsDiscarded()
     {
         // Arrange
         var collector = new CompilationDiagnosticCollector();
@@ -84,9 +101,7 @@ public class DiagnosticCollectorTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(result!.Events);
-        Assert.Equal(DiagnosticEventType.TokenAssigned, result.Events[0].Type);
-        Assert.Equal("DomainName", result.Events[0].TokenName);
+        Assert.Empty(result!.Events);
     }
 
     [Fact]

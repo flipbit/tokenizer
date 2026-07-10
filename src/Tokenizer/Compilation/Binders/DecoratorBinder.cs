@@ -23,7 +23,7 @@ internal static class DecoratorBinder
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.DecoratorApplied,
+                collector.RecordCompilation(CompilationEventType.DecoratorApplied,
                     tokenName: token.Name,
                     decoratorName: nameof(SetTransformer),
                     detail: definition.Value);
@@ -67,7 +67,7 @@ internal static class DecoratorBinder
 
         if (collector.IsEnabled)
         {
-            collector.Record(DiagnosticEventType.ConcatenationApplied,
+            collector.RecordCompilation(CompilationEventType.ConcatenationApplied,
                 tokenName: tokenName,
                 detail: token.ConcatenationString ?? "(empty)");
         }
@@ -100,7 +100,7 @@ internal static class DecoratorBinder
 
                 if (collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.DecoratorApplied,
+                    collector.RecordCompilation(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
                         decoratorName: transformerType.Name,
                         decoratorArgs: decorator.Args.ToArray());
@@ -134,7 +134,7 @@ internal static class DecoratorBinder
 
                 if (collector.IsEnabled)
                 {
-                    collector.Record(DiagnosticEventType.DecoratorApplied,
+                    collector.RecordCompilation(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
                         decoratorName: validatorType.Name,
                         decoratorArgs: decorator.Args.ToArray());

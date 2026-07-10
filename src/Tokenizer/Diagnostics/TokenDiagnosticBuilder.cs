@@ -9,9 +9,13 @@ internal static class TokenDiagnosticBuilder
     private static readonly IssueFactory IssueFactory = new IssueFactory(new IHintGenerator[]
     {
         new BlockedTokenHintGenerator(),
+        new ChainedDecoratorHintGenerator(),
         new DateFormatHintGenerator(),
+        new MultipleRejectionHintGenerator(),
+        new ValueMismatchHintGenerator(),
         new PreambleNearMissHintGenerator(),
         new ValidatorValueHintGenerator(),
+        new OptionalTokenHintGenerator(),
         new RepeatingTokenHintGenerator(),
     });
 

@@ -50,7 +50,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenValidatorRejection_WhenRenderingAlignment_ThenDocumentWhatRendererSays()
+    public void GivenValidatorRejection_WhenRenderingAlignment_ThenSaysRejectedNotPreambleNeverFound()
     {
         // Arrange
         var template = "Email: { Email : IsEmail }";
@@ -62,10 +62,9 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
 
         // Assert
         Output.WriteLine(alignment);
-        // BUG: Current renderer says "preamble never found" even though the preamble was found.
-        // After Phase 2 fix, this should say "validator rejected" or similar.
-        // For now, document the current (incorrect) behaviour.
-        Assert.True(alignment.Contains("preamble never found", StringComparison.Ordinal));
+        // The preamble WAS found — renderer should not say "preamble never found"
+        Assert.False(alignment.Contains("preamble never found", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("rejected", StringComparison.Ordinal));
     }
 
     [Fact]

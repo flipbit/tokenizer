@@ -123,9 +123,6 @@ public class ValidatorRejectionTests : TokenizerTestBase
             e => e.Type == DiagnosticEventType.ValidatorFailed);
 
         // Summary issues should report ValidatorRejection, NOT PreambleNeverFound
-        // BUG: The AlignmentRenderer currently says "preamble never found" for this case.
-        // The Summary.Issues correctly classifies this as ValidatorRejection, but the
-        // rendered alignment output is misleading.
         var issues = diagnostics.Summary.Issues;
         Assert.Contains(issues, i => i.Type == DiagnosticIssueType.ValidatorRejection);
         Assert.DoesNotContain(issues, i => i.Type == DiagnosticIssueType.PreambleNeverFound);

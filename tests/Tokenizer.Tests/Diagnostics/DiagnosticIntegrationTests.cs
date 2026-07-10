@@ -121,4 +121,28 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.Contains(result.Diagnostics!.Events,
             e => e.Type == DiagnosticEventType.PreambleMatched);
     }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenizing_ThenRuntimeDiagnosticsContainNoCompilationEvents()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }";
+        var input = "Name: John";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TokenCreated);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.DecoratorApplied);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.OptionApplied);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.ConcatenationApplied);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TagAdded);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.HintAdded);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.RepeatingTokenLinked);
+        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.CompilationCompleted);
+    }
 }

@@ -35,6 +35,26 @@ internal sealed class IssueFactory
     }
 
     /// <summary>
+    /// Creates a <see cref="DiagnosticIssue"/> of type <see cref="DiagnosticIssueType.ValueMismatch"/>
+    /// for a matched token whose assigned value contains the preamble of a missed or rejected token,
+    /// suggesting greedy capture consumed more than intended.
+    /// </summary>
+    internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, DiagnosticResult diagnostics)
+    {
+        var sourceEvent = new DiagnosticEvent
+        {
+            Type = DiagnosticEventType.TokenAssigned,
+            TokenName = tokenName,
+        };
+
+        return Create(
+            DiagnosticIssueType.ValueMismatch,
+            sourceEvent,
+            $"Token '{tokenName}' captured value containing preamble of token '{missedTokenName}'.",
+            diagnostics);
+    }
+
+    /// <summary>
     /// Creates a <see cref="DiagnosticIssue"/> of type <see cref="DiagnosticIssueType.Blocked"/>
     /// for a token that was not searched because a prior required token failed to match.
     /// </summary>

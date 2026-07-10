@@ -22,7 +22,7 @@ internal static class TokenDiagnosticBuilder
     public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics)
     {
         var collected = CollectEvents(diagnostics);
-        var result = ClassifyOutcomes(collected);
+        var result = ClassifyOutcomes(collected, diagnostics);
 
         // Causality pass: in ordered mode, non-optional missed tokens block subsequent ones
         if (!diagnostics.OutOfOrderTokens)
@@ -54,6 +54,13 @@ internal static class TokenDiagnosticBuilder
         public Dictionary<string, int> TokenIds { get; } = new(StringComparer.Ordinal);
         public HashSet<string> TokensWithFailures { get; } = new(StringComparer.Ordinal);
         public HashSet<string> MissedTokenNames { get; } = new(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Maps token name to its preamble text, collected from TokenMissed events.
+        /// Used for ValueMismatch detection.
+        /// </summary>
+        public Dictionary<string, string> PreambleTexts { get; } = new(StringComparer.Ordinal);
+
         public List<string> TokenOrder { get; } = new();
         public List<DiagnosticIssue> GlobalIssues { get; } = new();
         public int MatchedCount { get; set; }
@@ -138,6 +145,9 @@ internal static class TokenDiagnosticBuilder
                     {
                         data.MissedTokenNames.Add(evt.TokenName);
                         data.MissedCount++;
+                        var preambleDetail = evt.Detail;
+                        if (!string.IsNullOrEmpty(preambleDetail) && !data.PreambleTexts.ContainsKey(evt.TokenName))
+                            data.PreambleTexts[evt.TokenName] = preambleDetail!;
                         if (!data.TokensWithFailures.Contains(evt.TokenName))
                         {
                             AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.PreambleNeverFound, evt,
@@ -173,7 +183,7 @@ internal static class TokenDiagnosticBuilder
         return data;
     }
 
-    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data)
+    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, DiagnosticResult diagnostics)
     {
         var result = new List<TokenDiagnostic>();
 
@@ -210,7 +220,52 @@ internal static class TokenDiagnosticBuilder
             });
         }
 
+        ApplyValueMismatchIssues(data, result, diagnostics);
+
         return result;
+    }
+
+    private static void ApplyValueMismatchIssues(CollectedEventData data, List<TokenDiagnostic> tokens, DiagnosticResult diagnostics)
+    {
+        // Only check when there are missed/rejected tokens with known preambles
+        if (data.PreambleTexts.Count == 0)
+            return;
+
+        // Only preambles for tokens that are missed or rejected are relevant
+        var missedOrRejected = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var name in data.MissedTokenNames)
+            missedOrRejected.Add(name);
+        foreach (var name in data.TokensWithFailures)
+        {
+            if (!data.AssignedTokens.ContainsKey(name))
+                missedOrRejected.Add(name);
+        }
+
+        if (missedOrRejected.Count == 0)
+            return;
+
+        for (var idx = 0; idx < tokens.Count; idx++)
+        {
+            var token = tokens[idx];
+            var assignedValue = token.AssignedValue;
+            if (token.Outcome != TokenOutcome.Matched || string.IsNullOrEmpty(assignedValue))
+                continue;
+
+            foreach (var missedName in missedOrRejected)
+            {
+                if (!data.PreambleTexts.TryGetValue(missedName, out var preamble))
+                    continue;
+                if (string.IsNullOrEmpty(preamble))
+                    continue;
+
+                if (assignedValue!.IndexOf(preamble, StringComparison.Ordinal) >= 0)
+                {
+                    var issue = IssueFactory.CreateValueMismatch(token.TokenName, missedName, diagnostics);
+                    ((List<DiagnosticIssue>)token.Issues).Add(issue);
+                    break; // One ValueMismatch issue per token is enough
+                }
+            }
+        }
     }
 
     private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, DiagnosticResult diagnostics)

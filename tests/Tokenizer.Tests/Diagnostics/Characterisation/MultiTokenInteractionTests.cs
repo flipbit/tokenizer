@@ -28,7 +28,8 @@ public class MultiTokenInteractionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 0 of 2 tokens (2 missed).", diagnostics.Verdict);
+        Assert.Equal(0, diagnostics.MatchedCount);
+        Assert.Equal(2, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
@@ -75,7 +76,8 @@ public class MultiTokenInteractionTests : TokenizerTestBase
             .Where(e => e.Type == DiagnosticEventType.TokenMissed)
             .ToList();
         Assert.Equal(3, missed.Count);
-        Assert.Equal("Matched 0 of 3 tokens (3 missed).", diagnostics.Verdict);
+        Assert.Equal(0, diagnostics.MatchedCount);
+        Assert.Equal(3, diagnostics.MissedCount);
     }
 
     [Fact]
@@ -99,7 +101,8 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "C", StringComparison.Ordinal));
-        Assert.Equal("Matched 1 of 3 tokens (2 missed).", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(2, diagnostics.MissedCount);
     }
 
     [Fact]
@@ -125,7 +128,8 @@ public class MultiTokenInteractionTests : TokenizerTestBase
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
         Assert.Equal(0, backtracks.Count);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
@@ -137,12 +141,4 @@ public class MultiTokenInteractionTests : TokenizerTestBase
               && string.Equals(e.Value, "real", StringComparison.Ordinal));
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

@@ -78,7 +78,8 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 2 of 2 tokens.", result.Diagnostics!.Verdict);
+        Assert.Equal(2, result.Diagnostics!.MatchedCount);
+        Assert.Equal(0, result.Diagnostics!.MissedCount);
     }
 
     [Fact]
@@ -92,7 +93,8 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 2 of 3 tokens (1 missed).", result.Diagnostics!.Verdict);
+        Assert.Equal(2, result.Diagnostics!.MatchedCount);
+        Assert.Equal(1, result.Diagnostics!.MissedCount);
     }
 
     [Fact]
@@ -106,15 +108,8 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 0 of 2 tokens (2 missed).", result.Diagnostics!.Verdict);
+        Assert.Equal(0, result.Diagnostics!.MatchedCount);
+        Assert.Equal(2, result.Diagnostics!.MissedCount);
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

@@ -115,7 +115,8 @@ public class EdgeCaseTests : TokenizerTestBase
         }
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
@@ -138,9 +139,10 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.RawEvents,
+        var assigned = diagnostics.RawEvents.First(
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
+        Assert.Equal("José", assigned.Value);
     }
 
     [Fact]
@@ -187,7 +189,8 @@ public class EdgeCaseTests : TokenizerTestBase
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.Equal(0, removed.Count);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.ValidatorFailed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
@@ -222,15 +225,8 @@ public class EdgeCaseTests : TokenizerTestBase
         Assert.NotNull(diagnostics);
         Assert.True(nicknameMissed);
         Assert.True(nicknameInIssues);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Equal(1, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MissedCount);
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
-    {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
-    }
 }

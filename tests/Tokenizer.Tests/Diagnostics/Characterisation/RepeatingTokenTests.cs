@@ -53,7 +53,8 @@ public class RepeatingTokenTests : TokenizerTestBase
             .ToList();
         Output.WriteLine($"RepeatingTokenDisabled events: {disabled.Count}");
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
         Assert.Equal(0, disabled.Count);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.ValidatorRejection
@@ -80,7 +81,8 @@ public class RepeatingTokenTests : TokenizerTestBase
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.Equal(2, assigned.Count);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(0, diagnostics.MissedCount);
     }
 
     [Fact]
@@ -123,14 +125,26 @@ public class RepeatingTokenTests : TokenizerTestBase
         Output.WriteLine($"Matched {assigned.Count} occurrences");
         Assert.Equal(1, assigned.Count);
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
+        Assert.Equal(1, diagnostics.MatchedCount);
     }
 
-    private TokenizeResult TokenizeWithDiagnostics(string template, string input)
+    [Fact]
+    public void GivenRepeatingTokenWithTransformer_WhenSomeOccurrencesFail_ThenTransformerFailureRecorded()
     {
-        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
-        var compiled = tokenizer.Compile(template).Template;
-        var result = tokenizer.Tokenize(compiled, input);
-        Output.WriteLine(result.Diagnostics!.RenderAlignment());
-        return result;
+        // Arrange
+        var template = "Date: { Date : Repeating, ToDateTime('yyyy-MM-dd') }";
+        var input = "Date: 2024-01-01\nDate: bad\nDate: 2024-03-03";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        Assert.Contains(diagnostics.RawEvents,
+            e => e.Type == DiagnosticEventType.TransformerFailed
+              && string.Equals(e.TokenName, "Date", StringComparison.Ordinal));
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
+            i => i.Type == DiagnosticIssueType.TransformerFailure);
     }
+
 }

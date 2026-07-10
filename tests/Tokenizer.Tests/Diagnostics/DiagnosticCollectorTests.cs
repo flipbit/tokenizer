@@ -116,4 +116,41 @@ public class DiagnosticCollectorTests
         // Assert
         Assert.Null(result);
     }
+
+    [Fact]
+    public void GivenNullCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
+    {
+        // Assert
+        Assert.False(NullDiagnosticCollector.Instance.IsEnabled);
+    }
+
+    [Fact]
+    public void GivenRuntimeCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("x");
+
+        // Assert
+        Assert.True(collector.IsEnabled);
+    }
+
+    [Fact]
+    public void GivenCompilationCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
+    {
+        // Arrange
+        var collector = new CompilationDiagnosticCollector();
+
+        // Assert
+        Assert.True(collector.IsEnabled);
+    }
+
+    [Fact]
+    public void GivenNullCollector_WhenGetCompilationResult_ThenReturnsNull()
+    {
+        // Act
+        var result = NullDiagnosticCollector.Instance.GetCompilationResult();
+
+        // Assert
+        Assert.Null(result);
+    }
 }

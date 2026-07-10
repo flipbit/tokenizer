@@ -160,11 +160,10 @@ public class EdgeCaseTests : TokenizerTestBase
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
-        // Document: is NewlineTerminatedTokenProcessed event recorded?
         var newlineEvents = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.NewlineTerminatedTokenProcessed)
             .ToList();
-        Output.WriteLine($"NewlineTerminatedTokenProcessed events: {newlineEvents.Count}");
+        Assert.NotEmpty(newlineEvents);
     }
 
     [Fact]

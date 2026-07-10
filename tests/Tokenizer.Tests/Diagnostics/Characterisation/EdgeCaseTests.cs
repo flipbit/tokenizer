@@ -78,6 +78,26 @@ public class EdgeCaseTests : TokenizerTestBase
     }
 
     [Fact]
+    public void GivenTwoTokens_WhenGreedyCaptureContainsMissedTokenPreamble_ThenValueMismatchIssue()
+    {
+        // Arrange — Name captures greedily and swallows Age's preamble; Age is never found
+        var template = "Name: { Name }\nAge: { Age }";
+        var input = "Name: Age: 30";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var nameToken = diagnostics.Tokens.Single(t => string.Equals(t.TokenName, "Name", StringComparison.Ordinal));
+        var valueMismatch = nameToken.Issues.SingleOrDefault(i => i.Type == DiagnosticIssueType.ValueMismatch);
+        Assert.NotNull(valueMismatch);
+        Assert.Equal("TK004", valueMismatch.Code);
+        Assert.NotNull(valueMismatch.Hint);
+        Assert.Contains("delimiter", valueMismatch.Hint, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void GivenTwoTokens_WhenValueContainsPreambleOfOtherToken_ThenDocumentBehaviour()
     {
         // Arrange

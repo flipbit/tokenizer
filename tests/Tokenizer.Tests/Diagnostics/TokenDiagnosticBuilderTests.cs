@@ -160,6 +160,46 @@ public class TokenDiagnosticBuilderTests
     }
 
     [Fact]
+    public void GivenBacktrackEvent_WhenBuilding_ThenAttemptHasBacktrackedOutcome()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("Name: bad\nName: John");
+        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name");
+        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Name", value: "bad");
+        collector.Record(DiagnosticEventType.BacktrackStarted, tokenName: "Name", value: "bad");
+        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name");
+        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "John");
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        var token = Assert.Single(tokens);
+        Assert.Equal(TokenOutcome.Matched, token.Outcome);
+        Assert.Equal(2, token.Attempts.Count);
+        Assert.Equal(AttemptOutcome.Backtracked, token.Attempts[0].Outcome);
+        Assert.Equal(AttemptOutcome.Assigned, token.Attempts[1].Outcome);
+    }
+
+    [Fact]
+    public void GivenHintMissingWithTokenName_WhenBuilding_ThenIssueAttachedToToken()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("input");
+        collector.Record(DiagnosticEventType.HintMissing, tokenName: "Name", value: "Expected hint");
+        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Name");
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        var nameToken = tokens.First(t => string.Equals(t.TokenName, "Name", StringComparison.Ordinal));
+        Assert.Contains(nameToken.Issues, i => i.Type == DiagnosticIssueType.HintMissing);
+    }
+
+    [Fact]
     public void GivenHintMissing_WhenBuilding_ThenHintMissingIssueCreated()
     {
         // Arrange

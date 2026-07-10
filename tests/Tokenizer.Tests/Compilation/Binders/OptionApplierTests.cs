@@ -69,11 +69,11 @@ public class OptionApplierTests
     {
         var options = new TokenizerOptions { OutOfOrderTokens = true };
         var token = new Token("Name", "Preamble", new FileLocation());
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new DiagnosticCollector();
 
         OptionApplier.Apply(token, options, collector);
 
-        var diagnostics = collector.GetResult()!;
+        var diagnostics = collector.GetCompilationResult()!;
         Assert.Contains(diagnostics.Events, e => e.Type == DiagnosticEventType.OptionApplied);
     }
 }

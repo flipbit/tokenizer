@@ -17,9 +17,9 @@ public sealed class CompilationResult
     /// Structured diagnostic output from the compilation process.
     /// Null when <see cref="TokenizerOptions.EnableDiagnostics"/> is false.
     /// </summary>
-    public DiagnosticResult? Diagnostics { get; }
+    public CompilationDiagnostics? Diagnostics { get; }
 
-    internal CompilationResult(Template template, DiagnosticResult? diagnostics)
+    internal CompilationResult(Template template, CompilationDiagnostics? diagnostics)
     {
         Template = template;
         Diagnostics = diagnostics;

@@ -28,4 +28,9 @@ internal interface IDiagnosticCollector
     /// Returns the collected diagnostics, or null if collection is disabled.
     /// </summary>
     public DiagnosticResult? GetResult();
+
+    /// <summary>
+    /// Returns the collected compilation diagnostics, or null if collection is disabled.
+    /// </summary>
+    public CompilationDiagnostics? GetCompilationResult();
 }

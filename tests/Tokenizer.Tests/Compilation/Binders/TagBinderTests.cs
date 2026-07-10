@@ -52,11 +52,11 @@ public class TagBinderTests
         var definition = new TemplateDefinition();
         definition.Tags.Add("invoice");
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new DiagnosticCollector();
 
         TagBinder.Bind(definition, template, collector);
 
-        var diagnostics = collector.GetResult()!;
+        var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
         Assert.Equal(DiagnosticEventType.TagAdded, diagnostics.Events[0].Type);
     }

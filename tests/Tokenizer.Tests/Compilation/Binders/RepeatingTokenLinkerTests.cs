@@ -90,11 +90,11 @@ public class RepeatingTokenLinkerTests
         var template = new TemplateBuilder()
             .WithTokens(nonRepeating, repeating)
             .Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new DiagnosticCollector();
 
         RepeatingTokenLinker.Link(repeating, template, collector);
 
-        var diagnostics = collector.GetResult()!;
+        var diagnostics = collector.GetCompilationResult()!;
         Assert.Single(diagnostics.Events);
         Assert.Equal(DiagnosticEventType.RepeatingTokenLinked, diagnostics.Events[0].Type);
     }

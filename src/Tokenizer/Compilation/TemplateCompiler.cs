@@ -31,7 +31,7 @@ internal sealed class TemplateCompiler
     public CompilationResult Compile(string content)
     {
         IDiagnosticCollector collector = Options.EnableDiagnostics
-            ? new DiagnosticCollector(inputContent: null)
+            ? new DiagnosticCollector()
             : NullDiagnosticCollector.Instance;
 
         TemplateLengthValidator.Validate(content, Options);
@@ -58,12 +58,12 @@ internal sealed class TemplateCompiler
             _log.LogDebug("Template '{TemplateName}' compiled successfully with {TokenCount} token(s)",
                 template.Name, template.Tokens.Count);
 
-            return new CompilationResult(template, collector.GetResult());
+            return new CompilationResult(template, collector.GetCompilationResult());
         }
         catch (TokenizerException ex)
         {
             _log.LogError(ex, "Template compilation failed: {Message}", ex.Message);
-            ex.Data["DiagnosticResult"] = collector.GetResult();
+            ex.Data["CompilationDiagnostics"] = collector.GetCompilationResult();
             throw;
         }
         // Intentional catch-all: compilation boundary that wraps unexpected exceptions

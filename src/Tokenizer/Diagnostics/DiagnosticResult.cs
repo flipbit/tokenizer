@@ -12,6 +12,7 @@ public sealed class DiagnosticResult
     private IReadOnlyList<TokenDiagnostic>? _tokens;
     private string? _verdict;
     private string? _alignment;
+    private string? _processingOrder;
 
     internal DiagnosticResult(string? inputContent)
     {
@@ -68,6 +69,16 @@ public sealed class DiagnosticResult
     {
         _alignment ??= AlignmentRenderer.Render(this, _inputContent);
         return _alignment;
+    }
+
+    /// <summary>
+    /// Renders a chronological walk-through of every engine decision during tokenization.
+    /// The result is cached after the first call.
+    /// </summary>
+    public string RenderProcessingOrder()
+    {
+        _processingOrder ??= ProcessingOrderRenderer.Render(this);
+        return _processingOrder;
     }
 
     private void EnsureBuilt()

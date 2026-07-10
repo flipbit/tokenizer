@@ -23,7 +23,7 @@ public enum TokenOutcome
 
     /// <summary>
     /// Token was not searched for because a prior required token
-    /// failed to match. Defined but not populated until Phase 6.
+    /// failed to match.
     /// </summary>
     Blocked,
 }

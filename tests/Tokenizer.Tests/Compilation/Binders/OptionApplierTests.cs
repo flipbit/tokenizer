@@ -69,7 +69,7 @@ public class OptionApplierTests
     {
         var options = new TokenizerOptions { OutOfOrderTokens = true };
         var token = new Token("Name", "Preamble", new FileLocation());
-        var collector = new DiagnosticCollector();
+        var collector = new CompilationDiagnosticCollector();
 
         OptionApplier.Apply(token, options, collector);
 

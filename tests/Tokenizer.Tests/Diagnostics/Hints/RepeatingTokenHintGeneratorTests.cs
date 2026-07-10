@@ -17,7 +17,7 @@ public class RepeatingTokenHintGeneratorTests
             TokenName = "NameServers",
             Detail = "Line gap detected",
         };
-        var collector = new DiagnosticCollector("input");
+        var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
             tokenName: "NameServers",
             decoratorName: "IsDomainNameValidator",
@@ -45,7 +45,7 @@ public class RepeatingTokenHintGeneratorTests
             TokenName = "Dates",
             Detail = "Validation failure",
         };
-        var collector = new DiagnosticCollector("input");
+        var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TransformerFailed,
             tokenName: "Dates",
             decoratorName: "ToDateTimeTransformer",
@@ -73,7 +73,7 @@ public class RepeatingTokenHintGeneratorTests
             TokenName = "NameServers",
             Detail = "Line gap detected",
         };
-        var trace = new DiagnosticCollector("input").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -94,7 +94,7 @@ public class RepeatingTokenHintGeneratorTests
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
         };
-        var trace = new DiagnosticCollector("input").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -114,7 +114,7 @@ public class RepeatingTokenHintGeneratorTests
             TokenName = "Token",
             Detail = "Some detail",
         };
-        var trace = new DiagnosticCollector("input").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);

@@ -9,7 +9,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenSingleMatchedToken_WhenBuilding_ThenTokenHasMatchedOutcome()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Name: John");
+        var collector = new RuntimeDiagnosticCollector("Name: John");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name", location: new FileLocation());
         collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Name", value: "John");
@@ -34,7 +34,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMissedToken_WhenBuilding_ThenTokenHasNeverFoundOutcome()
     {
         // Arrange
-        var collector = new DiagnosticCollector("nothing");
+        var collector = new RuntimeDiagnosticCollector("nothing");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Name");
         collector.Record(DiagnosticEventType.TokenizationCompleted);
@@ -57,7 +57,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenValidatorRejection_WhenBuilding_ThenTokenHasRejectedOutcomeWithAttempts()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Email: bad");
+        var collector = new RuntimeDiagnosticCollector("Email: bad");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
         collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
@@ -85,7 +85,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenTransformerFailure_WhenBuilding_ThenTokenHasRejectedOutcomeWithAttempt()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Date: not-a-date");
+        var collector = new RuntimeDiagnosticCollector("Date: not-a-date");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Date", location: new FileLocation());
         collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Date", value: "not-a-date");
@@ -110,7 +110,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMultipleAttemptsOneSuccess_WhenBuilding_ThenMatchedWithMultipleAttempts()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Email: bad\nEmail: good@email.com");
+        var collector = new RuntimeDiagnosticCollector("Email: bad\nEmail: good@email.com");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         // First attempt — rejected
         collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
@@ -144,7 +144,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMixedTokens_WhenBuilding_ThenVerdictReflectsMatchAndMiss()
     {
         // Arrange
-        var collector = new DiagnosticCollector("Name: John");
+        var collector = new RuntimeDiagnosticCollector("Name: John");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "John");
         collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Age");
@@ -163,7 +163,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenHintMissing_WhenBuilding_ThenHintMissingIssueCreated()
     {
         // Arrange
-        var collector = new DiagnosticCollector("no hint");
+        var collector = new RuntimeDiagnosticCollector("no hint");
         collector.Record(DiagnosticEventType.TokenizationStarted);
         collector.Record(DiagnosticEventType.HintMissing, value: "Expected text");
         collector.Record(DiagnosticEventType.TokenizationCompleted);

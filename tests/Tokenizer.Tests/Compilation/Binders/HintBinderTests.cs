@@ -52,7 +52,7 @@ public class HintBinderTests
         var definition = new TemplateDefinition();
         definition.Hints.Add(new Hint("invoice", Optional: false));
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector();
+        var collector = new CompilationDiagnosticCollector();
 
         HintBinder.Bind(definition, template, collector);
 

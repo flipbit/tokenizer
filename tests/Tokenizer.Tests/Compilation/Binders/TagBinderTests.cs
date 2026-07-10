@@ -52,7 +52,7 @@ public class TagBinderTests
         var definition = new TemplateDefinition();
         definition.Tags.Add("invoice");
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector();
+        var collector = new CompilationDiagnosticCollector();
 
         TagBinder.Bind(definition, template, collector);
 

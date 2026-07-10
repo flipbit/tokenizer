@@ -23,7 +23,7 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "21/11/2005",
         };
-        var trace = new DiagnosticCollector("i").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -50,7 +50,7 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "21/11/2005 15:21:32",
         };
-        var trace = new DiagnosticCollector("i").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -77,7 +77,7 @@ public class DateFormatHintGeneratorTests
             DecoratorName = "ToUpperTransformer",
             Value = "test",
         };
-        var trace = new DiagnosticCollector("i").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -103,7 +103,7 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "not a date at all",
         };
-        var trace = new DiagnosticCollector("i").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
@@ -129,7 +129,7 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "dd/MM/yyyy" },
             Value = "2005-11-21T15:21:32",
         };
-        var trace = new DiagnosticCollector("i").GetResult()!;
+        var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);

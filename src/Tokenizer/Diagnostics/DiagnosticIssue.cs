@@ -9,6 +9,12 @@ namespace Tokens.Diagnostics;
 public sealed class DiagnosticIssue
 {
     /// <summary>
+    /// Stable error code for this issue type. Codes are stable across versions
+    /// and can be used for documentation linking, programmatic filtering, and suppression.
+    /// </summary>
+    public string Code => IssueCodeMap.GetCode(Type);
+
+    /// <summary>
     /// Category of the issue for programmatic filtering.
     /// </summary>
     public DiagnosticIssueType Type { get; init; }

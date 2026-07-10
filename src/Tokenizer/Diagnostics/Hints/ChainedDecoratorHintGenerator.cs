@@ -28,6 +28,10 @@ internal sealed class ChainedDecoratorHintGenerator : IHintGenerator
 
         foreach (var evt in trace.RawEvents)
         {
+            // Stop at the failing event — only consider prior successes
+            if (ReferenceEquals(evt, sourceEvent))
+                break;
+
             if (!string.Equals(evt.TokenName, tokenName, StringComparison.Ordinal))
                 continue;
 

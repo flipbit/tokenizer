@@ -173,6 +173,12 @@ internal static class TokenDiagnosticBuilder
             });
         }
 
+        // Causality pass: in ordered mode, non-optional missed tokens block subsequent ones
+        if (!diagnostics.OutOfOrderTokens)
+        {
+            ApplyBlockedAnnotations(result, diagnostics.OptionalTokenNames);
+        }
+
         // Handle global hint-missing issues: create a synthetic TokenDiagnostic for them
         if (globalIssues.Count > 0)
         {
@@ -191,6 +197,56 @@ internal static class TokenDiagnosticBuilder
         var verdict = BuildVerdict(matchedCount, totalCount, missedCount);
 
         return (result, verdict);
+    }
+
+    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames)
+    {
+        // Find the first non-optional, non-matched token — that's the blocker.
+        // All subsequent NeverFound tokens are blocked by it.
+        string? blockerName = null;
+
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            var token = tokens[i];
+
+            if (token.Outcome == TokenOutcome.Matched)
+                continue;
+
+            if (blockerName == null)
+            {
+                // This is a failed token. Is it non-optional (i.e. a blocker)?
+                if (!optionalTokenNames.Contains(token.TokenName))
+                {
+                    blockerName = token.TokenName;
+                }
+                continue;
+            }
+
+            // We have a blocker — mark subsequent NeverFound tokens as Blocked
+            if (token.Outcome == TokenOutcome.NeverFound)
+            {
+                tokens[i] = new TokenDiagnostic
+                {
+                    TokenName = token.TokenName,
+                    TokenId = token.TokenId,
+                    Outcome = TokenOutcome.Blocked,
+                    BlockedBy = blockerName,
+                    Attempts = token.Attempts,
+                    AssignedValue = token.AssignedValue,
+                    AssignedLocation = token.AssignedLocation,
+                    Issues = new List<DiagnosticIssue>
+                    {
+                        new DiagnosticIssue
+                        {
+                            Type = DiagnosticIssueType.PreambleNeverFound,
+                            TokenName = token.TokenName,
+                            Description = $"Token '{token.TokenName}' was not searched for because '{blockerName}' was not matched.",
+                            Hint = $"Fix '{blockerName}' first — this token may match once '{blockerName}' is resolved.",
+                        },
+                    },
+                };
+            }
+        }
     }
 
     private static void AddAttempt(Dictionary<string, List<TokenAttempt>> attempts, string tokenName, TokenAttempt attempt)

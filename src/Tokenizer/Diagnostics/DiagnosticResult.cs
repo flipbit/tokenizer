@@ -26,6 +26,18 @@ public sealed class DiagnosticResult
     internal string? InputContent => _inputContent;
 
     /// <summary>
+    /// Whether the template uses out-of-order token matching.
+    /// Set after construction from the template options.
+    /// </summary>
+    internal bool OutOfOrderTokens { get; set; }
+
+    /// <summary>
+    /// Token names that are optional (won't block subsequent tokens in ordered mode).
+    /// Set after construction from the template's token list.
+    /// </summary>
+    internal HashSet<string> OptionalTokenNames { get; set; } = new(StringComparer.Ordinal);
+
+    /// <summary>
     /// Per-token diagnostic narratives — the primary diagnostic API.
     /// Each entry tells the complete story of one token: every consideration,
     /// every rejection, and the final outcome.

@@ -14,9 +14,11 @@ internal sealed class RuntimeDiagnosticCollector : IDiagnosticCollector
     /// Initialises a collector for runtime tokenization.
     /// </summary>
     /// <param name="inputContent">The input text being tokenized.</param>
-    public RuntimeDiagnosticCollector(string? inputContent)
+    /// <param name="outOfOrderTokens">Whether the template uses out-of-order token matching.</param>
+    /// <param name="optionalTokenNames">Token names that are optional.</param>
+    public RuntimeDiagnosticCollector(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
-        _diagnostics = new DiagnosticResult(inputContent);
+        _diagnostics = new DiagnosticResult(inputContent, outOfOrderTokens, optionalTokenNames);
     }
 
     /// <inheritdoc />

@@ -254,7 +254,10 @@ public sealed class Tokenizer : ITokenizer
                 context.Initialize(reader);
 
                 IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new RuntimeDiagnosticCollector(rawInput)
+                    ? new RuntimeDiagnosticCollector(
+                        rawInput,
+                        template.Options.OutOfOrderTokens,
+                        new HashSet<string>(template.Tokens.Where(t => t.IsOptional).Select(t => t.Name), StringComparer.Ordinal))
                     : NullDiagnosticCollector.Instance;
 
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
@@ -344,14 +347,6 @@ public sealed class Tokenizer : ITokenizer
         }
 
         result.Diagnostics = collector.GetResult();
-
-        if (result.Diagnostics != null)
-        {
-            result.Diagnostics.OutOfOrderTokens = template.Options.OutOfOrderTokens;
-            result.Diagnostics.OptionalTokenNames = new HashSet<string>(
-                template.Tokens.Where(t => t.IsOptional).Select(t => t.Name),
-                StringComparer.Ordinal);
-        }
 
         if (result.Diagnostics != null)
         {

@@ -21,10 +21,12 @@ public sealed class DiagnosticResult
     private int _missedCount;
     private int _totalCount;
 
-    internal DiagnosticResult(string? inputContent)
+    internal DiagnosticResult(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _inputContent = inputContent;
         _events = new List<DiagnosticEvent>();
+        OutOfOrderTokens = outOfOrderTokens;
+        OptionalTokenNames = optionalTokenNames ?? new HashSet<string>(StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -34,15 +36,13 @@ public sealed class DiagnosticResult
 
     /// <summary>
     /// Whether the template uses out-of-order token matching.
-    /// Set after construction from the template options.
     /// </summary>
-    internal bool OutOfOrderTokens { get; set; }
+    internal bool OutOfOrderTokens { get; }
 
     /// <summary>
     /// Token names that are optional (won't block subsequent tokens in ordered mode).
-    /// Set after construction from the template's token list.
     /// </summary>
-    internal HashSet<string> OptionalTokenNames { get; set; } = new(StringComparer.Ordinal);
+    internal HashSet<string> OptionalTokenNames { get; }
 
     /// <summary>
     /// Per-token diagnostic narratives — the primary diagnostic API.

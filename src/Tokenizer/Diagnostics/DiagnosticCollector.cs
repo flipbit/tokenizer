@@ -3,8 +3,8 @@ using Tokens.Enumerators;
 namespace Tokens.Diagnostics;
 
 /// <summary>
-/// Active diagnostic collector that records all events during a tokenization call.
-/// Create one instance per tokenization call and pass it through the pipeline.
+/// Active diagnostic collector that records events during compilation or tokenization.
+/// Create one instance per operation and pass it through the pipeline.
 /// </summary>
 internal sealed class DiagnosticCollector : IDiagnosticCollector
 {

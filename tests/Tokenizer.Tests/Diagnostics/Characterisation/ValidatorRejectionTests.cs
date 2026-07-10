@@ -247,6 +247,28 @@ public class ValidatorRejectionTests : TokenizerTestBase
     }
 
     [Fact]
+    public void GivenValidator_WhenMultipleOccurrencesRejected_ThenMultipleRejectionHintGenerated()
+    {
+        // Arrange
+        var template = "Email: { Email : IsEmail }";
+        var input = "Email: bad1\nEmail: bad2\nEmail: bad3";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var issues = diagnostics.Tokens.SelectMany(t => t.Issues)
+            .Where(i => i.Type == DiagnosticIssueType.ValidatorRejection)
+            .ToList();
+        // The last rejection should have the multiple-rejection summary hint
+        var summaryHint = issues.LastOrDefault(i => i.Hint != null
+            && i.Hint.IndexOf("rejected", StringComparison.OrdinalIgnoreCase) >= 0);
+        Assert.NotNull(summaryHint);
+        Assert.True(summaryHint!.Hint!.IndexOf("3 times", StringComparison.Ordinal) >= 0);
+    }
+
+    [Fact]
     public void GivenMultipleValidators_WhenFirstFails_ThenFirstRejectionRecorded()
     {
         // Arrange — "hello" fails IsNumeric; engine short-circuits before IsEmail

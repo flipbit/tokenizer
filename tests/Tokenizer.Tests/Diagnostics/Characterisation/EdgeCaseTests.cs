@@ -200,6 +200,28 @@ public class EdgeCaseTests : TokenizerTestBase
     }
 
     [Fact]
+    public void GivenOptionalToken_WhenNotPresent_ThenOptionalHintGenerated()
+    {
+        // Arrange
+        var template = "Name: { Name }\nNickname: { Nickname? }";
+        var input = "Name: Alice";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var nicknameIssues = diagnostics.Tokens
+            .Where(t => string.Equals(t.TokenName, "Nickname", StringComparison.Ordinal))
+            .SelectMany(t => t.Issues)
+            .ToList();
+        Assert.NotEmpty(nicknameIssues);
+        var optionalHint = nicknameIssues.FirstOrDefault(i => i.Hint != null
+            && i.Hint.IndexOf("optional", StringComparison.OrdinalIgnoreCase) >= 0);
+        Assert.NotNull(optionalHint);
+    }
+
+    [Fact]
     public void GivenOptionalToken_WhenNotPresent_ThenDocumentBehaviour()
     {
         // Arrange

@@ -13,13 +13,16 @@ public sealed class DiagnosticResult
 {
     private readonly List<DiagnosticEvent> _events;
     private readonly string? _inputContent;
-    private IReadOnlyList<TokenDiagnostic>? _tokens;
-    private string? _verdict;
     private string? _alignment;
     private string? _processingOrder;
-    private int _matchedCount;
-    private int _missedCount;
-    private int _totalCount;
+    private BuiltResult? _built;
+
+    private sealed record BuiltResult(
+        IReadOnlyList<TokenDiagnostic> Tokens,
+        string Verdict,
+        int MatchedCount,
+        int MissedCount,
+        int TotalCount);
 
     internal Dictionary<string, List<DiagnosticEvent>>? RejectionsPerToken { get; set; }
     internal Dictionary<string, List<DiagnosticEvent>>? DecoratorSuccessesPerToken { get; set; }
@@ -53,42 +56,28 @@ public sealed class DiagnosticResult
     /// Each entry tells the complete story of one token: every consideration,
     /// every rejection, and the final outcome.
     /// </summary>
-    public IReadOnlyList<TokenDiagnostic> Tokens
-    {
-        get
-        {
-            EnsureBuilt();
-            return _tokens!;
-        }
-    }
+    public IReadOnlyList<TokenDiagnostic> Tokens => GetBuilt().Tokens;
 
     /// <summary>
     /// A human-readable verdict describing the overall outcome.
     /// E.g. "Matched 3 of 5 tokens (2 missed)."
     /// </summary>
-    public string Verdict
-    {
-        get
-        {
-            EnsureBuilt();
-            return _verdict!;
-        }
-    }
+    public string Verdict => GetBuilt().Verdict;
 
     /// <summary>
     /// Number of tokens that were successfully matched.
     /// </summary>
-    public int MatchedCount { get { EnsureBuilt(); return _matchedCount; } }
+    public int MatchedCount => GetBuilt().MatchedCount;
 
     /// <summary>
     /// Number of tokens that were missed (not matched).
     /// </summary>
-    public int MissedCount { get { EnsureBuilt(); return _missedCount; } }
+    public int MissedCount => GetBuilt().MissedCount;
 
     /// <summary>
     /// Total number of tokens in the template.
     /// </summary>
-    public int TotalCount { get { EnsureBuilt(); return _totalCount; } }
+    public int TotalCount => GetBuilt().TotalCount;
 
     /// <summary>
     /// All events recorded during this tokenization call, in the order they occurred.
@@ -119,16 +108,13 @@ public sealed class DiagnosticResult
         return _processingOrder;
     }
 
-    private void EnsureBuilt()
+    private BuiltResult GetBuilt()
     {
-        if (_tokens != null)
-            return;
+        if (_built != null)
+            return _built;
 
-        var (tokens, verdict, matchedCount, missedCount, totalCount) = TokenDiagnosticBuilder.Build(this);
-        _tokens = tokens;
-        _verdict = verdict;
-        _matchedCount = matchedCount;
-        _missedCount = missedCount;
-        _totalCount = totalCount;
+        var (tokens, verdict, matched, missed, total) = TokenDiagnosticBuilder.Build(this);
+        _built = new BuiltResult(tokens, verdict, matched, missed, total);
+        return _built;
     }
 }

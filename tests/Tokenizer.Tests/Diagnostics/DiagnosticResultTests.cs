@@ -95,4 +95,19 @@ public class DiagnosticResultTests : TokenizerTestBase
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Equal(2, diagnostics.TotalCount);
     }
+
+    [Fact]
+    public void GivenDiagnostics_WhenRenderAlignmentCalledTwice_ThenReturnsSameInstance()
+    {
+        // Arrange
+        var result = TokenizeWithDiagnostics("Name: { Name }", "Name: Alice");
+        var diagnostics = result.Diagnostics!;
+
+        // Act
+        var first = diagnostics.RenderAlignment();
+        var second = diagnostics.RenderAlignment();
+
+        // Assert
+        Assert.Same(first, second);
+    }
 }

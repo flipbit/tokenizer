@@ -53,6 +53,26 @@ internal static class DiagnosticSummaryBuilder
         return $"Matched {matched.ToInvariant()} of {total.ToInvariant()} tokens ({missed.ToInvariant()} missed).";
     }
 
+    private static DiagnosticIssue CreateIssue(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
+                                                string description, DiagnosticResult diagnostics)
+    {
+        var issue = new DiagnosticIssue
+        {
+            Type = type,
+            TokenName = sourceEvent.TokenName,
+            Description = description,
+            Location = sourceEvent.Location,
+        };
+        return new DiagnosticIssue
+        {
+            Type = issue.Type,
+            TokenName = issue.TokenName,
+            Description = issue.Description,
+            Location = issue.Location,
+            Hint = GenerateHint(issue, sourceEvent, diagnostics),
+        };
+    }
+
     private static IReadOnlyList<DiagnosticIssue> BuildIssues(IReadOnlyList<DiagnosticEvent> events,
                                                                DiagnosticResult diagnostics)
     {
@@ -67,115 +87,41 @@ internal static class DiagnosticSummaryBuilder
                 .Select(e => e.TokenName!),
             StringComparer.Ordinal);
 
-        // 1. Transformer failures
-        foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.TransformerFailed))
+        foreach (var evt in events)
         {
-            var description = BuildTransformerDescription(evt);
-            var partialIssue = new DiagnosticIssue
+            switch (evt.Type)
             {
-                Type = DiagnosticIssueType.TransformerFailure,
-                TokenName = evt.TokenName,
-                Description = description,
-                Location = evt.Location,
-            };
-            issues.Add(new DiagnosticIssue
-            {
-                Type = partialIssue.Type,
-                TokenName = partialIssue.TokenName,
-                Description = partialIssue.Description,
-                Location = partialIssue.Location,
-                Hint = GenerateHint(partialIssue, evt, diagnostics),
-            });
-        }
+                case DiagnosticEventType.TransformerFailed:
+                    issues.Add(CreateIssue(DiagnosticIssueType.TransformerFailure, evt,
+                        BuildTransformerDescription(evt), diagnostics));
+                    break;
 
-        // 2. Validator failures
-        foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.ValidatorFailed))
-        {
-            var description = BuildValidatorDescription(evt);
-            var partialIssue = new DiagnosticIssue
-            {
-                Type = DiagnosticIssueType.ValidatorRejection,
-                TokenName = evt.TokenName,
-                Description = description,
-                Location = evt.Location,
-            };
-            issues.Add(new DiagnosticIssue
-            {
-                Type = partialIssue.Type,
-                TokenName = partialIssue.TokenName,
-                Description = partialIssue.Description,
-                Location = partialIssue.Location,
-                Hint = GenerateHint(partialIssue, evt, diagnostics),
-            });
-        }
+                case DiagnosticEventType.ValidatorFailed:
+                    issues.Add(CreateIssue(DiagnosticIssueType.ValidatorRejection, evt,
+                        BuildValidatorDescription(evt), diagnostics));
+                    break;
 
-        // 3. Missed tokens with no prior transformer/validator failure (preamble never found)
-        // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
-        foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.TokenMissed))
-        {
-            if (evt.TokenName == null || tokensWithFailures.Contains(evt.TokenName))
-                continue;
+                case DiagnosticEventType.TokenMissed:
+                    if (evt.TokenName != null && !tokensWithFailures.Contains(evt.TokenName))
+                    {
+                        issues.Add(CreateIssue(DiagnosticIssueType.PreambleNeverFound, evt,
+                            $"Token '{evt.TokenName}' was never matched in the input.", diagnostics));
+                    }
+                    break;
 
-            var partialIssue = new DiagnosticIssue
-            {
-                Type = DiagnosticIssueType.PreambleNeverFound,
-                TokenName = evt.TokenName,
-                Description = $"Token '{evt.TokenName}' was never matched in the input.",
-                Location = evt.Location,
-            };
-            issues.Add(new DiagnosticIssue
-            {
-                Type = partialIssue.Type,
-                TokenName = partialIssue.TokenName,
-                Description = partialIssue.Description,
-                Location = partialIssue.Location,
-                Hint = GenerateHint(partialIssue, evt, diagnostics),
-            });
-        }
+                case DiagnosticEventType.RepeatingTokenDisabled:
+                    issues.Add(CreateIssue(DiagnosticIssueType.RepeatingTokenCutShort, evt,
+                        BuildRepeatingTokenDescription(evt), diagnostics));
+                    break;
 
-        // 4. Repeating token disabled
-        foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.RepeatingTokenDisabled))
-        {
-            var description = BuildRepeatingTokenDescription(evt);
-            var partialIssue = new DiagnosticIssue
-            {
-                Type = DiagnosticIssueType.RepeatingTokenCutShort,
-                TokenName = evt.TokenName,
-                Description = description,
-                Location = evt.Location,
-            };
-            issues.Add(new DiagnosticIssue
-            {
-                Type = partialIssue.Type,
-                TokenName = partialIssue.TokenName,
-                Description = partialIssue.Description,
-                Location = partialIssue.Location,
-                Hint = GenerateHint(partialIssue, evt, diagnostics),
-            });
-        }
-
-        // 5. Hint missing
-        foreach (var evt in events.Where(e => e.Type == DiagnosticEventType.HintMissing))
-        {
-            var description = string.IsNullOrEmpty(evt.Value)
-                ? "A required hint was not found in the input."
-                : $"Required hint not found in input: '{evt.Value}'.";
-
-            var partialIssue = new DiagnosticIssue
-            {
-                Type = DiagnosticIssueType.HintMissing,
-                TokenName = evt.TokenName,
-                Description = description,
-                Location = evt.Location,
-            };
-            issues.Add(new DiagnosticIssue
-            {
-                Type = partialIssue.Type,
-                TokenName = partialIssue.TokenName,
-                Description = partialIssue.Description,
-                Location = partialIssue.Location,
-                Hint = GenerateHint(partialIssue, evt, diagnostics),
-            });
+                case DiagnosticEventType.HintMissing:
+                    issues.Add(CreateIssue(DiagnosticIssueType.HintMissing, evt,
+                        string.IsNullOrEmpty(evt.Value)
+                            ? "A required hint was not found in the input."
+                            : $"Required hint not found in input: '{evt.Value}'.",
+                        diagnostics));
+                    break;
+            }
         }
 
         return issues;

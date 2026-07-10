@@ -8,45 +8,33 @@ namespace Tokens.Diagnostics.Hints;
 internal sealed class ChainedDecoratorHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
     {
-        if (issue.Type != DiagnosticIssueType.ValidatorRejection &&
-            issue.Type != DiagnosticIssueType.TransformerFailure)
+        if (type != DiagnosticIssueType.ValidatorRejection &&
+            type != DiagnosticIssueType.TransformerFailure)
         {
             return null;
         }
 
-        var tokenName = sourceEvent.TokenName;
         var failingDecorator = sourceEvent.DecoratorName;
         var value = sourceEvent.Value ?? string.Empty;
 
         if (tokenName == null || failingDecorator == null)
             return null;
 
-        string? priorDecorator = null;
-
-        foreach (var evt in trace.RawEvents)
+        if (trace.DecoratorSuccessesPerToken == null ||
+            !trace.DecoratorSuccessesPerToken.TryGetValue(tokenName, out var successes) ||
+            successes.Count == 0)
         {
-            // Stop at the failing event — only consider prior successes
-            if (ReferenceEquals(evt, sourceEvent))
-                break;
-
-            if (!string.Equals(evt.TokenName, tokenName, StringComparison.Ordinal))
-                continue;
-
-            if (evt.Type == DiagnosticEventType.ValidatorPassed ||
-                evt.Type == DiagnosticEventType.TransformerSucceeded)
-            {
-                if (evt.DecoratorName != null)
-                    priorDecorator = evt.DecoratorName;
-            }
+            return null;
         }
 
+        var priorDecorator = successes[successes.Count - 1].DecoratorName;
         if (priorDecorator == null)
             return null;
 
-        var action = issue.Type == DiagnosticIssueType.ValidatorRejection ? "rejected" : "failed on";
+        var action = type == DiagnosticIssueType.ValidatorRejection ? "rejected" : "failed on";
         return $"Decorator chain: '{priorDecorator}' succeeded \u2192 '{failingDecorator}' {action} value '{value}'.";
     }
 }

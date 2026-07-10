@@ -22,7 +22,7 @@ internal sealed class IssueFactory
     internal DiagnosticIssue Create(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
                                     string description, DiagnosticResult diagnostics)
     {
-        var hint = GenerateHint(type, sourceEvent, description, diagnostics);
+        var hint = GenerateHint(type, sourceEvent, diagnostics);
 
         return new DiagnosticIssue
         {
@@ -45,6 +45,7 @@ internal sealed class IssueFactory
         {
             Type = DiagnosticEventType.TokenAssigned,
             TokenName = tokenName,
+            Detail = missedTokenName,
         };
 
         return Create(
@@ -75,20 +76,11 @@ internal sealed class IssueFactory
     }
 
     private string? GenerateHint(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
-                                  string description, DiagnosticResult diagnostics)
+                                  DiagnosticResult diagnostics)
     {
-        // Generators need a DiagnosticIssue to inspect — create one for them
-        var inspectionIssue = new DiagnosticIssue
-        {
-            Type = type,
-            TokenName = sourceEvent.TokenName,
-            Description = description,
-            Location = sourceEvent.Location,
-        };
-
         foreach (var generator in _hintGenerators)
         {
-            var hint = generator.TryGenerateHint(inspectionIssue, sourceEvent, diagnostics);
+            var hint = generator.TryGenerateHint(type, sourceEvent.TokenName, sourceEvent, diagnostics);
             if (hint != null)
                 return hint;
         }

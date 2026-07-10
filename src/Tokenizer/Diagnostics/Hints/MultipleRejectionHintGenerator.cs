@@ -12,28 +12,26 @@ namespace Tokens.Diagnostics.Hints;
 internal sealed class MultipleRejectionHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
     {
-        if (issue.Type != DiagnosticIssueType.ValidatorRejection &&
-            issue.Type != DiagnosticIssueType.TransformerFailure)
+        if (type != DiagnosticIssueType.ValidatorRejection &&
+            type != DiagnosticIssueType.TransformerFailure)
         {
             return null;
         }
 
-        var tokenName = sourceEvent.TokenName;
-
         if (tokenName == null)
             return null;
 
-        var rejections = CollectRejections(trace, tokenName);
-
-        if (rejections.Count < 2)
+        if (trace.RejectionsPerToken == null ||
+            !trace.RejectionsPerToken.TryGetValue(tokenName, out var rejections) ||
+            rejections.Count < 2)
+        {
             return null;
+        }
 
-        // Only fire on the last rejection to avoid duplicate hints
-        var last = rejections[rejections.Count - 1];
-        if (!string.Equals(last.Value, sourceEvent.Value, StringComparison.Ordinal))
+        if (!ReferenceEquals(rejections[rejections.Count - 1], sourceEvent))
             return null;
 
         var sb = new StringBuilder();
@@ -53,24 +51,5 @@ internal sealed class MultipleRejectionHintGenerator : IHintGenerator
 
         sb.Append('.');
         return sb.ToString();
-    }
-
-    private static List<DiagnosticEvent> CollectRejections(DiagnosticResult trace, string tokenName)
-    {
-        var result = new List<DiagnosticEvent>();
-
-        foreach (var evt in trace.RawEvents)
-        {
-            if (!string.Equals(evt.TokenName, tokenName, StringComparison.Ordinal))
-                continue;
-
-            if (evt.Type == DiagnosticEventType.ValidatorFailed ||
-                evt.Type == DiagnosticEventType.TransformerFailed)
-            {
-                result.Add(evt);
-            }
-        }
-
-        return result;
     }
 }

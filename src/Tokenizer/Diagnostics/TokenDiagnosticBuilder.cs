@@ -6,95 +6,121 @@ namespace Tokens.Diagnostics;
 
 internal static class TokenDiagnosticBuilder
 {
-    private static readonly IHintGenerator[] HintGenerators =
+    private static readonly IssueFactory IssueFactory = new IssueFactory(new IHintGenerator[]
     {
+        new BlockedTokenHintGenerator(),
         new DateFormatHintGenerator(),
         new PreambleNearMissHintGenerator(),
         new ValidatorValueHintGenerator(),
         new RepeatingTokenHintGenerator(),
-    };
+    });
 
     public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics)
     {
-        var events = diagnostics.RawEvents;
-        var attempts = new Dictionary<string, List<TokenAttempt>>(StringComparer.Ordinal);
-        var issues = new Dictionary<string, List<DiagnosticIssue>>(StringComparer.Ordinal);
-        var assignedTokens = new Dictionary<string, (string? value, Enumerators.FileLocation? location)>(StringComparer.Ordinal);
-        var tokenIds = new Dictionary<string, int>(StringComparer.Ordinal);
+        var collected = CollectEvents(diagnostics);
+        var result = ClassifyOutcomes(collected);
 
-        // Collect token names that have transformer or validator failures
-        var tokensWithFailures = new HashSet<string>(
-            events
-                .Where(e => (e.Type == DiagnosticEventType.TransformerFailed
-                          || e.Type == DiagnosticEventType.ValidatorFailed)
-                         && e.TokenName != null)
-                .Select(e => e.TokenName!),
-            StringComparer.Ordinal);
+        // Causality pass: in ordered mode, non-optional missed tokens block subsequent ones
+        if (!diagnostics.OutOfOrderTokens)
+        {
+            ApplyBlockedAnnotations(result, diagnostics.OptionalTokenNames, diagnostics);
+        }
 
-        // Track all unique token names in order of first appearance
-        var tokenOrder = new List<string>();
+        // Handle global hint-missing issues: create a synthetic TokenDiagnostic for them
+        if (collected.GlobalIssues.Count > 0)
+        {
+            result.Add(new TokenDiagnostic
+            {
+                TokenName = "(global)",
+                Outcome = TokenOutcome.NeverFound,
+                Issues = collected.GlobalIssues,
+            });
+        }
+
+        var verdict = BuildVerdict(collected.MatchedCount, collected.MatchedCount + collected.MissedCount, collected.MissedCount);
+
+        return (result, verdict, collected.MatchedCount, collected.MissedCount, collected.MatchedCount + collected.MissedCount);
+    }
+
+    private sealed class CollectedEventData
+    {
+        public Dictionary<string, List<TokenAttempt>> Attempts { get; } = new(StringComparer.Ordinal);
+        public Dictionary<string, List<DiagnosticIssue>> Issues { get; } = new(StringComparer.Ordinal);
+        public Dictionary<string, (string? value, Enumerators.FileLocation? location)> AssignedTokens { get; } = new(StringComparer.Ordinal);
+        public Dictionary<string, int> TokenIds { get; } = new(StringComparer.Ordinal);
+        public HashSet<string> TokensWithFailures { get; } = new(StringComparer.Ordinal);
+        public HashSet<string> MissedTokenNames { get; } = new(StringComparer.Ordinal);
+        public List<string> TokenOrder { get; } = new();
+        public List<DiagnosticIssue> GlobalIssues { get; } = new();
+        public int MatchedCount { get; set; }
+        public int MissedCount { get; set; }
+    }
+
+    private static CollectedEventData CollectEvents(DiagnosticResult diagnostics)
+    {
+        var data = new CollectedEventData();
         var seenTokens = new HashSet<string>(StringComparer.Ordinal);
 
-        // Global issues (e.g. HintMissing without a token name)
-        var globalIssues = new List<DiagnosticIssue>();
-
-        foreach (var evt in events)
+        foreach (var evt in diagnostics.RawEvents)
         {
             if (evt.TokenName != null && seenTokens.Add(evt.TokenName))
             {
-                tokenOrder.Add(evt.TokenName);
+                data.TokenOrder.Add(evt.TokenName);
             }
 
-            if (evt.TokenName != null && evt.TokenId.HasValue && !tokenIds.ContainsKey(evt.TokenName))
+            if (evt.TokenName != null && evt.TokenId.HasValue && !data.TokenIds.ContainsKey(evt.TokenName))
             {
-                tokenIds[evt.TokenName] = evt.TokenId.Value;
+                data.TokenIds[evt.TokenName] = evt.TokenId.Value;
             }
 
             switch (evt.Type)
             {
                 case DiagnosticEventType.ValidatorFailed:
-                    AddAttempt(attempts, evt.TokenName!, new TokenAttempt
+                    var validatorDescription = BuildValidatorDescription(evt);
+                    data.TokensWithFailures.Add(evt.TokenName!);
+                    AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
                     {
                         Location = evt.Location,
                         Value = evt.Value,
                         Outcome = AttemptOutcome.ValidatorRejected,
                         DecoratorName = evt.DecoratorName,
-                        Reason = BuildValidatorDescription(evt),
+                        Reason = validatorDescription,
                     });
-                    AddIssue(issues, evt, DiagnosticIssueType.ValidatorRejection,
-                        BuildValidatorDescription(evt), diagnostics);
+                    AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.ValidatorRejection, evt, validatorDescription, diagnostics));
                     break;
 
                 case DiagnosticEventType.TransformerFailed:
-                    AddAttempt(attempts, evt.TokenName!, new TokenAttempt
+                    var transformerDescription = BuildTransformerDescription(evt);
+                    data.TokensWithFailures.Add(evt.TokenName!);
+                    AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
                     {
                         Location = evt.Location,
                         Value = evt.Value,
                         Outcome = AttemptOutcome.TransformerFailed,
                         DecoratorName = evt.DecoratorName,
-                        Reason = BuildTransformerDescription(evt),
+                        Reason = transformerDescription,
                     });
-                    AddIssue(issues, evt, DiagnosticIssueType.TransformerFailure,
-                        BuildTransformerDescription(evt), diagnostics);
+                    AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.TransformerFailure, evt, transformerDescription, diagnostics));
                     break;
 
                 case DiagnosticEventType.TokenAssigned:
                     if (evt.TokenName != null)
                     {
-                        assignedTokens[evt.TokenName] = (evt.Value, evt.Location);
-                        AddAttempt(attempts, evt.TokenName, new TokenAttempt
+                        data.AssignedTokens[evt.TokenName] = (evt.Value, evt.Location);
+                        AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                         {
                             Location = evt.Location,
                             Value = evt.Value,
                             Outcome = AttemptOutcome.Assigned,
                         });
+                        data.MatchedCount++;
                     }
                     break;
 
                 case DiagnosticEventType.BacktrackStarted:
                     if (evt.TokenName != null)
                     {
-                        AddAttempt(attempts, evt.TokenName, new TokenAttempt
+                        AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                         {
                             Location = evt.Location,
                             Value = evt.Value,
@@ -104,18 +130,23 @@ internal static class TokenDiagnosticBuilder
                     break;
 
                 case DiagnosticEventType.TokenMissed:
-                    if (evt.TokenName != null && !tokensWithFailures.Contains(evt.TokenName))
+                    if (evt.TokenName != null)
                     {
-                        AddIssue(issues, evt, DiagnosticIssueType.PreambleNeverFound,
-                            $"Token '{evt.TokenName}' was never matched in the input.", diagnostics);
+                        data.MissedTokenNames.Add(evt.TokenName);
+                        data.MissedCount++;
+                        if (!data.TokensWithFailures.Contains(evt.TokenName))
+                        {
+                            AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.PreambleNeverFound, evt,
+                                $"Token '{evt.TokenName}' was never matched in the input.", diagnostics));
+                        }
                     }
                     break;
 
                 case DiagnosticEventType.RepeatingTokenDisabled:
                     if (evt.TokenName != null)
                     {
-                        AddIssue(issues, evt, DiagnosticIssueType.RepeatingTokenCutShort,
-                            BuildRepeatingTokenDescription(evt), diagnostics);
+                        AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.RepeatingTokenCutShort, evt,
+                            BuildRepeatingTokenDescription(evt), diagnostics));
                     }
                     break;
 
@@ -125,25 +156,28 @@ internal static class TokenDiagnosticBuilder
                         : $"Required hint not found in input: '{evt.Value}'.";
                     if (evt.TokenName != null)
                     {
-                        AddIssue(issues, evt, DiagnosticIssueType.HintMissing, hintDesc, diagnostics);
+                        AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
                     }
                     else
                     {
-                        globalIssues.Add(CreateIssue(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
+                        data.GlobalIssues.Add(IssueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
                     }
                     break;
             }
         }
 
-        // Build TokenDiagnostic list
+        return data;
+    }
+
+    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data)
+    {
         var result = new List<TokenDiagnostic>();
 
-        foreach (var tokenName in tokenOrder)
+        foreach (var tokenName in data.TokenOrder)
         {
-            var isAssigned = assignedTokens.ContainsKey(tokenName);
-            var hasFailures = tokensWithFailures.Contains(tokenName);
-            var isMissed = events.Any(e => e.Type == DiagnosticEventType.TokenMissed
-                && string.Equals(e.TokenName, tokenName, StringComparison.Ordinal));
+            var isAssigned = data.AssignedTokens.ContainsKey(tokenName);
+            var hasFailures = data.TokensWithFailures.Contains(tokenName);
+            var isMissed = data.MissedTokenNames.Contains(tokenName);
 
             TokenOutcome outcome;
             if (isAssigned)
@@ -155,10 +189,10 @@ internal static class TokenDiagnosticBuilder
             else
                 continue; // Mentioned in events but has no terminal state
 
-            var tokenAttempts = attempts.TryGetValue(tokenName, out var a) ? a : new List<TokenAttempt>();
-            var tokenIssues = issues.TryGetValue(tokenName, out var i) ? i : new List<DiagnosticIssue>();
-            var assigned = isAssigned ? assignedTokens[tokenName] : default;
-            tokenIds.TryGetValue(tokenName, out var tokenId);
+            var tokenAttempts = data.Attempts.TryGetValue(tokenName, out var a) ? a : new List<TokenAttempt>();
+            var tokenIssues = data.Issues.TryGetValue(tokenName, out var i) ? i : new List<DiagnosticIssue>();
+            var assigned = isAssigned ? data.AssignedTokens[tokenName] : default;
+            data.TokenIds.TryGetValue(tokenName, out var tokenId);
 
             result.Add(new TokenDiagnostic
             {
@@ -172,33 +206,10 @@ internal static class TokenDiagnosticBuilder
             });
         }
 
-        // Causality pass: in ordered mode, non-optional missed tokens block subsequent ones
-        if (!diagnostics.OutOfOrderTokens)
-        {
-            ApplyBlockedAnnotations(result, diagnostics.OptionalTokenNames);
-        }
-
-        // Handle global hint-missing issues: create a synthetic TokenDiagnostic for them
-        if (globalIssues.Count > 0)
-        {
-            result.Add(new TokenDiagnostic
-            {
-                TokenName = "(global)",
-                Outcome = TokenOutcome.NeverFound,
-                Issues = globalIssues,
-            });
-        }
-
-        // Build verdict
-        var matchedCount = events.Count(e => e.Type == DiagnosticEventType.TokenAssigned);
-        var missedCount = events.Count(e => e.Type == DiagnosticEventType.TokenMissed);
-        var totalCount = matchedCount + missedCount;
-        var verdict = BuildVerdict(matchedCount, totalCount, missedCount);
-
-        return (result, verdict, matchedCount, missedCount, totalCount);
+        return result;
     }
 
-    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames)
+    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, DiagnosticResult diagnostics)
     {
         // Find the first non-optional, non-matched token — that's the blocker.
         // All subsequent NeverFound tokens are blocked by it.
@@ -235,13 +246,7 @@ internal static class TokenDiagnosticBuilder
                     AssignedLocation = token.AssignedLocation,
                     Issues = new List<DiagnosticIssue>
                     {
-                        new DiagnosticIssue
-                        {
-                            Type = DiagnosticIssueType.PreambleNeverFound,
-                            TokenName = token.TokenName,
-                            Description = $"Token '{token.TokenName}' was not searched for because '{blockerName}' was not matched.",
-                            Hint = $"Fix '{blockerName}' first — this token may match once '{blockerName}' is resolved.",
-                        },
+                        IssueFactory.CreateBlocked(token.TokenName, blockerName, diagnostics),
                     },
                 };
             }
@@ -258,48 +263,15 @@ internal static class TokenDiagnosticBuilder
         list.Add(attempt);
     }
 
-    private static void AddIssue(Dictionary<string, List<DiagnosticIssue>> issues, DiagnosticEvent evt,
-                                   DiagnosticIssueType type, string description, DiagnosticResult diagnostics)
+    private static void AddIssue(Dictionary<string, List<DiagnosticIssue>> issues, DiagnosticIssue issue)
     {
-        var tokenName = evt.TokenName!;
+        var tokenName = issue.TokenName!;
         if (!issues.TryGetValue(tokenName, out var list))
         {
             list = new List<DiagnosticIssue>();
             issues[tokenName] = list;
         }
-        list.Add(CreateIssue(type, evt, description, diagnostics));
-    }
-
-    private static DiagnosticIssue CreateIssue(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
-                                                string description, DiagnosticResult diagnostics)
-    {
-        var issue = new DiagnosticIssue
-        {
-            Type = type,
-            TokenName = sourceEvent.TokenName,
-            Description = description,
-            Location = sourceEvent.Location,
-        };
-        return new DiagnosticIssue
-        {
-            Type = issue.Type,
-            TokenName = issue.TokenName,
-            Description = issue.Description,
-            Location = issue.Location,
-            Hint = GenerateHint(issue, sourceEvent, diagnostics),
-        };
-    }
-
-    private static string? GenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                        DiagnosticResult diagnostics)
-    {
-        foreach (var generator in HintGenerators)
-        {
-            var hint = generator.TryGenerateHint(issue, sourceEvent, diagnostics);
-            if (hint != null)
-                return hint;
-        }
-        return null;
+        list.Add(issue);
     }
 
     private static string BuildVerdict(int matched, int total, int missed)

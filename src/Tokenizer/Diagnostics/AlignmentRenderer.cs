@@ -8,82 +8,73 @@ internal static class AlignmentRenderer
     public static string Render(DiagnosticResult diagnostics, string? inputContent)
     {
         var sb = new StringBuilder();
-        var summary = diagnostics.Summary;
-        var events = diagnostics.Events;
+        var tokens = diagnostics.Tokens;
 
-        var matchedEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned)
-            .ToList();
-
-        var failureEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TransformerFailed
-                     || e.Type == DiagnosticEventType.ValidatorFailed)
-            .ToList();
-
-        var missedEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TokenMissed)
-            .ToList();
+        var matchedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Matched).ToList();
+        var rejectedTokens = tokens.Where(t => t.Outcome == TokenOutcome.Rejected).ToList();
+        var neverFoundTokens = tokens.Where(t => t.Outcome == TokenOutcome.NeverFound).ToList();
 
         var inputLineCount = CountLines(inputContent);
-        var tokenCount = matchedEvents.Count + missedEvents.Count;
+        var totalTokens = matchedTokens.Count + rejectedTokens.Count + neverFoundTokens.Count;
 
         // Header
         sb.AppendLine("═══ Tokenization Alignment ═══");
-        sb.Append("Tokens: ").Append(tokenCount).Append(" | Input: ").Append(inputLineCount).Append(" lines | ").AppendLine(summary.Verdict);
+        sb.Append("Tokens: ").Append(totalTokens).Append(" | Input: ").Append(inputLineCount).Append(" lines | ").AppendLine(diagnostics.Verdict);
 
         // Matched tokens
-        if (matchedEvents.Count > 0)
+        if (matchedTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Matched Tokens ──");
-            foreach (var evt in matchedEvents)
+            foreach (var token in matchedTokens)
             {
-                var line = evt.Location != null ? $" (line {evt.Location.Line.ToInvariant()})" : string.Empty;
-                sb.Append("  ✓ ").Append(evt.TokenName).Append(" = \"").Append(evt.Value).Append('"').AppendLine(line);
+                var line = token.AssignedLocation != null ? $" (line {token.AssignedLocation.Line.ToInvariant()})" : string.Empty;
+                sb.Append("  ✓ ").Append(token.TokenName).Append(" = \"").Append(token.AssignedValue).Append('"').AppendLine(line);
             }
         }
 
-        // Failures (transformer/validator)
-        if (failureEvents.Count > 0)
+        // Failures (rejected tokens with attempts)
+        if (rejectedTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Failures ──");
-            foreach (var evt in failureEvents)
+            foreach (var token in rejectedTokens)
             {
-                var decoratorDesc = BuildDecoratorDescription(evt);
-                sb.Append("  ✗ ").Append(evt.TokenName).Append(": ").Append(evt.Type).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(evt.Value).AppendLine("'");
+                foreach (var attempt in token.Attempts)
+                {
+                    var decoratorDesc = !string.IsNullOrEmpty(attempt.DecoratorName) ? attempt.DecoratorName : "decorator";
+                    sb.Append("  ✗ ").Append(token.TokenName).Append(": ").Append(attempt.Outcome).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(attempt.Value).AppendLine("'");
+                }
 
-                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal)
-                    && (i.Type == DiagnosticIssueType.TransformerFailure
-                     || i.Type == DiagnosticIssueType.ValidatorRejection));
-                if (issue?.Hint != null)
-                    sb.Append("      Hint: ").AppendLine(issue.Hint);
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
             }
         }
 
-        // Unmatched tokens — use summary.Issues to determine the reason
-        if (missedEvents.Count > 0)
+        // Unmatched tokens (never found)
+        if (neverFoundTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Unmatched Tokens ──");
-            foreach (var evt in missedEvents)
+            foreach (var token in neverFoundTokens)
             {
-                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal));
+                sb.Append("  ✗ ").Append(token.TokenName).AppendLine(" — preamble never found");
 
-                if (issue != null && issue.Type != DiagnosticIssueType.PreambleNeverFound)
-                    sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — value rejected by decorator");
-                else
-                    sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
-
-                if (issue?.Hint != null)
-                    sb.Append("      Hint: ").AppendLine(issue.Hint);
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
             }
         }
 
         // Summary
         sb.AppendLine();
         sb.AppendLine("═══ Summary ═══");
-        sb.Append("  Matched: ").Append(matchedEvents.Count).Append(" | Missed: ").Append(missedEvents.Count).Append(" | Failures: ").Append(failureEvents.Count);
+        sb.Append("  Matched: ").Append(matchedTokens.Count).Append(" | Missed: ").Append(rejectedTokens.Count + neverFoundTokens.Count).Append(" | Failures: ").Append(rejectedTokens.Sum(t => t.Attempts.Count));
 
         return sb.ToString();
     }
@@ -101,16 +92,5 @@ internal static class AlignmentRenderer
                 count++;
         }
         return count;
-    }
-
-    private static string BuildDecoratorDescription(DiagnosticEvent evt)
-    {
-        if (string.IsNullOrEmpty(evt.DecoratorName))
-            return "decorator";
-
-        if (evt.DecoratorArgs != null && evt.DecoratorArgs.Length > 0)
-            return $"{evt.DecoratorName}({string.Join(", ", evt.DecoratorArgs)})";
-
-        return evt.DecoratorName!;
     }
 }

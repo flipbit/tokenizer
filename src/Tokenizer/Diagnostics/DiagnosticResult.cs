@@ -1,26 +1,16 @@
 namespace Tokens.Diagnostics;
 
 /// <summary>
-/// Contains all diagnostic events collected during a single tokenization call,
-/// together with derived views and rendered output for debugging.
+/// Contains all diagnostic information from a single tokenization call.
+/// The primary API is <see cref="Tokens"/> which provides per-token narratives.
+/// <see cref="RawEvents"/> retains the full event trace for power users.
 /// </summary>
 public sealed class DiagnosticResult
 {
-    private static readonly DiagnosticEventType[] FailureTypes =
-    {
-        DiagnosticEventType.ValidatorFailed,
-        DiagnosticEventType.TransformerFailed,
-        DiagnosticEventType.TokenAssignmentFailed,
-        DiagnosticEventType.TokenMissed,
-        DiagnosticEventType.HintMissing,
-        DiagnosticEventType.BacktrackStarted,
-        DiagnosticEventType.RepeatingTokenDisabled,
-        DiagnosticEventType.SingleUseTokenRemoved,
-    };
-
     private readonly List<DiagnosticEvent> _events;
     private readonly string? _inputContent;
-    private DiagnosticSummary? _summary;
+    private IReadOnlyList<TokenDiagnostic>? _tokens;
+    private string? _verdict;
     private string? _alignment;
 
     internal DiagnosticResult(string? inputContent)
@@ -35,40 +25,38 @@ public sealed class DiagnosticResult
     internal string? InputContent => _inputContent;
 
     /// <summary>
-    /// All events recorded during this tokenization call, in the order they occurred.
+    /// Per-token diagnostic narratives — the primary diagnostic API.
+    /// Each entry tells the complete story of one token: every consideration,
+    /// every rejection, and the final outcome.
     /// </summary>
-    public IReadOnlyList<DiagnosticEvent> Events => _events;
-
-    /// <summary>
-    /// A high-level summary computed lazily from the collected events.
-    /// </summary>
-    public DiagnosticSummary Summary
+    public IReadOnlyList<TokenDiagnostic> Tokens
     {
         get
         {
-            _summary ??= DiagnosticSummaryBuilder.Build(this);
-            return _summary;
+            EnsureBuilt();
+            return _tokens!;
         }
     }
 
     /// <summary>
-    /// All events whose type indicates a failure or missed match.
+    /// A human-readable verdict describing the overall outcome.
+    /// E.g. "Matched 3 of 5 tokens (2 missed)."
     /// </summary>
-    public IEnumerable<DiagnosticEvent> Failures =>
-        Events.Where(e => FailureTypes.Contains(e.Type));
+    public string Verdict
+    {
+        get
+        {
+            EnsureBuilt();
+            return _verdict!;
+        }
+    }
 
     /// <summary>
-    /// All events associated with the named token.
+    /// All events recorded during this tokenization call, in the order they occurred.
+    /// This is the raw event trace for power users and engine debugging.
+    /// For most use cases, prefer <see cref="Tokens"/> instead.
     /// </summary>
-    /// <param name="name">The token name to filter by.</param>
-    public IEnumerable<DiagnosticEvent> ForToken(string name) =>
-        Events.Where(e => string.Equals(e.TokenName, name, StringComparison.Ordinal));
-
-    /// <summary>
-    /// The first failure event in the event list, or null if there are none.
-    /// </summary>
-    public DiagnosticEvent? FirstFailure =>
-        _events.Find(e => FailureTypes.Contains(e.Type));
+    public IReadOnlyList<DiagnosticEvent> RawEvents => _events;
 
     internal void AddEvent(DiagnosticEvent evt) => _events.Add(evt);
 
@@ -80,5 +68,15 @@ public sealed class DiagnosticResult
     {
         _alignment ??= AlignmentRenderer.Render(this, _inputContent);
         return _alignment;
+    }
+
+    private void EnsureBuilt()
+    {
+        if (_tokens != null)
+            return;
+
+        var (tokens, verdict) = TokenDiagnosticBuilder.Build(this);
+        _tokens = tokens;
+        _verdict = verdict;
     }
 }

@@ -1,11 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Tokens.Diagnostics.Hints;
 using Tokens.Extensions;
 
 namespace Tokens.Diagnostics;
 
-[SuppressMessage("Meziantou.Analyzer", "MA0182", Justification = "Used by DiagnosticResult in Task 3")]
 internal static class TokenDiagnosticBuilder
 {
     private static readonly IHintGenerator[] HintGenerators =
@@ -19,7 +17,7 @@ internal static class TokenDiagnosticBuilder
 
     public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict) Build(DiagnosticResult diagnostics)
     {
-        var events = diagnostics.Events;
+        var events = diagnostics.RawEvents;
         var attempts = new Dictionary<string, List<TokenAttempt>>(StringComparer.Ordinal);
         var issues = new Dictionary<string, List<DiagnosticIssue>>(StringComparer.Ordinal);
         var assignedTokens = new Dictionary<string, (string? value, Enumerators.FileLocation? location)>(StringComparer.Ordinal);

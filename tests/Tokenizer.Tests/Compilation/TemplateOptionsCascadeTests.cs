@@ -190,7 +190,7 @@ public class TemplateOptionsCascadeTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.True(result.Diagnostics!.Events.Count > 0);
+        Assert.True(result.Diagnostics!.RawEvents.Count > 0);
     }
 
     // --- IgnoreMissingProperties ---

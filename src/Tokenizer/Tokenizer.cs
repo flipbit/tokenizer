@@ -349,14 +349,17 @@ public sealed class Tokenizer : ITokenizer
         {
             if (_log.IsEnabled(LogLevel.Debug))
             {
-                _log.LogDebug("{Verdict}", result.Diagnostics.Summary.Verdict);
+                _log.LogDebug("{Verdict}", result.Diagnostics.Verdict);
             }
-            foreach (var issue in result.Diagnostics.Summary.Issues)
+            foreach (var token in result.Diagnostics.Tokens)
             {
-                _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
-                if (issue.Hint != null)
+                foreach (var issue in token.Issues)
                 {
-                    _log.LogDebug("  → Hint: {Hint}", issue.Hint);
+                    _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                    if (issue.Hint != null)
+                    {
+                        _log.LogDebug("  → Hint: {Hint}", issue.Hint);
+                    }
                 }
             }
             if (rawInput != null && _log.IsEnabled(LogLevel.Debug))

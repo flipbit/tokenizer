@@ -23,12 +23,12 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.True(result.Diagnostics!.Events.Count > 0);
-        Assert.Contains(result.Diagnostics.Events,
+        Assert.True(result.Diagnostics!.RawEvents.Count > 0);
+        Assert.Contains(result.Diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenizationStarted);
-        Assert.Contains(result.Diagnostics.Events,
+        Assert.Contains(result.Diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenizationCompleted);
-        Assert.Contains(result.Diagnostics.Events,
+        Assert.Contains(result.Diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
@@ -62,7 +62,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.Contains(result.Diagnostics!.Events,
+        Assert.Contains(result.Diagnostics!.RawEvents,
             e => e.Type == DiagnosticEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
@@ -81,7 +81,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.Contains(result.Diagnostics!.Events,
+        Assert.Contains(result.Diagnostics!.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
@@ -100,7 +100,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.Contains(result.Diagnostics!.Events,
+        Assert.Contains(result.Diagnostics!.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed && string.Equals(e.TokenName, "Age", StringComparison.Ordinal));
     }
 
@@ -118,7 +118,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.Contains(result.Diagnostics!.Events,
+        Assert.Contains(result.Diagnostics!.RawEvents,
             e => e.Type == DiagnosticEventType.PreambleMatched);
     }
 
@@ -136,13 +136,13 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TokenCreated);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.DecoratorApplied);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.OptionApplied);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.ConcatenationApplied);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.TagAdded);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.HintAdded);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.RepeatingTokenLinked);
-        Assert.DoesNotContain(diagnostics.Events, e => e.Type == DiagnosticEventType.CompilationCompleted);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenCreated);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.DecoratorApplied);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.OptionApplied);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.ConcatenationApplied);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TagAdded);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.HintAdded);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.RepeatingTokenLinked);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.CompilationCompleted);
     }
 }

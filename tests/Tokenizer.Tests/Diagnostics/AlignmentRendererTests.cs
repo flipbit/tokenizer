@@ -85,7 +85,7 @@ public class AlignmentRendererTests
 
         // Assert
         Assert.Contains("Email", output, StringComparison.Ordinal);
-        Assert.Contains("rejected", output, StringComparison.Ordinal);
+        Assert.Contains("ValidatorRejected", output, StringComparison.Ordinal);
         Assert.DoesNotContain("preamble never found", output, StringComparison.Ordinal);
     }
 

@@ -21,7 +21,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
@@ -38,7 +38,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed);
     }
 
@@ -54,7 +54,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenMissed);
     }
 
@@ -71,7 +71,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var assigned = diagnostics.Events
+        var assigned = diagnostics.RawEvents
             .First(e => e.Type == DiagnosticEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         Assert.Equal(longValue, assigned.Value);
@@ -89,18 +89,18 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert — characterise: what does Name get? What does Age get?
         var diagnostics = result.Diagnostics!;
-        foreach (var evt in diagnostics.Events.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = \"{evt.Value}\"");
         }
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
-        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Events,
+        Assert.Equal("Matched 2 of 2 tokens.", diagnostics.Verdict);
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
               && string.Equals(e.Value, "Age: 30", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Age", StringComparison.Ordinal)
               && string.Equals(e.Value, "25", StringComparison.Ordinal));
@@ -118,7 +118,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
@@ -135,11 +135,11 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         // Document: is NewlineTerminatedTokenProcessed event recorded?
-        var newlineEvents = diagnostics.Events
+        var newlineEvents = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.NewlineTerminatedTokenProcessed)
             .ToList();
         Output.WriteLine($"NewlineTerminatedTokenProcessed events: {newlineEvents.Count}");
@@ -160,18 +160,18 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         // Document: does SingleUseTokenRemoved event appear?
-        var removed = diagnostics.Events
+        var removed = diagnostics.RawEvents
             .Where(e => e.Type == DiagnosticEventType.SingleUseTokenRemoved)
             .ToList();
         Output.WriteLine($"SingleUseTokenRemoved events: {removed.Count}");
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.Equal(0, removed.Count);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
-        Assert.Contains(diagnostics.Events,
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.ValidatorFailed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
@@ -189,20 +189,20 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         // Name should match
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         // Document: does optional token appear in issues even though it's optional?
-        var nicknameMissed = diagnostics.Events.Any(e => e.Type == DiagnosticEventType.TokenMissed
+        var nicknameMissed = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.TokenMissed
             && string.Equals(e.TokenName, "Nickname", StringComparison.Ordinal));
-        var nicknameInIssues = diagnostics.Summary.Issues.Any(i =>
+        var nicknameInIssues = diagnostics.Tokens.SelectMany(t => t.Issues).Any(i =>
             string.Equals(i.TokenName, "Nickname", StringComparison.Ordinal));
         Output.WriteLine($"Nickname missed event: {nicknameMissed}, in summary issues: {nicknameInIssues}");
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.True(nicknameMissed);
         Assert.True(nicknameInIssues);
-        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 1 of 2 tokens (1 missed).", diagnostics.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

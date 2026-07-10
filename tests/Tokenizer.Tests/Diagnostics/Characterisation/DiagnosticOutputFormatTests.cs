@@ -43,7 +43,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         // Assert
         Output.WriteLine(alignment);
         Assert.True(alignment.Contains("Matched Tokens", StringComparison.Ordinal));
-        Assert.True(alignment.Contains("Unmatched Tokens", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Failures", StringComparison.Ordinal));
         Assert.True(alignment.Contains("Matched: 2", StringComparison.Ordinal));
         Assert.True(alignment.Contains("Missed: 1", StringComparison.Ordinal));
         Assert.NotEmpty(alignment);
@@ -64,7 +64,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         Output.WriteLine(alignment);
         // The preamble WAS found — renderer should not say "preamble never found"
         Assert.False(alignment.Contains("preamble never found", StringComparison.Ordinal));
-        Assert.True(alignment.Contains("rejected", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("ValidatorRejected", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 2 of 2 tokens.", result.Diagnostics!.Summary.Verdict);
+        Assert.Equal("Matched 2 of 2 tokens.", result.Diagnostics!.Verdict);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 2 of 3 tokens (1 missed).", result.Diagnostics!.Summary.Verdict);
+        Assert.Equal("Matched 2 of 3 tokens (1 missed).", result.Diagnostics!.Verdict);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class DiagnosticOutputFormatTests : TokenizerTestBase
         var result = TokenizeWithDiagnostics(template, input);
 
         // Assert
-        Assert.Equal("Matched 0 of 2 tokens (2 missed).", result.Diagnostics!.Summary.Verdict);
+        Assert.Equal("Matched 0 of 2 tokens (2 missed).", result.Diagnostics!.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

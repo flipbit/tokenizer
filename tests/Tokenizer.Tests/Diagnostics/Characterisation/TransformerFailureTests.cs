@@ -21,9 +21,9 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerFailed);
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.TransformerFailure
               && string.Equals(i.TokenName, "Date", StringComparison.Ordinal));
     }
@@ -40,12 +40,12 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerSucceeded);
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TokenAssigned
               && string.Equals(e.TokenName, "Date", StringComparison.Ordinal));
-        Assert.Empty(diagnostics.Summary.Issues);
+        Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        var issue = diagnostics.Summary.Issues
+        var issue = diagnostics.Tokens.SelectMany(t => t.Issues)
             .FirstOrDefault(i => i.Type == DiagnosticIssueType.TransformerFailure
                               && string.Equals(i.TokenName, "Date", StringComparison.Ordinal));
         Assert.NotNull(issue);
@@ -82,14 +82,14 @@ public class TransformerFailureTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
 
         // Preamble WAS found
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.PreambleMatched);
 
         // Transformer DID fail
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerFailed);
 
-        var issues = diagnostics.Summary.Issues;
+        var issues = diagnostics.Tokens.SelectMany(t => t.Issues);
         Assert.Contains(issues, i => i.Type == DiagnosticIssueType.TransformerFailure);
         Assert.DoesNotContain(issues, i => i.Type == DiagnosticIssueType.PreambleNeverFound);
     }
@@ -106,11 +106,11 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
         // The failing decorator should be the validator, not the transformer
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
@@ -127,12 +127,12 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.TransformerFailed);
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

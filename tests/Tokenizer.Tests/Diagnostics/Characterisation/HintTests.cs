@@ -21,9 +21,9 @@ public class HintTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.HintMatched);
-        Assert.DoesNotContain(diagnostics.Summary.Issues,
+        Assert.DoesNotContain(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.HintMissing);
     }
 
@@ -39,9 +39,9 @@ public class HintTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Events,
+        Assert.Contains(diagnostics.RawEvents,
             e => e.Type == DiagnosticEventType.HintMissing);
-        Assert.Contains(diagnostics.Summary.Issues,
+        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.HintMissing);
     }
 
@@ -57,14 +57,14 @@ public class HintTests : TokenizerTestBase
 
         // Assert — characterise: is hint matching case-sensitive or case-insensitive?
         var diagnostics = result.Diagnostics!;
-        var hintMatched = diagnostics.Events.Any(e => e.Type == DiagnosticEventType.HintMatched);
-        var hintMissing = diagnostics.Events.Any(e => e.Type == DiagnosticEventType.HintMissing);
+        var hintMatched = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.HintMatched);
+        var hintMissing = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.HintMissing);
         Output.WriteLine($"HintMatched: {hintMatched}, HintMissing: {hintMissing}");
-        Output.WriteLine($"Verdict: {diagnostics.Summary.Verdict}");
+        Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.False(hintMatched);
         Assert.True(hintMissing);
-        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Summary.Verdict);
+        Assert.Equal("Matched 0 of 1 tokens (1 missed).", diagnostics.Verdict);
     }
 
     private TokenizeResult TokenizeWithDiagnostics(string template, string input)

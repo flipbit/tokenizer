@@ -15,7 +15,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
 
         var tokenName = sourceEvent.TokenName;
 
-        var priorValidatorFailure = trace.Events
+        var priorValidatorFailure = trace.RawEvents
             .LastOrDefault(e => e.Type == DiagnosticEventType.ValidatorFailed
                              && string.Equals(e.TokenName, tokenName, StringComparison.Ordinal));
 
@@ -27,7 +27,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
                    $"The value '{value}' failed {validator} validation.";
         }
 
-        var priorTransformerFailure = trace.Events
+        var priorTransformerFailure = trace.RawEvents
             .LastOrDefault(e => e.Type == DiagnosticEventType.TransformerFailed
                              && string.Equals(e.TokenName, tokenName, StringComparison.Ordinal));
 

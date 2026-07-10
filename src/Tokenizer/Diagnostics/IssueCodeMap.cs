@@ -15,6 +15,6 @@ internal static class IssueCodeMap
         DiagnosticIssueType.RepeatingTokenCutShort => "TK005",
         DiagnosticIssueType.HintMissing => "TK007",
         DiagnosticIssueType.Blocked => "TK008",
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown DiagnosticIssueType"),
+        _ => FormattableString.Invariant($"TK???({(int)type})"),
     };
 }

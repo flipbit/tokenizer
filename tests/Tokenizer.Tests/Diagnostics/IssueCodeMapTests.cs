@@ -65,12 +65,15 @@ public class IssueCodeMapTests
     }
 
     [Fact]
-    public void GivenUnknownIssueType_WhenGettingCode_ThenThrowsArgumentOutOfRange()
+    public void GivenUnknownIssueType_WhenGettingCode_ThenReturnsFallbackCode()
     {
         // Arrange
         var unknownType = (DiagnosticIssueType)999;
 
-        // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => IssueCodeMap.GetCode(unknownType));
+        // Act
+        var code = IssueCodeMap.GetCode(unknownType);
+
+        // Assert
+        Assert.Equal("TK???(999)", code);
     }
 }

@@ -156,4 +156,27 @@ public class TransformerFailureTests : TokenizerTestBase
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void GivenChainedTransformerAndValidator_WhenValidatorFails_ThenChainedDecoratorHintGenerated()
+    {
+        // Arrange — ToUpper succeeds, IsEmail rejects the uppercased value
+        var template = "Val: { Val : ToUpper, IsEmail }";
+        var input = "Val: hello";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var issues = diagnostics.Tokens.SelectMany(t => t.Issues)
+            .Where(i => i.Type == DiagnosticIssueType.ValidatorRejection)
+            .ToList();
+        Assert.NotEmpty(issues);
+        // ChainedDecoratorHintGenerator fires because ToUpper succeeded before IsEmail failed
+        var chainHint = issues.FirstOrDefault(i => i.Hint != null
+            && i.Hint.IndexOf("ToUpperTransformer", StringComparison.Ordinal) >= 0);
+        Assert.NotNull(chainHint);
+        Assert.True(chainHint!.Hint!.IndexOf("IsEmailValidator", StringComparison.Ordinal) >= 0);
+    }
+
 }

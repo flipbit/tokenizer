@@ -232,6 +232,13 @@ public sealed class Tokenizer : ITokenizer
 
         using (_log.BeginScope(scopeProperties))
         {
+            IDiagnosticCollector collector = template.Options.EnableDiagnostics
+                ? new RuntimeDiagnosticCollector(
+                    rawInput,
+                    template.Options.OutOfOrderTokens,
+                    new HashSet<string>(template.Tokens.Where(t => t.IsOptional).Select(t => t.Name), StringComparer.Ordinal))
+                : NullDiagnosticCollector.Instance;
+
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -252,13 +259,6 @@ public sealed class Tokenizer : ITokenizer
 
                 var context = new TokenizationContext();
                 context.Initialize(reader);
-
-                IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                    ? new RuntimeDiagnosticCollector(
-                        rawInput,
-                        template.Options.OutOfOrderTokens,
-                        new HashSet<string>(template.Tokens.Where(t => t.IsOptional).Select(t => t.Name), StringComparer.Ordinal))
-                    : NullDiagnosticCollector.Instance;
 
                 var hintsMissing = hintStrategy.PreProcess(template, context.Enumerator, rawInput, result, collector);
 
@@ -317,12 +317,14 @@ public sealed class Tokenizer : ITokenizer
             {
                 _log.LogError(ex, "Tokenization failed for template {TemplateName}: {Message}",
                     template.Name, ex.Message);
+                ex.Data["Diagnostics"] = collector.GetResult();
                 throw;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, "Unexpected error during tokenization for template {TemplateName}: {Message}",
                     template.Name, ex.Message);
+                ex.Data["Diagnostics"] = collector.GetResult();
                 throw;
             }
         }
@@ -350,24 +352,39 @@ public sealed class Tokenizer : ITokenizer
 
         if (result.Diagnostics != null)
         {
-            if (_log.IsEnabled(LogLevel.Debug))
+            if (result.Diagnostics.MissedCount > 0)
             {
-                _log.LogDebug("{Verdict}", result.Diagnostics.Verdict);
-            }
-            foreach (var token in result.Diagnostics.Tokens)
-            {
-                foreach (var issue in token.Issues)
+                foreach (var token in result.Diagnostics.Tokens)
                 {
-                    _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
-                    if (issue.Hint != null)
+                    if (token.Outcome == TokenOutcome.Matched)
+                        continue;
+
+                    foreach (var issue in token.Issues)
                     {
-                        _log.LogDebug("  → Hint: {Hint}", issue.Hint);
+                        _log.LogWarning("[{IssueCode}] Token '{TokenName}': {Description}",
+                            issue.Code, issue.TokenName, issue.Description);
                     }
                 }
             }
-            if (rawInput != null && _log.IsEnabled(LogLevel.Debug))
+
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                _log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                _log.LogDebug("{Verdict}", result.Diagnostics.Verdict);
+                foreach (var token in result.Diagnostics.Tokens)
+                {
+                    foreach (var issue in token.Issues)
+                    {
+                        _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
+                        if (issue.Hint != null)
+                        {
+                            _log.LogDebug("  → Hint: {Hint}", issue.Hint);
+                        }
+                    }
+                }
+                if (rawInput != null)
+                {
+                    _log.LogDebug("{Alignment}", result.Diagnostics.RenderAlignment());
+                }
             }
         }
     }

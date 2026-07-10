@@ -10,27 +10,23 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenTwoValidatorRejections_WhenGeneratingHintForLast_ThenSummarizesAllValues()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.ValidatorFailed,
-            TokenName = "Email",
-            DecoratorName = "IsEmailValidator",
-            Value = "second@bad",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "first@bad");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "second@bad");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "second@bad");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+        };
+
+        var sourceEvent = trace.RawEvents[1]; // the last rejection — must be the actual event for ReferenceEquals
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -43,27 +39,23 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenTwoTransformerFailures_WhenGeneratingHintForLast_ThenSummarizesAllValues()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Date" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.TransformerFailed,
-            TokenName = "Date",
-            DecoratorName = "ToDateTimeTransformer",
-            Value = "not-a-date-2",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TransformerFailed,
-            tokenName: "Date",
-            decoratorName: "ToDateTimeTransformer",
-            value: "not-a-date-1");
+            tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "not-a-date-1");
         collector.Record(DiagnosticEventType.TransformerFailed,
-            tokenName: "Date",
-            decoratorName: "ToDateTimeTransformer",
-            value: "not-a-date-2");
+            tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "not-a-date-2");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Date"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+        };
+
+        var sourceEvent = trace.RawEvents[1]; // the last rejection
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Date", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -76,23 +68,21 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenOnlyOneRejection_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.ValidatorFailed,
-            TokenName = "Email",
-            DecoratorName = "IsEmailValidator",
-            Value = "bad@value",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "bad@value");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad@value");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+        };
+
+        var sourceEvent = trace.RawEvents[0];
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
@@ -102,48 +92,42 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenNonRejectionIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Email" };
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.TokenMissed,
             TokenName = "Email",
         };
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Email", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
     }
 
     [Fact]
-    public void GivenTwoRejectionsButSourceIsNotLastValue_WhenGeneratingHint_ThenReturnsNull()
+    public void GivenTwoRejectionsButSourceIsNotLastEvent_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-
-        // sourceEvent has the value of the FIRST rejection, not the last
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.ValidatorFailed,
-            TokenName = "Email",
-            DecoratorName = "IsEmailValidator",
-            Value = "first@bad",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "first@bad");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "second@bad");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "second@bad");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+        };
+
+        var sourceEvent = trace.RawEvents[0]; // first rejection, not last
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);

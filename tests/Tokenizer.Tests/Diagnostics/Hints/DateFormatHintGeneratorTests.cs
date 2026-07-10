@@ -26,7 +26,7 @@ public class DateFormatHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -53,7 +53,7 @@ public class DateFormatHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -80,7 +80,7 @@ public class DateFormatHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
@@ -106,7 +106,7 @@ public class DateFormatHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
@@ -132,7 +132,7 @@ public class DateFormatHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("i").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);

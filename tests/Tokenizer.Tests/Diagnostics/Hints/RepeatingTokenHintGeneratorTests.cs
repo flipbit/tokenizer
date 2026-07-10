@@ -10,13 +10,6 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenPriorValidatorFailure_WhenGeneratingHint_ThenMentionsValidatorAndValue()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.RepeatingTokenCutShort, TokenName = "NameServers" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
-            TokenName = "NameServers",
-            Detail = "Line gap detected",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
             tokenName: "NameServers",
@@ -24,8 +17,21 @@ public class RepeatingTokenHintGeneratorTests
             value: "not a domain");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["NameServers"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+        };
+
+        var sourceEvent = new DiagnosticEvent
+        {
+            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            TokenName = "NameServers",
+            Detail = "Line gap detected",
+        };
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -38,13 +44,6 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenPriorTransformerFailure_WhenGeneratingHint_ThenMentionsTransformerAndValue()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.RepeatingTokenCutShort, TokenName = "Dates" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
-            TokenName = "Dates",
-            Detail = "Validation failure",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TransformerFailed,
             tokenName: "Dates",
@@ -52,8 +51,21 @@ public class RepeatingTokenHintGeneratorTests
             value: "not-a-date");
         var trace = collector.GetResult()!;
 
+        // Pre-populate index (normally done by TokenDiagnosticBuilder)
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Dates"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+        };
+
+        var sourceEvent = new DiagnosticEvent
+        {
+            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            TokenName = "Dates",
+            Detail = "Validation failure",
+        };
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "Dates", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -66,17 +78,18 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailure_WhenDetailPresent_ThenReturnsDetailBasedHint()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.RepeatingTokenCutShort, TokenName = "NameServers" };
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
             Detail = "Line gap detected",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -88,16 +101,17 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailureAndNoDetail_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.RepeatingTokenCutShort, TokenName = "NameServers" };
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
@@ -107,17 +121,18 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNonRepeatingTokenIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Token" };
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.TransformerFailed,
             TokenName = "Token",
             Detail = "Some detail",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Token", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);

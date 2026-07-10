@@ -11,10 +11,11 @@ internal interface IHintGenerator
     /// <summary>
     /// Attempts to generate a hint for the given issue.
     /// </summary>
-    /// <param name="issue">The diagnostic issue to generate a hint for</param>
+    /// <param name="type">The diagnostic issue type</param>
+    /// <param name="tokenName">The name of the token associated with the issue</param>
     /// <param name="sourceEvent">The diagnostic event that caused the issue</param>
     /// <param name="trace">The full diagnostic trace for cross-referencing</param>
     /// <returns>A human-readable hint string, or null if no hint applies</returns>
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                            DiagnosticResult trace);
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                            DiagnosticEvent sourceEvent, DiagnosticResult trace);
 }

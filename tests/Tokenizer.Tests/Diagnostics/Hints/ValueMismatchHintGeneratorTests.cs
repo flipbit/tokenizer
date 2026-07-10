@@ -7,10 +7,31 @@ public class ValueMismatchHintGeneratorTests
     private readonly ValueMismatchHintGenerator _generator = new();
 
     [Fact]
-    public void GivenValueMismatchIssue_WhenGeneratingHint_ThenSuggestsEndDelimiter()
+    public void GivenValueMismatchIssueWithMissedToken_WhenGeneratingHint_ThenIncludesMissedTokenName()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValueMismatch, TokenName = "Description" };
+        var sourceEvent = new DiagnosticEvent
+        {
+            Type = DiagnosticEventType.TokenAssigned,
+            TokenName = "Description",
+            Value = "some greedy value",
+            Detail = "Price",
+        };
+        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+
+        // Act
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
+
+        // Assert
+        Assert.NotNull(hint);
+        Assert.Contains("Price", hint, StringComparison.Ordinal);
+        Assert.Contains("end delimiter", hint, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GivenValueMismatchIssueWithNoMissedToken_WhenGeneratingHint_ThenSuggestsEndDelimiter()
+    {
+        // Arrange
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.TokenAssigned,
@@ -20,7 +41,7 @@ public class ValueMismatchHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -31,7 +52,6 @@ public class ValueMismatchHintGeneratorTests
     public void GivenNonValueMismatchIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Description" };
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.ValidatorFailed,
@@ -42,7 +62,7 @@ public class ValueMismatchHintGeneratorTests
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Description", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);

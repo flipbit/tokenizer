@@ -10,27 +10,23 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenValidatorRejectionWithPriorSuccess_WhenGeneratingHint_ThenDescribesChain()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.ValidatorFailed,
-            TokenName = "Email",
-            DecoratorName = "IsDomainNameValidator",
-            Value = "bad value",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorPassed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "bad value");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad value");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsDomainNameValidator",
-            value: "bad value");
+            tokenName: "Email", decoratorName: "IsDomainNameValidator", value: "bad value");
         var trace = collector.GetResult()!;
 
+        // Pre-populate indexes (normally done by TokenDiagnosticBuilder)
+        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+        };
+
+        var sourceEvent = trace.RawEvents[1]; // the actual ValidatorFailed event
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -43,27 +39,23 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenTransformerFailureWithPriorSuccess_WhenGeneratingHint_ThenDescribesChain()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Date" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.TransformerFailed,
-            TokenName = "Date",
-            DecoratorName = "ToDateTimeTransformer",
-            Value = "2024-01-01",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.TransformerSucceeded,
-            tokenName: "Date",
-            decoratorName: "TrimTransformer",
-            value: "2024-01-01");
+            tokenName: "Date", decoratorName: "TrimTransformer", value: "2024-01-01");
         collector.Record(DiagnosticEventType.TransformerFailed,
-            tokenName: "Date",
-            decoratorName: "ToDateTimeTransformer",
-            value: "2024-01-01");
+            tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "2024-01-01");
         var trace = collector.GetResult()!;
 
+        // Pre-populate indexes (normally done by TokenDiagnosticBuilder)
+        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        {
+            ["Date"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+        };
+
+        var sourceEvent = trace.RawEvents[1]; // the actual TransformerFailed event
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Date", sourceEvent, trace);
 
         // Assert
         Assert.NotNull(hint);
@@ -75,23 +67,18 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenValidatorRejectionWithNoPriorSuccess_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
-        {
-            Type = DiagnosticEventType.ValidatorFailed,
-            TokenName = "Email",
-            DecoratorName = "IsEmailValidator",
-            Value = "bad value",
-        };
         var collector = new RuntimeDiagnosticCollector("input");
         collector.Record(DiagnosticEventType.ValidatorFailed,
-            tokenName: "Email",
-            decoratorName: "IsEmailValidator",
-            value: "bad value");
+            tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad value");
         var trace = collector.GetResult()!;
 
+        // Pre-populate indexes with empty successes (normally done by TokenDiagnosticBuilder)
+        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+
+        var sourceEvent = trace.RawEvents[0];
+
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);
@@ -101,16 +88,16 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenNonRejectionIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Email" };
         var sourceEvent = new DiagnosticEvent
         {
             Type = DiagnosticEventType.TokenMissed,
             TokenName = "Email",
         };
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Email", sourceEvent, trace);
 
         // Assert
         Assert.Null(hint);

@@ -21,6 +21,10 @@ public sealed class DiagnosticResult
     private int _missedCount;
     private int _totalCount;
 
+    internal Dictionary<string, List<DiagnosticEvent>>? RejectionsPerToken { get; set; }
+    internal Dictionary<string, List<DiagnosticEvent>>? DecoratorSuccessesPerToken { get; set; }
+    internal string[]? CachedInputLines { get; set; }
+
     internal DiagnosticResult(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _inputContent = inputContent;

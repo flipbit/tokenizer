@@ -68,8 +68,24 @@ internal static class TokenDiagnosticBuilder
         public int MissedCount { get; set; }
     }
 
+    private static void AddToIndex(Dictionary<string, List<DiagnosticEvent>>? index, string tokenName, DiagnosticEvent evt)
+    {
+        if (index == null)
+            return;
+
+        if (!index.TryGetValue(tokenName, out var list))
+        {
+            list = new List<DiagnosticEvent>();
+            index[tokenName] = list;
+        }
+        list.Add(evt);
+    }
+
     private static CollectedEventData CollectEvents(DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
+        diagnostics.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        diagnostics.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+
         var data = new CollectedEventData();
         var seenTokens = new HashSet<string>(StringComparer.Ordinal);
 
@@ -88,6 +104,8 @@ internal static class TokenDiagnosticBuilder
             switch (evt.Type)
             {
                 case DiagnosticEventType.ValidatorFailed:
+                    if (evt.TokenName != null)
+                        AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
                     var validatorDescription = BuildValidatorDescription(evt);
                     data.TokensWithFailures.Add(evt.TokenName!);
                     AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
@@ -102,6 +120,8 @@ internal static class TokenDiagnosticBuilder
                     break;
 
                 case DiagnosticEventType.TransformerFailed:
+                    if (evt.TokenName != null)
+                        AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
                     var transformerDescription = BuildTransformerDescription(evt);
                     data.TokensWithFailures.Add(evt.TokenName!);
                     AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
@@ -113,6 +133,12 @@ internal static class TokenDiagnosticBuilder
                         Reason = transformerDescription,
                     });
                     AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.TransformerFailure, evt, transformerDescription, diagnostics));
+                    break;
+
+                case DiagnosticEventType.ValidatorPassed:
+                case DiagnosticEventType.TransformerSucceeded:
+                    if (evt.TokenName != null)
+                        AddToIndex(diagnostics.DecoratorSuccessesPerToken, evt.TokenName, evt);
                     break;
 
                 case DiagnosticEventType.TokenAssigned:

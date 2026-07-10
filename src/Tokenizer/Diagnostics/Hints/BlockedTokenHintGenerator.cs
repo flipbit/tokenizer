@@ -7,10 +7,10 @@ namespace Tokens.Diagnostics.Hints;
 internal sealed class BlockedTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
     {
-        if (issue.Type != DiagnosticIssueType.Blocked)
+        if (type != DiagnosticIssueType.Blocked)
             return null;
 
         var blockerName = sourceEvent.Detail;

@@ -10,8 +10,8 @@ public class IssueCodeMapTests
     [InlineData(DiagnosticIssueType.TransformerFailure, "TK003")]
     [InlineData(DiagnosticIssueType.ValueMismatch, "TK004")]
     [InlineData(DiagnosticIssueType.RepeatingTokenCutShort, "TK005")]
-    [InlineData(DiagnosticIssueType.UnmatchedInputSection, "TK006")]
     [InlineData(DiagnosticIssueType.HintMissing, "TK007")]
+    [InlineData(DiagnosticIssueType.Blocked, "TK008")]
     public void GivenIssueType_WhenGetCode_ThenReturnsExpectedCode(DiagnosticIssueType type, string expectedCode)
     {
         // Act
@@ -62,5 +62,15 @@ public class IssueCodeMapTests
 
         // Assert
         Assert.Equal(codes.Count, codes.Distinct(StringComparer.Ordinal).Count());
+    }
+
+    [Fact]
+    public void GivenUnknownIssueType_WhenGettingCode_ThenThrowsArgumentOutOfRange()
+    {
+        // Arrange
+        var unknownType = (DiagnosticIssueType)999;
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => IssueCodeMap.GetCode(unknownType));
     }
 }

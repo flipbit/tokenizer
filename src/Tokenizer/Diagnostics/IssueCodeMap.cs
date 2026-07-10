@@ -13,8 +13,8 @@ internal static class IssueCodeMap
         DiagnosticIssueType.TransformerFailure => "TK003",
         DiagnosticIssueType.ValueMismatch => "TK004",
         DiagnosticIssueType.RepeatingTokenCutShort => "TK005",
-        DiagnosticIssueType.UnmatchedInputSection => "TK006",
         DiagnosticIssueType.HintMissing => "TK007",
-        _ => "TK000",
+        DiagnosticIssueType.Blocked => "TK008",
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown DiagnosticIssueType"),
     };
 }

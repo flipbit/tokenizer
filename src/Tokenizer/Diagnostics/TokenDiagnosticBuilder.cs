@@ -11,7 +11,6 @@ internal static class TokenDiagnosticBuilder
         new DateFormatHintGenerator(),
         new PreambleNearMissHintGenerator(),
         new ValidatorValueHintGenerator(),
-        new UnmatchedInputHintGenerator(),
         new RepeatingTokenHintGenerator(),
     };
 

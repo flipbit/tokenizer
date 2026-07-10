@@ -32,6 +32,8 @@ public class CausalityChainTests : TokenizerTestBase
         // C should be blocked because non-optional B was not found
         Assert.Equal(TokenOutcome.Blocked, tokenC.Outcome);
         Assert.Equal("B", tokenC.BlockedBy);
+        Assert.Contains(tokenC.Issues, i => i.Type == DiagnosticIssueType.Blocked);
+        Assert.Contains(tokenC.Issues, i => i.Type == DiagnosticIssueType.PreambleNeverFound);
     }
 
     [Fact]
@@ -130,10 +132,10 @@ public class CausalityChainTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         var tokenC = diagnostics.Tokens.First(t => string.Equals(t.TokenName, "C", StringComparison.Ordinal));
         Assert.Equal(TokenOutcome.Blocked, tokenC.Outcome);
-        var issue = Assert.Single(tokenC.Issues);
-        Assert.Equal("TK008", issue.Code);
-        Assert.NotNull(issue.Hint);
-        Assert.True(issue.Hint!.Contains("B", StringComparison.Ordinal));
+        var blockedIssue = tokenC.Issues.First(i => i.Type == DiagnosticIssueType.Blocked);
+        Assert.Equal("TK008", blockedIssue.Code);
+        Assert.NotNull(blockedIssue.Hint);
+        Assert.True(blockedIssue.Hint!.Contains("B", StringComparison.Ordinal));
     }
 
     [Fact]

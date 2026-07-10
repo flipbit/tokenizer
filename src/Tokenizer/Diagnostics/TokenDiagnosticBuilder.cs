@@ -6,7 +6,7 @@ namespace Tokens.Diagnostics;
 
 internal static class TokenDiagnosticBuilder
 {
-    private static readonly IssueFactory IssueFactory = new IssueFactory(new IHintGenerator[]
+    private static readonly IssueFactory DefaultIssueFactory = new IssueFactory(new IHintGenerator[]
     {
         new BlockedTokenHintGenerator(),
         new ChainedDecoratorHintGenerator(),
@@ -19,15 +19,16 @@ internal static class TokenDiagnosticBuilder
         new RepeatingTokenHintGenerator(),
     });
 
-    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics)
+    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics, IssueFactory? issueFactory = null)
     {
-        var collected = CollectEvents(diagnostics);
-        var result = ClassifyOutcomes(collected, diagnostics);
+        issueFactory ??= DefaultIssueFactory;
+        var collected = CollectEvents(diagnostics, issueFactory);
+        var result = ClassifyOutcomes(collected, diagnostics, issueFactory);
 
         // Causality pass: in ordered mode, non-optional missed tokens block subsequent ones
         if (!diagnostics.OutOfOrderTokens)
         {
-            ApplyBlockedAnnotations(result, diagnostics.OptionalTokenNames, diagnostics);
+            ApplyBlockedAnnotations(result, diagnostics.OptionalTokenNames, diagnostics, issueFactory);
         }
 
         // Handle global hint-missing issues: create a synthetic TokenDiagnostic for them
@@ -67,7 +68,7 @@ internal static class TokenDiagnosticBuilder
         public int MissedCount { get; set; }
     }
 
-    private static CollectedEventData CollectEvents(DiagnosticResult diagnostics)
+    private static CollectedEventData CollectEvents(DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
         var data = new CollectedEventData();
         var seenTokens = new HashSet<string>(StringComparer.Ordinal);
@@ -97,7 +98,7 @@ internal static class TokenDiagnosticBuilder
                         DecoratorName = evt.DecoratorName,
                         Reason = validatorDescription,
                     });
-                    AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.ValidatorRejection, evt, validatorDescription, diagnostics));
+                    AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.ValidatorRejection, evt, validatorDescription, diagnostics));
                     break;
 
                 case DiagnosticEventType.TransformerFailed:
@@ -111,7 +112,7 @@ internal static class TokenDiagnosticBuilder
                         DecoratorName = evt.DecoratorName,
                         Reason = transformerDescription,
                     });
-                    AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.TransformerFailure, evt, transformerDescription, diagnostics));
+                    AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.TransformerFailure, evt, transformerDescription, diagnostics));
                     break;
 
                 case DiagnosticEventType.TokenAssigned:
@@ -140,6 +141,14 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
+                case DiagnosticEventType.PreambleMatched:
+                    if (evt.TokenName != null && !string.IsNullOrEmpty(evt.Detail)
+                        && !data.PreambleTexts.ContainsKey(evt.TokenName))
+                    {
+                        data.PreambleTexts[evt.TokenName] = evt.Detail!;
+                    }
+                    break;
+
                 case DiagnosticEventType.TokenMissed:
                     if (evt.TokenName != null)
                     {
@@ -150,7 +159,7 @@ internal static class TokenDiagnosticBuilder
                             data.PreambleTexts[evt.TokenName] = preambleDetail!;
                         if (!data.TokensWithFailures.Contains(evt.TokenName))
                         {
-                            AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.PreambleNeverFound, evt,
+                            AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.PreambleNeverFound, evt,
                                 $"Token '{evt.TokenName}' was never matched in the input.", diagnostics));
                         }
                     }
@@ -159,7 +168,7 @@ internal static class TokenDiagnosticBuilder
                 case DiagnosticEventType.RepeatingTokenDisabled:
                     if (evt.TokenName != null)
                     {
-                        AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.RepeatingTokenCutShort, evt,
+                        AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.RepeatingTokenCutShort, evt,
                             BuildRepeatingTokenDescription(evt), diagnostics));
                     }
                     break;
@@ -170,11 +179,11 @@ internal static class TokenDiagnosticBuilder
                         : $"Required hint not found in input: '{evt.Value}'.";
                     if (evt.TokenName != null)
                     {
-                        AddIssue(data.Issues, IssueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
+                        AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
                     }
                     else
                     {
-                        data.GlobalIssues.Add(IssueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
+                        data.GlobalIssues.Add(issueFactory.Create(DiagnosticIssueType.HintMissing, evt, hintDesc, diagnostics));
                     }
                     break;
             }
@@ -183,13 +192,13 @@ internal static class TokenDiagnosticBuilder
         return data;
     }
 
-    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, DiagnosticResult diagnostics)
+    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
         // ValueMismatch detection: before building TokenDiagnostic objects, check if any
         // matched token's value contains the preamble of a missed/rejected token.
         // We add issues to data.Issues BEFORE construction so there's no need to downcast
         // the IReadOnlyList<DiagnosticIssue> after the fact.
-        ApplyValueMismatchIssues(data, diagnostics);
+        ApplyValueMismatchIssues(data, diagnostics, issueFactory);
 
         var result = new List<TokenDiagnostic>();
 
@@ -229,7 +238,7 @@ internal static class TokenDiagnosticBuilder
         return result;
     }
 
-    private static void ApplyValueMismatchIssues(CollectedEventData data, DiagnosticResult diagnostics)
+    private static void ApplyValueMismatchIssues(CollectedEventData data, DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
         if (data.PreambleTexts.Count == 0)
             return;
@@ -269,14 +278,14 @@ internal static class TokenDiagnosticBuilder
                         issues = new List<DiagnosticIssue>();
                         data.Issues[tokenName] = issues;
                     }
-                    issues.Add(IssueFactory.CreateValueMismatch(tokenName, missedName, diagnostics));
+                    issues.Add(issueFactory.CreateValueMismatch(tokenName, missedName, diagnostics));
                     break;
                 }
             }
         }
     }
 
-    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, DiagnosticResult diagnostics)
+    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
         // Find the first non-optional, non-matched token — that's the blocker.
         // All subsequent NeverFound tokens are blocked by it.
@@ -311,9 +320,9 @@ internal static class TokenDiagnosticBuilder
                     Attempts = token.Attempts,
                     AssignedValue = token.AssignedValue,
                     AssignedLocation = token.AssignedLocation,
-                    Issues = new List<DiagnosticIssue>
+                    Issues = new List<DiagnosticIssue>(token.Issues)
                     {
-                        IssueFactory.CreateBlocked(token.TokenName, blockerName, diagnostics),
+                        issueFactory.CreateBlocked(token.TokenName, blockerName, diagnostics),
                     },
                 };
             }
@@ -332,7 +341,10 @@ internal static class TokenDiagnosticBuilder
 
     private static void AddIssue(Dictionary<string, List<DiagnosticIssue>> issues, DiagnosticIssue issue)
     {
-        var tokenName = issue.TokenName!;
+        if (issue.TokenName == null)
+            return;
+
+        var tokenName = issue.TokenName;
         if (!issues.TryGetValue(tokenName, out var list))
         {
             list = new List<DiagnosticIssue>();

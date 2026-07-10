@@ -1,10 +1,15 @@
 using Tokens.Enumerators;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Tokens.Diagnostics;
 
-public class AlignmentRendererTests
+public class AlignmentRendererTests : TokenizerTestBase
 {
+    public AlignmentRendererTests(ITestOutputHelper output)
+        : base(output)
+    {
+    }
     [Fact]
     public void GivenSuccessfulMatch_WhenRendering_ThenShowsMatchedTokens()
     {
@@ -127,5 +132,23 @@ public class AlignmentRendererTests
 
         // Assert
         Assert.Contains("Alignment", output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GivenBlockedTokens_WhenRendered_ThenShowsBlockedSectionWithMarkerAndBlocker()
+    {
+        // Arrange — ordered template, B missing causes C to be blocked
+        var template = "A: { A }\nB: { B }\nC: { C }";
+        var input = "A: one";
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Act
+        var alignment = result.Diagnostics!.RenderAlignment();
+        Output.WriteLine(alignment);
+
+        // Assert
+        Assert.Contains("⊘", alignment, StringComparison.Ordinal); // ⊘ marker
+        Assert.Contains("blocked by", alignment, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Blocked:", alignment, StringComparison.Ordinal);
     }
 }

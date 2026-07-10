@@ -62,6 +62,10 @@ internal static class AlignmentRenderer
             {
                 foreach (var attempt in token.Attempts)
                 {
+                    if (attempt.Outcome != AttemptOutcome.ValidatorRejected &&
+                        attempt.Outcome != AttemptOutcome.TransformerFailed)
+                        continue;
+
                     var decoratorDesc = !string.IsNullOrEmpty(attempt.DecoratorName) ? attempt.DecoratorName : "decorator";
                     sb.Append("  ✗ ").Append(token.TokenName).Append(": ").Append(attempt.Outcome).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(attempt.Value).AppendLine("'");
                 }
@@ -114,7 +118,7 @@ internal static class AlignmentRenderer
         sb.Append("  Matched: ").Append(matchedTokens.Count)
             .Append(" | Missed: ").Append(rejectedTokens.Count + neverFoundTokens.Count)
             .Append(" | Blocked: ").Append(blockedTokens.Count)
-            .Append(" | Failures: ").Append(rejectedTokens.Sum(t => t.Attempts.Count));
+            .Append(" | Failures: ").Append(CountFailures(rejectedTokens));
 
         return sb.ToString();
     }
@@ -131,6 +135,17 @@ internal static class AlignmentRenderer
             if (c == '\n')
                 count++;
         }
+        return count;
+    }
+
+    private static int CountFailures(List<TokenDiagnostic> tokens)
+    {
+        var count = 0;
+        foreach (var token in tokens)
+            foreach (var attempt in token.Attempts)
+                if (attempt.Outcome == AttemptOutcome.ValidatorRejected ||
+                    attempt.Outcome == AttemptOutcome.TransformerFailed)
+                    count++;
         return count;
     }
 }

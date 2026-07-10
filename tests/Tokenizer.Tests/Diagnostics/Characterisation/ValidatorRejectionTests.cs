@@ -269,7 +269,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
     }
 
     [Fact]
-    public void GivenMultipleValidators_WhenFirstFails_ThenFirstRejectionRecorded()
+    public void GivenMultipleValidators_WhenFirstFails_ThenEngineShortCircuits_OnlyFirstRejectionRecorded()
     {
         // Arrange — "hello" fails IsNumeric; engine short-circuits before IsEmail
         var template = "Val: { Val : IsNumeric, IsEmail }";

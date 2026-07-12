@@ -297,6 +297,52 @@ public class TokenDiagnosticBuilderTests
     }
 
     [Fact]
+    public void GivenRepeatingTokenWithMultipleMatches_WhenBuilding_ThenCountsAsOneMatchedToken()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("Items: one\nItems: two");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Items", tokenId: 1, value: "one");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Items", tokenId: 2, value: "two");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var builder = new TokenDiagnosticBuilder(diagnostics);
+        var (tokens, _, matched, missed, total) = builder.Build();
+
+        // Assert
+        Assert.Equal(1, tokens.Count);
+        Assert.Equal(1, matched);
+        Assert.Equal(0, missed);
+        Assert.Equal(1, total);
+        Assert.Equal(total, tokens.Count);
+    }
+
+    [Fact]
+    public void GivenRepeatingTokenWithZeroMatches_WhenBuilding_ThenCountsAsOneMissedToken()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("nothing");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Items", tokenId: 1);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Items", tokenId: 2);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var builder = new TokenDiagnosticBuilder(diagnostics);
+        var (tokens, _, matched, missed, total) = builder.Build();
+
+        // Assert
+        Assert.Equal(1, tokens.Count);
+        Assert.Equal(0, matched);
+        Assert.Equal(1, missed);
+        Assert.Equal(1, total);
+        Assert.Equal(total, tokens.Count);
+    }
+
+    [Fact]
     public void GivenOutOfOrderTokens_WhenBuilding_ThenNoBlockedAnnotationsApplied()
     {
         // Arrange

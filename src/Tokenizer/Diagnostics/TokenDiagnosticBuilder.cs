@@ -159,6 +159,10 @@ internal sealed class TokenDiagnosticBuilder
                 case TokenizationEventType.TokenAssigned:
                     if (evt.TokenName != null)
                     {
+                        if (!data.AssignedTokens.ContainsKey(evt.TokenName))
+                        {
+                            data.MatchedCount++;
+                        }
                         data.AssignedTokens[evt.TokenName] = (evt.Value, evt.Location);
                         AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                         {
@@ -166,7 +170,6 @@ internal sealed class TokenDiagnosticBuilder
                             Value = evt.Value,
                             Outcome = AttemptOutcome.Assigned,
                         });
-                        data.MatchedCount++;
                     }
                     break;
 
@@ -193,12 +196,15 @@ internal sealed class TokenDiagnosticBuilder
                 case TokenizationEventType.TokenMissed:
                     if (evt.TokenName != null)
                     {
-                        data.MissedTokenNames.Add(evt.TokenName);
-                        data.MissedCount++;
+                        var isFirstMiss = data.MissedTokenNames.Add(evt.TokenName);
+                        if (!data.AssignedTokens.ContainsKey(evt.TokenName) && isFirstMiss)
+                        {
+                            data.MissedCount++;
+                        }
                         var preambleDetail = evt.Detail;
                         if (!string.IsNullOrEmpty(preambleDetail) && !data.PreambleTexts.ContainsKey(evt.TokenName))
                             data.PreambleTexts[evt.TokenName] = preambleDetail!;
-                        if (!data.TokensWithFailures.Contains(evt.TokenName))
+                        if (isFirstMiss && !data.TokensWithFailures.Contains(evt.TokenName))
                         {
                             AddIssue(data.Issues, _issueFactory.Create(DiagnosticIssueType.PreambleNeverFound, evt,
                                 $"Token '{evt.TokenName}' was never matched in the input.", _context));
@@ -279,6 +285,11 @@ internal sealed class TokenDiagnosticBuilder
         return result;
     }
 
+    /// <summary>
+    /// Detects tokens whose assigned value contains the preamble of a missed/rejected token.
+    /// Complexity: O(matched × missed × value_length). Bounded by template token count
+    /// (typically &lt;50) and short preamble/value strings. Acceptable at current scale.
+    /// </summary>
     private void ApplyValueMismatchIssues(CollectedEventData data)
     {
         if (data.PreambleTexts.Count == 0)
@@ -350,6 +361,8 @@ internal sealed class TokenDiagnosticBuilder
             }
 
             // We have a blocker — mark subsequent NeverFound tokens as Blocked
+            // Only NeverFound tokens are reclassified as Blocked. Rejected tokens were
+            // actively attempted and carry their own diagnostic value (validator feedback, hints).
             if (token.Outcome == TokenOutcome.NeverFound)
             {
                 tokens[i] = token with

@@ -374,10 +374,9 @@ public sealed class Tokenizer : ITokenizer
                 {
                     foreach (var issue in token.Issues)
                     {
-                        _log.LogDebug("Token '{TokenName}': {Description}", issue.TokenName, issue.Description);
                         if (issue.Hint != null)
                         {
-                            _log.LogDebug("  → Hint: {Hint}", issue.Hint);
+                            _log.LogDebug("  → Hint for '{TokenName}': {Hint}", issue.TokenName, issue.Hint);
                         }
                     }
                 }

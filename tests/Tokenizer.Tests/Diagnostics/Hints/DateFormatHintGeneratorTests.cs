@@ -10,11 +10,6 @@ public class DateFormatHintGeneratorTests
     public void GivenDateWithWrongFormat_WhenGeneratingHint_ThenSuggestsCorrectFormat()
     {
         // Arrange
-        var issue = new DiagnosticIssue
-        {
-            Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered",
-        };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -23,10 +18,10 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "21/11/2005",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Registered", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -37,11 +32,6 @@ public class DateFormatHintGeneratorTests
     public void GivenDateWithTimeAndWrongFormat_WhenGeneratingHint_ThenSuggestsFormatWithTime()
     {
         // Arrange
-        var issue = new DiagnosticIssue
-        {
-            Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered",
-        };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -50,10 +40,10 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "21/11/2005 15:21:32",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Registered", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -65,11 +55,6 @@ public class DateFormatHintGeneratorTests
     public void GivenNonDateTransformer_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue
-        {
-            Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Name",
-        };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -77,10 +62,10 @@ public class DateFormatHintGeneratorTests
             DecoratorName = "ToUpperTransformer",
             Value = "test",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Name", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -90,11 +75,6 @@ public class DateFormatHintGeneratorTests
     public void GivenUnparseableValue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue
-        {
-            Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Registered",
-        };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -103,10 +83,10 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "yyyy-MM-dd" },
             Value = "not a date at all",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Registered", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -116,11 +96,6 @@ public class DateFormatHintGeneratorTests
     public void GivenIso8601Date_WhenGeneratingHint_ThenSuggestsIsoFormat()
     {
         // Arrange
-        var issue = new DiagnosticIssue
-        {
-            Type = DiagnosticIssueType.TransformerFailure,
-            TokenName = "Created",
-        };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -129,10 +104,10 @@ public class DateFormatHintGeneratorTests
             DecoratorArgs = new[] { "dd/MM/yyyy" },
             Value = "2005-11-21T15:21:32",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Created", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);

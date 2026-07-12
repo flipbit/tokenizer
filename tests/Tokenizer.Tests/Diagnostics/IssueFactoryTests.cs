@@ -15,10 +15,10 @@ public class IssueFactoryTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "Name",
         };
-        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var issue = factory.Create(DiagnosticIssueType.PreambleNeverFound, sourceEvent, "Token 'Name' was never found.", diagnostics);
+        var issue = factory.Create(DiagnosticIssueType.PreambleNeverFound, sourceEvent, "Token 'Name' was never found.", context);
 
         // Assert
         Assert.Equal(DiagnosticIssueType.PreambleNeverFound, issue.Type);
@@ -38,10 +38,10 @@ public class IssueFactoryTests
             TokenName = "Email",
             Value = "bad",
         };
-        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var issue = factory.Create(DiagnosticIssueType.ValidatorRejection, sourceEvent, "Validator rejected 'bad'.", diagnostics);
+        var issue = factory.Create(DiagnosticIssueType.ValidatorRejection, sourceEvent, "Validator rejected 'bad'.", context);
 
         // Assert
         Assert.Equal(DiagnosticIssueType.ValidatorRejection, issue.Type);
@@ -53,10 +53,10 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(new IHintGenerator[] { new BlockedTokenHintGenerator() });
-        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var issue = factory.CreateBlocked(tokenName: "C", blockerName: "B", diagnostics);
+        var issue = factory.CreateBlocked(tokenName: "C", blockerName: "B", context);
 
         // Assert
         Assert.Equal(DiagnosticIssueType.Blocked, issue.Type);
@@ -70,10 +70,10 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(new IHintGenerator[] { new ValueMismatchHintGenerator() });
-        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var issue = factory.CreateValueMismatch("Description", "Price", diagnostics);
+        var issue = factory.CreateValueMismatch("Description", "Price", context);
 
         // Assert
         Assert.Equal(DiagnosticIssueType.ValueMismatch, issue.Type);
@@ -93,7 +93,7 @@ public class IssueFactoryTests
         internal ConstantHintGenerator(string hint) => _hint = hint;
 
         public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                       TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                       TokenizationEvent sourceEvent, BuildContext context)
             => _hint;
     }
 }

@@ -8,13 +8,13 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.RepeatingTokenCutShort)
             return null;
 
-        if (tokenName != null && trace.RejectionsPerToken != null &&
-            trace.RejectionsPerToken.TryGetValue(tokenName, out var rejections) &&
+        if (tokenName != null &&
+            context.RejectionsPerToken.TryGetValue(tokenName, out var rejections) &&
             rejections.Count > 0)
         {
             var last = rejections[rejections.Count - 1];

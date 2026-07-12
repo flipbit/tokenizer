@@ -17,16 +17,14 @@ public class ChainedDecoratorHintGeneratorTests
             tokenName: "Email", decoratorName: "IsDomainNameValidator", value: "bad value");
         var trace = collector.GetResult()!;
 
-        // Pre-populate indexes (normally done by TokenDiagnosticBuilder)
-        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
-        {
-            ["Email"] = new List<TokenizationEvent> { trace.RawEvents[0] },
-        };
+        // Pre-populate indexes via BuildContext
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+        context.DecoratorSuccessesPerToken["Email"] = new List<TokenizationEvent> { trace.RawEvents[0] };
 
         var sourceEvent = trace.RawEvents[1]; // the actual ValidatorFailed event
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -46,16 +44,14 @@ public class ChainedDecoratorHintGeneratorTests
             tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "2024-01-01");
         var trace = collector.GetResult()!;
 
-        // Pre-populate indexes (normally done by TokenDiagnosticBuilder)
-        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
-        {
-            ["Date"] = new List<TokenizationEvent> { trace.RawEvents[0] },
-        };
+        // Pre-populate indexes via BuildContext
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+        context.DecoratorSuccessesPerToken["Date"] = new List<TokenizationEvent> { trace.RawEvents[0] };
 
         var sourceEvent = trace.RawEvents[1]; // the actual TransformerFailed event
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Date", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Date", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -72,13 +68,11 @@ public class ChainedDecoratorHintGeneratorTests
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad value");
         var trace = collector.GetResult()!;
 
-        // Pre-populate indexes with empty successes (normally done by TokenDiagnosticBuilder)
-        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
-
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
         var sourceEvent = trace.RawEvents[0];
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -93,11 +87,10 @@ public class ChainedDecoratorHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "Email",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
-        trace.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Email", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Email", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

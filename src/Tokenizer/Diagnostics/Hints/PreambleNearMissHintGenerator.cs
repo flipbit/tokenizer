@@ -22,7 +22,7 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
 
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.PreambleNeverFound)
             return null;
@@ -32,18 +32,13 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
         if (string.IsNullOrWhiteSpace(preamble))
             return null;
 
-        var inputContent = trace.InputContent;
+        var inputContent = context.InputContent;
 
         if (string.IsNullOrEmpty(inputContent))
             return null;
 
         var normalizedPreamble = NormalizeWhitespace(preamble);
-
-        if (trace.CachedInputLines == null)
-        {
-            trace.CachedInputLines = inputContent!.Split('\n');
-        }
-        var lines = trace.CachedInputLines;
+        var lines = context.InputLines;
 
         for (var i = 0; i < lines.Length; i++)
         {

@@ -17,10 +17,10 @@ public class BlockedTokenHintGeneratorTests
             TokenName = "City",
             Detail = "Country",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -37,10 +37,10 @@ public class BlockedTokenHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "City",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -57,10 +57,10 @@ public class BlockedTokenHintGeneratorTests
             TokenName = "City",
             Detail = "Country",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

@@ -17,11 +17,9 @@ public class RepeatingTokenHintGeneratorTests
             value: "not a domain");
         var trace = collector.GetResult()!;
 
-        // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
-        {
-            ["NameServers"] = new List<TokenizationEvent> { trace.RawEvents[0] },
-        };
+        // Pre-populate index via BuildContext
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+        context.RejectionsPerToken["NameServers"] = new List<TokenizationEvent> { trace.RawEvents[0] };
 
         var sourceEvent = new TokenizationEvent
         {
@@ -31,7 +29,7 @@ public class RepeatingTokenHintGeneratorTests
         };
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -51,11 +49,9 @@ public class RepeatingTokenHintGeneratorTests
             value: "not-a-date");
         var trace = collector.GetResult()!;
 
-        // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
-        {
-            ["Dates"] = new List<TokenizationEvent> { trace.RawEvents[0] },
-        };
+        // Pre-populate index via BuildContext
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+        context.RejectionsPerToken["Dates"] = new List<TokenizationEvent> { trace.RawEvents[0] };
 
         var sourceEvent = new TokenizationEvent
         {
@@ -65,7 +61,7 @@ public class RepeatingTokenHintGeneratorTests
         };
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "Dates", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "Dates", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -78,8 +74,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailure_WhenDetailPresent_ThenReturnsDetailBasedHint()
     {
         // Arrange
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         var sourceEvent = new TokenizationEvent
         {
@@ -89,7 +84,7 @@ public class RepeatingTokenHintGeneratorTests
         };
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -101,8 +96,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailureAndNoDetail_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         var sourceEvent = new TokenizationEvent
         {
@@ -111,7 +105,7 @@ public class RepeatingTokenHintGeneratorTests
         };
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.RepeatingTokenCutShort, "NameServers", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -121,8 +115,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNonRepeatingTokenIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         var sourceEvent = new TokenizationEvent
         {
@@ -132,7 +125,7 @@ public class RepeatingTokenHintGeneratorTests
         };
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Token", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Token", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

@@ -24,10 +24,6 @@ public sealed class TokenizationDiagnostics
         int MissedCount,
         int TotalCount);
 
-    internal Dictionary<string, List<TokenizationEvent>>? RejectionsPerToken { get; set; }
-    internal Dictionary<string, List<TokenizationEvent>>? DecoratorSuccessesPerToken { get; set; }
-    internal string[]? CachedInputLines { get; set; }
-
     internal TokenizationDiagnostics(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _inputContent = inputContent;
@@ -113,7 +109,8 @@ public sealed class TokenizationDiagnostics
         if (_built != null)
             return _built;
 
-        var (tokens, verdict, matched, missed, total) = TokenDiagnosticBuilder.Build(this);
+        var builder = new TokenDiagnosticBuilder(this);
+        var (tokens, verdict, matched, missed, total) = builder.Build();
         _built = new BuiltResult(tokens, verdict, matched, missed, total);
         return _built;
     }

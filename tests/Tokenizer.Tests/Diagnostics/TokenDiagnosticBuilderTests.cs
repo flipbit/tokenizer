@@ -18,7 +18,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Single(tokens);
@@ -41,7 +41,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Single(tokens);
@@ -69,7 +69,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Single(tokens);
@@ -97,7 +97,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Single(tokens);
@@ -129,7 +129,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Single(tokens);
@@ -152,7 +152,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, verdict, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, verdict, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Equal(2, tokens.Count);
@@ -172,7 +172,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         var token = Assert.Single(tokens);
@@ -192,7 +192,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         var nameToken = tokens.First(t => string.Equals(t.TokenName, "Name", StringComparison.Ordinal));
@@ -210,7 +210,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         // Hint missing is a global issue, not per-token — it produces a TokenDiagnostic
@@ -232,7 +232,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Empty(tokens);
@@ -250,7 +250,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.Empty(tokens);
@@ -269,7 +269,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         var items = tokens.First(t => string.Equals(t.TokenName, "Items", StringComparison.Ordinal));
@@ -289,7 +289,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         var nameToken = tokens.First(t => string.Equals(t.TokenName, "Name", StringComparison.Ordinal));
@@ -308,7 +308,7 @@ public class TokenDiagnosticBuilderTests
         var diagnostics = collector.GetResult()!;
 
         // Act
-        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+        var (tokens, _, _, _, _) = new TokenDiagnosticBuilder(diagnostics).Build();
 
         // Assert
         Assert.All(tokens, t => Assert.NotEqual(TokenOutcome.Blocked, t.Outcome));

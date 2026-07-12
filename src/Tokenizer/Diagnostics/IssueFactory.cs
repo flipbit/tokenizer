@@ -20,9 +20,9 @@ internal sealed class IssueFactory
     /// generating a hint from the hint generator chain if possible.
     /// </summary>
     internal DiagnosticIssue Create(DiagnosticIssueType type, TokenizationEvent sourceEvent,
-                                    string description, TokenizationDiagnostics diagnostics)
+                                    string description, BuildContext context)
     {
-        var hint = GenerateHint(type, sourceEvent, diagnostics);
+        var hint = GenerateHint(type, sourceEvent, context);
 
         return new DiagnosticIssue
         {
@@ -39,7 +39,7 @@ internal sealed class IssueFactory
     /// for a matched token whose assigned value contains the preamble of a missed or rejected token,
     /// suggesting greedy capture consumed more than intended.
     /// </summary>
-    internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, TokenizationDiagnostics diagnostics)
+    internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, BuildContext context)
     {
         var sourceEvent = new TokenizationEvent
         {
@@ -52,14 +52,14 @@ internal sealed class IssueFactory
             DiagnosticIssueType.ValueMismatch,
             sourceEvent,
             $"Token '{tokenName}' captured value containing preamble of token '{missedTokenName}'.",
-            diagnostics);
+            context);
     }
 
     /// <summary>
     /// Creates a <see cref="DiagnosticIssue"/> of type <see cref="DiagnosticIssueType.Blocked"/>
     /// for a token that was not searched because a prior required token failed to match.
     /// </summary>
-    internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, TokenizationDiagnostics diagnostics)
+    internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, BuildContext context)
     {
         var sourceEvent = new TokenizationEvent
         {
@@ -72,15 +72,15 @@ internal sealed class IssueFactory
             DiagnosticIssueType.Blocked,
             sourceEvent,
             $"Token '{tokenName}' was not searched for because '{blockerName}' was not matched.",
-            diagnostics);
+            context);
     }
 
     private string? GenerateHint(DiagnosticIssueType type, TokenizationEvent sourceEvent,
-                                  TokenizationDiagnostics diagnostics)
+                                  BuildContext context)
     {
         foreach (var generator in _hintGenerators)
         {
-            var hint = generator.TryGenerateHint(type, sourceEvent.TokenName, sourceEvent, diagnostics);
+            var hint = generator.TryGenerateHint(type, sourceEvent.TokenName, sourceEvent, context);
             if (hint != null)
                 return hint;
         }

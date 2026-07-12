@@ -8,7 +8,7 @@ internal sealed class ValidatorValueHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.ValidatorRejection)
             return null;

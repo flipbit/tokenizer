@@ -20,7 +20,7 @@ internal sealed class IssueFactory
     /// generating a hint from the hint generator chain if possible.
     /// </summary>
     internal DiagnosticIssue Create(DiagnosticIssueType type, TokenizationEvent sourceEvent,
-                                    string description, DiagnosticResult diagnostics)
+                                    string description, TokenizationDiagnostics diagnostics)
     {
         var hint = GenerateHint(type, sourceEvent, diagnostics);
 
@@ -39,7 +39,7 @@ internal sealed class IssueFactory
     /// for a matched token whose assigned value contains the preamble of a missed or rejected token,
     /// suggesting greedy capture consumed more than intended.
     /// </summary>
-    internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, DiagnosticResult diagnostics)
+    internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, TokenizationDiagnostics diagnostics)
     {
         var sourceEvent = new TokenizationEvent
         {
@@ -59,7 +59,7 @@ internal sealed class IssueFactory
     /// Creates a <see cref="DiagnosticIssue"/> of type <see cref="DiagnosticIssueType.Blocked"/>
     /// for a token that was not searched because a prior required token failed to match.
     /// </summary>
-    internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, DiagnosticResult diagnostics)
+    internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, TokenizationDiagnostics diagnostics)
     {
         var sourceEvent = new TokenizationEvent
         {
@@ -76,7 +76,7 @@ internal sealed class IssueFactory
     }
 
     private string? GenerateHint(DiagnosticIssueType type, TokenizationEvent sourceEvent,
-                                  DiagnosticResult diagnostics)
+                                  TokenizationDiagnostics diagnostics)
     {
         foreach (var generator in _hintGenerators)
         {

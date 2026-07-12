@@ -3,9 +3,9 @@ using Xunit.Abstractions;
 
 namespace Tokens.Diagnostics;
 
-public class DiagnosticResultTests : TokenizerTestBase
+public class TokenizationDiagnosticsTests : TokenizerTestBase
 {
-    public DiagnosticResultTests(ITestOutputHelper output) : base(output)
+    public TokenizationDiagnosticsTests(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -13,7 +13,7 @@ public class DiagnosticResultTests : TokenizerTestBase
     public void GivenMatchedAndMissedTokens_WhenTokensAccessed_ThenPerTokenDiagnosticsAvailable()
     {
         // Arrange
-        var result = new DiagnosticResult(inputContent: null);
+        var result = new TokenizationDiagnostics(inputContent: null);
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "Name", Value = "John" });
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Age" });
 
@@ -30,7 +30,7 @@ public class DiagnosticResultTests : TokenizerTestBase
     public void GivenEvents_WhenRawEventsAccessed_ThenAllEventsAvailable()
     {
         // Arrange
-        var result = new DiagnosticResult(inputContent: null);
+        var result = new TokenizationDiagnostics(inputContent: null);
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "Name" });
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Age" });
 
@@ -42,7 +42,7 @@ public class DiagnosticResultTests : TokenizerTestBase
     public void GivenEmptyResult_WhenQueried_ThenReturnsEmptyCollections()
     {
         // Arrange
-        var result = new DiagnosticResult(inputContent: null);
+        var result = new TokenizationDiagnostics(inputContent: null);
 
         // Act & Assert
         Assert.Empty(result.RawEvents);
@@ -54,7 +54,7 @@ public class DiagnosticResultTests : TokenizerTestBase
     public void GivenResult_WhenVerdictAccessed_ThenReturnsVerdictString()
     {
         // Arrange
-        var result = new DiagnosticResult(inputContent: null);
+        var result = new TokenizationDiagnostics(inputContent: null);
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "First" });
         result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Second" });
 

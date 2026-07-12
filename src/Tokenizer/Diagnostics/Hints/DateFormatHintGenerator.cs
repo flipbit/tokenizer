@@ -22,7 +22,7 @@ internal sealed class DateFormatHintGenerator : IHintGenerator
 
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, DiagnosticResult trace)
+                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
     {
         if (sourceEvent.DecoratorName == null ||
             !sourceEvent.DecoratorName.Contains("ToDateTime", StringComparison.Ordinal))

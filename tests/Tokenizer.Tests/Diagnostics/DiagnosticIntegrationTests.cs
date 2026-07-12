@@ -197,7 +197,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(ex.Data["Diagnostics"]);
-        var diagnostics = (DiagnosticResult)ex.Data["Diagnostics"]!;
+        var diagnostics = (TokenizationDiagnostics)ex.Data["Diagnostics"]!;
         Assert.True(diagnostics.RawEvents.Count > 0);
     }
 }

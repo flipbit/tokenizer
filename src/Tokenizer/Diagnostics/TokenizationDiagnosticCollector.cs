@@ -8,7 +8,7 @@ namespace Tokens.Diagnostics;
 /// </summary>
 internal sealed class TokenizationDiagnosticCollector : ITokenizationDiagnosticCollector
 {
-    private readonly DiagnosticResult _diagnostics;
+    private readonly TokenizationDiagnostics _diagnostics;
 
     /// <summary>
     /// Initialises a collector for runtime tokenization.
@@ -18,7 +18,7 @@ internal sealed class TokenizationDiagnosticCollector : ITokenizationDiagnosticC
     /// <param name="optionalTokenNames">Token names that are optional.</param>
     public TokenizationDiagnosticCollector(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
-        _diagnostics = new DiagnosticResult(inputContent, outOfOrderTokens, optionalTokenNames);
+        _diagnostics = new TokenizationDiagnostics(inputContent, outOfOrderTokens, optionalTokenNames);
     }
 
     /// <inheritdoc />
@@ -43,5 +43,5 @@ internal sealed class TokenizationDiagnosticCollector : ITokenizationDiagnosticC
     }
 
     /// <inheritdoc />
-    public DiagnosticResult? GetResult() => _diagnostics;
+    public TokenizationDiagnostics? GetResult() => _diagnostics;
 }

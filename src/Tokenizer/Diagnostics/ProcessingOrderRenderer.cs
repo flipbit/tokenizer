@@ -9,7 +9,7 @@ namespace Tokens.Diagnostics;
 /// </summary>
 internal static class ProcessingOrderRenderer
 {
-    public static string Render(DiagnosticResult diagnostics)
+    public static string Render(TokenizationDiagnostics diagnostics)
     {
         var sb = new StringBuilder();
         var events = diagnostics.RawEvents;

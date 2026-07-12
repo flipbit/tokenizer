@@ -19,7 +19,7 @@ internal static class TokenDiagnosticBuilder
         new RepeatingTokenHintGenerator(),
     });
 
-    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(DiagnosticResult diagnostics, IssueFactory? issueFactory = null)
+    public static (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matchedCount, int missedCount, int totalCount) Build(TokenizationDiagnostics diagnostics, IssueFactory? issueFactory = null)
     {
         issueFactory ??= DefaultIssueFactory;
         var collected = CollectEvents(diagnostics, issueFactory);
@@ -81,7 +81,7 @@ internal static class TokenDiagnosticBuilder
         list.Add(evt);
     }
 
-    private static CollectedEventData CollectEvents(DiagnosticResult diagnostics, IssueFactory issueFactory)
+    private static CollectedEventData CollectEvents(TokenizationDiagnostics diagnostics, IssueFactory issueFactory)
     {
         diagnostics.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
         diagnostics.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
@@ -220,7 +220,7 @@ internal static class TokenDiagnosticBuilder
         return data;
     }
 
-    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, DiagnosticResult diagnostics, IssueFactory issueFactory)
+    private static List<TokenDiagnostic> ClassifyOutcomes(CollectedEventData data, TokenizationDiagnostics diagnostics, IssueFactory issueFactory)
     {
         // ValueMismatch detection: before building TokenDiagnostic objects, check if any
         // matched token's value contains the preamble of a missed/rejected token.
@@ -266,7 +266,7 @@ internal static class TokenDiagnosticBuilder
         return result;
     }
 
-    private static void ApplyValueMismatchIssues(CollectedEventData data, DiagnosticResult diagnostics, IssueFactory issueFactory)
+    private static void ApplyValueMismatchIssues(CollectedEventData data, TokenizationDiagnostics diagnostics, IssueFactory issueFactory)
     {
         if (data.PreambleTexts.Count == 0)
             return;
@@ -313,7 +313,7 @@ internal static class TokenDiagnosticBuilder
         }
     }
 
-    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, DiagnosticResult diagnostics, IssueFactory issueFactory)
+    private static void ApplyBlockedAnnotations(List<TokenDiagnostic> tokens, HashSet<string> optionalTokenNames, TokenizationDiagnostics diagnostics, IssueFactory issueFactory)
     {
         // Find the first non-optional, non-matched token — that's the blocker.
         // All subsequent NeverFound tokens are blocked by it.

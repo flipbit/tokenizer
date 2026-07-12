@@ -10,11 +10,11 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Name", value: "John");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "John", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Name", value: "John");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "John", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -35,9 +35,9 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("nothing");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Name");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Name");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -58,14 +58,14 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Email: bad");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
-        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Email",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
+        collector.Record(TokenizationEventType.ValidatorFailed, tokenName: "Email",
             decoratorName: "IsEmailValidator", value: "bad", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentFailed, tokenName: "Email", value: "bad");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Email");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenAssignmentFailed, tokenName: "Email", value: "bad");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Email");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -86,14 +86,14 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Date: not-a-date");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Date", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Date", value: "not-a-date");
-        collector.Record(DiagnosticEventType.TransformerFailed, tokenName: "Date",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Date", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Date", value: "not-a-date");
+        collector.Record(TokenizationEventType.TransformerFailed, tokenName: "Date",
             decoratorName: "ToDateTimeTransformer", value: "not-a-date", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentFailed, tokenName: "Date", value: "not-a-date");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Date");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenAssignmentFailed, tokenName: "Date", value: "not-a-date");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Date");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -111,21 +111,21 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Email: bad\nEmail: good@email.com");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
         // First attempt — rejected
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
-        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Email",
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
+        collector.Record(TokenizationEventType.ValidatorFailed, tokenName: "Email",
             decoratorName: "IsEmailValidator", value: "bad", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentFailed, tokenName: "Email", value: "bad");
+        collector.Record(TokenizationEventType.TokenAssignmentFailed, tokenName: "Email", value: "bad");
         // Second attempt — accepted
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Email", value: "good@email.com");
-        collector.Record(DiagnosticEventType.ValidatorPassed, tokenName: "Email",
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Email", value: "good@email.com");
+        collector.Record(TokenizationEventType.ValidatorPassed, tokenName: "Email",
             decoratorName: "IsEmailValidator", value: "good@email.com");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Email",
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Email",
             value: "good@email.com", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -145,10 +145,10 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "John");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Age");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "John");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Age");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -164,11 +164,11 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: bad\nName: John");
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name");
-        collector.Record(DiagnosticEventType.TokenAssignmentAttempted, tokenName: "Name", value: "bad");
-        collector.Record(DiagnosticEventType.BacktrackStarted, tokenName: "Name", value: "bad");
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "John");
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name");
+        collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Name", value: "bad");
+        collector.Record(TokenizationEventType.BacktrackStarted, tokenName: "Name", value: "bad");
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "John");
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -187,8 +187,8 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.HintMissing, tokenName: "Name", value: "Expected hint");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Name");
+        collector.Record(TokenizationEventType.HintMissing, tokenName: "Name", value: "Expected hint");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Name");
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -204,9 +204,9 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("no hint");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.HintMissing, value: "Expected text");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.HintMissing, value: "Expected text");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -225,10 +225,10 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: null,
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.ValidatorFailed, tokenName: null,
             decoratorName: "IsEmailValidator", value: "bad");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -243,10 +243,10 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TransformerFailed, tokenName: null,
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TransformerFailed, tokenName: null,
             decoratorName: "ToDateTimeTransformer", value: "bad");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -261,11 +261,11 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Items: one\nItems: two");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Items", tokenId: 1, value: "one");
-        collector.Record(DiagnosticEventType.RepeatingTokenDisabled, tokenName: "Items",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Items", tokenId: 1, value: "one");
+        collector.Record(TokenizationEventType.RepeatingTokenDisabled, tokenName: "Items",
             detail: "Line gap exceeded maximum");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -281,11 +281,11 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: Alice Age: 30");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name", detail: "Name: ");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "Alice Age: 30");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Age", detail: "Age: ");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name", detail: "Name: ");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "Alice Age: 30");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Age", detail: "Age: ");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act
@@ -301,10 +301,10 @@ public class TokenDiagnosticBuilderTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("nothing", outOfOrderTokens: true);
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Second");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "First");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Second");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var diagnostics = collector.GetResult()!;
 
         // Act

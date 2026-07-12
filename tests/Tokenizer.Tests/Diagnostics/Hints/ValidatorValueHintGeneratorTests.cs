@@ -11,9 +11,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Email",
             DecoratorName = "IsEmailValidator",
             Value = "notanemail",
@@ -33,9 +33,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Domain" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Domain",
             DecoratorName = "IsDomainNameValidator",
             Value = "not a domain",
@@ -55,9 +55,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Domain" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Domain",
             DecoratorName = "IsDomainNameValidator",
             Value = "notadomain!",
@@ -77,9 +77,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Count" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Count",
             DecoratorName = "IsNumericValidator",
             Value = "abc",
@@ -99,9 +99,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Phone" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Phone",
             DecoratorName = "IsPhoneNumberValidator",
             Value = "not-a-phone",
@@ -121,9 +121,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Token" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Token",
             DecoratorName = "SomeCustomValidator",
             Value = "value",
@@ -142,9 +142,9 @@ public class ValidatorValueHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Email" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Email",
             DecoratorName = "IsEmailValidator",
             Value = "notanemail",

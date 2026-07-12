@@ -12,7 +12,7 @@ public class DiagnosticCollectorTests
         var collector = NullDiagnosticCollector.Instance;
 
         // Act
-        collector.Record(DiagnosticEventType.TokenizationStarted, value: "test");
+        collector.Record(TokenizationEventType.TokenizationStarted, value: "test");
         var result = collector.GetResult();
 
         // Assert
@@ -26,7 +26,7 @@ public class DiagnosticCollectorTests
         var collector = new RuntimeDiagnosticCollector("input");
 
         // Act
-        collector.Record(DiagnosticEventType.TokenAssigned,
+        collector.Record(TokenizationEventType.TokenAssigned,
             tokenName: "DomainName", tokenId: 1,
             location: new FileLocation(), value: "bbc.co.uk");
         var result = collector.GetResult();
@@ -34,7 +34,7 @@ public class DiagnosticCollectorTests
         // Assert
         Assert.NotNull(result);
         Assert.Single(result!.RawEvents);
-        Assert.Equal(DiagnosticEventType.TokenAssigned, result.RawEvents[0].Type);
+        Assert.Equal(TokenizationEventType.TokenAssigned, result.RawEvents[0].Type);
         Assert.Equal("DomainName", result.RawEvents[0].TokenName);
         Assert.Equal("bbc.co.uk", result.RawEvents[0].Value);
     }
@@ -46,17 +46,17 @@ public class DiagnosticCollectorTests
         var collector = new RuntimeDiagnosticCollector("input");
 
         // Act
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "First");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "First");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var result = collector.GetResult();
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(4, result!.RawEvents.Count);
-        Assert.Equal(DiagnosticEventType.TokenizationStarted, result.RawEvents[0].Type);
-        Assert.Equal(DiagnosticEventType.TokenizationCompleted, result.RawEvents[3].Type);
+        Assert.Equal(TokenizationEventType.TokenizationStarted, result.RawEvents[0].Type);
+        Assert.Equal(TokenizationEventType.TokenizationCompleted, result.RawEvents[3].Type);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class DiagnosticCollectorTests
         var collector = new CompilationDiagnosticCollector();
 
         // Act
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "DomainName", tokenId: 1);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "DomainName", tokenId: 1);
         var result = collector.GetCompilationResult();
 
         // Assert

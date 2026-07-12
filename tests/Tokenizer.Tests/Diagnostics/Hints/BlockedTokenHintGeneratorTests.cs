@@ -11,9 +11,9 @@ public class BlockedTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.Blocked, TokenName = "City" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "City",
             Detail = "Country",
         };
@@ -32,9 +32,9 @@ public class BlockedTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.Blocked, TokenName = "City" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "City",
         };
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
@@ -51,9 +51,9 @@ public class BlockedTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "City" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "City",
             Detail = "Country",
         };

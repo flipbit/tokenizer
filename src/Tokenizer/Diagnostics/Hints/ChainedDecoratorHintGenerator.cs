@@ -9,7 +9,7 @@ internal sealed class ChainedDecoratorHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
+                                   TokenizationEvent sourceEvent, DiagnosticResult trace)
     {
         if (type != DiagnosticIssueType.ValidatorRejection &&
             type != DiagnosticIssueType.TransformerFailure)

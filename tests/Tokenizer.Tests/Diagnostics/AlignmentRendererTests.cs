@@ -15,13 +15,13 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John");
-        collector.Record(DiagnosticEventType.TokenizationStarted,
+        collector.Record(TokenizationEventType.TokenizationStarted,
             detail: "Template: test, Tokens: 1, Input length: 10");
-        collector.Record(DiagnosticEventType.PreambleMatched,
+        collector.Record(TokenizationEventType.PreambleMatched,
             tokenName: "Name", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenAssigned,
+        collector.Record(TokenizationEventType.TokenAssigned,
             tokenName: "Name", value: "John", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenizationCompleted,
+        collector.Record(TokenizationEventType.TokenizationCompleted,
             detail: "Matches: 1, Misses: 0");
 
         // Act
@@ -39,11 +39,11 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Age");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Age");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
 
         // Act
         var diagnostics = collector.GetResult()!;
@@ -59,10 +59,10 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
 
         // Act
         var diagnostics = collector.GetResult()!;
@@ -77,12 +77,12 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Email: notanemail");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator",
             value: "notanemail", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Email");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Email");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
 
         // Act
         var diagnostics = collector.GetResult()!;
@@ -99,13 +99,13 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Date: 21/11/2005");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TransformerFailed,
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeUtcTransformer",
             decoratorArgs: new[] { "yyyy-MM-dd" }, value: "21/11/2005",
             location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Date");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Date");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
 
         // Act
         var diagnostics = collector.GetResult()!;
@@ -121,10 +121,10 @@ public class AlignmentRendererTests : TokenizerTestBase
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("Name: John\nExtra line");
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name",
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
 
         // Act
         var diagnostics = collector.GetResult()!;

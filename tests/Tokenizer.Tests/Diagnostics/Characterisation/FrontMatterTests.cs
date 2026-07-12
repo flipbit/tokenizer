@@ -22,7 +22,7 @@ public class FrontMatterTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned
               && string.Equals(e.TokenName, "MyToken", StringComparison.Ordinal));
     }
 
@@ -40,8 +40,8 @@ public class FrontMatterTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         var frontMatterEvents = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
-                     || e.Type == DiagnosticEventType.FrontMatterTokenFailed)
+            .Where(e => e.Type == TokenizationEventType.FrontMatterTokenAssigned
+                     || e.Type == TokenizationEventType.FrontMatterTokenFailed)
             .ToList();
         foreach (var evt in frontMatterEvents)
         {
@@ -51,10 +51,10 @@ public class FrontMatterTests : TokenizerTestBase
         Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(frontMatterEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed
+            e => e.Type == TokenizationEventType.FrontMatterTokenFailed
               && string.Equals(e.TokenName, "MyDate", StringComparison.Ordinal));
         Assert.DoesNotContain(frontMatterEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned
               && string.Equals(e.TokenName, "MyDate", StringComparison.Ordinal));
     }
 

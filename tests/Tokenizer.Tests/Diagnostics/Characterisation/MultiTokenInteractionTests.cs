@@ -23,7 +23,7 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         foreach (var evt in diagnostics.RawEvents.Where(e =>
-            e.Type == DiagnosticEventType.TokenAssigned || e.Type == DiagnosticEventType.TokenMissed))
+            e.Type == TokenizationEventType.TokenAssigned || e.Type == TokenizationEventType.TokenMissed))
         {
             Output.WriteLine($"{evt.Type}: {evt.TokenName}");
         }
@@ -31,10 +31,10 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         Assert.Equal(0, diagnostics.MatchedCount);
         Assert.Equal(2, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
 
@@ -52,11 +52,11 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         // Email should fail validation ("Alice" is not an email)
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal));
         // Name should still match
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
@@ -73,7 +73,7 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var missed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenMissed)
+            .Where(e => e.Type == TokenizationEventType.TokenMissed)
             .ToList();
         Assert.Equal(3, missed.Count);
         Assert.Equal(0, diagnostics.MatchedCount);
@@ -93,13 +93,13 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         // Assert — characterise: A consumes to end despite later preambles in input
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "C", StringComparison.Ordinal));
         Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(2, diagnostics.MissedCount);
@@ -119,11 +119,11 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         var backtracks = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.BacktrackStarted)
+            .Where(e => e.Type == TokenizationEventType.BacktrackStarted)
             .ToList();
         Output.WriteLine($"Backtrack events: {backtracks.Count}");
         foreach (var evt in diagnostics.RawEvents.Where(e =>
-            e.Type == DiagnosticEventType.TokenAssigned || e.Type == DiagnosticEventType.TokenMissed))
+            e.Type == TokenizationEventType.TokenAssigned || e.Type == TokenizationEventType.TokenMissed))
         {
             Output.WriteLine($"{evt.Type}: {evt.TokenName} = {evt.Value}");
         }
@@ -132,11 +132,11 @@ public class MultiTokenInteractionTests : TokenizerTestBase
         Assert.Equal(0, diagnostics.MissedCount);
         Assert.Equal(0, backtracks.Count);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Label", StringComparison.Ordinal)
               && string.Equals(e.Value, "Name: fake", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
               && string.Equals(e.Value, "real", StringComparison.Ordinal));
     }

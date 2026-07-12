@@ -23,10 +23,10 @@ public class PreambleMatchingTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         Assert.DoesNotContain(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed);
+            e => e.Type == TokenizationEventType.TokenMissed);
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
         Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(0, diagnostics.MissedCount);
@@ -62,7 +62,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
@@ -166,10 +166,10 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
@@ -187,7 +187,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert — characterise which token matches
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
-        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == TokenizationEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = {evt.Value}");
         }
@@ -195,7 +195,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal)
               && string.Equals(e.Value, "a@b.com", StringComparison.Ordinal));
     }
@@ -213,7 +213,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Name", StringComparison.Ordinal))
             .ToList();
         Assert.Single(assigned);
@@ -234,7 +234,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
@@ -251,7 +251,7 @@ public class PreambleMatchingTests : TokenizerTestBase
         // Assert — characterise: does A match with empty value? Is an issue raised?
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
-        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == TokenizationEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = \"{evt.Value}\"");
         }
@@ -263,11 +263,11 @@ public class PreambleMatchingTests : TokenizerTestBase
         Assert.Equal(2, diagnostics.MatchedCount);
         Assert.Equal(0, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal)
               && string.Equals(e.Value, string.Empty, StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal)
               && string.Equals(e.Value, "hello", StringComparison.Ordinal));
     }

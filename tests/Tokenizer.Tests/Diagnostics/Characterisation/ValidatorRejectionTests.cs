@@ -22,7 +22,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.ValidatorRejection
@@ -42,10 +42,10 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorPassed
+            e => e.Type == TokenizationEventType.ValidatorPassed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal));
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
@@ -63,7 +63,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsNumericValidator", StringComparison.Ordinal));
     }
 
@@ -116,11 +116,11 @@ public class ValidatorRejectionTests : TokenizerTestBase
 
         // Preamble WAS found
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.PreambleMatched);
+            e => e.Type == TokenizationEventType.PreambleMatched);
 
         // Validator DID reject
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed);
+            e => e.Type == TokenizationEventType.ValidatorFailed);
 
         // Summary issues should report ValidatorRejection, NOT PreambleNeverFound
         var issues = diagnostics.Tokens.SelectMany(t => t.Issues);
@@ -143,7 +143,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Document: does IsNumeric pass then IsEmail fail? Or does the engine short-circuit?
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         foreach (var evt in diagnostics.RawEvents.Where(e =>
-            e.Type == DiagnosticEventType.ValidatorPassed || e.Type == DiagnosticEventType.ValidatorFailed))
+            e.Type == TokenizationEventType.ValidatorPassed || e.Type == TokenizationEventType.ValidatorFailed))
         {
             Output.WriteLine($"{evt.Type}: {evt.DecoratorName} on value '{evt.Value}'");
         }
@@ -151,10 +151,10 @@ public class ValidatorRejectionTests : TokenizerTestBase
         Assert.Equal(0, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorPassed
+            e => e.Type == TokenizationEventType.ValidatorPassed
               && string.Equals(e.DecoratorName, "IsNumericValidator", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
 
@@ -171,11 +171,11 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Assert — characterise: does repeating stop at first failure or continue?
         var diagnostics = result.Diagnostics!;
         var validatorPassed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.ValidatorPassed
+            .Where(e => e.Type == TokenizationEventType.ValidatorPassed
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         var validatorFailed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.ValidatorFailed
+            .Where(e => e.Type == TokenizationEventType.ValidatorFailed
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"ValidatorPassed count: {validatorPassed.Count}");
@@ -202,7 +202,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         // Preamble was found (at least once), so this should NOT be PreambleNeverFound
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.PreambleMatched);
+            e => e.Type == TokenizationEventType.PreambleMatched);
         // Document: is the issue ValidatorRejection or PreambleNeverFound?
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         foreach (var issue in diagnostics.Tokens.SelectMany(t => t.Issues))
@@ -231,7 +231,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         foreach (var evt in diagnostics.RawEvents.Where(e =>
-            e.Type == DiagnosticEventType.ValidatorFailed || e.Type == DiagnosticEventType.ValidatorPassed))
+            e.Type == TokenizationEventType.ValidatorFailed || e.Type == TokenizationEventType.ValidatorPassed))
         {
             Output.WriteLine($"{evt.Type}: {evt.DecoratorName} on value '{evt.Value}'");
         }
@@ -239,8 +239,8 @@ public class ValidatorRejectionTests : TokenizerTestBase
         // Empty value after preamble results in preamble-never-found (token not matched at all)
         Assert.Equal(0, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.ValidatorFailed);
-        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.ValidatorPassed);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == TokenizationEventType.ValidatorFailed);
+        Assert.DoesNotContain(diagnostics.RawEvents, e => e.Type == TokenizationEventType.ValidatorPassed);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.PreambleNeverFound
               && string.Equals(i.TokenName, "Name", StringComparison.Ordinal));
@@ -283,7 +283,7 @@ public class ValidatorRejectionTests : TokenizerTestBase
         Assert.Equal(0, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsNumericValidator", StringComparison.Ordinal));
     }
 

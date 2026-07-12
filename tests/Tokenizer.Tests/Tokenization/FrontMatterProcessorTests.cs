@@ -30,7 +30,7 @@ public class FrontMatterProcessorTests
 
         // Assert
         Assert.Contains(collector.GetResult()!.RawEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned);
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned);
     }
 
     [Fact]
@@ -57,9 +57,9 @@ public class FrontMatterProcessorTests
         // Assert
         var diagnosticResult = collector.GetResult();
         Assert.DoesNotContain(diagnosticResult!.RawEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned);
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned);
         Assert.DoesNotContain(diagnosticResult.RawEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
+            e => e.Type == TokenizationEventType.FrontMatterTokenFailed);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class FrontMatterProcessorTests
 
         // Assert
         Assert.Contains(collector.GetResult()!.RawEvents,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
+            e => e.Type == TokenizationEventType.FrontMatterTokenFailed);
         Assert.Empty(result.Tokens.Matches);
     }
 }

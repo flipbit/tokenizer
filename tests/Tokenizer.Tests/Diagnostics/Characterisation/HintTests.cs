@@ -22,7 +22,7 @@ public class HintTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.HintMatched);
+            e => e.Type == TokenizationEventType.HintMatched);
         Assert.DoesNotContain(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.HintMissing);
     }
@@ -40,7 +40,7 @@ public class HintTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.HintMissing);
+            e => e.Type == TokenizationEventType.HintMissing);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.HintMissing);
     }
@@ -57,8 +57,8 @@ public class HintTests : TokenizerTestBase
 
         // Assert — characterise: is hint matching case-sensitive or case-insensitive?
         var diagnostics = result.Diagnostics!;
-        var hintMatched = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.HintMatched);
-        var hintMissing = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.HintMissing);
+        var hintMatched = diagnostics.RawEvents.Any(e => e.Type == TokenizationEventType.HintMatched);
+        var hintMissing = diagnostics.RawEvents.Any(e => e.Type == TokenizationEventType.HintMissing);
         Output.WriteLine($"HintMatched: {hintMatched}, HintMissing: {hintMissing}");
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);

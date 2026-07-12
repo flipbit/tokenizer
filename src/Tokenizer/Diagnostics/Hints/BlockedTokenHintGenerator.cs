@@ -2,13 +2,13 @@ namespace Tokens.Diagnostics.Hints;
 
 /// <summary>
 /// Generates a hint for Blocked issues, suggesting the user fix the blocking
-/// token first. The blocker name is read from <see cref="DiagnosticEvent.Detail"/>.
+/// token first. The blocker name is read from <see cref="TokenizationEvent.Detail"/>.
 /// </summary>
 internal sealed class BlockedTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
+                                   TokenizationEvent sourceEvent, DiagnosticResult trace)
     {
         if (type != DiagnosticIssueType.Blocked)
             return null;

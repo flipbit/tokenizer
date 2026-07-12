@@ -57,7 +57,7 @@ internal sealed class TokenMatchRouter
         {
             if (_collector.IsEnabled)
             {
-                _collector.Record(DiagnosticEventType.PreambleMatched,
+                _collector.Record(TokenizationEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
                     location: context.Enumerator.Location);
             }

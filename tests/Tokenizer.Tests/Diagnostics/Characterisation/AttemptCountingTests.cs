@@ -22,19 +22,19 @@ public class AttemptCountingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var preambleMatches = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.PreambleMatched
+            .Where(e => e.Type == TokenizationEventType.PreambleMatched
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
         var validatorFailed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.ValidatorFailed
+            .Where(e => e.Type == TokenizationEventType.ValidatorFailed
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
         var validatorPassed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.ValidatorPassed
+            .Where(e => e.Type == TokenizationEventType.ValidatorPassed
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
 
@@ -64,11 +64,11 @@ public class AttemptCountingTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var validatorFailed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.ValidatorFailed
+            .Where(e => e.Type == TokenizationEventType.ValidatorFailed
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
         var tokenMissed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenMissed
+            .Where(e => e.Type == TokenizationEventType.TokenMissed
                      && string.Equals(e.TokenName, "Email", StringComparison.Ordinal))
             .ToList();
 
@@ -92,10 +92,10 @@ public class AttemptCountingTests : TokenizerTestBase
         // Assert — characterise how multiple candidates are handled
         var diagnostics = result.Diagnostics!;
         var attempted = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssignmentAttempted)
+            .Where(e => e.Type == TokenizationEventType.TokenAssignmentAttempted)
             .ToList();
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned)
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned)
             .ToList();
 
         Output.WriteLine($"TokenAssignmentAttempted: {attempted.Count}");

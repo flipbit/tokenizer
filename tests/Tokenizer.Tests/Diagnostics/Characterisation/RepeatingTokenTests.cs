@@ -22,7 +22,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
@@ -49,7 +49,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         }
         // Document: is RepeatingTokenDisabled event raised?
         var disabled = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.RepeatingTokenDisabled)
+            .Where(e => e.Type == TokenizationEventType.RepeatingTokenDisabled)
             .ToList();
         Output.WriteLine($"RepeatingTokenDisabled events: {disabled.Count}");
         Assert.NotNull(diagnostics);
@@ -74,7 +74,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         // Assert — characterise: does a line gap disable repeating?
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
@@ -98,11 +98,11 @@ public class RepeatingTokenTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "Item", StringComparison.Ordinal));
         // No RepeatingTokenDisabled — it was never started
         Assert.DoesNotContain(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.RepeatingTokenDisabled
+            e => e.Type == TokenizationEventType.RepeatingTokenDisabled
               && string.Equals(e.TokenName, "Item", StringComparison.Ordinal));
     }
 
@@ -119,7 +119,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned
+            .Where(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Item", StringComparison.Ordinal))
             .ToList();
         Output.WriteLine($"Matched {assigned.Count} occurrences");
@@ -142,7 +142,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerFailed
+            e => e.Type == TokenizationEventType.TransformerFailed
               && string.Equals(e.TokenName, "Date", StringComparison.Ordinal));
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.TransformerFailure);

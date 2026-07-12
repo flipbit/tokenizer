@@ -11,9 +11,9 @@ public class OptionalTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "MiddleName" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "MiddleName",
         };
         var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "MiddleName" };
@@ -33,9 +33,9 @@ public class OptionalTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "LastName" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "LastName",
         };
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
@@ -52,9 +52,9 @@ public class OptionalTokenHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "MiddleName" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "MiddleName",
             DecoratorName = "IsEmailValidator",
             Value = "test",

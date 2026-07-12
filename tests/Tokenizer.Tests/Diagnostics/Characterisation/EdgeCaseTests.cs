@@ -22,7 +22,7 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed
+            e => e.Type == TokenizationEventType.TokenMissed
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
@@ -39,7 +39,7 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed);
+            e => e.Type == TokenizationEventType.TokenMissed);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed);
+            e => e.Type == TokenizationEventType.TokenMissed);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents
-            .First(e => e.Type == DiagnosticEventType.TokenAssigned
+            .First(e => e.Type == TokenizationEventType.TokenAssigned
                      && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         Assert.Equal(longValue, assigned.Value);
     }
@@ -109,7 +109,7 @@ public class EdgeCaseTests : TokenizerTestBase
 
         // Assert — characterise: what does Name get? What does Age get?
         var diagnostics = result.Diagnostics!;
-        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == DiagnosticEventType.TokenAssigned))
+        foreach (var evt in diagnostics.RawEvents.Where(e => e.Type == TokenizationEventType.TokenAssigned))
         {
             Output.WriteLine($"Assigned: {evt.TokenName} = \"{evt.Value}\"");
         }
@@ -118,11 +118,11 @@ public class EdgeCaseTests : TokenizerTestBase
         Assert.Equal(2, diagnostics.MatchedCount);
         Assert.Equal(0, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal)
               && string.Equals(e.Value, "Age: 30", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Age", StringComparison.Ordinal)
               && string.Equals(e.Value, "25", StringComparison.Ordinal));
     }
@@ -140,7 +140,7 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         var assigned = diagnostics.RawEvents.First(
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         Assert.Equal("José", assigned.Value);
     }
@@ -158,10 +158,10 @@ public class EdgeCaseTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         var newlineEvents = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.NewlineTerminatedTokenProcessed)
+            .Where(e => e.Type == TokenizationEventType.NewlineTerminatedTokenProcessed)
             .ToList();
         Assert.NotEmpty(newlineEvents);
     }
@@ -182,7 +182,7 @@ public class EdgeCaseTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         // Document: does SingleUseTokenRemoved event appear?
         var removed = diagnostics.RawEvents
-            .Where(e => e.Type == DiagnosticEventType.SingleUseTokenRemoved)
+            .Where(e => e.Type == TokenizationEventType.SingleUseTokenRemoved)
             .ToList();
         Output.WriteLine($"SingleUseTokenRemoved events: {removed.Count}");
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
@@ -191,10 +191,10 @@ public class EdgeCaseTests : TokenizerTestBase
         Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(1, diagnostics.MissedCount);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.TokenName, "A", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "B", StringComparison.Ordinal));
     }
 
@@ -234,10 +234,10 @@ public class EdgeCaseTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         // Name should match
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
         // Document: does optional token appear in issues even though it's optional?
-        var nicknameMissed = diagnostics.RawEvents.Any(e => e.Type == DiagnosticEventType.TokenMissed
+        var nicknameMissed = diagnostics.RawEvents.Any(e => e.Type == TokenizationEventType.TokenMissed
             && string.Equals(e.TokenName, "Nickname", StringComparison.Ordinal));
         var nicknameInIssues = diagnostics.Tokens.SelectMany(t => t.Issues).Any(i =>
             string.Equals(i.TokenName, "Nickname", StringComparison.Ordinal));

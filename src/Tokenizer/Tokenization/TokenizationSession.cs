@@ -95,7 +95,7 @@ internal sealed class TokenizationSession
     {
         if (_collector.IsEnabled)
         {
-            _collector.Record(DiagnosticEventType.TokenizationStarted,
+            _collector.Record(TokenizationEventType.TokenizationStarted,
                 detail: $"Template: {_template.Name}, Tokens: {_template.Tokens.Count}");
         }
         context.MatchBuffer.Clear();
@@ -145,7 +145,7 @@ internal sealed class TokenizationSession
         FrontMatterProcessor.Process(_template, _result, _pipeline, context.Enumerator.Location);
         if (_collector.IsEnabled)
         {
-            _collector.Record(DiagnosticEventType.TokenizationCompleted,
+            _collector.Record(TokenizationEventType.TokenizationCompleted,
                 detail: $"Matches: {_result.Tokens.Matches.Count}, Misses: {_result.Tokens.Misses.Count}");
         }
     }

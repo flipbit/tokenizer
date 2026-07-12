@@ -14,8 +14,8 @@ public class DiagnosticResultTests : TokenizerTestBase
     {
         // Arrange
         var result = new DiagnosticResult(inputContent: null);
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name", Value = "John" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Age" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "Name", Value = "John" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Age" });
 
         // Act
         var tokens = result.Tokens;
@@ -31,8 +31,8 @@ public class DiagnosticResultTests : TokenizerTestBase
     {
         // Arrange
         var result = new DiagnosticResult(inputContent: null);
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "Name" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Age" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "Name" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Age" });
 
         // Act & Assert
         Assert.Equal(2, result.RawEvents.Count);
@@ -55,8 +55,8 @@ public class DiagnosticResultTests : TokenizerTestBase
     {
         // Arrange
         var result = new DiagnosticResult(inputContent: null);
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenAssigned, TokenName = "First" });
-        result.AddEvent(new DiagnosticEvent { Type = DiagnosticEventType.TokenMissed, TokenName = "Second" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenAssigned, TokenName = "First" });
+        result.AddEvent(new TokenizationEvent { Type = TokenizationEventType.TokenMissed, TokenName = "Second" });
 
         // Assert
         Assert.Equal("Matched 1 of 2 tokens (1 missed).", result.Verdict);

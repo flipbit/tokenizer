@@ -104,11 +104,12 @@ internal static class TokenDiagnosticBuilder
             switch (evt.Type)
             {
                 case DiagnosticEventType.ValidatorFailed:
-                    if (evt.TokenName != null)
-                        AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
+                    if (evt.TokenName == null)
+                        break;
+                    AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
                     var validatorDescription = BuildValidatorDescription(evt);
-                    data.TokensWithFailures.Add(evt.TokenName!);
-                    AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
+                    data.TokensWithFailures.Add(evt.TokenName);
+                    AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                     {
                         Location = evt.Location,
                         Value = evt.Value,
@@ -120,11 +121,12 @@ internal static class TokenDiagnosticBuilder
                     break;
 
                 case DiagnosticEventType.TransformerFailed:
-                    if (evt.TokenName != null)
-                        AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
+                    if (evt.TokenName == null)
+                        break;
+                    AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
                     var transformerDescription = BuildTransformerDescription(evt);
-                    data.TokensWithFailures.Add(evt.TokenName!);
-                    AddAttempt(data.Attempts, evt.TokenName!, new TokenAttempt
+                    data.TokensWithFailures.Add(evt.TokenName);
+                    AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                     {
                         Location = evt.Location,
                         Value = evt.Value,

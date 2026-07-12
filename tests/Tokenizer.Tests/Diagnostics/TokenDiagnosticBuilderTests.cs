@@ -219,4 +219,40 @@ public class TokenDiagnosticBuilderTests
             .Where(i => i.Type == DiagnosticIssueType.HintMissing).ToList();
         Assert.Single(hintIssues);
     }
+
+    [Fact]
+    public void GivenValidatorFailedWithNullTokenName_WhenBuilding_ThenDoesNotThrow()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("input");
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: null,
+            decoratorName: "IsEmailValidator", value: "bad");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        Assert.Empty(tokens);
+    }
+
+    [Fact]
+    public void GivenTransformerFailedWithNullTokenName_WhenBuilding_ThenDoesNotThrow()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("input");
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.TransformerFailed, tokenName: null,
+            decoratorName: "ToDateTimeTransformer", value: "bad");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        Assert.Empty(tokens);
+    }
 }

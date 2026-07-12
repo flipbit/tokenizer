@@ -13,7 +13,7 @@ internal static class IssueCodeMap
         DiagnosticIssueType.TransformerFailure => "TK003",
         DiagnosticIssueType.ValueMismatch => "TK004",
         DiagnosticIssueType.RepeatingTokenCutShort => "TK005",
-        // TK006: reserved
+        // TK006: formerly UnmatchedInputSection, reserved to prevent code reuse
         DiagnosticIssueType.HintMissing => "TK007",
         DiagnosticIssueType.Blocked => "TK008",
         _ => FormattableString.Invariant($"TK???({(int)type})"),

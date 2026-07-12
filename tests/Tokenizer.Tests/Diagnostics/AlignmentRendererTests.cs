@@ -151,4 +151,22 @@ public class AlignmentRendererTests : TokenizerTestBase
         Assert.Contains("blocked by", alignment, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Blocked:", alignment, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void GivenMissedTokenWithNoAttempts_WhenRenderingAlignment_ThenRendersWithoutError()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }\nAge: { Age }";
+        var input = "Name: John";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+        var alignment = result.Diagnostics!.RenderAlignment();
+
+        // Assert
+        Output.WriteLine(alignment);
+        Assert.Contains("Age", alignment, StringComparison.Ordinal);
+    }
 }

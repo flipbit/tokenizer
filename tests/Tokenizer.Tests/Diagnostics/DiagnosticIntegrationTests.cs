@@ -200,4 +200,23 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var diagnostics = (TokenizationDiagnostics)ex.Data["Diagnostics"]!;
         Assert.True(diagnostics.RawEvents.Count > 0);
     }
+
+    [Fact]
+    public void GivenOptionalToken_WhenMissed_ThenOptionalTokenHintGenerated()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Name: { Name }\nNickname: { Nickname? }";
+        var input = "Name: John";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var nickname = diagnostics.Tokens.FirstOrDefault(t => string.Equals(t.TokenName, "Nickname", StringComparison.Ordinal));
+        Assert.NotNull(nickname);
+        Assert.Contains(nickname!.Issues, i => i.Hint != null && i.Hint.Contains("optional", StringComparison.OrdinalIgnoreCase));
+    }
 }

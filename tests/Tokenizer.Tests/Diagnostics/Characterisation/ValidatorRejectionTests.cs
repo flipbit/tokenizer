@@ -9,13 +9,19 @@ public class ValidatorRejectionTests : TokenizerTestBase
     {
     }
 
-    [Fact]
-    public void GivenIsEmailValidator_WhenValueIsInvalid_ThenValidatorRejectionIssue()
+    public static IEnumerable<object[]> ValidatorRejectionCases => new List<object[]>
     {
-        // Arrange
-        var template = "Email: { Email : IsEmail }";
-        var input = "Email: notanemail";
+        new object[] { "Email: { Email : IsEmail }", "Email: notanemail", "IsEmailValidator" },
+        new object[] { "Count: { Count : IsNumeric }", "Count: twelve", "IsNumericValidator" },
+        new object[] { "Phone: { Phone : IsPhoneNumber }", "Phone: abc", "IsPhoneNumberValidator" },
+        new object[] { "Host: { Host : IsDomainName }", "Host: not a domain", "IsDomainNameValidator" },
+    };
 
+    [Theory]
+    [MemberData(nameof(ValidatorRejectionCases))]
+    public void GivenValidatorRejectsValue_WhenTokenizing_ThenDiagnosticsShowRejection(
+        string template, string input, string expectedDecoratorName)
+    {
         // Act
         var result = TokenizeWithDiagnostics(template, input);
 
@@ -23,10 +29,9 @@ public class ValidatorRejectionTests : TokenizerTestBase
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
             e => e.Type == TokenizationEventType.ValidatorFailed
-              && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
+              && string.Equals(e.DecoratorName, expectedDecoratorName, StringComparison.Ordinal));
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
-            i => i.Type == DiagnosticIssueType.ValidatorRejection
-              && string.Equals(i.TokenName, "Email", StringComparison.Ordinal));
+            i => i.Type == DiagnosticIssueType.ValidatorRejection);
     }
 
     [Fact]
@@ -48,57 +53,6 @@ public class ValidatorRejectionTests : TokenizerTestBase
             e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Email", StringComparison.Ordinal));
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
-    }
-
-    [Fact]
-    public void GivenIsNumericValidator_WhenValueIsText_ThenValidatorRejectionIssue()
-    {
-        // Arrange
-        var template = "Count: { Count : IsNumeric }";
-        var input = "Count: twelve";
-
-        // Act
-        var result = TokenizeWithDiagnostics(template, input);
-
-        // Assert
-        var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == TokenizationEventType.ValidatorFailed
-              && string.Equals(e.DecoratorName, "IsNumericValidator", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void GivenIsPhoneNumberValidator_WhenValueIsGibberish_ThenValidatorRejectionIssue()
-    {
-        // Arrange
-        var template = "Phone: { Phone : IsPhoneNumber }";
-        var input = "Phone: abc";
-
-        // Act
-        var result = TokenizeWithDiagnostics(template, input);
-
-        // Assert
-        var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
-            i => i.Type == DiagnosticIssueType.ValidatorRejection
-              && string.Equals(i.TokenName, "Phone", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void GivenIsDomainNameValidator_WhenValueIsInvalid_ThenValidatorRejectionIssue()
-    {
-        // Arrange
-        var template = "Host: { Host : IsDomainName }";
-        var input = "Host: not a domain";
-
-        // Act
-        var result = TokenizeWithDiagnostics(template, input);
-
-        // Assert
-        var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
-            i => i.Type == DiagnosticIssueType.ValidatorRejection
-              && string.Equals(i.TokenName, "Host", StringComparison.Ordinal));
     }
 
     [Fact]

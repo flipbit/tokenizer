@@ -93,8 +93,11 @@ internal sealed class TokenizationSession
 
     private void Initialize(TokenizationContext context)
     {
-        _collector.Record(DiagnosticEventType.TokenizationStarted,
-            detail: $"Template: {_template.Name}, Tokens: {_template.Tokens.Count}");
+        if (_collector.IsEnabled)
+        {
+            _collector.Record(DiagnosticEventType.TokenizationStarted,
+                detail: $"Template: {_template.Name}, Tokens: {_template.Tokens.Count}");
+        }
         context.MatchBuffer.Clear();
         _iterationCount = 0;
     }
@@ -140,7 +143,10 @@ internal sealed class TokenizationSession
     {
         _candidateProcessor.ProcessRemaining(context);
         FrontMatterProcessor.Process(_template, _result, _pipeline, context.Enumerator.Location);
-        _collector.Record(DiagnosticEventType.TokenizationCompleted,
-            detail: $"Matches: {_result.Tokens.Matches.Count}, Misses: {_result.Tokens.Misses.Count}");
+        if (_collector.IsEnabled)
+        {
+            _collector.Record(DiagnosticEventType.TokenizationCompleted,
+                detail: $"Matches: {_result.Tokens.Matches.Count}, Misses: {_result.Tokens.Misses.Count}");
+        }
     }
 }

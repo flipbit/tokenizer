@@ -86,23 +86,29 @@ internal sealed class DecoratorPipeline
             {
                 if (!decorator.TryTransform(evaluatedValue!, _options, out var output))
                 {
-                    _collector.Record(DiagnosticEventType.TransformerFailed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        location: location,
-                        value: evaluatedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name,
-                        decoratorArgs: decorator.Parameters.ToArray());
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(DiagnosticEventType.TransformerFailed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            location: location,
+                            value: evaluatedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name,
+                            decoratorArgs: decorator.Parameters.ToArray());
+                    }
 
                     return false;
                 }
 
-                _collector.Record(DiagnosticEventType.TransformerSucceeded,
-                    tokenName: token.Name, tokenId: token.Id,
-                    location: location,
-                    value: evaluatedValue?.ToString(),
-                    detail: output?.ToString(),
-                    decoratorName: decorator.DecoratorType.Name,
-                    decoratorArgs: decorator.Parameters.ToArray());
+                if (_collector.IsEnabled)
+                {
+                    _collector.Record(DiagnosticEventType.TransformerSucceeded,
+                        tokenName: token.Name, tokenId: token.Id,
+                        location: location,
+                        value: evaluatedValue?.ToString(),
+                        detail: output?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name,
+                        decoratorArgs: decorator.Parameters.ToArray());
+                }
 
                 evaluatedValue = output;
             }
@@ -111,17 +117,23 @@ internal sealed class DecoratorPipeline
             {
                 if (decorator.Validate(evaluatedValue!, _options))
                 {
-                    _collector.Record(DiagnosticEventType.ValidatorPassed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        value: evaluatedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(DiagnosticEventType.ValidatorPassed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            value: evaluatedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name);
+                    }
                 }
                 else
                 {
-                    _collector.Record(DiagnosticEventType.ValidatorFailed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        value: input?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(DiagnosticEventType.ValidatorFailed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            value: input?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name);
+                    }
 
                     return false;
                 }

@@ -54,4 +54,19 @@ public class CompilationDiagnosticsTests : TokenizerTestBase
         Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.DecoratorApplied);
         Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.CompilationCompleted);
     }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenCompilingWithDecorators_ThenDecoratorAppliedEventsRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+
+        // Act
+        var result = tokenizer.Compile("Email: { Email : IsEmail }");
+
+        // Assert
+        var diagnostics = result.Diagnostics!;
+        var decoratorEvents = diagnostics.Events.Where(e => e.Type == CompilationEventType.DecoratorApplied).ToList();
+        Assert.NotEmpty(decoratorEvents);
+    }
 }

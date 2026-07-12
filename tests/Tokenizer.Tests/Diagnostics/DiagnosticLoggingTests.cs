@@ -38,4 +38,24 @@ public class DiagnosticLoggingTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.NotEmpty(result.Diagnostics!.Tokens.SelectMany(t => t.Issues));
     }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenMissed_ThenIssueHasStableTKCode()
+    {
+        // Arrange
+        var tokenizer = CreateDiagnosticTokenizer();
+
+        // Act
+        var template = tokenizer.Compile("Name: { Name }\nAge: { Age }").Template;
+        var result = tokenizer.Tokenize(template, "Name: John");
+
+        // Assert
+        var issues = result.Diagnostics!.Tokens.SelectMany(t => t.Issues).ToList();
+        Assert.All(issues, issue =>
+        {
+            Assert.NotNull(issue.Code);
+            Assert.Matches(@"^TK\d{3}$", issue.Code);
+        });
+        Assert.Contains(issues, i => string.Equals(i.Code, "TK001", StringComparison.Ordinal));
+    }
 }

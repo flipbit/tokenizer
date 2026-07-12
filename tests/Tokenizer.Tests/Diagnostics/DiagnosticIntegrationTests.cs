@@ -1,3 +1,4 @@
+using Tokens.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -120,6 +121,28 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
             e => e.Type == DiagnosticEventType.PreambleMatched);
+    }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenizingWithDecorators_ThenDecoratorEventsRecorded()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Date: { Date : ToDateTime(yyyy-MM-dd) }";
+        var input = "Date: 2026-01-15";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+
+        // Assert
+        Assert.NotNull(result.Diagnostics);
+        Assert.Contains(result.Diagnostics!.RawEvents,
+            e => e.Type == DiagnosticEventType.TransformerSucceeded);
+        var transformerEvent = result.Diagnostics.RawEvents
+            .First(e => e.Type == DiagnosticEventType.TransformerSucceeded);
+        Assert.NotNull(transformerEvent.DecoratorArgs);
+        Assert.Contains("yyyy-MM-dd", transformerEvent.DecoratorArgs);
     }
 
     [Fact]

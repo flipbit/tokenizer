@@ -5,7 +5,7 @@ namespace Tokens.Diagnostics;
 /// <summary>
 /// The complete diagnostic story for a single token during tokenization.
 /// </summary>
-public sealed class TokenDiagnostic
+public sealed record TokenDiagnostic
 {
     /// <summary>
     /// Token name from the template.

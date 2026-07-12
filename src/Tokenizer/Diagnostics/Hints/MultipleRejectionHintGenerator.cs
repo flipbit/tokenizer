@@ -13,7 +13,7 @@ internal sealed class MultipleRejectionHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, DiagnosticResult trace)
+                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
     {
         if (type != DiagnosticIssueType.ValidatorRejection &&
             type != DiagnosticIssueType.TransformerFailure)

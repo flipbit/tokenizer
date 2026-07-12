@@ -17,5 +17,5 @@ internal interface IHintGenerator
     /// <param name="trace">The full diagnostic trace for cross-referencing</param>
     /// <returns>A human-readable hint string, or null if no hint applies</returns>
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                            TokenizationEvent sourceEvent, DiagnosticResult trace);
+                            TokenizationEvent sourceEvent, TokenizationDiagnostics trace);
 }

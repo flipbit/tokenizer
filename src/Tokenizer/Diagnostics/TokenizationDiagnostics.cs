@@ -9,7 +9,7 @@ namespace Tokens.Diagnostics;
 /// Thread safety: this type is not thread-safe. Designed for single-threaded
 /// access after tokenization completes.
 /// </remarks>
-public sealed class DiagnosticResult
+public sealed class TokenizationDiagnostics
 {
     private readonly List<TokenizationEvent> _events;
     private readonly string? _inputContent;
@@ -28,7 +28,7 @@ public sealed class DiagnosticResult
     internal Dictionary<string, List<TokenizationEvent>>? DecoratorSuccessesPerToken { get; set; }
     internal string[]? CachedInputLines { get; set; }
 
-    internal DiagnosticResult(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
+    internal TokenizationDiagnostics(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _inputContent = inputContent;
         _events = new List<TokenizationEvent>();

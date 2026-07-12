@@ -93,7 +93,7 @@ public class IssueFactoryTests
         internal ConstantHintGenerator(string hint) => _hint = hint;
 
         public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                       TokenizationEvent sourceEvent, DiagnosticResult trace)
+                                       TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
             => _hint;
     }
 }

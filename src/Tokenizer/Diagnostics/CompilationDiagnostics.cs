@@ -2,7 +2,7 @@ namespace Tokens.Diagnostics;
 
 /// <summary>
 /// Contains diagnostic events recorded during template compilation.
-/// Separate from runtime <see cref="DiagnosticResult"/> which covers tokenization.
+/// Separate from runtime <see cref="TokenizationDiagnostics"/> which covers tokenization.
 /// </summary>
 public sealed class CompilationDiagnostics
 {

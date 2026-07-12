@@ -9,9 +9,9 @@ public class DiagnosticEventTests
     public void GivenDiagnosticEvent_WhenCreated_ThenPropertiesAreSet()
     {
         // Arrange & Act
-        var evt = new DiagnosticEvent
+        var evt = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenAssigned,
+            Type = TokenizationEventType.TokenAssigned,
             TokenName = "DomainName",
             TokenId = 1,
             Location = new FileLocation(),
@@ -22,7 +22,7 @@ public class DiagnosticEventTests
         };
 
         // Assert
-        Assert.Equal(DiagnosticEventType.TokenAssigned, evt.Type);
+        Assert.Equal(TokenizationEventType.TokenAssigned, evt.Type);
         Assert.Equal("DomainName", evt.TokenName);
         Assert.Equal(1, evt.TokenId);
         Assert.NotNull(evt.Location);
@@ -36,9 +36,9 @@ public class DiagnosticEventTests
     public void GivenDiagnosticEvent_WhenCreatedWithDecoratorInfo_ThenDecoratorPropertiesAreSet()
     {
         // Arrange & Act
-        var evt = new DiagnosticEvent
+        var evt = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registered",
             TokenId = 5,
             Value = "21/11/2005",
@@ -47,7 +47,7 @@ public class DiagnosticEventTests
         };
 
         // Assert
-        Assert.Equal(DiagnosticEventType.TransformerFailed, evt.Type);
+        Assert.Equal(TokenizationEventType.TransformerFailed, evt.Type);
         Assert.Equal("ToDateTimeUtc", evt.DecoratorName);
         Assert.Single(evt.DecoratorArgs);
         Assert.Equal("yyyy-MM-dd", evt.DecoratorArgs[0]);

@@ -19,7 +19,7 @@ internal sealed class IssueFactory
     /// Creates a <see cref="DiagnosticIssue"/> for the given type and source event,
     /// generating a hint from the hint generator chain if possible.
     /// </summary>
-    internal DiagnosticIssue Create(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
+    internal DiagnosticIssue Create(DiagnosticIssueType type, TokenizationEvent sourceEvent,
                                     string description, DiagnosticResult diagnostics)
     {
         var hint = GenerateHint(type, sourceEvent, diagnostics);
@@ -41,9 +41,9 @@ internal sealed class IssueFactory
     /// </summary>
     internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, DiagnosticResult diagnostics)
     {
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenAssigned,
+            Type = TokenizationEventType.TokenAssigned,
             TokenName = tokenName,
             Detail = missedTokenName,
         };
@@ -61,9 +61,9 @@ internal sealed class IssueFactory
     /// </summary>
     internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, DiagnosticResult diagnostics)
     {
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = tokenName,
             Detail = blockerName,
         };
@@ -75,7 +75,7 @@ internal sealed class IssueFactory
             diagnostics);
     }
 
-    private string? GenerateHint(DiagnosticIssueType type, DiagnosticEvent sourceEvent,
+    private string? GenerateHint(DiagnosticIssueType type, TokenizationEvent sourceEvent,
                                   DiagnosticResult diagnostics)
     {
         foreach (var generator in _hintGenerators)

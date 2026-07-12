@@ -10,9 +10,9 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(Array.Empty<IHintGenerator>());
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Name",
         };
         var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
@@ -32,9 +32,9 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(new IHintGenerator[] { new ConstantHintGenerator("Check the value format.") });
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Email",
             Value = "bad",
         };
@@ -93,7 +93,7 @@ public class IssueFactoryTests
         internal ConstantHintGenerator(string hint) => _hint = hint;
 
         public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                       DiagnosticEvent sourceEvent, DiagnosticResult trace)
+                                       TokenizationEvent sourceEvent, DiagnosticResult trace)
             => _hint;
     }
 }

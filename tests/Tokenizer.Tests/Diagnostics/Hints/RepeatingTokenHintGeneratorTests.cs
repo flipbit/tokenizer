@@ -11,21 +11,21 @@ public class RepeatingTokenHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "NameServers",
             decoratorName: "IsDomainNameValidator",
             value: "not a domain");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["NameServers"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+            ["NameServers"] = new List<TokenizationEvent> { trace.RawEvents[0] },
         };
 
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            Type = TokenizationEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
             Detail = "Line gap detected",
         };
@@ -45,21 +45,21 @@ public class RepeatingTokenHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TransformerFailed,
+        collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Dates",
             decoratorName: "ToDateTimeTransformer",
             value: "not-a-date");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["Dates"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+            ["Dates"] = new List<TokenizationEvent> { trace.RawEvents[0] },
         };
 
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            Type = TokenizationEventType.RepeatingTokenDisabled,
             TokenName = "Dates",
             Detail = "Validation failure",
         };
@@ -79,11 +79,11 @@ public class RepeatingTokenHintGeneratorTests
     {
         // Arrange
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            Type = TokenizationEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
             Detail = "Line gap detected",
         };
@@ -102,11 +102,11 @@ public class RepeatingTokenHintGeneratorTests
     {
         // Arrange
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.RepeatingTokenDisabled,
+            Type = TokenizationEventType.RepeatingTokenDisabled,
             TokenName = "NameServers",
         };
 
@@ -122,11 +122,11 @@ public class RepeatingTokenHintGeneratorTests
     {
         // Arrange
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Token",
             Detail = "Some detail",
         };

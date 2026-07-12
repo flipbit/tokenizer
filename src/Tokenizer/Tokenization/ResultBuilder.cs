@@ -60,7 +60,7 @@ internal sealed class ResultBuilder : IResultBuilder
                         token.IsRequired);
                 }
 
-                collector.Record(DiagnosticEventType.TokenMissed,
+                collector.Record(TokenizationEventType.TokenMissed,
                     tokenName: token.Name, tokenId: token.Id,
                     detail: token.Preamble);
 

@@ -26,11 +26,11 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.NotNull(result.Diagnostics);
         Assert.True(result.Diagnostics!.RawEvents.Count > 0);
         Assert.Contains(result.Diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenizationStarted);
+            e => e.Type == TokenizationEventType.TokenizationStarted);
         Assert.Contains(result.Diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenizationCompleted);
+            e => e.Type == TokenizationEventType.TokenizationCompleted);
         Assert.Contains(result.Diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
+            e => e.Type == TokenizationEventType.TokenAssigned && string.Equals(e.TokenName, "Name", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
 
@@ -83,7 +83,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded
+            e => e.Type == TokenizationEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
 
@@ -102,7 +102,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenMissed && string.Equals(e.TokenName, "Age", StringComparison.Ordinal));
+            e => e.Type == TokenizationEventType.TokenMissed && string.Equals(e.TokenName, "Age", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
-            e => e.Type == DiagnosticEventType.PreambleMatched);
+            e => e.Type == TokenizationEventType.PreambleMatched);
     }
 
     [Fact]
@@ -138,9 +138,9 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         // Assert
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded);
+            e => e.Type == TokenizationEventType.TransformerSucceeded);
         var transformerEvent = result.Diagnostics.RawEvents
-            .First(e => e.Type == DiagnosticEventType.TransformerSucceeded);
+            .First(e => e.Type == TokenizationEventType.TransformerSucceeded);
         Assert.NotNull(transformerEvent.DecoratorArgs);
         Assert.Contains("yyyy-MM-dd", transformerEvent.DecoratorArgs);
     }
@@ -157,11 +157,11 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var compiled = tokenizer.Compile(template).Template;
         var result = tokenizer.Tokenize(compiled, input);
 
-        // Assert: runtime diagnostics contain only DiagnosticEvent (runtime) types,
+        // Assert: runtime diagnostics contain only TokenizationEvent (runtime) types,
         // not CompilationEvent types — separation is enforced by the type system.
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationStarted);
-        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationCompleted);
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == TokenizationEventType.TokenizationStarted);
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == TokenizationEventType.TokenizationCompleted);
     }
 
     [Fact]

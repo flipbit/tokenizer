@@ -38,7 +38,7 @@ internal sealed class CandidateProcessor
     {
         if (_collector.IsEnabled)
         {
-            _collector.Record(DiagnosticEventType.TokenAssignmentAttempted,
+            _collector.Record(TokenizationEventType.TokenAssignmentAttempted,
                 tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                 location: location,
                 value: context.Replacement.ToString());
@@ -50,7 +50,7 @@ internal sealed class CandidateProcessor
             {
                 if (_collector.IsEnabled)
                 {
-                    _collector.Record(DiagnosticEventType.TokenAssigned,
+                    _collector.Record(TokenizationEventType.TokenAssigned,
                         tokenName: evaluated.Name, tokenId: evaluated.Id,
                         location: location,
                         value: evaluatedValue?.ToString());
@@ -67,7 +67,7 @@ internal sealed class CandidateProcessor
 
             if (_collector.IsEnabled)
             {
-                _collector.Record(DiagnosticEventType.TokenAssignmentFailed,
+                _collector.Record(TokenizationEventType.TokenAssignmentFailed,
                     tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                     location: location,
                     value: context.Replacement.ToString());
@@ -110,7 +110,7 @@ internal sealed class CandidateProcessor
         {
             if (_collector.IsEnabled)
             {
-                _collector.Record(DiagnosticEventType.BacktrackStarted,
+                _collector.Record(TokenizationEventType.BacktrackStarted,
                     tokenName: string.Join(", ", context.Candidates.Tokens.Select(t => t.Name)),
                     location: context.Enumerator.Location,
                     value: replacementValue);
@@ -139,7 +139,7 @@ internal sealed class CandidateProcessor
                 {
                     if (_collector.IsEnabled)
                     {
-                        _collector.Record(DiagnosticEventType.RepeatingTokenDisabled,
+                        _collector.Record(TokenizationEventType.RepeatingTokenDisabled,
                             tokenName: token.Name, tokenId: token.Id,
                             location: context.Enumerator.Location);
                     }
@@ -151,7 +151,7 @@ internal sealed class CandidateProcessor
                 {
                     if (_collector.IsEnabled)
                     {
-                        _collector.Record(DiagnosticEventType.SingleUseTokenRemoved,
+                        _collector.Record(TokenizationEventType.SingleUseTokenRemoved,
                             tokenName: token.Name, tokenId: token.Id,
                             location: context.Enumerator.Location);
                     }
@@ -181,7 +181,7 @@ internal sealed class CandidateProcessor
 
         if (_collector.IsEnabled)
         {
-            _collector.Record(DiagnosticEventType.NewlineTerminatedTokenProcessed,
+            _collector.Record(TokenizationEventType.NewlineTerminatedTokenProcessed,
                 tokenName: firstToken.Name,
                 tokenId: firstToken.Id,
                 value: context.Replacement.ToString(),

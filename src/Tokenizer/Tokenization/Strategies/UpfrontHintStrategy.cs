@@ -37,7 +37,7 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
             {
                 result.Hints.TryAddMatch(hint, enumerator);
 
-                collector.Record(DiagnosticEventType.HintMatched,
+                collector.Record(TokenizationEventType.HintMatched,
                     value: hint.Text,
                     location: enumerator.Location);
             }
@@ -48,7 +48,7 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
         {
             if (result.Hints.TryAddMiss(hint) && !hint.Optional)
             {
-                collector.Record(DiagnosticEventType.HintMissing,
+                collector.Record(TokenizationEventType.HintMissing,
                     value: hint.Text);
             }
         }

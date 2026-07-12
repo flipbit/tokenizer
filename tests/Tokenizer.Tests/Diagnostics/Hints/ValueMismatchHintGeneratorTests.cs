@@ -10,9 +10,9 @@ public class ValueMismatchHintGeneratorTests
     public void GivenValueMismatchIssueWithMissedToken_WhenGeneratingHint_ThenIncludesMissedTokenName()
     {
         // Arrange
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenAssigned,
+            Type = TokenizationEventType.TokenAssigned,
             TokenName = "Description",
             Value = "some greedy value",
             Detail = "Price",
@@ -32,9 +32,9 @@ public class ValueMismatchHintGeneratorTests
     public void GivenValueMismatchIssueWithNoMissedToken_WhenGeneratingHint_ThenSuggestsEndDelimiter()
     {
         // Arrange
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenAssigned,
+            Type = TokenizationEventType.TokenAssigned,
             TokenName = "Description",
             Value = "some greedy value",
         };
@@ -52,9 +52,9 @@ public class ValueMismatchHintGeneratorTests
     public void GivenNonValueMismatchIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.ValidatorFailed,
+            Type = TokenizationEventType.ValidatorFailed,
             TokenName = "Description",
             DecoratorName = "IsEmailValidator",
             Value = "test",

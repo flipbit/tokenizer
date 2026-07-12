@@ -22,7 +22,7 @@ public class TransformerFailureTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerFailed);
+            e => e.Type == TokenizationEventType.TransformerFailed);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
             i => i.Type == DiagnosticIssueType.TransformerFailure
               && string.Equals(i.TokenName, "Date", StringComparison.Ordinal));
@@ -41,9 +41,9 @@ public class TransformerFailureTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded);
+            e => e.Type == TokenizationEventType.TransformerSucceeded);
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TokenAssigned
+            e => e.Type == TokenizationEventType.TokenAssigned
               && string.Equals(e.TokenName, "Date", StringComparison.Ordinal));
         Assert.Empty(diagnostics.Tokens.SelectMany(t => t.Issues));
     }
@@ -86,11 +86,11 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Preamble WAS found
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.PreambleMatched);
+            e => e.Type == TokenizationEventType.PreambleMatched);
 
         // Transformer DID fail
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerFailed);
+            e => e.Type == TokenizationEventType.TransformerFailed);
 
         var issues = diagnostics.Tokens.SelectMany(t => t.Issues);
         Assert.Contains(issues, i => i.Type == DiagnosticIssueType.TransformerFailure);
@@ -110,11 +110,11 @@ public class TransformerFailureTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded
+            e => e.Type == TokenizationEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
         // The failing decorator should be the validator, not the transformer
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.ValidatorFailed
+            e => e.Type == TokenizationEventType.ValidatorFailed
               && string.Equals(e.DecoratorName, "IsEmailValidator", StringComparison.Ordinal));
     }
 
@@ -131,10 +131,10 @@ public class TransformerFailureTests : TokenizerTestBase
         // Assert
         var diagnostics = result.Diagnostics!;
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded
+            e => e.Type == TokenizationEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
         Assert.Contains(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerFailed);
+            e => e.Type == TokenizationEventType.TransformerFailed);
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
     }
 
@@ -150,9 +150,9 @@ public class TransformerFailureTests : TokenizerTestBase
 
         // Assert
         var diagnostics = result.Diagnostics!;
-        Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TransformerFailed);
+        Assert.Contains(diagnostics.RawEvents, e => e.Type == TokenizationEventType.TransformerFailed);
         Assert.DoesNotContain(diagnostics.RawEvents,
-            e => e.Type == DiagnosticEventType.TransformerSucceeded
+            e => e.Type == TokenizationEventType.TransformerSucceeded
               && string.Equals(e.DecoratorName, "ToUpperTransformer", StringComparison.Ordinal));
     }
 

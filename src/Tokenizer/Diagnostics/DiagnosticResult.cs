@@ -11,7 +11,7 @@ namespace Tokens.Diagnostics;
 /// </remarks>
 public sealed class DiagnosticResult
 {
-    private readonly List<DiagnosticEvent> _events;
+    private readonly List<TokenizationEvent> _events;
     private readonly string? _inputContent;
     private string? _alignment;
     private string? _processingOrder;
@@ -24,14 +24,14 @@ public sealed class DiagnosticResult
         int MissedCount,
         int TotalCount);
 
-    internal Dictionary<string, List<DiagnosticEvent>>? RejectionsPerToken { get; set; }
-    internal Dictionary<string, List<DiagnosticEvent>>? DecoratorSuccessesPerToken { get; set; }
+    internal Dictionary<string, List<TokenizationEvent>>? RejectionsPerToken { get; set; }
+    internal Dictionary<string, List<TokenizationEvent>>? DecoratorSuccessesPerToken { get; set; }
     internal string[]? CachedInputLines { get; set; }
 
     internal DiagnosticResult(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _inputContent = inputContent;
-        _events = new List<DiagnosticEvent>();
+        _events = new List<TokenizationEvent>();
         OutOfOrderTokens = outOfOrderTokens;
         OptionalTokenNames = optionalTokenNames ?? new HashSet<string>(StringComparer.Ordinal);
     }
@@ -84,9 +84,9 @@ public sealed class DiagnosticResult
     /// This is the raw event trace for power users and engine debugging.
     /// For most use cases, prefer <see cref="Tokens"/> instead.
     /// </summary>
-    public IReadOnlyList<DiagnosticEvent> RawEvents => _events;
+    public IReadOnlyList<TokenizationEvent> RawEvents => _events;
 
-    internal void AddEvent(DiagnosticEvent evt) => _events.Add(evt);
+    internal void AddEvent(TokenizationEvent evt) => _events.Add(evt);
 
     /// <summary>
     /// Renders an alignment view showing how the template tokens mapped onto the input text.

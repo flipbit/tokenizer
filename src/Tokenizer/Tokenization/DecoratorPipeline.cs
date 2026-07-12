@@ -88,7 +88,7 @@ internal sealed class DecoratorPipeline
                 {
                     if (_collector.IsEnabled)
                     {
-                        _collector.Record(DiagnosticEventType.TransformerFailed,
+                        _collector.Record(TokenizationEventType.TransformerFailed,
                             tokenName: token.Name, tokenId: token.Id,
                             location: location,
                             value: evaluatedValue?.ToString(),
@@ -101,7 +101,7 @@ internal sealed class DecoratorPipeline
 
                 if (_collector.IsEnabled)
                 {
-                    _collector.Record(DiagnosticEventType.TransformerSucceeded,
+                    _collector.Record(TokenizationEventType.TransformerSucceeded,
                         tokenName: token.Name, tokenId: token.Id,
                         location: location,
                         value: evaluatedValue?.ToString(),
@@ -119,7 +119,7 @@ internal sealed class DecoratorPipeline
                 {
                     if (_collector.IsEnabled)
                     {
-                        _collector.Record(DiagnosticEventType.ValidatorPassed,
+                        _collector.Record(TokenizationEventType.ValidatorPassed,
                             tokenName: token.Name, tokenId: token.Id,
                             value: evaluatedValue?.ToString(),
                             decoratorName: decorator.DecoratorType.Name);
@@ -129,7 +129,7 @@ internal sealed class DecoratorPipeline
                 {
                     if (_collector.IsEnabled)
                     {
-                        _collector.Record(DiagnosticEventType.ValidatorFailed,
+                        _collector.Record(TokenizationEventType.ValidatorFailed,
                             tokenName: token.Name, tokenId: token.Id,
                             value: input?.ToString(),
                             decoratorName: decorator.DecoratorType.Name);

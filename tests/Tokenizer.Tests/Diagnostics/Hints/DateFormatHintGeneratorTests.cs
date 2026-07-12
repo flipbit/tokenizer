@@ -15,9 +15,9 @@ public class DateFormatHintGeneratorTests
             Type = DiagnosticIssueType.TransformerFailure,
             TokenName = "Registered",
         };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
@@ -42,9 +42,9 @@ public class DateFormatHintGeneratorTests
             Type = DiagnosticIssueType.TransformerFailure,
             TokenName = "Registered",
         };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
@@ -70,9 +70,9 @@ public class DateFormatHintGeneratorTests
             Type = DiagnosticIssueType.TransformerFailure,
             TokenName = "Name",
         };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Name",
             DecoratorName = "ToUpperTransformer",
             Value = "test",
@@ -95,9 +95,9 @@ public class DateFormatHintGeneratorTests
             Type = DiagnosticIssueType.TransformerFailure,
             TokenName = "Registered",
         };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registered",
             DecoratorName = "ToDateTimeUtcTransformer",
             DecoratorArgs = new[] { "yyyy-MM-dd" },
@@ -121,9 +121,9 @@ public class DateFormatHintGeneratorTests
             Type = DiagnosticIssueType.TransformerFailure,
             TokenName = "Created",
         };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Created",
             DecoratorName = "ToDateTimeTransformer",
             DecoratorArgs = new[] { "dd/MM/yyyy" },

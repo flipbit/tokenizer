@@ -5,7 +5,7 @@ namespace Tokens.Diagnostics;
 /// Every event type has a corresponding diagnostic meaning that AI agents
 /// and developers can use to understand the tokenization process.
 /// </summary>
-public enum DiagnosticEventType
+public enum TokenizationEventType
 {
     /// <summary>
     /// Tokenization has started for a template/input pair.

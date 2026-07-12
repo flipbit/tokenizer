@@ -8,7 +8,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   DiagnosticEvent sourceEvent, DiagnosticResult trace)
+                                   TokenizationEvent sourceEvent, DiagnosticResult trace)
     {
         if (type != DiagnosticIssueType.RepeatingTokenCutShort)
             return null;
@@ -19,7 +19,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
         {
             var last = rejections[rejections.Count - 1];
 
-            if (last.Type == DiagnosticEventType.ValidatorFailed)
+            if (last.Type == TokenizationEventType.ValidatorFailed)
             {
                 var validator = last.DecoratorName ?? "unknown validator";
                 var value = last.Value ?? "unknown value";
@@ -27,7 +27,7 @@ internal sealed class RepeatingTokenHintGenerator : IHintGenerator
                        $"The value '{value}' failed {validator} validation.";
             }
 
-            if (last.Type == DiagnosticEventType.TransformerFailed)
+            if (last.Type == TokenizationEventType.TransformerFailed)
             {
                 var transformer = last.DecoratorName ?? "unknown transformer";
                 var value = last.Value ?? "unknown value";

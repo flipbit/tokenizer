@@ -11,9 +11,9 @@ public class PreambleNearMissHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
@@ -34,9 +34,9 @@ public class PreambleNearMissHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Server" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Server",
             Detail = "Name Server:",
         };
@@ -56,9 +56,9 @@ public class PreambleNearMissHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
@@ -77,9 +77,9 @@ public class PreambleNearMissHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
@@ -98,9 +98,9 @@ public class PreambleNearMissHintGeneratorTests
     {
         // Arrange
         var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Token" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Token",
         };
         var collector = new RuntimeDiagnosticCollector("Some input text");

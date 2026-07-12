@@ -68,14 +68,14 @@ internal static class TokenDiagnosticBuilder
         public int MissedCount { get; set; }
     }
 
-    private static void AddToIndex(Dictionary<string, List<DiagnosticEvent>>? index, string tokenName, DiagnosticEvent evt)
+    private static void AddToIndex(Dictionary<string, List<TokenizationEvent>>? index, string tokenName, TokenizationEvent evt)
     {
         if (index == null)
             return;
 
         if (!index.TryGetValue(tokenName, out var list))
         {
-            list = new List<DiagnosticEvent>();
+            list = new List<TokenizationEvent>();
             index[tokenName] = list;
         }
         list.Add(evt);
@@ -83,8 +83,8 @@ internal static class TokenDiagnosticBuilder
 
     private static CollectedEventData CollectEvents(DiagnosticResult diagnostics, IssueFactory issueFactory)
     {
-        diagnostics.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
-        diagnostics.DecoratorSuccessesPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        diagnostics.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
+        diagnostics.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         var data = new CollectedEventData();
         var seenTokens = new HashSet<string>(StringComparer.Ordinal);
@@ -103,7 +103,7 @@ internal static class TokenDiagnosticBuilder
 
             switch (evt.Type)
             {
-                case DiagnosticEventType.ValidatorFailed:
+                case TokenizationEventType.ValidatorFailed:
                     if (evt.TokenName == null)
                         break;
                     AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
@@ -120,7 +120,7 @@ internal static class TokenDiagnosticBuilder
                     AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.ValidatorRejection, evt, validatorDescription, diagnostics));
                     break;
 
-                case DiagnosticEventType.TransformerFailed:
+                case TokenizationEventType.TransformerFailed:
                     if (evt.TokenName == null)
                         break;
                     AddToIndex(diagnostics.RejectionsPerToken, evt.TokenName, evt);
@@ -137,13 +137,13 @@ internal static class TokenDiagnosticBuilder
                     AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.TransformerFailure, evt, transformerDescription, diagnostics));
                     break;
 
-                case DiagnosticEventType.ValidatorPassed:
-                case DiagnosticEventType.TransformerSucceeded:
+                case TokenizationEventType.ValidatorPassed:
+                case TokenizationEventType.TransformerSucceeded:
                     if (evt.TokenName != null)
                         AddToIndex(diagnostics.DecoratorSuccessesPerToken, evt.TokenName, evt);
                     break;
 
-                case DiagnosticEventType.TokenAssigned:
+                case TokenizationEventType.TokenAssigned:
                     if (evt.TokenName != null)
                     {
                         data.AssignedTokens[evt.TokenName] = (evt.Value, evt.Location);
@@ -157,7 +157,7 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
-                case DiagnosticEventType.BacktrackStarted:
+                case TokenizationEventType.BacktrackStarted:
                     if (evt.TokenName != null)
                     {
                         AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
@@ -169,7 +169,7 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
-                case DiagnosticEventType.PreambleMatched:
+                case TokenizationEventType.PreambleMatched:
                     if (evt.TokenName != null && !string.IsNullOrEmpty(evt.Detail)
                         && !data.PreambleTexts.ContainsKey(evt.TokenName))
                     {
@@ -177,7 +177,7 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
-                case DiagnosticEventType.TokenMissed:
+                case TokenizationEventType.TokenMissed:
                     if (evt.TokenName != null)
                     {
                         data.MissedTokenNames.Add(evt.TokenName);
@@ -193,7 +193,7 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
-                case DiagnosticEventType.RepeatingTokenDisabled:
+                case TokenizationEventType.RepeatingTokenDisabled:
                     if (evt.TokenName != null)
                     {
                         AddIssue(data.Issues, issueFactory.Create(DiagnosticIssueType.RepeatingTokenCutShort, evt,
@@ -201,7 +201,7 @@ internal static class TokenDiagnosticBuilder
                     }
                     break;
 
-                case DiagnosticEventType.HintMissing:
+                case TokenizationEventType.HintMissing:
                     var hintDesc = string.IsNullOrEmpty(evt.Value)
                         ? "A required hint was not found in the input."
                         : $"Required hint not found in input: '{evt.Value}'.";
@@ -389,7 +389,7 @@ internal static class TokenDiagnosticBuilder
         return $"Matched {matched.ToInvariant()} of {total.ToInvariant()} tokens ({missed.ToInvariant()} missed).";
     }
 
-    private static string BuildTransformerDescription(DiagnosticEvent evt)
+    private static string BuildTransformerDescription(TokenizationEvent evt)
     {
         var sb = new StringBuilder();
         sb.Append("Transformer '").Append(evt.DecoratorName ?? "unknown").Append('\'');
@@ -410,7 +410,7 @@ internal static class TokenDiagnosticBuilder
         return sb.ToString();
     }
 
-    private static string BuildValidatorDescription(DiagnosticEvent evt)
+    private static string BuildValidatorDescription(TokenizationEvent evt)
     {
         var sb = new StringBuilder();
         sb.Append("Validator '").Append(evt.DecoratorName ?? "unknown").Append('\'');
@@ -423,7 +423,7 @@ internal static class TokenDiagnosticBuilder
         return sb.ToString();
     }
 
-    private static string BuildRepeatingTokenDescription(DiagnosticEvent evt)
+    private static string BuildRepeatingTokenDescription(TokenizationEvent evt)
     {
         var sb = new StringBuilder();
         sb.Append("Repeating token '").Append(evt.TokenName ?? "unknown").Append("' was cut short");

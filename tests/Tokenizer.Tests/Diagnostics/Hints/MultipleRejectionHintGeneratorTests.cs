@@ -11,16 +11,16 @@ public class MultipleRejectionHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "second@bad");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+            ["Email"] = new List<TokenizationEvent> { trace.RawEvents[0], trace.RawEvents[1] },
         };
 
         var sourceEvent = trace.RawEvents[1]; // the last rejection — must be the actual event for ReferenceEquals
@@ -40,16 +40,16 @@ public class MultipleRejectionHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TransformerFailed,
+        collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "not-a-date-1");
-        collector.Record(DiagnosticEventType.TransformerFailed,
+        collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "not-a-date-2");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["Date"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+            ["Date"] = new List<TokenizationEvent> { trace.RawEvents[0], trace.RawEvents[1] },
         };
 
         var sourceEvent = trace.RawEvents[1]; // the last rejection
@@ -69,14 +69,14 @@ public class MultipleRejectionHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad@value");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0] },
+            ["Email"] = new List<TokenizationEvent> { trace.RawEvents[0] },
         };
 
         var sourceEvent = trace.RawEvents[0];
@@ -92,13 +92,13 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenNonRejectionIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Email",
         };
         var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal);
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         // Act
         var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Email", sourceEvent, trace);
@@ -112,16 +112,16 @@ public class MultipleRejectionHintGeneratorTests
     {
         // Arrange
         var collector = new RuntimeDiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
-        collector.Record(DiagnosticEventType.ValidatorFailed,
+        collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "second@bad");
         var trace = collector.GetResult()!;
 
         // Pre-populate index (normally done by TokenDiagnosticBuilder)
-        trace.RejectionsPerToken = new Dictionary<string, List<DiagnosticEvent>>(StringComparer.Ordinal)
+        trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal)
         {
-            ["Email"] = new List<DiagnosticEvent> { trace.RawEvents[0], trace.RawEvents[1] },
+            ["Email"] = new List<TokenizationEvent> { trace.RawEvents[0], trace.RawEvents[1] },
         };
 
         var sourceEvent = trace.RawEvents[0]; // first rejection, not last

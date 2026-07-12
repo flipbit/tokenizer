@@ -87,4 +87,22 @@ public class ProcessingOrderRendererTests : TokenizerTestBase
         // Assert
         Assert.Same(first, second);
     }
+
+    [Fact]
+    public void GivenDecoratorWithArgs_WhenRendering_ThenArgsAppearInOutput()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Date: { Date : ToDateTime(yyyy-MM-dd) }";
+        var input = "Date: 2026-01-15";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+        var output = result.Diagnostics!.RenderProcessingOrder();
+
+        // Assert
+        Output.WriteLine(output);
+        Assert.Contains("yyyy-MM-dd", output, StringComparison.Ordinal);
+    }
 }

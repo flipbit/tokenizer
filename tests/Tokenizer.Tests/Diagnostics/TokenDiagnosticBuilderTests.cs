@@ -255,4 +255,63 @@ public class TokenDiagnosticBuilderTests
         // Assert
         Assert.Empty(tokens);
     }
+
+    [Fact]
+    public void GivenRepeatingTokenDisabled_WhenBuilding_ThenRepeatingTokenCutShortIssueCreated()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("Items: one\nItems: two");
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Items", tokenId: 1, value: "one");
+        collector.Record(DiagnosticEventType.RepeatingTokenDisabled, tokenName: "Items",
+            detail: "Line gap exceeded maximum");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        var items = tokens.First(t => string.Equals(t.TokenName, "Items", StringComparison.Ordinal));
+        Assert.Contains(items.Issues, i => i.Type == DiagnosticIssueType.RepeatingTokenCutShort);
+    }
+
+    [Fact]
+    public void GivenMatchedValueContainsMissedPreamble_WhenBuilding_ThenValueMismatchIssueAdded()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("Name: Alice Age: 30");
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Name", detail: "Name: ");
+        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "Name", value: "Alice Age: 30");
+        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Age", detail: "Age: ");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        var nameToken = tokens.First(t => string.Equals(t.TokenName, "Name", StringComparison.Ordinal));
+        Assert.Contains(nameToken.Issues, i => i.Type == DiagnosticIssueType.ValueMismatch);
+    }
+
+    [Fact]
+    public void GivenOutOfOrderTokens_WhenBuilding_ThenNoBlockedAnnotationsApplied()
+    {
+        // Arrange
+        var collector = new RuntimeDiagnosticCollector("nothing", outOfOrderTokens: true);
+        collector.Record(DiagnosticEventType.TokenizationStarted);
+        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "First");
+        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Second");
+        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, _, _, _) = TokenDiagnosticBuilder.Build(diagnostics);
+
+        // Assert
+        Assert.All(tokens, t => Assert.NotEqual(TokenOutcome.Blocked, t.Outcome));
+        Assert.All(tokens, t => Assert.Null(t.BlockedBy));
+    }
 }

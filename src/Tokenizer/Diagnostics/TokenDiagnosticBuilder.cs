@@ -339,15 +339,10 @@ internal static class TokenDiagnosticBuilder
             // We have a blocker — mark subsequent NeverFound tokens as Blocked
             if (token.Outcome == TokenOutcome.NeverFound)
             {
-                tokens[i] = new TokenDiagnostic
+                tokens[i] = token with
                 {
-                    TokenName = token.TokenName,
-                    TokenId = token.TokenId,
                     Outcome = TokenOutcome.Blocked,
                     BlockedBy = blockerName,
-                    Attempts = token.Attempts,
-                    AssignedValue = token.AssignedValue,
-                    AssignedLocation = token.AssignedLocation,
                     Issues = new List<DiagnosticIssue>(token.Issues)
                     {
                         issueFactory.CreateBlocked(token.TokenName, blockerName, diagnostics),

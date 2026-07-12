@@ -1,3 +1,7 @@
+using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
+using ScalarValue = Serilog.Events.ScalarValue;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -57,5 +61,48 @@ public class DiagnosticLoggingTests : TokenizerTestBase
             Assert.Matches(@"^TK\d{3}$", issue.Code);
         });
         Assert.Contains(issues, i => string.Equals(i.Code, "TK001", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenMissed_ThenWarningLoggedWithIssueCode()
+    {
+        // Arrange
+        var logEvents = new List<LogEvent>();
+        var sink = new ListSink(logEvents);
+        var serilogLogger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.Sink(sink)
+            .WriteTo.TestOutput(Output)
+            .CreateLogger();
+        using var loggerFactory = new SerilogLoggerFactory(serilogLogger);
+        var tokenizer = new Tokenizer(new TokenizerOptions { EnableDiagnostics = true }, loggerFactory);
+
+        // Act
+        var template = tokenizer.Compile("Name: { Name }\nAge: { Age }").Template;
+        tokenizer.Tokenize(template, "Name: John");
+
+        // Assert
+        var warnings = logEvents.Where(e => e.Level == LogEventLevel.Warning).ToList();
+        Assert.NotEmpty(warnings);
+        var issueWarning = warnings.First(e => e.MessageTemplate.Text.Contains("{IssueCode}", StringComparison.Ordinal));
+        var issueCode = (ScalarValue)issueWarning.Properties["IssueCode"];
+        var tokenName = (ScalarValue)issueWarning.Properties["TokenName"];
+        Assert.Equal("TK001", issueCode.Value);
+        Assert.Equal("Age", tokenName.Value);
+    }
+
+    private sealed class ListSink : Serilog.Core.ILogEventSink
+    {
+        private readonly List<LogEvent> _events;
+
+        public ListSink(List<LogEvent> events)
+        {
+            _events = events;
+        }
+
+        public void Emit(LogEvent logEvent)
+        {
+            _events.Add(logEvent);
+        }
     }
 }

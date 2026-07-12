@@ -169,4 +169,23 @@ public class AlignmentRendererTests : TokenizerTestBase
         Output.WriteLine(alignment);
         Assert.Contains("Age", alignment, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void GivenTokenWithBacktrackAndRejection_WhenRenderingAlignment_ThenRendersCorrectly()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var template = "Email: { Email : IsEmail }";
+        var input = "Email: bad\nEmail: worse";
+
+        // Act
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+        var alignment = result.Diagnostics!.RenderAlignment();
+
+        // Assert
+        Output.WriteLine(alignment);
+        Assert.Contains("Email", alignment, StringComparison.Ordinal);
+        Assert.Contains("Missed", alignment, StringComparison.Ordinal);
+    }
 }

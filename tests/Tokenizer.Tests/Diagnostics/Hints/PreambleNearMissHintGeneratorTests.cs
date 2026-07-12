@@ -102,4 +102,24 @@ public class PreambleNearMissHintGeneratorTests
         // Assert
         Assert.Null(hint);
     }
+
+    [Fact]
+    public void GivenWindowsLineEndings_WhenCheckingNearMiss_ThenHintStillGenerated()
+    {
+        // Arrange
+        var sourceEvent = new TokenizationEvent
+        {
+            Type = TokenizationEventType.TokenMissed,
+            TokenName = "Registrar",
+            Detail = "Registrar:",
+        };
+        var context = new BuildContext("Line one\r\nREGISTRAR:\r\nLine three", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+
+        // Act
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Registrar", sourceEvent, context);
+
+        // Assert
+        Assert.NotNull(hint);
+        Assert.Contains("case difference", hint, StringComparison.OrdinalIgnoreCase);
+    }
 }

@@ -9,7 +9,7 @@ internal sealed class ChainedDecoratorHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.ValidatorRejection &&
             type != DiagnosticIssueType.TransformerFailure)
@@ -23,8 +23,7 @@ internal sealed class ChainedDecoratorHintGenerator : IHintGenerator
         if (tokenName == null || failingDecorator == null)
             return null;
 
-        if (trace.DecoratorSuccessesPerToken == null ||
-            !trace.DecoratorSuccessesPerToken.TryGetValue(tokenName, out var successes) ||
+        if (!context.DecoratorSuccessesPerToken.TryGetValue(tokenName, out var successes) ||
             successes.Count == 0)
         {
             return null;

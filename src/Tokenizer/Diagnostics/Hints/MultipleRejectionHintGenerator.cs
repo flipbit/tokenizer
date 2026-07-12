@@ -13,7 +13,7 @@ internal sealed class MultipleRejectionHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.ValidatorRejection &&
             type != DiagnosticIssueType.TransformerFailure)
@@ -24,8 +24,7 @@ internal sealed class MultipleRejectionHintGenerator : IHintGenerator
         if (tokenName == null)
             return null;
 
-        if (trace.RejectionsPerToken == null ||
-            !trace.RejectionsPerToken.TryGetValue(tokenName, out var rejections) ||
+        if (!context.RejectionsPerToken.TryGetValue(tokenName, out var rejections) ||
             rejections.Count < 2)
         {
             return null;

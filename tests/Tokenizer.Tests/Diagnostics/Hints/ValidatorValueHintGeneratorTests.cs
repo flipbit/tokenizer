@@ -10,7 +10,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenEmailWithoutAtSign_WhenGeneratingHint_ThenMentionsMissingAtSign()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Email" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -18,10 +17,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "notanemail",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Email", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -32,7 +31,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenDomainNameWithSpaces_WhenGeneratingHint_ThenMentionsSpaces()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Domain" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -40,10 +38,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsDomainNameValidator",
             Value = "not a domain",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Domain", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -54,7 +52,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenDomainNameWithoutSpaces_WhenGeneratingHint_ThenExplainsNotDomain()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Domain" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -62,10 +59,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsDomainNameValidator",
             Value = "notadomain!",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Domain", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -76,7 +73,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenIsNumericFailure_WhenGeneratingHint_ThenExplainsNotValidNumber()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Count" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -84,10 +80,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsNumericValidator",
             Value = "abc",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Count", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -98,7 +94,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenIsPhoneNumberFailure_WhenGeneratingHint_ThenMentionsNonPhoneCharacters()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Phone" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -106,10 +101,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsPhoneNumberValidator",
             Value = "not-a-phone",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Phone", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -120,7 +115,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenUnknownValidator_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "Token" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -128,10 +122,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "SomeCustomValidator",
             Value = "value",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Token", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -141,7 +135,6 @@ public class ValidatorValueHintGeneratorTests
     public void GivenNonValidatorRejectionIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Email" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TransformerFailed,
@@ -149,10 +142,10 @@ public class ValidatorValueHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "notanemail",
         };
-        var trace = new TokenizationDiagnosticCollector("i").GetResult()!;
+        var context = new BuildContext("i", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Email", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

@@ -8,7 +8,7 @@ internal sealed class OptionalTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
     public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
-                                   TokenizationEvent sourceEvent, TokenizationDiagnostics trace)
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (type != DiagnosticIssueType.PreambleNeverFound)
             return null;
@@ -16,7 +16,7 @@ internal sealed class OptionalTokenHintGenerator : IHintGenerator
         if (tokenName == null)
             return null;
 
-        if (!trace.OptionalTokenNames.Contains(tokenName))
+        if (!context.OptionalTokenNames.Contains(tokenName))
             return null;
 
         return $"Token '{tokenName}' is optional — no action needed unless you expected it to match.";

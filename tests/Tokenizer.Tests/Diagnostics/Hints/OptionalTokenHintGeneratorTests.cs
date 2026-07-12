@@ -10,17 +10,16 @@ public class OptionalTokenHintGeneratorTests
     public void GivenPreambleNeverFoundForOptionalToken_WhenGeneratingHint_ThenMentionsOptional()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "MiddleName" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TokenMissed,
             TokenName = "MiddleName",
         };
         var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "MiddleName" };
-        var trace = new TokenizationDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, optionalNames);
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "MiddleName", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -32,16 +31,15 @@ public class OptionalTokenHintGeneratorTests
     public void GivenPreambleNeverFoundForNonOptionalToken_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "LastName" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.TokenMissed,
             TokenName = "LastName",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "LastName", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -51,7 +49,6 @@ public class OptionalTokenHintGeneratorTests
     public void GivenNonPreambleIssueForOptionalToken_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.ValidatorRejection, TokenName = "MiddleName" };
         var sourceEvent = new TokenizationEvent
         {
             Type = TokenizationEventType.ValidatorFailed,
@@ -60,10 +57,10 @@ public class OptionalTokenHintGeneratorTests
             Value = "test",
         };
         var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "MiddleName" };
-        var trace = new TokenizationDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, optionalNames);
 
         // Act
-        var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "MiddleName", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

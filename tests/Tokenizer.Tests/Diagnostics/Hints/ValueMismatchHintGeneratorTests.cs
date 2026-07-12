@@ -17,10 +17,10 @@ public class ValueMismatchHintGeneratorTests
             Value = "some greedy value",
             Detail = "Price",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -38,10 +38,10 @@ public class ValueMismatchHintGeneratorTests
             TokenName = "Description",
             Value = "some greedy value",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -59,10 +59,10 @@ public class ValueMismatchHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "test",
         };
-        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
+        var context = new BuildContext("input", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Description", sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Description", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);

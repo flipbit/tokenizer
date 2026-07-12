@@ -360,4 +360,75 @@ public class TokenDiagnosticBuilderTests
         Assert.All(tokens, t => Assert.NotEqual(TokenOutcome.Blocked, t.Outcome));
         Assert.All(tokens, t => Assert.Null(t.BlockedBy));
     }
+
+    [Fact]
+    public void GivenOptionalTokenBeforeBlocker_WhenBuilding_ThenOptionalIsNotBlocker()
+    {
+        // Arrange
+        var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "Middle" };
+        var collector = new TokenizationDiagnosticCollector("input", optionalTokenNames: optionalNames);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Middle");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Required");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Last");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var builder = new TokenDiagnosticBuilder(diagnostics);
+        var (tokens, _, _, _, _) = builder.Build();
+
+        // Assert — "Middle" is optional so "Required" is the blocker, "Last" is blocked
+        var middle = tokens.First(t => t.TokenName == "Middle");
+        var required = tokens.First(t => t.TokenName == "Required");
+        var last = tokens.First(t => t.TokenName == "Last");
+        Assert.Equal(TokenOutcome.NeverFound, middle.Outcome);
+        Assert.Null(middle.BlockedBy);
+        Assert.Equal(TokenOutcome.NeverFound, required.Outcome);
+        Assert.Null(required.BlockedBy);
+        Assert.Equal(TokenOutcome.Blocked, last.Outcome);
+        Assert.Equal("Required", last.BlockedBy);
+    }
+
+    [Fact]
+    public void GivenMatchedValueContainsRejectedTokenPreamble_WhenBuilding_ThenValueMismatchIssueAdded()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("Email: notanemail Age: 30");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", detail: "Email: ");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Email", value: "notanemail Age: 30");
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Age", detail: "Age: ");
+        collector.Record(TokenizationEventType.ValidatorFailed, tokenName: "Age", decoratorName: "IsNumericValidator", value: "30");
+        collector.Record(TokenizationEventType.TokenMissed, tokenName: "Age", detail: "Age: ");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var builder = new TokenDiagnosticBuilder(diagnostics);
+        var (tokens, _, _, _, _) = builder.Build();
+
+        // Assert
+        var email = tokens.First(t => t.TokenName == "Email");
+        Assert.Contains(email.Issues, i => i.Type == DiagnosticIssueType.ValueMismatch);
+    }
+
+    [Fact]
+    public void GivenTokenWithOnlyPreambleMatch_WhenBuilding_ThenTokenNotIncludedInResult()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("Name: John");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name", detail: "Name: ");
+        // No TokenAssigned or TokenMissed — token has no terminal state
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var builder = new TokenDiagnosticBuilder(diagnostics);
+        var (tokens, _, _, _, _) = builder.Build();
+
+        // Assert
+        Assert.Empty(tokens);
+    }
 }

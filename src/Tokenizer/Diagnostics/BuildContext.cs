@@ -17,9 +17,9 @@ internal sealed class BuildContext
     public BuildContext(string? inputContent, bool outOfOrderTokens, HashSet<string> optionalTokenNames)
     {
         InputContent = inputContent;
-        InputLines = inputContent?.Split('\n') ?? Array.Empty<string>();
+        InputLines = inputContent?.Split('\n').Select(l => l.TrimEnd('\r')).ToArray() ?? Array.Empty<string>();
         OutOfOrderTokens = outOfOrderTokens;
-        OptionalTokenNames = optionalTokenNames;
+        OptionalTokenNames = new HashSet<string>(optionalTokenNames, StringComparer.Ordinal);
         RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
         DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
     }

@@ -42,7 +42,7 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
 
         for (var i = 0; i < lines.Length; i++)
         {
-            var line = lines[i].TrimEnd('\r');
+            var line = lines[i];
             var normalizedLine = NormalizeWhitespace(line);
             var lineNumber = i + 1;
 

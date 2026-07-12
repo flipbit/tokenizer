@@ -30,9 +30,9 @@ internal sealed class TemplateCompiler
 
     public CompilationResult Compile(string content)
     {
-        IDiagnosticCollector collector = Options.EnableDiagnostics
+        ICompilationDiagnosticCollector collector = Options.EnableDiagnostics
             ? new CompilationDiagnosticCollector()
-            : NullDiagnosticCollector.Instance;
+            : NullCompilationDiagnosticCollector.Instance;
 
         TemplateLengthValidator.Validate(content, Options);
 
@@ -51,19 +51,19 @@ internal sealed class TemplateCompiler
 
             if (collector.IsEnabled)
             {
-                collector.RecordCompilation(CompilationEventType.CompilationCompleted,
+                collector.Record(CompilationEventType.CompilationCompleted,
                     detail: $"Template '{template.Name}' compiled with {template.Tokens.Count} token(s)");
             }
 
             _log.LogDebug("Template '{TemplateName}' compiled successfully with {TokenCount} token(s)",
                 template.Name, template.Tokens.Count);
 
-            return new CompilationResult(template, collector.GetCompilationResult());
+            return new CompilationResult(template, collector.GetResult());
         }
         catch (TokenizerException ex)
         {
             _log.LogError(ex, "Template compilation failed: {Message}", ex.Message);
-            ex.Data["CompilationDiagnostics"] = collector.GetCompilationResult();
+            ex.Data["CompilationDiagnostics"] = collector.GetResult();
             throw;
         }
         // Intentional catch-all: compilation boundary that wraps unexpected exceptions
@@ -75,7 +75,7 @@ internal sealed class TemplateCompiler
         {
             _log.LogError(ex, "Unexpected error during template compilation: {Message}", ex.Message);
             var wrapped = new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
-            wrapped.Data["CompilationDiagnostics"] = collector.GetCompilationResult();
+            wrapped.Data["CompilationDiagnostics"] = collector.GetResult();
             throw wrapped;
         }
     }

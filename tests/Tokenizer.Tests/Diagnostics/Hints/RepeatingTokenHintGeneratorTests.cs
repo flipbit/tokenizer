@@ -10,7 +10,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenPriorValidatorFailure_WhenGeneratingHint_ThenMentionsValidatorAndValue()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "NameServers",
             decoratorName: "IsDomainNameValidator",
@@ -44,7 +44,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenPriorTransformerFailure_WhenGeneratingHint_ThenMentionsTransformerAndValue()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Dates",
             decoratorName: "ToDateTimeTransformer",
@@ -78,7 +78,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailure_WhenDetailPresent_ThenReturnsDetailBasedHint()
     {
         // Arrange
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
         trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         var sourceEvent = new TokenizationEvent
@@ -101,7 +101,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNoPriorFailureAndNoDetail_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
         trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         var sourceEvent = new TokenizationEvent
@@ -121,7 +121,7 @@ public class RepeatingTokenHintGeneratorTests
     public void GivenNonRepeatingTokenIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
         trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         var sourceEvent = new TokenizationEvent

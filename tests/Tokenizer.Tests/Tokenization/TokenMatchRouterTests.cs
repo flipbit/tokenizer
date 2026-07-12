@@ -17,11 +17,11 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance);
+            NullTokenizationDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("x"));
@@ -43,11 +43,11 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance);
+            NullTokenizationDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice"));
@@ -69,11 +69,11 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance);
+            NullTokenizationDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("A:helloB:world"));
@@ -98,11 +98,11 @@ public class TokenMatchRouterTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
         var router = new TokenMatchRouter(template, processor,
-            NullDiagnosticCollector.Instance);
+            NullTokenizationDiagnosticCollector.Instance);
 
         var context = new TokenizationContext();
         context.Initialize(new System.IO.StringReader("Name: Alice\nOther: stuff"));

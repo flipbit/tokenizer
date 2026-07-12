@@ -18,8 +18,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -45,8 +45,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -71,8 +71,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -97,8 +97,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -121,8 +121,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -146,8 +146,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();
@@ -172,8 +172,8 @@ public class CandidateProcessorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
         var processor = new CandidateProcessor(
             result, template,
-            new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance),
-            NullDiagnosticCollector.Instance,
+            new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance),
+            NullTokenizationDiagnosticCollector.Instance,
             NullLogger<TokenizationEngine>.Instance);
 
         var context = new TokenizationContext();

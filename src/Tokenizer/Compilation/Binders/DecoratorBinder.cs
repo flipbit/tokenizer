@@ -13,7 +13,7 @@ internal static class DecoratorBinder
 {
     public static void Bind(TokenDefinition definition, Token token,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
-        IDiagnosticCollector collector)
+        ICompilationDiagnosticCollector collector)
     {
         if (!string.IsNullOrEmpty(definition.Value))
         {
@@ -23,7 +23,7 @@ internal static class DecoratorBinder
 
             if (collector.IsEnabled)
             {
-                collector.RecordCompilation(CompilationEventType.DecoratorApplied,
+                collector.Record(CompilationEventType.DecoratorApplied,
                     tokenName: token.Name,
                     decoratorName: nameof(SetTransformer),
                     detail: definition.Value);
@@ -48,7 +48,7 @@ internal static class DecoratorBinder
         ValidateFrontMatterToken(definition, token);
     }
 
-    private static bool TryApplyConcatenation(string tokenName, DecoratorDefinition decorator, Token token, IDiagnosticCollector collector)
+    private static bool TryApplyConcatenation(string tokenName, DecoratorDefinition decorator, Token token, ICompilationDiagnosticCollector collector)
     {
         if (!string.Equals("concat", decorator.Name, StringComparison.InvariantCultureIgnoreCase))
             return false;
@@ -67,7 +67,7 @@ internal static class DecoratorBinder
 
         if (collector.IsEnabled)
         {
-            collector.RecordCompilation(CompilationEventType.ConcatenationApplied,
+            collector.Record(CompilationEventType.ConcatenationApplied,
                 tokenName: tokenName,
                 detail: token.ConcatenationString ?? "(empty)");
         }
@@ -77,7 +77,7 @@ internal static class DecoratorBinder
 
     private static bool TryApplyTransformer(DecoratorDefinition decorator, Token token,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
-        IDiagnosticCollector collector)
+        ICompilationDiagnosticCollector collector)
     {
         // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var transformerType in registry.Transformers)
@@ -100,7 +100,7 @@ internal static class DecoratorBinder
 
                 if (collector.IsEnabled)
                 {
-                    collector.RecordCompilation(CompilationEventType.DecoratorApplied,
+                    collector.Record(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
                         decoratorName: transformerType.Name,
                         decoratorArgs: decorator.Args.ToArray());
@@ -115,7 +115,7 @@ internal static class DecoratorBinder
 
     private static bool TryApplyValidator(DecoratorDefinition decorator, Token token,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
-        IDiagnosticCollector collector)
+        ICompilationDiagnosticCollector collector)
     {
         // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var validatorType in registry.Validators)
@@ -134,7 +134,7 @@ internal static class DecoratorBinder
 
                 if (collector.IsEnabled)
                 {
-                    collector.RecordCompilation(CompilationEventType.DecoratorApplied,
+                    collector.Record(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
                         decoratorName: validatorType.Name,
                         decoratorArgs: decorator.Args.ToArray());

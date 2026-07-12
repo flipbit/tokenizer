@@ -24,7 +24,7 @@ internal sealed class TokenizationEngine : ITokenizationEngine
     public TokenizationSession CreateSession(
         Template template,
         TokenizeResult result,
-        IDiagnosticCollector collector,
+        ITokenizationDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null)
     {
         ArgumentValidation.ThrowIfNull(template, nameof(template));

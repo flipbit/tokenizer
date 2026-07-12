@@ -17,7 +17,7 @@ public class BlockedTokenHintGeneratorTests
             TokenName = "City",
             Detail = "Country",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
@@ -37,7 +37,7 @@ public class BlockedTokenHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "City",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
@@ -57,7 +57,7 @@ public class BlockedTokenHintGeneratorTests
             TokenName = "City",
             Detail = "Country",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);

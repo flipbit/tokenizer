@@ -6,10 +6,10 @@ namespace Tokens.Diagnostics;
 public class DiagnosticCollectorTests
 {
     [Fact]
-    public void GivenNullCollector_WhenRecordingEvent_ThenGetResultReturnsNull()
+    public void GivenNullTokenizationCollector_WhenRecordingEvent_ThenGetResultReturnsNull()
     {
         // Arrange
-        var collector = NullDiagnosticCollector.Instance;
+        var collector = NullTokenizationDiagnosticCollector.Instance;
 
         // Act
         collector.Record(TokenizationEventType.TokenizationStarted, value: "test");
@@ -20,10 +20,10 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenRuntimeCollector_WhenRecordingEvent_ThenEventIsStored()
+    public void GivenTokenizationCollector_WhenRecordingEvent_ThenEventIsStored()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
 
         // Act
         collector.Record(TokenizationEventType.TokenAssigned,
@@ -40,10 +40,10 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenRuntimeCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
+    public void GivenTokenizationCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
 
         // Act
         collector.Record(TokenizationEventType.TokenizationStarted);
@@ -60,27 +60,14 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenRuntimeCollector_WhenGettingCompilationResult_ThenReturnsNull()
-    {
-        // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
-
-        // Act
-        var result = collector.GetCompilationResult();
-
-        // Assert
-        Assert.Null(result);
-    }
-
-    [Fact]
     public void GivenCompilationCollector_WhenRecordingCompilationEvent_ThenEventIsStored()
     {
         // Arrange
         var collector = new CompilationDiagnosticCollector();
 
         // Act
-        collector.RecordCompilation(CompilationEventType.TokenCreated, tokenName: "DomainName", tokenId: 1);
-        var result = collector.GetCompilationResult();
+        collector.Record(CompilationEventType.TokenCreated, tokenName: "DomainName", tokenId: 1);
+        var result = collector.GetResult();
 
         // Assert
         Assert.NotNull(result);
@@ -90,45 +77,24 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenCompilationCollector_WhenRecordingRuntimeEvent_ThenEventIsDiscarded()
+    public void GivenNullTokenizationCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
     {
-        // Arrange
-        var collector = new CompilationDiagnosticCollector();
-
-        // Act
-        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "DomainName", tokenId: 1);
-        var result = collector.GetCompilationResult();
-
         // Assert
-        Assert.NotNull(result);
-        Assert.Empty(result!.Events);
+        Assert.False(NullTokenizationDiagnosticCollector.Instance.IsEnabled);
     }
 
     [Fact]
-    public void GivenCompilationCollector_WhenGettingResult_ThenReturnsNull()
+    public void GivenNullCompilationCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
     {
-        // Arrange
-        var collector = new CompilationDiagnosticCollector();
-
-        // Act
-        var result = collector.GetResult();
-
         // Assert
-        Assert.Null(result);
+        Assert.False(NullCompilationDiagnosticCollector.Instance.IsEnabled);
     }
 
     [Fact]
-    public void GivenNullCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
-    {
-        // Assert
-        Assert.False(NullDiagnosticCollector.Instance.IsEnabled);
-    }
-
-    [Fact]
-    public void GivenRuntimeCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
+    public void GivenTokenizationCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("x");
+        var collector = new TokenizationDiagnosticCollector("x");
 
         // Assert
         Assert.True(collector.IsEnabled);
@@ -145,10 +111,20 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenNullCollector_WhenGetCompilationResult_ThenReturnsNull()
+    public void GivenNullCompilationCollector_WhenGetResult_ThenReturnsNull()
     {
         // Act
-        var result = NullDiagnosticCollector.Instance.GetCompilationResult();
+        var result = NullCompilationDiagnosticCollector.Instance.GetResult();
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void GivenNullTokenizationCollector_WhenGetResult_ThenReturnsNull()
+    {
+        // Act
+        var result = NullTokenizationDiagnosticCollector.Instance.GetResult();
 
         // Assert
         Assert.Null(result);

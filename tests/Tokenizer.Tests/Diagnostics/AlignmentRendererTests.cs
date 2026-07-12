@@ -14,7 +14,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenSuccessfulMatch_WhenRendering_ThenShowsMatchedTokens()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John");
+        var collector = new TokenizationDiagnosticCollector("Name: John");
         collector.Record(TokenizationEventType.TokenizationStarted,
             detail: "Template: test, Tokens: 1, Input length: 10");
         collector.Record(TokenizationEventType.PreambleMatched,
@@ -38,7 +38,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenMissedToken_WhenRendering_ThenShowsUnmatchedSection()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John");
+        var collector = new TokenizationDiagnosticCollector("Name: John");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
@@ -58,7 +58,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenRenderedAlignment_WhenRendered_ThenContainsSummarySection()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John");
+        var collector = new TokenizationDiagnosticCollector("Name: John");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());
@@ -76,7 +76,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenValidatorFailure_WhenRendering_ThenShowsRejectedNotPreambleNeverFound()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Email: notanemail");
+        var collector = new TokenizationDiagnosticCollector("Email: notanemail");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator",
@@ -98,7 +98,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenTransformerFailure_WhenRendering_ThenShowsTransformerDetails()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Date: 21/11/2005");
+        var collector = new TokenizationDiagnosticCollector("Date: 21/11/2005");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeUtcTransformer",
@@ -120,7 +120,7 @@ public class AlignmentRendererTests : TokenizerTestBase
     public void GivenHeaderSection_WhenRendered_ThenContainsTokenAndInputCounts()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John\nExtra line");
+        var collector = new TokenizationDiagnosticCollector("Name: John\nExtra line");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name",
             value: "John", location: new FileLocation());

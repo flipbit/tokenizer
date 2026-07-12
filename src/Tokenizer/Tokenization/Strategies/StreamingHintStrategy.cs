@@ -19,7 +19,7 @@ internal sealed class StreamingHintStrategy : IHintStrategy
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
+                           string? rawInput, TokenizeResult result, ITokenizationDiagnosticCollector collector)
     {
         _currentTemplate = template;
         _foundHints.Clear();

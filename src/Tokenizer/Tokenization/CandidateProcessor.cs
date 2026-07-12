@@ -13,14 +13,14 @@ internal sealed class CandidateProcessor
     private readonly TokenizeResult _result;
     private readonly Template _template;
     private readonly DecoratorPipeline _pipeline;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
     private readonly ILogger _logger;
 
     public CandidateProcessor(
         TokenizeResult result,
         Template template,
         DecoratorPipeline pipeline,
-        IDiagnosticCollector collector,
+        ITokenizationDiagnosticCollector collector,
         ILogger logger)
     {
         _result = result;

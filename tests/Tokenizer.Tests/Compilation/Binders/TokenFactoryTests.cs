@@ -25,7 +25,7 @@ public class TokenFactoryTests
         definition.AppendName("Name");
         definition.AppendPreamble("Preamble: ");
 
-        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("Name", token.Name);
         Assert.Equal("Preamble: ", token.Preamble);
@@ -43,7 +43,7 @@ public class TokenFactoryTests
     public void GivenTokenDefinitionWithNullName_WhenCreating_ThenNameDefaultsToEmpty()
     {
         var definition = new TokenDefinition { Content = "literal" };
-        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullCompilationDiagnosticCollector.Instance);
         Assert.Equal(string.Empty, token.Name);
     }
 
@@ -54,7 +54,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition { Content = "{Token}" };
         definition.AppendPreamble("\n  Hello");
 
-        var token = TokenFactory.Create(definition, options, NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("Hello", token.Preamble);
     }
@@ -66,7 +66,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition { Content = "{Token}" };
         definition.AppendPreamble("   ");
 
-        var token = TokenFactory.Create(definition, options, NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("   ", token.Preamble);
     }
@@ -78,7 +78,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition { Content = "{Token}" };
         definition.AppendPreamble("  \n");
 
-        var token = TokenFactory.Create(definition, options, NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("\n", token.Preamble);
     }
@@ -90,7 +90,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition { Content = "{Token}" };
         definition.AppendPreamble("First line\nSecond line");
 
-        var token = TokenFactory.Create(definition, options, NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("Second line", token.Preamble);
     }
@@ -102,7 +102,7 @@ public class TokenFactoryTests
         var definition = new TokenDefinition { Content = "{Token}" };
         definition.AppendPreamble("No newline here");
 
-        var token = TokenFactory.Create(definition, options, NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal("No newline here", token.Preamble);
     }
@@ -117,7 +117,7 @@ public class TokenFactoryTests
             Location = location,
         };
 
-        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullDiagnosticCollector.Instance);
+        var token = TokenFactory.Create(definition, new TokenizerOptions(), NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(location, token.Location);
     }

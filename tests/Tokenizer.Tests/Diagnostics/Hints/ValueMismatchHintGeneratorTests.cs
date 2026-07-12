@@ -17,7 +17,7 @@ public class ValueMismatchHintGeneratorTests
             Value = "some greedy value",
             Detail = "Price",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
@@ -38,7 +38,7 @@ public class ValueMismatchHintGeneratorTests
             TokenName = "Description",
             Value = "some greedy value",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValueMismatch, "Description", sourceEvent, trace);
@@ -59,7 +59,7 @@ public class ValueMismatchHintGeneratorTests
             DecoratorName = "IsEmailValidator",
             Value = "test",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(DiagnosticIssueType.ValidatorRejection, "Description", sourceEvent, trace);

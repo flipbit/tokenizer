@@ -6,7 +6,7 @@ namespace Tokens.Diagnostics;
 /// Active diagnostic collector that records events during template compilation.
 /// Create one instance per compilation call and pass it through the pipeline.
 /// </summary>
-internal sealed class CompilationDiagnosticCollector : IDiagnosticCollector
+internal sealed class CompilationDiagnosticCollector : ICompilationDiagnosticCollector
 {
     private readonly CompilationDiagnostics _compilationDiagnostics;
 
@@ -22,14 +22,7 @@ internal sealed class CompilationDiagnosticCollector : IDiagnosticCollector
     public bool IsEnabled => true;
 
     /// <inheritdoc />
-    public void Record(TokenizationEventType type, string? tokenName = null, int? tokenId = null,
-                       FileLocation? location = null, string? value = null, string? detail = null,
-                       string? decoratorName = null, string[]? decoratorArgs = null)
-    {
-    }
-
-    /// <inheritdoc />
-    public void RecordCompilation(CompilationEventType type, string? tokenName = null, int? tokenId = null,
+    public void Record(CompilationEventType type, string? tokenName = null, int? tokenId = null,
                        FileLocation? location = null, string? value = null, string? detail = null,
                        string? decoratorName = null, string[]? decoratorArgs = null)
     {
@@ -47,8 +40,5 @@ internal sealed class CompilationDiagnosticCollector : IDiagnosticCollector
     }
 
     /// <inheritdoc />
-    public DiagnosticResult? GetResult() => null;
-
-    /// <inheritdoc />
-    public CompilationDiagnostics? GetCompilationResult() => _compilationDiagnostics;
+    public CompilationDiagnostics? GetResult() => _compilationDiagnostics;
 }

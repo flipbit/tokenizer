@@ -34,7 +34,7 @@ internal sealed class ResultBuilder : IResultBuilder
     public void BuildUnmatchedTokens(
         Template template,
         TokenizeResult result,
-        IDiagnosticCollector collector)
+        ITokenizationDiagnosticCollector collector)
     {
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(result, nameof(result));

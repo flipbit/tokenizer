@@ -15,7 +15,7 @@ public class IssueFactoryTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "Name",
         };
-        var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var issue = factory.Create(DiagnosticIssueType.PreambleNeverFound, sourceEvent, "Token 'Name' was never found.", diagnostics);
@@ -38,7 +38,7 @@ public class IssueFactoryTests
             TokenName = "Email",
             Value = "bad",
         };
-        var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var issue = factory.Create(DiagnosticIssueType.ValidatorRejection, sourceEvent, "Validator rejected 'bad'.", diagnostics);
@@ -53,7 +53,7 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(new IHintGenerator[] { new BlockedTokenHintGenerator() });
-        var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var issue = factory.CreateBlocked(tokenName: "C", blockerName: "B", diagnostics);
@@ -70,7 +70,7 @@ public class IssueFactoryTests
     {
         // Arrange
         var factory = new IssueFactory(new IHintGenerator[] { new ValueMismatchHintGenerator() });
-        var diagnostics = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var diagnostics = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var issue = factory.CreateValueMismatch("Description", "Price", diagnostics);

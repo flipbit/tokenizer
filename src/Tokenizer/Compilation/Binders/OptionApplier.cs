@@ -7,7 +7,7 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class OptionApplier
 {
-    public static void Apply(Token token, TokenizerOptions options, IDiagnosticCollector collector)
+    public static void Apply(Token token, TokenizerOptions options, ICompilationDiagnosticCollector collector)
     {
         if (options.OutOfOrderTokens)
         {
@@ -15,7 +15,7 @@ internal static class OptionApplier
 
             if (collector.IsEnabled)
             {
-                collector.RecordCompilation(CompilationEventType.OptionApplied,
+                collector.Record(CompilationEventType.OptionApplied,
                     tokenName: token.Name,
                     detail: "OutOfOrderTokens: marked as optional");
             }
@@ -27,7 +27,7 @@ internal static class OptionApplier
 
             if (collector.IsEnabled)
             {
-                collector.RecordCompilation(CompilationEventType.OptionApplied,
+                collector.Record(CompilationEventType.OptionApplied,
                     tokenName: token.Name,
                     detail: "TerminateOnNewLine: applied from global option");
             }

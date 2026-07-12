@@ -39,7 +39,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.CreateSession(null!, result, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(null!, result, NullTokenizationDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class TokenizationEngineErrorTests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _engine.CreateSession(template, null!, NullDiagnosticCollector.Instance));
+            _engine.CreateSession(template, null!, NullTokenizationDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class TokenizationEngineErrorTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

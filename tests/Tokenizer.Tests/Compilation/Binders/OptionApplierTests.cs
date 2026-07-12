@@ -12,7 +12,7 @@ public class OptionApplierTests
         var options = new TokenizerOptions { OutOfOrderTokens = true };
         var token = new Token("Name", "Preamble", new FileLocation());
 
-        OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
+        OptionApplier.Apply(token, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.True(token.IsOptional);
     }
@@ -23,7 +23,7 @@ public class OptionApplierTests
         var options = new TokenizerOptions { OutOfOrderTokens = false };
         var token = new Token("Name", "Preamble", new FileLocation());
 
-        OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
+        OptionApplier.Apply(token, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.False(token.IsOptional);
     }
@@ -35,7 +35,7 @@ public class OptionApplierTests
         var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = false;
 
-        OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
+        OptionApplier.Apply(token, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.True(token.TerminateOnNewLine);
     }
@@ -47,7 +47,7 @@ public class OptionApplierTests
         var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = true;
 
-        OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
+        OptionApplier.Apply(token, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.True(token.TerminateOnNewLine);
     }
@@ -59,7 +59,7 @@ public class OptionApplierTests
         var token = new Token("Name", "Preamble", new FileLocation());
         token.TerminateOnNewLine = false;
 
-        OptionApplier.Apply(token, options, NullDiagnosticCollector.Instance);
+        OptionApplier.Apply(token, options, NullCompilationDiagnosticCollector.Instance);
 
         Assert.False(token.TerminateOnNewLine);
     }
@@ -73,7 +73,7 @@ public class OptionApplierTests
 
         OptionApplier.Apply(token, options, collector);
 
-        var diagnostics = collector.GetCompilationResult()!;
+        var diagnostics = collector.GetResult()!;
         Assert.Contains(diagnostics.Events, e => e.Type == CompilationEventType.OptionApplied);
     }
 }

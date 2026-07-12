@@ -25,7 +25,7 @@ public class ResultBuilder_Unmatched_Tests
             .Build();
 
         // Act
-        _builder.BuildUnmatchedTokens(template, result, NullDiagnosticCollector.Instance);
+        _builder.BuildUnmatchedTokens(template, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(result.Tokens.Misses.Count > 0);
@@ -47,7 +47,7 @@ public class ResultBuilder_Unmatched_Tests
         result.Tokens.AddMatch(nameToken, "TestName", new FileLocation());
 
         // Act
-        _builder.BuildUnmatchedTokens(template, result, NullDiagnosticCollector.Instance);
+        _builder.BuildUnmatchedTokens(template, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.Single(result.Tokens.Misses);

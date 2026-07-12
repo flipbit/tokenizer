@@ -29,7 +29,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -65,7 +65,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -89,7 +89,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -113,7 +113,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -137,7 +137,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — 3 items in input, all should match the repeating token
@@ -161,7 +161,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -184,7 +184,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -218,7 +218,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -241,7 +241,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — without a separator, the first token captures all input and the second gets nothing
@@ -269,7 +269,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -300,7 +300,7 @@ public class TokenizationEngineTokenMatchingTests
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -322,7 +322,7 @@ public class TokenizationEngineTokenMatchingTests
         // Act - Provide input in reverse order
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -344,7 +344,7 @@ public class TokenizationEngineTokenMatchingTests
         // Act — input has Name first, then Age (reversed from template order)
         var input = "Name: John\nAge: 25";
         context.Initialize(new System.IO.StringReader(input));
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — with strict ordering the engine scans for Age first; it skips

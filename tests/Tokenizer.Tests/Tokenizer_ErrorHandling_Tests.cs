@@ -51,7 +51,7 @@ public class Tokenizer_ErrorHandling_Tests
 
         public TokenizationSession CreateSession(
             Template template, TokenizeResult result,
-            IDiagnosticCollector collector, IHintStrategy? hintStrategy = null)
+            ITokenizationDiagnosticCollector collector, IHintStrategy? hintStrategy = null)
         {
             throw _exception;
         }

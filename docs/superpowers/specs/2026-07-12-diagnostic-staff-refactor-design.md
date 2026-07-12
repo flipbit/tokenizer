@@ -40,6 +40,11 @@ The two diagnostic paths align with their user-facing API methods:
 
 `DiagnosticIssue`, `DiagnosticIssueType`, `TokenDiagnostic`, `TokenAttempt`, `TokenOutcome`, `IssueCodeMap`, `IssueFactory`
 
+## Design Decisions
+
+**Why not a generic `IDiagnosticCollector<TEventType>` base interface?**
+The two collector interfaces have identical `Record(...)` signatures differing only in the enum type parameter. A generic base would eliminate the signature duplication. We intentionally reject this: there is no code that needs to be generic over "any collector," and the two paths may diverge in future (e.g., compilation may gain structured severity levels). The DRY cost is one signature line maintained in two places — acceptable for full decoupling. YAGNI.
+
 ## Detailed Design
 
 ### 1. Interface Split (D2)
@@ -94,11 +99,11 @@ public sealed class DiagnosticEvent<TType> where TType : struct, Enum
 }
 ```
 
-Internal code uses namespace-level `using` aliases to avoid generic syntax:
+Internal code uses `global using` aliases (in `src/Tokenizer/Diagnostics/GlobalUsings.cs`) to avoid generic syntax throughout the project:
 
 ```csharp
-using TokenizationEvent = Tokens.Diagnostics.DiagnosticEvent<Tokens.Diagnostics.TokenizationEventType>;
-using CompilationEvent = Tokens.Diagnostics.DiagnosticEvent<Tokens.Diagnostics.CompilationEventType>;
+global using TokenizationEvent = Tokens.Diagnostics.DiagnosticEvent<Tokens.Diagnostics.TokenizationEventType>;
+global using CompilationEvent = Tokens.Diagnostics.DiagnosticEvent<Tokens.Diagnostics.CompilationEventType>;
 ```
 
 Public API surface:
@@ -125,7 +130,8 @@ public sealed record TokenDiagnostic
 
 ### 4. BuildContext Extraction (D1)
 
-New internal class holds all state that was previously mutated onto `TokenizationDiagnostics`:
+New internal class holds all state that was previously mutated onto `TokenizationDiagnostics`.
+Constructor accepts individual values (not the diagnostics object) for testability and to avoid coupling to the result type's shape:
 
 ```csharp
 internal sealed class BuildContext
@@ -137,12 +143,12 @@ internal sealed class BuildContext
     public Dictionary<string, List<TokenizationEvent>> RejectionsPerToken { get; }
     public Dictionary<string, List<TokenizationEvent>> DecoratorSuccessesPerToken { get; }
 
-    public BuildContext(TokenizationDiagnostics diagnostics)
+    public BuildContext(string? inputContent, bool outOfOrderTokens, HashSet<string> optionalTokenNames)
     {
-        InputContent = diagnostics.InputContent;
-        InputLines = InputContent?.Split('\n') ?? Array.Empty<string>();
-        OutOfOrderTokens = diagnostics.OutOfOrderTokens;
-        OptionalTokenNames = diagnostics.OptionalTokenNames;
+        InputContent = inputContent;
+        InputLines = inputContent?.Split('\n') ?? Array.Empty<string>();
+        OutOfOrderTokens = outOfOrderTokens;
+        OptionalTokenNames = optionalTokenNames;
         RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
         DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
     }
@@ -161,6 +167,8 @@ These properties no longer exist. `TokenizationDiagnostics` is immutable after c
 ```csharp
 internal sealed class TokenDiagnosticBuilder
 {
+    // Static shared instance — safe because IssueFactory and all IHintGenerator
+    // implementations are stateless (no mutable fields).
     private static readonly IssueFactory DefaultIssueFactory = new IssueFactory(new IHintGenerator[] { ... });
 
     private readonly TokenizationDiagnostics _diagnostics;
@@ -171,9 +179,16 @@ internal sealed class TokenDiagnosticBuilder
     {
         _diagnostics = diagnostics;
         _issueFactory = issueFactory ?? DefaultIssueFactory;
-        _context = new BuildContext(diagnostics);
+        _context = new BuildContext(diagnostics.InputContent, diagnostics.OutOfOrderTokens, diagnostics.OptionalTokenNames);
     }
 
+    /// <summary>
+    /// Executes the build pipeline. Phases must run in this order:
+    /// 1. CollectEvents — populates context indexes and collects attempts/issues
+    /// 2. ClassifyOutcomes — creates TokenDiagnostics from collected data (calls ApplyValueMismatchIssues)
+    /// 3. ApplyBlockedAnnotations — reclassifies NeverFound tokens downstream of a blocker
+    /// 4. BuildVerdict — generates the human-readable summary string
+    /// </summary>
     public (IReadOnlyList<TokenDiagnostic> tokens, string verdict, int matched, int missed, int total) Build()
     {
         var collected = CollectEvents();
@@ -201,7 +216,7 @@ var builder = new TokenDiagnosticBuilder(this);
 var (tokens, verdict, matched, missed, total) = builder.Build();
 ```
 
-### 6. IHintGenerator Signature Update
+### 6. IHintGenerator and IssueFactory Signature Updates
 
 ```csharp
 internal interface IHintGenerator
@@ -213,6 +228,20 @@ internal interface IHintGenerator
 
 All 9 hint generators update to accept `BuildContext` instead of `TokenizationDiagnostics`. `PreambleNearMissHintGenerator` reads `context.InputLines` directly (no mutation).
 
+`IssueFactory` also updates to accept `BuildContext`:
+
+```csharp
+internal DiagnosticIssue Create(DiagnosticIssueType type, TokenizationEvent sourceEvent,
+                                string description, BuildContext context)
+{
+    var hint = GenerateHint(type, sourceEvent, context);
+    return new DiagnosticIssue { ... };
+}
+
+internal DiagnosticIssue CreateValueMismatch(string tokenName, string missedTokenName, BuildContext context) { ... }
+internal DiagnosticIssue CreateBlocked(string tokenName, string blockerName, BuildContext context) { ... }
+```
+
 ### 7. Repeating-Token Count Fix (M1)
 
 In `CollectEvents`, counting changes:
@@ -221,6 +250,12 @@ In `CollectEvents`, counting changes:
 - `TotalCount = MatchedCount + MissedCount` (always equals `Tokens.Count`)
 
 Repeating token repetition details remain in `RawEvents` for power users.
+
+**Acceptance criteria:**
+- A repeating token with N repetitions (N ≥ 1 matched) counts as 1 matched token
+- A repeating token with 0 matches counts as 1 missed token
+- `TotalCount` equals the number of unique token names in the template
+- `TotalCount == Tokens.Count` always holds
 
 ### 8. Warning Log IsEnabled Guard (L1)
 
@@ -271,6 +306,7 @@ XML doc on the value mismatch method:
 - `src/Tokenizer/Diagnostics/NullCompilationDiagnosticCollector.cs`
 - `src/Tokenizer/Diagnostics/DiagnosticEvent.cs` (generic, replaces two files)
 - `src/Tokenizer/Diagnostics/BuildContext.cs`
+- `src/Tokenizer/Diagnostics/GlobalUsings.cs` (global using aliases for event types)
 
 ### Renamed Files
 - `DiagnosticResult.cs` → `TokenizationDiagnostics.cs`

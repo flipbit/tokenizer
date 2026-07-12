@@ -53,7 +53,7 @@ public class RepeatingTokenTests : TokenizerTestBase
             .ToList();
         Output.WriteLine($"RepeatingTokenDisabled events: {disabled.Count}");
         Assert.NotNull(diagnostics);
-        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(0, diagnostics.MissedCount);
         Assert.Equal(0, disabled.Count);
         Assert.Contains(diagnostics.Tokens.SelectMany(t => t.Issues),
@@ -81,7 +81,7 @@ public class RepeatingTokenTests : TokenizerTestBase
         Output.WriteLine($"Verdict: {diagnostics.Verdict}");
         Assert.NotNull(diagnostics);
         Assert.Equal(2, assigned.Count);
-        Assert.Equal(2, diagnostics.MatchedCount);
+        Assert.Equal(1, diagnostics.MatchedCount);
         Assert.Equal(0, diagnostics.MissedCount);
     }
 

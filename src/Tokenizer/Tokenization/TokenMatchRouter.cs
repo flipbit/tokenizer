@@ -59,7 +59,8 @@ internal sealed class TokenMatchRouter
             {
                 _collector.Record(TokenizationEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
-                    location: context.Enumerator.Location);
+                    location: context.Enumerator.Location,
+                    detail: context.MatchBuffer[0].Preamble);
             }
 
             // First token found — prepare to read token value

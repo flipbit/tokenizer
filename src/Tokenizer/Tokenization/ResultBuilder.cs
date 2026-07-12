@@ -60,9 +60,12 @@ internal sealed class ResultBuilder : IResultBuilder
                         token.IsRequired);
                 }
 
-                collector.Record(TokenizationEventType.TokenMissed,
-                    tokenName: token.Name, tokenId: token.Id,
-                    detail: token.Preamble);
+                if (collector.IsEnabled)
+                {
+                    collector.Record(TokenizationEventType.TokenMissed,
+                        tokenName: token.Name, tokenId: token.Id,
+                        detail: token.Preamble);
+                }
 
                 result.Tokens.AddMiss(token);
                 unmatchedCount++;

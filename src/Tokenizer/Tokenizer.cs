@@ -352,7 +352,7 @@ public sealed class Tokenizer : ITokenizer
 
         if (result.Diagnostics != null)
         {
-            if (_log.IsEnabled(LogLevel.Warning) && result.Diagnostics.MissedCount > 0)
+            if (_log.IsEnabled(LogLevel.Warning))
             {
                 foreach (var token in result.Diagnostics.Tokens)
                 {

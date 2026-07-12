@@ -163,4 +163,41 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationStarted);
         Assert.Contains(diagnostics.RawEvents, e => e.Type == DiagnosticEventType.TokenizationCompleted);
     }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenCompilationFails_ThenExceptionCarriesCompilationDiagnostics()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+
+        // Act
+        var ex = Assert.Throws<TokenizerException>(() =>
+            tokenizer.Compile("{ Name : UnknownDecoratorThatDoesNotExist }"));
+
+        // Assert
+        Assert.NotNull(ex.Data["CompilationDiagnostics"]);
+        var diagnostics = (CompilationDiagnostics)ex.Data["CompilationDiagnostics"]!;
+        Assert.True(diagnostics.Events.Count > 0);
+    }
+
+    [Fact]
+    public void GivenDiagnosticsEnabled_WhenTokenizationThrows_ThenExceptionCarriesDiagnostics()
+    {
+        // Arrange
+        var tokenizer = CreateTokenizer(new TokenizerOptions
+        {
+            EnableDiagnostics = true,
+            MaxIterations = 1,
+        });
+        var template = tokenizer.Compile("{ Name }").Template;
+
+        // Act
+        var ex = Assert.Throws<TokenizerException>(() =>
+            tokenizer.Tokenize(template, "some input that needs processing"));
+
+        // Assert
+        Assert.NotNull(ex.Data["Diagnostics"]);
+        var diagnostics = (DiagnosticResult)ex.Data["Diagnostics"]!;
+        Assert.True(diagnostics.RawEvents.Count > 0);
+    }
 }

@@ -22,7 +22,7 @@ public class UpfrontHintStrategyTests
             .Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -45,7 +45,7 @@ public class UpfrontHintStrategyTests
             .Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -68,7 +68,7 @@ public class UpfrontHintStrategyTests
             .Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.True(hintsMissing);
@@ -91,7 +91,7 @@ public class UpfrontHintStrategyTests
             .Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, "Hello World", result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -114,7 +114,7 @@ public class UpfrontHintStrategyTests
             .Build();
 
         // Act
-        _strategy.PreProcess(template, enumerator, "Hello World", result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, "Hello World", result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert - enumerator should still be at the beginning
         Assert.Equal('H', enumerator.Peek());
@@ -138,7 +138,7 @@ public class UpfrontHintStrategyTests
 
         // Act & Assert — sync path always provides rawInput; null is a programming error
         Assert.Throws<ArgumentNullException>(() =>
-            _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance));
+            _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance));
     }
 
     [Fact]

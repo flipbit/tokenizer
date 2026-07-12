@@ -9,7 +9,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenSingleMatchedToken_WhenBuilding_ThenTokenHasMatchedOutcome()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John");
+        var collector = new TokenizationDiagnosticCollector("Name: John");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name", location: new FileLocation());
         collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Name", value: "John");
@@ -34,7 +34,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMissedToken_WhenBuilding_ThenTokenHasNeverFoundOutcome()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("nothing");
+        var collector = new TokenizationDiagnosticCollector("nothing");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenMissed, tokenName: "Name");
         collector.Record(TokenizationEventType.TokenizationCompleted);
@@ -57,7 +57,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenValidatorRejection_WhenBuilding_ThenTokenHasRejectedOutcomeWithAttempts()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Email: bad");
+        var collector = new TokenizationDiagnosticCollector("Email: bad");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
         collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Email", value: "bad");
@@ -85,7 +85,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenTransformerFailure_WhenBuilding_ThenTokenHasRejectedOutcomeWithAttempt()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Date: not-a-date");
+        var collector = new TokenizationDiagnosticCollector("Date: not-a-date");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Date", location: new FileLocation());
         collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Date", value: "not-a-date");
@@ -110,7 +110,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMultipleAttemptsOneSuccess_WhenBuilding_ThenMatchedWithMultipleAttempts()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Email: bad\nEmail: good@email.com");
+        var collector = new TokenizationDiagnosticCollector("Email: bad\nEmail: good@email.com");
         collector.Record(TokenizationEventType.TokenizationStarted);
         // First attempt — rejected
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Email", location: new FileLocation());
@@ -144,7 +144,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMixedTokens_WhenBuilding_ThenVerdictReflectsMatchAndMiss()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: John");
+        var collector = new TokenizationDiagnosticCollector("Name: John");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "John");
         collector.Record(TokenizationEventType.TokenMissed, tokenName: "Age");
@@ -163,7 +163,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenBacktrackEvent_WhenBuilding_ThenAttemptHasBacktrackedOutcome()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: bad\nName: John");
+        var collector = new TokenizationDiagnosticCollector("Name: bad\nName: John");
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name");
         collector.Record(TokenizationEventType.TokenAssignmentAttempted, tokenName: "Name", value: "bad");
         collector.Record(TokenizationEventType.BacktrackStarted, tokenName: "Name", value: "bad");
@@ -186,7 +186,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenHintMissingWithTokenName_WhenBuilding_ThenIssueAttachedToToken()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.HintMissing, tokenName: "Name", value: "Expected hint");
         collector.Record(TokenizationEventType.TokenMissed, tokenName: "Name");
         var diagnostics = collector.GetResult()!;
@@ -203,7 +203,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenHintMissing_WhenBuilding_ThenHintMissingIssueCreated()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("no hint");
+        var collector = new TokenizationDiagnosticCollector("no hint");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.HintMissing, value: "Expected text");
         collector.Record(TokenizationEventType.TokenizationCompleted);
@@ -224,7 +224,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenValidatorFailedWithNullTokenName_WhenBuilding_ThenDoesNotThrow()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.ValidatorFailed, tokenName: null,
             decoratorName: "IsEmailValidator", value: "bad");
@@ -242,7 +242,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenTransformerFailedWithNullTokenName_WhenBuilding_ThenDoesNotThrow()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TransformerFailed, tokenName: null,
             decoratorName: "ToDateTimeTransformer", value: "bad");
@@ -260,7 +260,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenRepeatingTokenDisabled_WhenBuilding_ThenRepeatingTokenCutShortIssueCreated()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Items: one\nItems: two");
+        var collector = new TokenizationDiagnosticCollector("Items: one\nItems: two");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Items", tokenId: 1, value: "one");
         collector.Record(TokenizationEventType.RepeatingTokenDisabled, tokenName: "Items",
@@ -280,7 +280,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenMatchedValueContainsMissedPreamble_WhenBuilding_ThenValueMismatchIssueAdded()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("Name: Alice Age: 30");
+        var collector = new TokenizationDiagnosticCollector("Name: Alice Age: 30");
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.PreambleMatched, tokenName: "Name", detail: "Name: ");
         collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Name", value: "Alice Age: 30");
@@ -300,7 +300,7 @@ public class TokenDiagnosticBuilderTests
     public void GivenOutOfOrderTokens_WhenBuilding_ThenNoBlockedAnnotationsApplied()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("nothing", outOfOrderTokens: true);
+        var collector = new TokenizationDiagnosticCollector("nothing", outOfOrderTokens: true);
         collector.Record(TokenizationEventType.TokenizationStarted);
         collector.Record(TokenizationEventType.TokenMissed, tokenName: "First");
         collector.Record(TokenizationEventType.TokenMissed, tokenName: "Second");

@@ -11,15 +11,15 @@ namespace Tokens.Tokenization;
 internal sealed class DecoratorPipeline
 {
     private readonly TokenizerOptions _options;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
 
-    internal DecoratorPipeline(TokenizerOptions options, IDiagnosticCollector collector)
+    internal DecoratorPipeline(TokenizerOptions options, ITokenizationDiagnosticCollector collector)
     {
         _options = options;
         _collector = collector;
     }
 
-    internal IDiagnosticCollector Collector => _collector;
+    internal ITokenizationDiagnosticCollector Collector => _collector;
 
     /// <summary>
     /// Prepares the value and runs the decorator pipeline (transformers then validators).

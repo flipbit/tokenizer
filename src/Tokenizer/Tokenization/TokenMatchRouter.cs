@@ -10,12 +10,12 @@ internal sealed class TokenMatchRouter
 {
     private readonly Template _template;
     private readonly CandidateProcessor _candidateProcessor;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
 
     public TokenMatchRouter(
         Template template,
         CandidateProcessor candidateProcessor,
-        IDiagnosticCollector collector)
+        ITokenizationDiagnosticCollector collector)
     {
         _template = template;
         _candidateProcessor = candidateProcessor;

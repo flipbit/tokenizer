@@ -14,7 +14,7 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
+                           string? rawInput, TokenizeResult result, ITokenizationDiagnosticCollector collector)
     {
         if (template.Hints.Count == 0)
         {

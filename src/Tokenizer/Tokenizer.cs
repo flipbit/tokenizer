@@ -232,12 +232,12 @@ public sealed class Tokenizer : ITokenizer
 
         using (_log.BeginScope(scopeProperties))
         {
-            IDiagnosticCollector collector = template.Options.EnableDiagnostics
-                ? new RuntimeDiagnosticCollector(
+            ITokenizationDiagnosticCollector collector = template.Options.EnableDiagnostics
+                ? new TokenizationDiagnosticCollector(
                     rawInput,
                     template.Options.OutOfOrderTokens,
                     new HashSet<string>(template.Tokens.Where(t => t.IsOptional).Select(t => t.Name), StringComparer.Ordinal))
-                : NullDiagnosticCollector.Instance;
+                : NullTokenizationDiagnosticCollector.Instance;
 
             try
             {
@@ -332,7 +332,7 @@ public sealed class Tokenizer : ITokenizer
 
     private void FinalizeTokenization(
         TokenizeResult result, Template template,
-        IDiagnosticCollector collector, string? rawInput)
+        ITokenizationDiagnosticCollector collector, string? rawInput)
     {
         _resultBuilder.BuildUnmatchedTokens(template, result, collector);
 

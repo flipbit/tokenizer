@@ -10,7 +10,7 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenTwoValidatorRejections_WhenGeneratingHintForLast_ThenSummarizesAllValues()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
         collector.Record(TokenizationEventType.ValidatorFailed,
@@ -39,7 +39,7 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenTwoTransformerFailures_WhenGeneratingHintForLast_ThenSummarizesAllValues()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.TransformerFailed,
             tokenName: "Date", decoratorName: "ToDateTimeTransformer", value: "not-a-date-1");
         collector.Record(TokenizationEventType.TransformerFailed,
@@ -68,7 +68,7 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenOnlyOneRejection_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad@value");
         var trace = collector.GetResult()!;
@@ -97,7 +97,7 @@ public class MultipleRejectionHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "Email",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
         trace.RejectionsPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         // Act
@@ -111,7 +111,7 @@ public class MultipleRejectionHintGeneratorTests
     public void GivenTwoRejectionsButSourceIsNotLastEvent_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "first@bad");
         collector.Record(TokenizationEventType.ValidatorFailed,

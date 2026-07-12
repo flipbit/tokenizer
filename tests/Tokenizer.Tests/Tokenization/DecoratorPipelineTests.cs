@@ -16,7 +16,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
 
     public DecoratorPipelineTests(ITestOutputHelper output) : base(output)
     {
-        _pipeline = new DecoratorPipeline(new TokenizerOptions(), NullDiagnosticCollector.Instance);
+        _pipeline = new DecoratorPipeline(new TokenizerOptions(), NullTokenizationDiagnosticCollector.Instance);
     }
 
     // Spy transformer: implements IOptionsAwareTransformer and records whether options were received
@@ -136,7 +136,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
     {
         // Arrange
         var options = new TokenizerOptions { TrimTrailingWhiteSpace = true };
-        var pipeline = new DecoratorPipeline(options, NullDiagnosticCollector.Instance);
+        var pipeline = new DecoratorPipeline(options, NullTokenizationDiagnosticCollector.Instance);
         var token = new TokenBuilder().WithName("Name").Build();
 
         // Act
@@ -178,7 +178,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
         // Arrange
         var culture = CultureInfo.GetCultureInfo("fr-FR");
         var options = new TokenizerOptions { Culture = culture };
-        var pipeline = new DecoratorPipeline(options, NullDiagnosticCollector.Instance);
+        var pipeline = new DecoratorPipeline(options, NullTokenizationDiagnosticCollector.Instance);
         var cache = new ConcurrentDictionary<Type, ITokenDecorator>();
         var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyTransformer), cache);
         var token = new TokenBuilder().WithName("Value").Build();
@@ -197,7 +197,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
         // Arrange
         var culture = CultureInfo.GetCultureInfo("de-DE");
         var options = new TokenizerOptions { Culture = culture };
-        var pipeline = new DecoratorPipeline(options, NullDiagnosticCollector.Instance);
+        var pipeline = new DecoratorPipeline(options, NullTokenizationDiagnosticCollector.Instance);
         var cache = new ConcurrentDictionary<Type, ITokenDecorator>();
         var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyValidator), cache);
         var token = new TokenBuilder().WithName("Value").Build();

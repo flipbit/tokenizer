@@ -15,5 +15,5 @@ internal interface IResultBuilder
     /// <param name="template">The template containing all token definitions</param>
     /// <param name="result">The result object to populate with unmatched tokens</param>
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
-    public void BuildUnmatchedTokens(Template template, TokenizeResult result, IDiagnosticCollector collector);
+    public void BuildUnmatchedTokens(Template template, TokenizeResult result, ITokenizationDiagnosticCollector collector);
 }

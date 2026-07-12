@@ -14,7 +14,7 @@ internal sealed class TokenizationSession
 {
     private readonly Template _template;
     private readonly TokenizeResult _result;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
     private readonly DecoratorPipeline _pipeline;
     private readonly TokenMatchRouter _router;
     private readonly CandidateProcessor _candidateProcessor;
@@ -25,7 +25,7 @@ internal sealed class TokenizationSession
     public TokenizationSession(
         Template template,
         TokenizeResult result,
-        IDiagnosticCollector collector,
+        ITokenizationDiagnosticCollector collector,
         IHintStrategy? hintStrategy,
         ILogger logger)
     {

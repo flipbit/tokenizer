@@ -15,7 +15,7 @@ public class HintBinderTests
         definition.Hints.Add(new Hint("receipt", Optional: false));
         var template = new TemplateBuilder().Build();
 
-        HintBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        HintBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(2, template.Hints.Count);
         Assert.Equal("invoice", template.Hints[0].Text);
@@ -30,7 +30,7 @@ public class HintBinderTests
         definition.Hints.Add(new Hint("invoice", Optional: false));
         var template = new TemplateBuilder().Build();
 
-        HintBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        HintBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Single(template.Hints);
     }
@@ -41,7 +41,7 @@ public class HintBinderTests
         var definition = new TemplateDefinition();
         var template = new TemplateBuilder().Build();
 
-        HintBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        HintBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Empty(template.Hints);
     }
@@ -56,7 +56,7 @@ public class HintBinderTests
 
         HintBinder.Bind(definition, template, collector);
 
-        var diagnostics = collector.GetCompilationResult()!;
+        var diagnostics = collector.GetResult()!;
         Assert.Single(diagnostics.Events);
         Assert.Equal(CompilationEventType.HintAdded, diagnostics.Events[0].Type);
     }

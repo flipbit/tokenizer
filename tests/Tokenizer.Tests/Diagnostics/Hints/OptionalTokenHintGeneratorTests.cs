@@ -17,7 +17,7 @@ public class OptionalTokenHintGeneratorTests
             TokenName = "MiddleName",
         };
         var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "MiddleName" };
-        var trace = new RuntimeDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
@@ -38,7 +38,7 @@ public class OptionalTokenHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "LastName",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);
@@ -60,7 +60,7 @@ public class OptionalTokenHintGeneratorTests
             Value = "test",
         };
         var optionalNames = new HashSet<string>(StringComparer.Ordinal) { "MiddleName" };
-        var trace = new RuntimeDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input", optionalTokenNames: optionalNames).GetResult()!;
 
         // Act
         var hint = _generator.TryGenerateHint(issue.Type, issue.TokenName, sourceEvent, trace);

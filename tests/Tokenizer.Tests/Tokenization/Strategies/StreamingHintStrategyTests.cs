@@ -18,7 +18,7 @@ public class StreamingHintStrategyTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert
         Assert.False(hintsMissing);
@@ -36,7 +36,7 @@ public class StreamingHintStrategyTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var hintsMissing = _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        var hintsMissing = _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Assert — PreProcess never skips tokenization for streaming strategies
         Assert.False(hintsMissing);
@@ -49,7 +49,7 @@ public class StreamingHintStrategyTests
         var template = new TemplateBuilder().WithName("TestTemplate").Build();
         var enumerator = new TokenEnumerator("Hello World");
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var hintsMissing = _strategy.PostProcess(result);
@@ -68,7 +68,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var buffer = "Hello World".ToCharArray();
@@ -89,7 +89,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var buffer = "Hello World".ToCharArray();
@@ -110,7 +110,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var buffer = "Hello World".ToCharArray();
@@ -131,7 +131,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var chunk1 = "Some text Hel".ToCharArray();
@@ -154,7 +154,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var chunk1 = "Hello ".ToCharArray();
@@ -179,7 +179,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act
         var buffer = "Hello World".ToCharArray();
@@ -200,7 +200,7 @@ public class StreamingHintStrategyTests
             .Build();
         var enumerator = new TokenEnumerator(string.Empty);
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullDiagnosticCollector.Instance);
+        _strategy.PreProcess(template, enumerator, rawInput: null, result, NullTokenizationDiagnosticCollector.Instance);
 
         // Act — "Hello" is in first 5 chars, "World" starts at index 6, but count=5 limits scan
         var buffer = "Hello World".ToCharArray();

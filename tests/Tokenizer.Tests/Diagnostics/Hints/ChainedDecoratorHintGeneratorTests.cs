@@ -10,7 +10,7 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenValidatorRejectionWithPriorSuccess_WhenGeneratingHint_ThenDescribesChain()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorPassed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad value");
         collector.Record(TokenizationEventType.ValidatorFailed,
@@ -39,7 +39,7 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenTransformerFailureWithPriorSuccess_WhenGeneratingHint_ThenDescribesChain()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.TransformerSucceeded,
             tokenName: "Date", decoratorName: "TrimTransformer", value: "2024-01-01");
         collector.Record(TokenizationEventType.TransformerFailed,
@@ -67,7 +67,7 @@ public class ChainedDecoratorHintGeneratorTests
     public void GivenValidatorRejectionWithNoPriorSuccess_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var collector = new RuntimeDiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
         collector.Record(TokenizationEventType.ValidatorFailed,
             tokenName: "Email", decoratorName: "IsEmailValidator", value: "bad value");
         var trace = collector.GetResult()!;
@@ -93,7 +93,7 @@ public class ChainedDecoratorHintGeneratorTests
             Type = TokenizationEventType.TokenMissed,
             TokenName = "Email",
         };
-        var trace = new RuntimeDiagnosticCollector("input").GetResult()!;
+        var trace = new TokenizationDiagnosticCollector("input").GetResult()!;
         trace.DecoratorSuccessesPerToken = new Dictionary<string, List<TokenizationEvent>>(StringComparer.Ordinal);
 
         // Act

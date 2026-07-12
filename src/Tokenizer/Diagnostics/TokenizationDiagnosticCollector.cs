@@ -6,7 +6,7 @@ namespace Tokens.Diagnostics;
 /// Active diagnostic collector that records events during tokenization.
 /// Create one instance per tokenization call and pass it through the pipeline.
 /// </summary>
-internal sealed class RuntimeDiagnosticCollector : IDiagnosticCollector
+internal sealed class TokenizationDiagnosticCollector : ITokenizationDiagnosticCollector
 {
     private readonly DiagnosticResult _diagnostics;
 
@@ -16,7 +16,7 @@ internal sealed class RuntimeDiagnosticCollector : IDiagnosticCollector
     /// <param name="inputContent">The input text being tokenized.</param>
     /// <param name="outOfOrderTokens">Whether the template uses out-of-order token matching.</param>
     /// <param name="optionalTokenNames">Token names that are optional.</param>
-    public RuntimeDiagnosticCollector(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
+    public TokenizationDiagnosticCollector(string? inputContent, bool outOfOrderTokens = false, HashSet<string>? optionalTokenNames = null)
     {
         _diagnostics = new DiagnosticResult(inputContent, outOfOrderTokens, optionalTokenNames);
     }
@@ -43,15 +43,5 @@ internal sealed class RuntimeDiagnosticCollector : IDiagnosticCollector
     }
 
     /// <inheritdoc />
-    public void RecordCompilation(CompilationEventType type, string? tokenName = null, int? tokenId = null,
-                       FileLocation? location = null, string? value = null, string? detail = null,
-                       string? decoratorName = null, string[]? decoratorArgs = null)
-    {
-    }
-
-    /// <inheritdoc />
     public DiagnosticResult? GetResult() => _diagnostics;
-
-    /// <inheritdoc />
-    public CompilationDiagnostics? GetCompilationResult() => null;
 }

@@ -19,7 +19,7 @@ internal interface IHintStrategy
     /// <param name="collector">The diagnostic collector for recording analysis information.</param>
     /// <returns>True if required hints are missing, false if all required hints are found.</returns>
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector);
+                           string? rawInput, TokenizeResult result, ITokenizationDiagnosticCollector collector);
 
     /// <summary>
     /// Called by the tokenization session after each buffer refill, passing the staging

@@ -48,8 +48,38 @@ internal static class AlignmentRenderer
             sb.AppendLine("── Matched Tokens ──");
             foreach (var token in matchedTokens)
             {
-                var line = token.AssignedLocation != null ? $" (line {token.AssignedLocation.Line.ToInvariant()})" : string.Empty;
-                sb.Append("  ✓ ").Append(token.TokenName).Append(" = \"").Append(token.AssignedValue).Append('"').AppendLine(line);
+                sb.Append("  ✓ ").Append(token.TokenName).Append(" = ");
+
+                if (token.AssignedValues.Count <= 1)
+                {
+                    // Single value — preserve existing format
+                    sb.Append('"').Append(token.AssignedValues.Count == 1 ? token.AssignedValues[0] : string.Empty).Append('"');
+                    if (token.AssignedLocations.Count == 1)
+                    {
+                        sb.Append(" (line ").Append(token.AssignedLocations[0].Line.ToInvariant()).Append(')');
+                    }
+                }
+                else
+                {
+                    // Multiple values — comma-separated with line range
+                    for (var vi = 0; vi < token.AssignedValues.Count; vi++)
+                    {
+                        if (vi > 0) sb.Append(", ");
+                        sb.Append('"').Append(token.AssignedValues[vi]).Append('"');
+                    }
+
+                    if (token.AssignedLocations.Count >= 2)
+                    {
+                        var firstLine = token.AssignedLocations[0].Line;
+                        var lastLine = token.AssignedLocations[token.AssignedLocations.Count - 1].Line;
+                        if (firstLine > 0 && lastLine > 0)
+                        {
+                            sb.Append(" (lines ").Append(firstLine.ToInvariant()).Append('–').Append(lastLine.ToInvariant()).Append(')');
+                        }
+                    }
+                }
+
+                sb.AppendLine();
             }
         }
 

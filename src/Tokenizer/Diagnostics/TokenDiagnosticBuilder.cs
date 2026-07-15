@@ -70,7 +70,7 @@ internal sealed class TokenDiagnosticBuilder
     {
         public Dictionary<string, List<TokenAttempt>> Attempts { get; } = new(StringComparer.Ordinal);
         public Dictionary<string, List<DiagnosticIssue>> Issues { get; } = new(StringComparer.Ordinal);
-        public Dictionary<string, (string? value, Enumerators.FileLocation? location)> AssignedTokens { get; } = new(StringComparer.Ordinal);
+        public Dictionary<string, List<(string? value, Enumerators.FileLocation? location)>> AssignedTokens { get; } = new(StringComparer.Ordinal);
         public Dictionary<string, int> TokenIds { get; } = new(StringComparer.Ordinal);
         public HashSet<string> TokensWithFailures { get; } = new(StringComparer.Ordinal);
         public HashSet<string> MissedTokenNames { get; } = new(StringComparer.Ordinal);
@@ -159,11 +159,13 @@ internal sealed class TokenDiagnosticBuilder
                 case TokenizationEventType.TokenAssigned:
                     if (evt.TokenName != null)
                     {
-                        if (!data.AssignedTokens.ContainsKey(evt.TokenName))
+                        if (!data.AssignedTokens.TryGetValue(evt.TokenName, out var assignedList))
                         {
+                            assignedList = new List<(string?, Enumerators.FileLocation?)>();
+                            data.AssignedTokens[evt.TokenName] = assignedList;
                             data.MatchedCount++;
                         }
-                        data.AssignedTokens[evt.TokenName] = (evt.Value, evt.Location);
+                        assignedList.Add((evt.Value, evt.Location));
                         AddAttempt(data.Attempts, evt.TokenName, new TokenAttempt
                         {
                             Location = evt.Location,
@@ -267,8 +269,19 @@ internal sealed class TokenDiagnosticBuilder
 
             var tokenAttempts = data.Attempts.TryGetValue(tokenName, out var a) ? a : new List<TokenAttempt>();
             var tokenIssues = data.Issues.TryGetValue(tokenName, out var i) ? i : new List<DiagnosticIssue>();
-            var assigned = isAssigned ? data.AssignedTokens[tokenName] : default;
+            var assignedEntries = isAssigned ? data.AssignedTokens[tokenName] : null;
             data.TokenIds.TryGetValue(tokenName, out var tokenId);
+
+            List<string> assignedValues = [];
+            List<Enumerators.FileLocation> assignedLocations = [];
+            if (assignedEntries != null)
+            {
+                foreach (var entry in assignedEntries)
+                {
+                    assignedValues.Add(entry.value!);
+                    assignedLocations.Add(entry.location!);
+                }
+            }
 
             result.Add(new TokenDiagnostic
             {
@@ -276,8 +289,8 @@ internal sealed class TokenDiagnosticBuilder
                 TokenId = tokenId,
                 Outcome = outcome,
                 Attempts = tokenAttempts,
-                AssignedValue = assigned.value,
-                AssignedLocation = assigned.location,
+                AssignedValues = assignedValues,
+                AssignedLocations = assignedLocations,
                 Issues = tokenIssues,
             });
         }
@@ -312,8 +325,11 @@ internal sealed class TokenDiagnosticBuilder
             if (!data.AssignedTokens.ContainsKey(tokenName))
                 continue;
 
-            var assignedValue = data.AssignedTokens[tokenName].value;
-            if (string.IsNullOrEmpty(assignedValue))
+            var assignedEntries = data.AssignedTokens[tokenName];
+            // For value-mismatch detection, check the last assigned value — this is the
+            // one most likely to have "swallowed" a subsequent token's preamble.
+            var lastValue = assignedEntries[assignedEntries.Count - 1].value;
+            if (string.IsNullOrEmpty(lastValue))
                 continue;
 
             foreach (var missedName in missedOrRejected)
@@ -323,7 +339,7 @@ internal sealed class TokenDiagnosticBuilder
                 if (string.IsNullOrEmpty(preamble))
                     continue;
 
-                if (assignedValue!.IndexOf(preamble, StringComparison.Ordinal) >= 0)
+                if (lastValue!.IndexOf(preamble, StringComparison.Ordinal) >= 0)
                 {
                     if (!data.Issues.TryGetValue(tokenName, out var issues))
                     {

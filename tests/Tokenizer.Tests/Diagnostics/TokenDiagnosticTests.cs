@@ -14,8 +14,8 @@ public class TokenDiagnosticTests
             TokenName = "Email",
             TokenId = 1,
             Outcome = TokenOutcome.Matched,
-            AssignedValue = "user@example.com",
-            AssignedLocation = new FileLocation(),
+            AssignedValues = new[] { "user@example.com" },
+            AssignedLocations = new[] { new FileLocation() },
             Attempts = new[]
             {
                 new TokenAttempt
@@ -30,7 +30,7 @@ public class TokenDiagnosticTests
         // Assert
         Assert.Equal("Email", diagnostic.TokenName);
         Assert.Equal(TokenOutcome.Matched, diagnostic.Outcome);
-        Assert.Equal("user@example.com", diagnostic.AssignedValue);
+        Assert.Equal("user@example.com", diagnostic.AssignedValues[0]);
         Assert.Single(diagnostic.Attempts);
         Assert.Equal(AttemptOutcome.Assigned, diagnostic.Attempts[0].Outcome);
     }
@@ -80,6 +80,25 @@ public class TokenDiagnosticTests
     }
 
     [Fact]
+    public void GivenMatchedToken_WhenCreated_ThenAssignedValuesContainsSingleValue()
+    {
+        // Arrange & Act
+        var diagnostic = new TokenDiagnostic
+        {
+            TokenName = "Email",
+            TokenId = 1,
+            Outcome = TokenOutcome.Matched,
+            AssignedValues = new[] { "user@example.com" },
+            AssignedLocations = new[] { new FileLocation() },
+        };
+
+        // Assert
+        Assert.Single(diagnostic.AssignedValues);
+        Assert.Equal("user@example.com", diagnostic.AssignedValues[0]);
+        Assert.Single(diagnostic.AssignedLocations);
+    }
+
+    [Fact]
     public void GivenNeverFoundToken_WhenCreated_ThenNoAttemptsAndNoAssignedValue()
     {
         // Arrange & Act
@@ -92,7 +111,7 @@ public class TokenDiagnosticTests
 
         // Assert
         Assert.Equal(TokenOutcome.NeverFound, diagnostic.Outcome);
-        Assert.Null(diagnostic.AssignedValue);
+        Assert.Empty(diagnostic.AssignedValues);
         Assert.Empty(diagnostic.Attempts);
     }
 }

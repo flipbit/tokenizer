@@ -24,7 +24,7 @@ public class TokenDiagnosticBuilderTests
         Assert.Single(tokens);
         Assert.Equal("Name", tokens[0].TokenName);
         Assert.Equal(TokenOutcome.Matched, tokens[0].Outcome);
-        Assert.Equal("John", tokens[0].AssignedValue);
+        Assert.Equal("John", tokens[0].AssignedValues[0]);
         Assert.Single(tokens[0].Attempts);
         Assert.Equal(AttemptOutcome.Assigned, tokens[0].Attempts[0].Outcome);
         Assert.Empty(tokens[0].Issues);
@@ -47,7 +47,7 @@ public class TokenDiagnosticBuilderTests
         Assert.Single(tokens);
         Assert.Equal("Name", tokens[0].TokenName);
         Assert.Equal(TokenOutcome.NeverFound, tokens[0].Outcome);
-        Assert.Null(tokens[0].AssignedValue);
+        Assert.Empty(tokens[0].AssignedValues);
         Assert.Empty(tokens[0].Attempts);
         Assert.Single(tokens[0].Issues);
         Assert.Equal(DiagnosticIssueType.PreambleNeverFound, tokens[0].Issues[0].Type);
@@ -134,10 +134,41 @@ public class TokenDiagnosticBuilderTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(TokenOutcome.Matched, tokens[0].Outcome);
-        Assert.Equal("good@email.com", tokens[0].AssignedValue);
+        Assert.Equal("good@email.com", tokens[0].AssignedValues[0]);
         Assert.Equal(2, tokens[0].Attempts.Count);
         Assert.Equal(AttemptOutcome.ValidatorRejected, tokens[0].Attempts[0].Outcome);
         Assert.Equal(AttemptOutcome.Assigned, tokens[0].Attempts[1].Outcome);
+    }
+
+    [Fact]
+    public void GivenRepeatingTokenWithThreeMatches_WhenBuilding_ThenAssignedValuesContainsAllInOrder()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("Item: A\nItem: B\nItem: C");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Item", tokenId: 1,
+            value: "A", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Item", tokenId: 1,
+            value: "B", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "Item", tokenId: 1,
+            value: "C", location: new FileLocation());
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+        var diagnostics = collector.GetResult()!;
+
+        // Act
+        var (tokens, _, matched, missed, total) = new TokenDiagnosticBuilder(diagnostics).Build();
+
+        // Assert
+        var item = Assert.Single(tokens);
+        Assert.Equal(TokenOutcome.Matched, item.Outcome);
+        Assert.Equal(3, item.AssignedValues.Count);
+        Assert.Equal("A", item.AssignedValues[0]);
+        Assert.Equal("B", item.AssignedValues[1]);
+        Assert.Equal("C", item.AssignedValues[2]);
+        Assert.Equal(3, item.AssignedLocations.Count);
+        Assert.Equal(1, matched);  // still 1 unique token
+        Assert.Equal(0, missed);
+        Assert.Equal(1, total);
     }
 
     [Fact]

@@ -28,14 +28,15 @@ public sealed record TokenDiagnostic
     public IReadOnlyList<TokenAttempt> Attempts { get; internal init; } = [];
 
     /// <summary>
-    /// The final assigned value, if Outcome is Matched.
+    /// All assigned values, in input order. Single-element for non-repeating tokens,
+    /// multiple elements for repeating tokens. Empty if Outcome is not Matched.
     /// </summary>
-    public string? AssignedValue { get; internal init; }
+    public IReadOnlyList<string> AssignedValues { get; internal init; } = [];
 
     /// <summary>
-    /// Where in the input the token was matched, if Outcome is Matched.
+    /// Locations where each value was matched, parallel to <see cref="AssignedValues"/>.
     /// </summary>
-    public FileLocation? AssignedLocation { get; internal init; }
+    public IReadOnlyList<FileLocation> AssignedLocations { get; internal init; } = [];
 
     /// <summary>
     /// The name of the token that blocked this one from being searched,

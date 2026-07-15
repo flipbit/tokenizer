@@ -153,6 +153,36 @@ public class AlignmentRendererTests : TokenizerTestBase
     }
 
     [Fact]
+    public void GivenRepeatingToken_WhenRendering_ThenShowsAllValuesAndLineRange()
+    {
+        // Arrange
+        var collector = new TokenizationDiagnosticCollector("Item: A\nItem: B\nItem: C");
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        var loc1 = new FileLocation();
+        var loc2 = new FileLocation();
+        loc2.NewLine();
+        var loc3 = new FileLocation();
+        loc3.NewLine();
+        loc3.NewLine();
+        collector.Record(TokenizationEventType.TokenAssigned,
+            tokenName: "Item", value: "A", location: loc1);
+        collector.Record(TokenizationEventType.TokenAssigned,
+            tokenName: "Item", value: "B", location: loc2);
+        collector.Record(TokenizationEventType.TokenAssigned,
+            tokenName: "Item", value: "C", location: loc3);
+        collector.Record(TokenizationEventType.TokenizationCompleted);
+
+        // Act
+        var diagnostics = collector.GetResult()!;
+        var output = diagnostics.RenderAlignment();
+        Output.WriteLine(output);
+
+        // Assert
+        Assert.Contains("\"A\", \"B\", \"C\"", output, StringComparison.Ordinal);
+        Assert.Contains("lines", output, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void GivenMissedTokenWithNoAttempts_WhenRenderingAlignment_ThenRendersWithoutError()
     {
         // Arrange

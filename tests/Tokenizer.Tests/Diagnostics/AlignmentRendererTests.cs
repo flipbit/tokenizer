@@ -179,7 +179,7 @@ public class AlignmentRendererTests : TokenizerTestBase
 
         // Assert
         Assert.Contains("\"A\", \"B\", \"C\"", output, StringComparison.Ordinal);
-        Assert.Contains("lines", output, StringComparison.Ordinal);
+        Assert.Contains("lines 1–3", output, StringComparison.Ordinal);
     }
 
     [Fact]

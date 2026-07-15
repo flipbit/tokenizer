@@ -279,7 +279,8 @@ internal sealed class TokenDiagnosticBuilder
                 foreach (var entry in assignedEntries)
                 {
                     assignedValues.Add(entry.value!);
-                    assignedLocations.Add(entry.location!);
+                    if (entry.location != null)
+                        assignedLocations.Add(entry.location);
                 }
             }
 

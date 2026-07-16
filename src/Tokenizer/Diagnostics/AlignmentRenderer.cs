@@ -5,81 +5,150 @@ namespace Tokens.Diagnostics;
 
 internal static class AlignmentRenderer
 {
-    public static string Render(DiagnosticResult diagnostics, string? inputContent)
+    public static string Render(TokenizationDiagnostics diagnostics, string? inputContent)
     {
         var sb = new StringBuilder();
-        var summary = diagnostics.Summary;
-        var events = diagnostics.Events;
+        var tokens = diagnostics.Tokens;
 
-        var matchedEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TokenAssigned)
-            .ToList();
+        var matchedTokens = new List<TokenDiagnostic>();
+        var rejectedTokens = new List<TokenDiagnostic>();
+        var neverFoundTokens = new List<TokenDiagnostic>();
+        var blockedTokens = new List<TokenDiagnostic>();
 
-        var failureEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TransformerFailed
-                     || e.Type == DiagnosticEventType.ValidatorFailed)
-            .ToList();
-
-        var missedEvents = events
-            .Where(e => e.Type == DiagnosticEventType.TokenMissed)
-            .ToList();
+        foreach (var token in tokens)
+        {
+            switch (token.Outcome)
+            {
+                case TokenOutcome.Matched:
+                    matchedTokens.Add(token);
+                    break;
+                case TokenOutcome.Rejected:
+                    rejectedTokens.Add(token);
+                    break;
+                case TokenOutcome.NeverFound:
+                    neverFoundTokens.Add(token);
+                    break;
+                case TokenOutcome.Blocked:
+                    blockedTokens.Add(token);
+                    break;
+            }
+        }
 
         var inputLineCount = CountLines(inputContent);
-        var tokenCount = matchedEvents.Count + missedEvents.Count;
+        var totalTokens = matchedTokens.Count + rejectedTokens.Count + neverFoundTokens.Count + blockedTokens.Count;
 
         // Header
         sb.AppendLine("═══ Tokenization Alignment ═══");
-        sb.Append("Tokens: ").Append(tokenCount).Append(" | Input: ").Append(inputLineCount).Append(" lines | ").AppendLine(summary.Verdict);
+        sb.Append("Tokens: ").Append(totalTokens).Append(" | Input: ").Append(inputLineCount).Append(" lines | ").AppendLine(diagnostics.Verdict);
 
         // Matched tokens
-        if (matchedEvents.Count > 0)
+        if (matchedTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Matched Tokens ──");
-            foreach (var evt in matchedEvents)
+            foreach (var token in matchedTokens)
             {
-                var line = evt.Location != null ? $" (line {evt.Location.Line.ToInvariant()})" : string.Empty;
-                sb.Append("  ✓ ").Append(evt.TokenName).Append(" = \"").Append(evt.Value).Append('"').AppendLine(line);
+                sb.Append("  ✓ ").Append(token.TokenName).Append(" = ");
+
+                if (token.AssignedValues.Count <= 1)
+                {
+                    // Single value — preserve existing format
+                    sb.Append('"').Append(token.AssignedValues.Count == 1 ? token.AssignedValues[0] : string.Empty).Append('"');
+                    if (token.AssignedLocations.Count == 1)
+                    {
+                        sb.Append(" (line ").Append(token.AssignedLocations[0].Line.ToInvariant()).Append(')');
+                    }
+                }
+                else
+                {
+                    // Multiple values — comma-separated with line range
+                    for (var vi = 0; vi < token.AssignedValues.Count; vi++)
+                    {
+                        if (vi > 0) sb.Append(", ");
+                        sb.Append('"').Append(token.AssignedValues[vi]).Append('"');
+                    }
+
+                    if (token.AssignedLocations.Count >= 2)
+                    {
+                        var firstLine = token.AssignedLocations[0].Line;
+                        var lastLine = token.AssignedLocations[token.AssignedLocations.Count - 1].Line;
+                        if (firstLine > 0 && lastLine > 0)
+                        {
+                            sb.Append(" (lines ").Append(firstLine.ToInvariant()).Append('–').Append(lastLine.ToInvariant()).Append(')');
+                        }
+                    }
+                }
+
+                sb.AppendLine();
             }
         }
 
-        // Failures (transformer/validator)
-        if (failureEvents.Count > 0)
+        // Failures (rejected tokens with attempts)
+        if (rejectedTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Failures ──");
-            foreach (var evt in failureEvents)
+            foreach (var token in rejectedTokens)
             {
-                var decoratorDesc = BuildDecoratorDescription(evt);
-                sb.Append("  ✗ ").Append(evt.TokenName).Append(": ").Append(evt.Type).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(evt.Value).AppendLine("'");
+                foreach (var attempt in token.Attempts)
+                {
+                    if (attempt.Outcome != AttemptOutcome.ValidatorRejected &&
+                        attempt.Outcome != AttemptOutcome.TransformerFailed)
+                        continue;
 
-                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal)
-                    && (i.Type == DiagnosticIssueType.TransformerFailure
-                     || i.Type == DiagnosticIssueType.ValidatorRejection));
-                if (issue?.Hint != null)
-                    sb.Append("      Hint: ").AppendLine(issue.Hint);
+                    var decoratorDesc = !string.IsNullOrEmpty(attempt.DecoratorName) ? attempt.DecoratorName : "decorator";
+                    sb.Append("  ✗ ").Append(token.TokenName).Append(": ").Append(attempt.Outcome).Append(" — ").Append(decoratorDesc).Append(" failed on '").Append(attempt.Value).AppendLine("'");
+                }
+
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
             }
         }
 
-        // Unmatched tokens
-        if (missedEvents.Count > 0)
+        // Unmatched tokens (never found)
+        if (neverFoundTokens.Count > 0)
         {
             sb.AppendLine();
             sb.AppendLine("── Unmatched Tokens ──");
-            foreach (var evt in missedEvents)
+            foreach (var token in neverFoundTokens)
             {
-                sb.Append("  ✗ ").Append(evt.TokenName).AppendLine(" — preamble never found");
+                sb.Append("  ✗ ").Append(token.TokenName).AppendLine(" — preamble never found");
 
-                var issue = summary.Issues.FirstOrDefault(i => string.Equals(i.TokenName, evt.TokenName, StringComparison.Ordinal));
-                if (issue?.Hint != null)
-                    sb.Append("      Hint: ").AppendLine(issue.Hint);
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
+            }
+        }
+
+        // Blocked tokens (not searched because a prior non-optional token was missing)
+        if (blockedTokens.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("── Blocked Tokens ──");
+            foreach (var token in blockedTokens)
+            {
+                sb.Append("  ⊘ ").Append(token.TokenName).Append(" — blocked by '").Append(token.BlockedBy).AppendLine("'");
+
+                foreach (var issue in token.Issues)
+                {
+                    if (issue.Hint != null)
+                        sb.Append("      Hint: ").AppendLine(issue.Hint);
+                }
             }
         }
 
         // Summary
         sb.AppendLine();
         sb.AppendLine("═══ Summary ═══");
-        sb.Append("  Matched: ").Append(matchedEvents.Count).Append(" | Missed: ").Append(missedEvents.Count).Append(" | Failures: ").Append(failureEvents.Count);
+        sb.Append("  Matched: ").Append(matchedTokens.Count)
+            .Append(" | Missed: ").Append(rejectedTokens.Count + neverFoundTokens.Count)
+            .Append(" | Blocked: ").Append(blockedTokens.Count)
+            .Append(" | Failures: ").Append(CountFailures(rejectedTokens));
 
         return sb.ToString();
     }
@@ -99,14 +168,14 @@ internal static class AlignmentRenderer
         return count;
     }
 
-    private static string BuildDecoratorDescription(DiagnosticEvent evt)
+    private static int CountFailures(List<TokenDiagnostic> tokens)
     {
-        if (string.IsNullOrEmpty(evt.DecoratorName))
-            return "decorator";
-
-        if (evt.DecoratorArgs != null && evt.DecoratorArgs.Length > 0)
-            return $"{evt.DecoratorName}({string.Join(", ", evt.DecoratorArgs)})";
-
-        return evt.DecoratorName!;
+        var count = 0;
+        foreach (var token in tokens)
+            foreach (var attempt in token.Attempts)
+                if (attempt.Outcome == AttemptOutcome.ValidatorRejected ||
+                    attempt.Outcome == AttemptOutcome.TransformerFailed)
+                    count++;
+        return count;
     }
 }

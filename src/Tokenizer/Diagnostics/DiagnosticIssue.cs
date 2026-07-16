@@ -9,28 +9,34 @@ namespace Tokens.Diagnostics;
 public sealed class DiagnosticIssue
 {
     /// <summary>
+    /// Stable error code for this issue type. Codes are stable across versions
+    /// and can be used for documentation linking, programmatic filtering, and suppression.
+    /// </summary>
+    public string Code => IssueCodeMap.GetCode(Type);
+
+    /// <summary>
     /// Category of the issue for programmatic filtering.
     /// </summary>
-    public DiagnosticIssueType Type { get; init; }
+    public DiagnosticIssueType Type { get; internal init; }
 
     /// <summary>
     /// The token that failed, if applicable.
     /// </summary>
-    public string? TokenName { get; init; }
+    public string? TokenName { get; internal init; }
 
     /// <summary>
     /// Human-readable explanation of what went wrong.
     /// </summary>
-    public string Description { get; init; } = string.Empty;
+    public string Description { get; internal init; } = string.Empty;
 
     /// <summary>
     /// Location in the input where the issue occurred.
     /// </summary>
-    public FileLocation? Location { get; init; }
+    public FileLocation? Location { get; internal init; }
 
     /// <summary>
     /// Adaptive hint suggesting how to fix the issue, if available.
     /// Null when no hint can be generated.
     /// </summary>
-    public string? Hint { get; init; }
+    public string? Hint { get; internal init; }
 }

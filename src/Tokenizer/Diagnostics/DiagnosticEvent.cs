@@ -3,16 +3,16 @@ using Tokens.Enumerators;
 namespace Tokens.Diagnostics;
 
 /// <summary>
-/// A single diagnostic event recorded during tokenization, representing
-/// one decision point in the matching process.
+/// A single diagnostic event recorded during compilation or tokenization,
+/// representing one decision point in the process.
 /// </summary>
-public sealed class DiagnosticEvent
+/// <typeparam name="TType">The enum type identifying the event kind.</typeparam>
+public sealed class DiagnosticEvent<TType> where TType : struct, Enum
 {
     /// <summary>
-    /// The type of decision or event. See <see cref="DiagnosticEventType"/>
-    /// for detailed documentation of each type's semantics.
+    /// The type of decision or event.
     /// </summary>
-    public DiagnosticEventType Type { get; init; }
+    public TType Type { get; init; }
 
     /// <summary>
     /// The name of the token this event relates to, or null for
@@ -27,13 +27,13 @@ public sealed class DiagnosticEvent
     public int? TokenId { get; init; }
 
     /// <summary>
-    /// The position in the input text where this event occurred.
+    /// The position in the input/source text where this event occurred.
     /// </summary>
     public FileLocation? Location { get; init; }
 
     /// <summary>
     /// The value being tested, assigned, or accumulated.
-    /// Meaning varies by event type — see <see cref="DiagnosticEventType"/> docs.
+    /// Meaning varies by event type.
     /// </summary>
     public string? Value { get; init; }
 
@@ -45,13 +45,12 @@ public sealed class DiagnosticEvent
 
     /// <summary>
     /// The name of the decorator (validator or transformer) involved,
-    /// or null for non-decorator events. E.g. "ToDateTimeUtc", "IsEmail".
+    /// or null for non-decorator events.
     /// </summary>
     public string? DecoratorName { get; init; }
 
     /// <summary>
     /// The parameters passed to the decorator, or null.
-    /// E.g. ["yyyy-MM-dd HH:mm:ss"] for ToDateTimeUtc.
     /// </summary>
     public string[]? DecoratorArgs { get; init; }
 }

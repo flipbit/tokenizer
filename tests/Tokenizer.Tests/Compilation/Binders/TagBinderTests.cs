@@ -15,7 +15,7 @@ public class TagBinderTests
         definition.Tags.Add("receipt");
         var template = new TemplateBuilder().Build();
 
-        TagBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        TagBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(2, template.Tags.Count);
         Assert.Equal("invoice", template.Tags[0]);
@@ -30,7 +30,7 @@ public class TagBinderTests
         definition.Tags.Add("invoice");
         var template = new TemplateBuilder().Build();
 
-        TagBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        TagBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Single(template.Tags);
     }
@@ -41,7 +41,7 @@ public class TagBinderTests
         var definition = new TemplateDefinition();
         var template = new TemplateBuilder().Build();
 
-        TagBinder.Bind(definition, template, NullDiagnosticCollector.Instance);
+        TagBinder.Bind(definition, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Empty(template.Tags);
     }
@@ -52,12 +52,12 @@ public class TagBinderTests
         var definition = new TemplateDefinition();
         definition.Tags.Add("invoice");
         var template = new TemplateBuilder().Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new CompilationDiagnosticCollector();
 
         TagBinder.Bind(definition, template, collector);
 
         var diagnostics = collector.GetResult()!;
         Assert.Single(diagnostics.Events);
-        Assert.Equal(DiagnosticEventType.TagAdded, diagnostics.Events[0].Type);
+        Assert.Equal(CompilationEventType.TagAdded, diagnostics.Events[0].Type);
     }
 }

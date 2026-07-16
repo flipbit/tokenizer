@@ -11,15 +11,15 @@ namespace Tokens.Tokenization;
 internal sealed class DecoratorPipeline
 {
     private readonly TokenizerOptions _options;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
 
-    internal DecoratorPipeline(TokenizerOptions options, IDiagnosticCollector collector)
+    internal DecoratorPipeline(TokenizerOptions options, ITokenizationDiagnosticCollector collector)
     {
         _options = options;
         _collector = collector;
     }
 
-    internal IDiagnosticCollector Collector => _collector;
+    internal ITokenizationDiagnosticCollector Collector => _collector;
 
     /// <summary>
     /// Prepares the value and runs the decorator pipeline (transformers then validators).
@@ -86,23 +86,29 @@ internal sealed class DecoratorPipeline
             {
                 if (!decorator.TryTransform(evaluatedValue!, _options, out var output))
                 {
-                    _collector.Record(DiagnosticEventType.TransformerFailed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        location: location,
-                        value: evaluatedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name,
-                        decoratorArgs: decorator.Parameters.ToArray());
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(TokenizationEventType.TransformerFailed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            location: location,
+                            value: evaluatedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name,
+                            decoratorArgs: decorator.Parameters.ToArray());
+                    }
 
                     return false;
                 }
 
-                _collector.Record(DiagnosticEventType.TransformerSucceeded,
-                    tokenName: token.Name, tokenId: token.Id,
-                    location: location,
-                    value: evaluatedValue?.ToString(),
-                    detail: output?.ToString(),
-                    decoratorName: decorator.DecoratorType.Name,
-                    decoratorArgs: decorator.Parameters.ToArray());
+                if (_collector.IsEnabled)
+                {
+                    _collector.Record(TokenizationEventType.TransformerSucceeded,
+                        tokenName: token.Name, tokenId: token.Id,
+                        location: location,
+                        value: evaluatedValue?.ToString(),
+                        detail: output?.ToString(),
+                        decoratorName: decorator.DecoratorType.Name,
+                        decoratorArgs: decorator.Parameters.ToArray());
+                }
 
                 evaluatedValue = output;
             }
@@ -111,17 +117,23 @@ internal sealed class DecoratorPipeline
             {
                 if (decorator.Validate(evaluatedValue!, _options))
                 {
-                    _collector.Record(DiagnosticEventType.ValidatorPassed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        value: evaluatedValue?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(TokenizationEventType.ValidatorPassed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            value: evaluatedValue?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name);
+                    }
                 }
                 else
                 {
-                    _collector.Record(DiagnosticEventType.ValidatorFailed,
-                        tokenName: token.Name, tokenId: token.Id,
-                        value: input?.ToString(),
-                        decoratorName: decorator.DecoratorType.Name);
+                    if (_collector.IsEnabled)
+                    {
+                        _collector.Record(TokenizationEventType.ValidatorFailed,
+                            tokenName: token.Name, tokenId: token.Id,
+                            value: input?.ToString(),
+                            decoratorName: decorator.DecoratorType.Name);
+                    }
 
                     return false;
                 }

@@ -14,6 +14,6 @@ internal interface ITokenizationEngine
     public TokenizationSession CreateSession(
         Template template,
         TokenizeResult result,
-        IDiagnosticCollector collector,
+        ITokenizationDiagnosticCollector collector,
         IHintStrategy? hintStrategy = null);
 }

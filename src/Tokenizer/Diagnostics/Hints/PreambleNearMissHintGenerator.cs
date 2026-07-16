@@ -21,10 +21,10 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
 #endif
 
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
-        if (issue.Type != DiagnosticIssueType.PreambleNeverFound)
+        if (type != DiagnosticIssueType.PreambleNeverFound)
             return null;
 
         var preamble = sourceEvent.Detail ?? sourceEvent.Value ?? string.Empty;
@@ -32,13 +32,13 @@ internal sealed partial class PreambleNearMissHintGenerator : IHintGenerator
         if (string.IsNullOrWhiteSpace(preamble))
             return null;
 
-        var inputContent = trace.InputContent;
+        var inputContent = context.InputContent;
 
         if (string.IsNullOrEmpty(inputContent))
             return null;
 
         var normalizedPreamble = NormalizeWhitespace(preamble);
-        var lines = inputContent!.Split(new[] { '\n', '\r' }, StringSplitOptions.None);
+        var lines = context.InputLines;
 
         for (var i = 0; i < lines.Length; i++)
         {

@@ -8,7 +8,7 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class RepeatingTokenLinker
 {
-    public static void Link(Token token, Template template, IDiagnosticCollector collector)
+    public static void Link(Token token, Template template, ICompilationDiagnosticCollector collector)
     {
         if (!token.IsRepeating || token.DependsOnId != -1 || template.Tokens.Count < 2)
             return;
@@ -21,7 +21,7 @@ internal static class RepeatingTokenLinker
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.RepeatingTokenLinked,
+                collector.Record(CompilationEventType.RepeatingTokenLinked,
                     tokenName: token.Name,
                     tokenId: token.Id,
                     detail: $"Linked to token {previous.Id.ToInvariant()}");

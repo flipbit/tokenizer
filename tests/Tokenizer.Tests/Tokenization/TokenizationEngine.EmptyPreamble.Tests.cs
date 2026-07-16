@@ -23,7 +23,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -45,7 +45,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -67,7 +67,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -88,7 +88,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -108,7 +108,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -130,7 +130,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -156,7 +156,7 @@ public class TokenizationEngineEmptyPreambleTests
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert — the key thing is that this completes (does not hang)

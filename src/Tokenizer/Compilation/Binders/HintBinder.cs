@@ -8,7 +8,7 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class HintBinder
 {
-    public static void Bind(TemplateDefinition definition, Template template, IDiagnosticCollector collector)
+    public static void Bind(TemplateDefinition definition, Template template, ICompilationDiagnosticCollector collector)
     {
         // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
         foreach (var hint in definition.Hints)
@@ -20,7 +20,7 @@ internal static class HintBinder
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.HintAdded, detail: hint.Text);
+                collector.Record(CompilationEventType.HintAdded, detail: hint.Text);
             }
         }
     }

@@ -6,13 +6,13 @@ namespace Tokens.Diagnostics;
 public class DiagnosticCollectorTests
 {
     [Fact]
-    public void GivenNullCollector_WhenRecordingEvent_ThenGetResultReturnsNull()
+    public void GivenNullTokenizationCollector_WhenRecordingEvent_ThenGetResultReturnsNull()
     {
         // Arrange
-        var collector = NullDiagnosticCollector.Instance;
+        var collector = NullTokenizationDiagnosticCollector.Instance;
 
         // Act
-        collector.Record(DiagnosticEventType.TokenizationStarted, value: "test");
+        collector.Record(TokenizationEventType.TokenizationStarted, value: "test");
         var result = collector.GetResult();
 
         // Assert
@@ -20,118 +20,113 @@ public class DiagnosticCollectorTests
     }
 
     [Fact]
-    public void GivenActiveCollector_WhenRecordingEvent_ThenEventIsStored()
+    public void GivenTokenizationCollector_WhenRecordingEvent_ThenEventIsStored()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
 
         // Act
-        collector.Record(DiagnosticEventType.TokenAssigned,
+        collector.Record(TokenizationEventType.TokenAssigned,
             tokenName: "DomainName", tokenId: 1,
             location: new FileLocation(), value: "bbc.co.uk");
         var result = collector.GetResult();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(result!.Events);
-        Assert.Equal(DiagnosticEventType.TokenAssigned, result.Events[0].Type);
-        Assert.Equal("DomainName", result.Events[0].TokenName);
-        Assert.Equal("bbc.co.uk", result.Events[0].Value);
+        Assert.Single(result!.RawEvents);
+        Assert.Equal(TokenizationEventType.TokenAssigned, result.RawEvents[0].Type);
+        Assert.Equal("DomainName", result.RawEvents[0].TokenName);
+        Assert.Equal("bbc.co.uk", result.RawEvents[0].Value);
     }
 
     [Fact]
-    public void GivenActiveCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
+    public void GivenTokenizationCollector_WhenRecordingMultipleEvents_ThenEventsAreInOrder()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
+        var collector = new TokenizationDiagnosticCollector("input");
 
         // Act
-        collector.Record(DiagnosticEventType.TokenizationStarted);
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenizationCompleted);
+        collector.Record(TokenizationEventType.TokenizationStarted);
+        collector.Record(TokenizationEventType.PreambleMatched, tokenName: "First");
+        collector.Record(TokenizationEventType.TokenAssigned, tokenName: "First");
+        collector.Record(TokenizationEventType.TokenizationCompleted);
         var result = collector.GetResult();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(4, result!.Events.Count);
-        Assert.Equal(DiagnosticEventType.TokenizationStarted, result.Events[0].Type);
-        Assert.Equal(DiagnosticEventType.TokenizationCompleted, result.Events[3].Type);
+        Assert.Equal(4, result!.RawEvents.Count);
+        Assert.Equal(TokenizationEventType.TokenizationStarted, result.RawEvents[0].Type);
+        Assert.Equal(TokenizationEventType.TokenizationCompleted, result.RawEvents[3].Type);
     }
 
     [Fact]
-    public void GivenDiagnostics_WhenQueryingFailures_ThenReturnsOnlyFailureEvents()
+    public void GivenCompilationCollector_WhenRecordingCompilationEvent_ThenEventIsStored()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Second",
-            decoratorName: "IsEmail", value: "notanemail");
-        collector.Record(DiagnosticEventType.TransformerFailed, tokenName: "Third",
-            decoratorName: "ToDateTimeUtc", value: "bad-date");
-        collector.Record(DiagnosticEventType.TokenMissed, tokenName: "Fourth");
+        var collector = new CompilationDiagnosticCollector();
 
         // Act
-        var result = collector.GetResult()!;
+        collector.Record(CompilationEventType.TokenCreated, tokenName: "DomainName", tokenId: 1);
+        var result = collector.GetResult();
 
         // Assert
-        var failures = result.Failures.ToList();
-        Assert.Equal(3, failures.Count);
-        Assert.All(failures, f => Assert.Contains(f.Type, new[]
-        {
-            DiagnosticEventType.ValidatorFailed,
-            DiagnosticEventType.TransformerFailed,
-            DiagnosticEventType.TokenMissed,
-        }));
+        Assert.NotNull(result);
+        Assert.Single(result!.Events);
+        Assert.Equal(CompilationEventType.TokenCreated, result.Events[0].Type);
+        Assert.Equal("DomainName", result.Events[0].TokenName);
     }
 
     [Fact]
-    public void GivenDiagnostics_WhenQueryingForToken_ThenReturnsEventsForThatToken()
+    public void GivenNullTokenizationCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
     {
-        // Arrange
-        var collector = new DiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "First");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-        collector.Record(DiagnosticEventType.PreambleMatched, tokenName: "Second");
-
-        // Act
-        var result = collector.GetResult()!;
-        var firstEvents = result.ForToken("First").ToList();
-
         // Assert
-        Assert.Equal(2, firstEvents.Count);
-        Assert.All(firstEvents, e => Assert.Equal("First", e.TokenName));
+        Assert.False(NullTokenizationDiagnosticCollector.Instance.IsEnabled);
     }
 
     [Fact]
-    public void GivenDiagnostics_WhenQueryingFirstFailure_ThenReturnsFirstFailureEvent()
+    public void GivenNullCompilationCollector_WhenCheckingIsEnabled_ThenReturnsFalse()
     {
-        // Arrange
-        var collector = new DiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-        collector.Record(DiagnosticEventType.ValidatorFailed, tokenName: "Second");
-        collector.Record(DiagnosticEventType.TransformerFailed, tokenName: "Third");
-
-        // Act
-        var result = collector.GetResult()!;
-
         // Assert
-        Assert.NotNull(result.FirstFailure);
-        Assert.Equal("Second", result.FirstFailure!.TokenName);
-        Assert.Equal(DiagnosticEventType.ValidatorFailed, result.FirstFailure.Type);
+        Assert.False(NullCompilationDiagnosticCollector.Instance.IsEnabled);
     }
 
     [Fact]
-    public void GivenDiagnosticsWithNoFailures_WhenQueryingFirstFailure_ThenReturnsNull()
+    public void GivenTokenizationCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
     {
         // Arrange
-        var collector = new DiagnosticCollector("input");
-        collector.Record(DiagnosticEventType.TokenAssigned, tokenName: "First");
-
-        // Act
-        var result = collector.GetResult()!;
+        var collector = new TokenizationDiagnosticCollector("x");
 
         // Assert
-        Assert.Null(result.FirstFailure);
+        Assert.True(collector.IsEnabled);
+    }
+
+    [Fact]
+    public void GivenCompilationCollector_WhenCheckingIsEnabled_ThenReturnsTrue()
+    {
+        // Arrange
+        var collector = new CompilationDiagnosticCollector();
+
+        // Assert
+        Assert.True(collector.IsEnabled);
+    }
+
+    [Fact]
+    public void GivenNullCompilationCollector_WhenGetResult_ThenReturnsNull()
+    {
+        // Act
+        var result = NullCompilationDiagnosticCollector.Instance.GetResult();
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void GivenNullTokenizationCollector_WhenGetResult_ThenReturnsNull()
+    {
+        // Act
+        var result = NullTokenizationDiagnosticCollector.Instance.GetResult();
+
+        // Assert
+        Assert.Null(result);
     }
 }

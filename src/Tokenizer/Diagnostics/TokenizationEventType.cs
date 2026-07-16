@@ -5,7 +5,7 @@ namespace Tokens.Diagnostics;
 /// Every event type has a corresponding diagnostic meaning that AI agents
 /// and developers can use to understand the tokenization process.
 /// </summary>
-public enum DiagnosticEventType
+public enum TokenizationEventType
 {
     /// <summary>
     /// Tokenization has started for a template/input pair.
@@ -157,52 +157,4 @@ public enum DiagnosticEventType
     /// </summary>
     TokenMissed,
 
-    /// <summary>
-    /// A hint was added to the template during compilation.
-    /// Detail contains the hint text.
-    /// </summary>
-    HintAdded,
-
-    /// <summary>
-    /// A tag was added to the template during compilation.
-    /// Detail contains the tag string.
-    /// </summary>
-    TagAdded,
-
-    /// <summary>
-    /// A token was created from a token definition during compilation.
-    /// TokenName and TokenId identify the created token.
-    /// </summary>
-    TokenCreated,
-
-    /// <summary>
-    /// A template-level option was applied to a token during compilation.
-    /// TokenName identifies the token. Detail describes the option applied.
-    /// </summary>
-    OptionApplied,
-
-    /// <summary>
-    /// A decorator (transformer or validator) was applied to a token during compilation.
-    /// TokenName identifies the token. DecoratorName identifies the decorator.
-    /// </summary>
-    DecoratorApplied,
-
-    /// <summary>
-    /// A concatenation decorator was applied to a token during compilation.
-    /// TokenName identifies the token. Detail contains the joining string.
-    /// </summary>
-    ConcatenationApplied,
-
-    /// <summary>
-    /// A repeating token was linked to its non-repeating counterpart during compilation.
-    /// TokenName and TokenId identify the repeating token.
-    /// Detail contains the id of the linked non-repeating token.
-    /// </summary>
-    RepeatingTokenLinked,
-
-    /// <summary>
-    /// Template compilation has completed.
-    /// Detail contains the template name and token count.
-    /// </summary>
-    CompilationCompleted,
 }

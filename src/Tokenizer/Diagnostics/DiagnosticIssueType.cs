@@ -37,14 +37,13 @@ public enum DiagnosticIssueType
     RepeatingTokenCutShort,
 
     /// <summary>
-    /// Input text exists that doesn't correspond to any token in the template,
-    /// which may have pushed subsequent tokens out of alignment.
-    /// </summary>
-    UnmatchedInputSection,
-
-    /// <summary>
     /// A required hint string was not found in the input text,
     /// causing tokenization to be skipped entirely.
     /// </summary>
     HintMissing,
+
+    /// <summary>
+    /// Token was not searched for because a prior required token failed to match.
+    /// </summary>
+    Blocked,
 }

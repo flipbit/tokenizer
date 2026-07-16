@@ -56,7 +56,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -86,7 +86,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -110,7 +110,7 @@ Notes: Test notes
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -138,7 +138,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -161,7 +161,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -184,7 +184,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -207,7 +207,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -231,7 +231,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -254,7 +254,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -277,7 +277,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -301,7 +301,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -324,7 +324,7 @@ Content: {Content}").Template;
         context.Initialize(new System.IO.StringReader(input));
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

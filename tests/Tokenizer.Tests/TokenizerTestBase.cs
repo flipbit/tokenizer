@@ -41,4 +41,17 @@ public abstract class TokenizerTestBase
     {
         return CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
     }
+
+    /// <summary>
+    /// Compiles the template and tokenizes the input with diagnostics enabled.
+    /// Writes the alignment view to test output and returns the result.
+    /// </summary>
+    protected TokenizeResult TokenizeWithDiagnostics(string template, string input)
+    {
+        var tokenizer = CreateTokenizer(new TokenizerOptions { EnableDiagnostics = true });
+        var compiled = tokenizer.Compile(template).Template;
+        var result = tokenizer.Tokenize(compiled, input);
+        Output.WriteLine(result.Diagnostics!.RenderAlignment());
+        return result;
+    }
 }

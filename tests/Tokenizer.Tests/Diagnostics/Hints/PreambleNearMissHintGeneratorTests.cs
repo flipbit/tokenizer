@@ -10,18 +10,16 @@ public class PreambleNearMissHintGeneratorTests
     public void GivenCaseInsensitiveNearMiss_WhenGeneratingHint_ThenReturnsHintWithLineNumber()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
-        var collector = new DiagnosticCollector("Line one\nREGISTRAR:\nLine three");
-        var trace = collector.GetResult()!;
+        var context = new BuildContext("Line one\nREGISTRAR:\nLine three", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Registrar", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -33,18 +31,16 @@ public class PreambleNearMissHintGeneratorTests
     public void GivenSubstringNearMiss_WhenGeneratingHint_ThenReturnsHint()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Server" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Server",
             Detail = "Name Server:",
         };
-        var collector = new DiagnosticCollector("First line\n  Name Server:  extra text\nThird line");
-        var trace = collector.GetResult()!;
+        var context = new BuildContext("First line\n  Name Server:  extra text\nThird line", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Server", sourceEvent, context);
 
         // Assert
         Assert.NotNull(hint);
@@ -55,18 +51,16 @@ public class PreambleNearMissHintGeneratorTests
     public void GivenNoNearMiss_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
-        var collector = new DiagnosticCollector("Completely unrelated text\nNothing here");
-        var trace = collector.GetResult()!;
+        var context = new BuildContext("Completely unrelated text\nNothing here", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Registrar", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -76,18 +70,16 @@ public class PreambleNearMissHintGeneratorTests
     public void GivenNonPreambleNeverFoundIssue_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.TransformerFailure, TokenName = "Registrar" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TransformerFailed,
+            Type = TokenizationEventType.TransformerFailed,
             TokenName = "Registrar",
             Detail = "Registrar:",
         };
-        var collector = new DiagnosticCollector("REGISTRAR: some value");
-        var trace = collector.GetResult()!;
+        var context = new BuildContext("REGISTRAR: some value", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.TransformerFailure, "Registrar", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
@@ -97,19 +89,37 @@ public class PreambleNearMissHintGeneratorTests
     public void GivenNoPreambleInEvent_WhenGeneratingHint_ThenReturnsNull()
     {
         // Arrange
-        var issue = new DiagnosticIssue { Type = DiagnosticIssueType.PreambleNeverFound, TokenName = "Token" };
-        var sourceEvent = new DiagnosticEvent
+        var sourceEvent = new TokenizationEvent
         {
-            Type = DiagnosticEventType.TokenMissed,
+            Type = TokenizationEventType.TokenMissed,
             TokenName = "Token",
         };
-        var collector = new DiagnosticCollector("Some input text");
-        var trace = collector.GetResult()!;
+        var context = new BuildContext("Some input text", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
 
         // Act
-        var hint = _generator.TryGenerateHint(issue, sourceEvent, trace);
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Token", sourceEvent, context);
 
         // Assert
         Assert.Null(hint);
+    }
+
+    [Fact]
+    public void GivenWindowsLineEndings_WhenCheckingNearMiss_ThenHintStillGenerated()
+    {
+        // Arrange
+        var sourceEvent = new TokenizationEvent
+        {
+            Type = TokenizationEventType.TokenMissed,
+            TokenName = "Registrar",
+            Detail = "Registrar:",
+        };
+        var context = new BuildContext("Line one\r\nREGISTRAR:\r\nLine three", outOfOrderTokens: false, new HashSet<string>(StringComparer.Ordinal));
+
+        // Act
+        var hint = _generator.TryGenerateHint(DiagnosticIssueType.PreambleNeverFound, "Registrar", sourceEvent, context);
+
+        // Assert
+        Assert.NotNull(hint);
+        Assert.Contains("case difference", hint, StringComparison.OrdinalIgnoreCase);
     }
 }

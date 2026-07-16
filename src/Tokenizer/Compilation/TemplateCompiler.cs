@@ -30,9 +30,9 @@ internal sealed class TemplateCompiler
 
     public CompilationResult Compile(string content)
     {
-        IDiagnosticCollector collector = Options.EnableDiagnostics
-            ? new DiagnosticCollector(inputContent: null)
-            : NullDiagnosticCollector.Instance;
+        ICompilationDiagnosticCollector collector = Options.EnableDiagnostics
+            ? new CompilationDiagnosticCollector()
+            : NullCompilationDiagnosticCollector.Instance;
 
         TemplateLengthValidator.Validate(content, Options);
 
@@ -51,7 +51,7 @@ internal sealed class TemplateCompiler
 
             if (collector.IsEnabled)
             {
-                collector.Record(DiagnosticEventType.CompilationCompleted,
+                collector.Record(CompilationEventType.CompilationCompleted,
                     detail: $"Template '{template.Name}' compiled with {template.Tokens.Count} token(s)");
             }
 
@@ -63,7 +63,7 @@ internal sealed class TemplateCompiler
         catch (TokenizerException ex)
         {
             _log.LogError(ex, "Template compilation failed: {Message}", ex.Message);
-            ex.Data["DiagnosticResult"] = collector.GetResult();
+            ex.Data["CompilationDiagnostics"] = collector.GetResult();
             throw;
         }
         // Intentional catch-all: compilation boundary that wraps unexpected exceptions
@@ -74,7 +74,9 @@ internal sealed class TemplateCompiler
 #pragma warning restore CA1031
         {
             _log.LogError(ex, "Unexpected error during template compilation: {Message}", ex.Message);
-            throw new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
+            var wrapped = new TokenizerException($"Unexpected error during template compilation: {ex.Message}", ex);
+            wrapped.Data["CompilationDiagnostics"] = collector.GetResult();
+            throw wrapped;
         }
     }
 }

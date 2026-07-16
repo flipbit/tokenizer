@@ -48,6 +48,6 @@ public class CompilationResultTests : TokenizerTestBase
 
         // Assert
         Assert.NotNull(result.Diagnostics);
-        Assert.Contains(result.Diagnostics.Events, e => e.Type == DiagnosticEventType.CompilationCompleted);
+        Assert.Contains(result.Diagnostics.Events, e => e.Type == CompilationEventType.CompilationCompleted);
     }
 }

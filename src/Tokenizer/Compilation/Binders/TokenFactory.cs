@@ -9,7 +9,7 @@ namespace Tokens.Compilation.Binders;
 /// </summary>
 internal static class TokenFactory
 {
-    public static Token Create(TokenDefinition definition, TokenizerOptions options, IDiagnosticCollector collector)
+    public static Token Create(TokenDefinition definition, TokenizerOptions options, ICompilationDiagnosticCollector collector)
     {
         var preamble = ComputePreamble(definition, options);
         var location = definition.Location ?? new Enumerators.FileLocation();
@@ -26,7 +26,7 @@ internal static class TokenFactory
 
         if (collector.IsEnabled)
         {
-            collector.Record(DiagnosticEventType.TokenCreated,
+            collector.Record(CompilationEventType.TokenCreated,
                 tokenName: token.Name,
                 tokenId: definition.Id,
                 detail: $"Content={definition.Content}, Optional={token.IsOptional}, Repeating={token.IsRepeating}");

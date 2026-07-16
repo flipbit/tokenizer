@@ -11,7 +11,7 @@ public class CandidateTokenListTests : TokenizerTestBase
 {
     private static readonly FileLocation NoLocation = new FileLocation();
     private static readonly TokenizerOptions DefaultOptions = new TokenizerOptions();
-    private static readonly DecoratorPipeline DefaultPipeline = new DecoratorPipeline(DefaultOptions, NullDiagnosticCollector.Instance);
+    private static readonly DecoratorPipeline DefaultPipeline = new DecoratorPipeline(DefaultOptions, NullTokenizationDiagnosticCollector.Instance);
 
     public CandidateTokenListTests(ITestOutputHelper output) : base(output)
     {

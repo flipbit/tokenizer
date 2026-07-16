@@ -34,7 +34,7 @@ internal sealed class ResultBuilder : IResultBuilder
     public void BuildUnmatchedTokens(
         Template template,
         TokenizeResult result,
-        IDiagnosticCollector collector)
+        ITokenizationDiagnosticCollector collector)
     {
         ArgumentValidation.ThrowIfNull(template, nameof(template));
         ArgumentValidation.ThrowIfNull(result, nameof(result));
@@ -60,9 +60,12 @@ internal sealed class ResultBuilder : IResultBuilder
                         token.IsRequired);
                 }
 
-                collector.Record(DiagnosticEventType.TokenMissed,
-                    tokenName: token.Name, tokenId: token.Id,
-                    detail: token.Preamble);
+                if (collector.IsEnabled)
+                {
+                    collector.Record(TokenizationEventType.TokenMissed,
+                        tokenName: token.Name, tokenId: token.Id,
+                        detail: token.Preamble);
+                }
 
                 result.Tokens.AddMiss(token);
                 unmatchedCount++;

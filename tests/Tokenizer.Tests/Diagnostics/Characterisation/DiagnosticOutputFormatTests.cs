@@ -1,0 +1,115 @@
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Tokens.Diagnostics.Characterisation;
+
+public class DiagnosticOutputFormatTests : TokenizerTestBase
+{
+    public DiagnosticOutputFormatTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    [Fact]
+    public void GivenAllTokensMatch_WhenRenderingAlignment_ThenMatchedSectionPopulatedAndNoFailures()
+    {
+        // Arrange
+        var template = "Name: { Name }\nAge: { Age }";
+        var input = "Name: Alice\nAge: 30";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+        var alignment = result.Diagnostics!.RenderAlignment();
+
+        // Assert
+        Assert.True(alignment.Contains("Matched Tokens", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Name", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Age", StringComparison.Ordinal));
+        Assert.False(alignment.Contains("Unmatched Tokens", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Matched: 2", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Missed: 0", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void GivenMixedResults_WhenRenderingAlignment_ThenAllSectionsPopulated()
+    {
+        // Arrange
+        var template = "Name: { Name }\nEmail: { Email : IsEmail }\nAge: { Age }";
+        var input = "Name: Alice\nEmail: notvalid\nAge: 30";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+        var alignment = result.Diagnostics!.RenderAlignment();
+
+        // Assert
+        Output.WriteLine(alignment);
+        Assert.True(alignment.Contains("Matched Tokens", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Failures", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Matched: 2", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("Missed: 1", StringComparison.Ordinal));
+        Assert.NotEmpty(alignment);
+    }
+
+    [Fact]
+    public void GivenValidatorRejection_WhenRenderingAlignment_ThenSaysRejectedNotPreambleNeverFound()
+    {
+        // Arrange
+        var template = "Email: { Email : IsEmail }";
+        var input = "Email: bad";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+        var alignment = result.Diagnostics!.RenderAlignment();
+
+        // Assert
+        Output.WriteLine(alignment);
+        // The preamble WAS found — renderer should not say "preamble never found"
+        Assert.False(alignment.Contains("preamble never found", StringComparison.Ordinal));
+        Assert.True(alignment.Contains("ValidatorRejected", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void GivenAllTokensMatch_WhenCheckingVerdict_ThenVerdictShowsFullMatch()
+    {
+        // Arrange
+        var template = "Name: { Name }\nAge: { Age }";
+        var input = "Name: Alice\nAge: 30";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        Assert.Equal(2, result.Diagnostics!.MatchedCount);
+        Assert.Equal(0, result.Diagnostics!.MissedCount);
+    }
+
+    [Fact]
+    public void GivenPartialMatch_WhenCheckingVerdict_ThenVerdictShowsMissedCount()
+    {
+        // Arrange
+        var template = "Name: { Name }\nAge: { Age }\nCity: { City }";
+        var input = "Name: Alice\nAge: 30";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        Assert.Equal(2, result.Diagnostics!.MatchedCount);
+        Assert.Equal(1, result.Diagnostics!.MissedCount);
+    }
+
+    [Fact]
+    public void GivenNoMatches_WhenCheckingVerdict_ThenVerdictShowsAllMissed()
+    {
+        // Arrange
+        var template = "A: { A }\nB: { B }";
+        var input = "nothing";
+
+        // Act
+        var result = TokenizeWithDiagnostics(template, input);
+
+        // Assert
+        Assert.Equal(0, result.Diagnostics!.MatchedCount);
+        Assert.Equal(2, result.Diagnostics!.MissedCount);
+    }
+
+}

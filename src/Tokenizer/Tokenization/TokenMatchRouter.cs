@@ -10,12 +10,12 @@ internal sealed class TokenMatchRouter
 {
     private readonly Template _template;
     private readonly CandidateProcessor _candidateProcessor;
-    private readonly IDiagnosticCollector _collector;
+    private readonly ITokenizationDiagnosticCollector _collector;
 
     public TokenMatchRouter(
         Template template,
         CandidateProcessor candidateProcessor,
-        IDiagnosticCollector collector)
+        ITokenizationDiagnosticCollector collector)
     {
         _template = template;
         _candidateProcessor = candidateProcessor;
@@ -57,9 +57,10 @@ internal sealed class TokenMatchRouter
         {
             if (_collector.IsEnabled)
             {
-                _collector.Record(DiagnosticEventType.PreambleMatched,
+                _collector.Record(TokenizationEventType.PreambleMatched,
                     tokenName: string.Join(", ", context.MatchBuffer.Select(m => m.Name)),
-                    location: context.Enumerator.Location);
+                    location: context.Enumerator.Location,
+                    detail: context.MatchBuffer[0].Preamble);
             }
 
             // First token found — prepare to read token value

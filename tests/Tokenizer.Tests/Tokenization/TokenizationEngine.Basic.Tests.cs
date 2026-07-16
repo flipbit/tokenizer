@@ -29,7 +29,7 @@ public class TokenizationEngineBasicTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert
@@ -52,7 +52,7 @@ public class TokenizationEngineBasicTests
             .Build();
 
         // Act
-        var session = _engine.CreateSession(template, result, NullDiagnosticCollector.Instance);
+        var session = _engine.CreateSession(template, result, NullTokenizationDiagnosticCollector.Instance);
         session.Run(context);
 
         // Assert

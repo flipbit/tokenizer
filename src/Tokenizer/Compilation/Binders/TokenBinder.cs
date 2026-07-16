@@ -11,7 +11,7 @@ internal static class TokenBinder
 {
     public static void Bind(TemplateDefinition definition, Template template,
         DecoratorRegistry registry, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache,
-        IDiagnosticCollector collector)
+        ICompilationDiagnosticCollector collector)
     {
         foreach (var tokenDef in definition.Tokens)
         {

@@ -21,7 +21,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new TokenizationDiagnosticCollector(inputContent: null);
         var pipeline = new DecoratorPipeline(template.Options, collector);
         var location = new FileLocation();
 
@@ -29,8 +29,8 @@ public class FrontMatterProcessorTests
         FrontMatterProcessor.Process(template, result, pipeline, location);
 
         // Assert
-        Assert.Contains(collector.GetResult()!.Events,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned);
+        Assert.Contains(collector.GetResult()!.RawEvents,
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new TokenizationDiagnosticCollector(inputContent: null);
         var pipeline = new DecoratorPipeline(template.Options, collector);
         var location = new FileLocation();
 
@@ -56,10 +56,10 @@ public class FrontMatterProcessorTests
 
         // Assert
         var diagnosticResult = collector.GetResult();
-        Assert.DoesNotContain(diagnosticResult!.Events,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenAssigned);
-        Assert.DoesNotContain(diagnosticResult.Events,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
+        Assert.DoesNotContain(diagnosticResult!.RawEvents,
+            e => e.Type == TokenizationEventType.FrontMatterTokenAssigned);
+        Assert.DoesNotContain(diagnosticResult.RawEvents,
+            e => e.Type == TokenizationEventType.FrontMatterTokenFailed);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class FrontMatterProcessorTests
             .WithDefaultOptions()
             .Build();
         var result = new TokenizeResultBuilder().WithTemplate(template).Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new TokenizationDiagnosticCollector(inputContent: null);
         var pipeline = new DecoratorPipeline(template.Options, collector);
         var location = new FileLocation();
 
@@ -84,8 +84,8 @@ public class FrontMatterProcessorTests
         FrontMatterProcessor.Process(template, result, pipeline, location);
 
         // Assert
-        Assert.Contains(collector.GetResult()!.Events,
-            e => e.Type == DiagnosticEventType.FrontMatterTokenFailed);
+        Assert.Contains(collector.GetResult()!.RawEvents,
+            e => e.Type == TokenizationEventType.FrontMatterTokenFailed);
         Assert.Empty(result.Tokens.Matches);
     }
 }

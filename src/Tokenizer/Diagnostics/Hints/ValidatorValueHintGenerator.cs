@@ -7,10 +7,10 @@ namespace Tokens.Diagnostics.Hints;
 internal sealed class ValidatorValueHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
-        if (issue.Type != DiagnosticIssueType.ValidatorRejection)
+        if (type != DiagnosticIssueType.ValidatorRejection)
             return null;
 
         var decoratorName = sourceEvent.DecoratorName;

@@ -21,8 +21,8 @@ internal sealed class DateFormatHintGenerator : IHintGenerator
     };
 
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
         if (sourceEvent.DecoratorName == null ||
             !sourceEvent.DecoratorName.Contains("ToDateTime", StringComparison.Ordinal))

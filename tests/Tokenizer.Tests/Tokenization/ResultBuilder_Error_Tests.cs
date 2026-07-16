@@ -19,7 +19,7 @@ public class ResultBuilder_Error_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(template, null!, NullDiagnosticCollector.Instance));
+            _builder.BuildUnmatchedTokens(template, null!, NullTokenizationDiagnosticCollector.Instance));
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class ResultBuilder_Error_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() =>
-            _builder.BuildUnmatchedTokens(null!, result, NullDiagnosticCollector.Instance));
+            _builder.BuildUnmatchedTokens(null!, result, NullTokenizationDiagnosticCollector.Instance));
     }
 }

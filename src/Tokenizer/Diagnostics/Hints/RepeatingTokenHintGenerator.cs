@@ -2,41 +2,38 @@ namespace Tokens.Diagnostics.Hints;
 
 /// <summary>
 /// Generates a hint for RepeatingTokenCutShort issues by looking for prior
-/// validator or transformer failures for the same token in the event trace.
+/// validator or transformer failures for the same token in the event index.
 /// </summary>
 internal sealed class RepeatingTokenHintGenerator : IHintGenerator
 {
     /// <inheritdoc />
-    public string? TryGenerateHint(DiagnosticIssue issue, DiagnosticEvent sourceEvent,
-                                   DiagnosticResult trace)
+    public string? TryGenerateHint(DiagnosticIssueType type, string? tokenName,
+                                   TokenizationEvent sourceEvent, BuildContext context)
     {
-        if (issue.Type != DiagnosticIssueType.RepeatingTokenCutShort)
+        if (type != DiagnosticIssueType.RepeatingTokenCutShort)
             return null;
 
-        var tokenName = sourceEvent.TokenName;
-
-        var priorValidatorFailure = trace.Events
-            .LastOrDefault(e => e.Type == DiagnosticEventType.ValidatorFailed
-                             && string.Equals(e.TokenName, tokenName, StringComparison.Ordinal));
-
-        if (priorValidatorFailure != null)
+        if (tokenName != null &&
+            context.RejectionsPerToken.TryGetValue(tokenName, out var rejections) &&
+            rejections.Count > 0)
         {
-            var validator = priorValidatorFailure.DecoratorName ?? "unknown validator";
-            var value = priorValidatorFailure.Value ?? "unknown value";
-            return $"Repeating token '{tokenName}' was disabled. " +
-                   $"The value '{value}' failed {validator} validation.";
-        }
+            var last = rejections[rejections.Count - 1];
 
-        var priorTransformerFailure = trace.Events
-            .LastOrDefault(e => e.Type == DiagnosticEventType.TransformerFailed
-                             && string.Equals(e.TokenName, tokenName, StringComparison.Ordinal));
+            if (last.Type == TokenizationEventType.ValidatorFailed)
+            {
+                var validator = last.DecoratorName ?? "unknown validator";
+                var value = last.Value ?? "unknown value";
+                return $"Repeating token '{tokenName}' was disabled. " +
+                       $"The value '{value}' failed {validator} validation.";
+            }
 
-        if (priorTransformerFailure != null)
-        {
-            var transformer = priorTransformerFailure.DecoratorName ?? "unknown transformer";
-            var value = priorTransformerFailure.Value ?? "unknown value";
-            return $"Repeating token '{tokenName}' was disabled. " +
-                   $"The value '{value}' failed {transformer} transformation.";
+            if (last.Type == TokenizationEventType.TransformerFailed)
+            {
+                var transformer = last.DecoratorName ?? "unknown transformer";
+                var value = last.Value ?? "unknown value";
+                return $"Repeating token '{tokenName}' was disabled. " +
+                       $"The value '{value}' failed {transformer} transformation.";
+            }
         }
 
         if (!string.IsNullOrEmpty(sourceEvent.Detail))

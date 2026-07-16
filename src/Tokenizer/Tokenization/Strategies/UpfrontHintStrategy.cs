@@ -14,7 +14,7 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
 
     /// <inheritdoc />
     public bool PreProcess(Template template, TokenEnumerator enumerator,
-                           string? rawInput, TokenizeResult result, IDiagnosticCollector collector)
+                           string? rawInput, TokenizeResult result, ITokenizationDiagnosticCollector collector)
     {
         if (template.Hints.Count == 0)
         {
@@ -37,9 +37,12 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
             {
                 result.Hints.TryAddMatch(hint, enumerator);
 
-                collector.Record(DiagnosticEventType.HintMatched,
-                    value: hint.Text,
-                    location: enumerator.Location);
+                if (collector.IsEnabled)
+                {
+                    collector.Record(TokenizationEventType.HintMatched,
+                        value: hint.Text,
+                        location: enumerator.Location);
+                }
             }
         }
 
@@ -48,8 +51,11 @@ internal sealed class UpfrontHintStrategy : IHintStrategy
         {
             if (result.Hints.TryAddMiss(hint) && !hint.Optional)
             {
-                collector.Record(DiagnosticEventType.HintMissing,
-                    value: hint.Text);
+                if (collector.IsEnabled)
+                {
+                    collector.Record(TokenizationEventType.HintMissing,
+                        value: hint.Text);
+                }
             }
         }
 

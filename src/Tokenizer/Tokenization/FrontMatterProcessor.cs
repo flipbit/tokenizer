@@ -27,7 +27,7 @@ internal static class FrontMatterProcessor
             {
                 if (pipeline.Collector.IsEnabled)
                 {
-                    pipeline.Collector.Record(DiagnosticEventType.FrontMatterTokenAssigned,
+                    pipeline.Collector.Record(TokenizationEventType.FrontMatterTokenAssigned,
                         tokenName: token.Name, tokenId: token.Id,
                         value: evaluatedValue?.ToString());
                 }
@@ -40,7 +40,7 @@ internal static class FrontMatterProcessor
             {
                 if (pipeline.Collector.IsEnabled)
                 {
-                    pipeline.Collector.Record(DiagnosticEventType.FrontMatterTokenFailed,
+                    pipeline.Collector.Record(TokenizationEventType.FrontMatterTokenFailed,
                         tokenName: token.Name, tokenId: token.Id);
                 }
             }

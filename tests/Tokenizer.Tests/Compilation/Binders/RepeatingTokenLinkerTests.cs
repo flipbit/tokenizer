@@ -17,7 +17,7 @@ public class RepeatingTokenLinkerTests
             .WithTokens(nonRepeating, repeating)
             .Build();
 
-        RepeatingTokenLinker.Link(repeating, template, NullDiagnosticCollector.Instance);
+        RepeatingTokenLinker.Link(repeating, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(nonRepeating.Id, repeating.DependsOnId);
     }
@@ -32,7 +32,7 @@ public class RepeatingTokenLinkerTests
             .WithTokens(nonRepeating, repeating)
             .Build();
 
-        RepeatingTokenLinker.Link(repeating, template, NullDiagnosticCollector.Instance);
+        RepeatingTokenLinker.Link(repeating, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(-1, repeating.DependsOnId);
     }
@@ -46,7 +46,7 @@ public class RepeatingTokenLinkerTests
             .WithTokens(token)
             .Build();
 
-        RepeatingTokenLinker.Link(token, template, NullDiagnosticCollector.Instance);
+        RepeatingTokenLinker.Link(token, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(-1, token.DependsOnId);
     }
@@ -62,7 +62,7 @@ public class RepeatingTokenLinkerTests
             .WithTokens(nonRepeating, repeating)
             .Build();
 
-        RepeatingTokenLinker.Link(repeating, template, NullDiagnosticCollector.Instance);
+        RepeatingTokenLinker.Link(repeating, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(99, repeating.DependsOnId);
     }
@@ -76,7 +76,7 @@ public class RepeatingTokenLinkerTests
             .WithTokens(repeating)
             .Build();
 
-        RepeatingTokenLinker.Link(repeating, template, NullDiagnosticCollector.Instance);
+        RepeatingTokenLinker.Link(repeating, template, NullCompilationDiagnosticCollector.Instance);
 
         Assert.Equal(-1, repeating.DependsOnId);
     }
@@ -90,12 +90,12 @@ public class RepeatingTokenLinkerTests
         var template = new TemplateBuilder()
             .WithTokens(nonRepeating, repeating)
             .Build();
-        var collector = new DiagnosticCollector(inputContent: null);
+        var collector = new CompilationDiagnosticCollector();
 
         RepeatingTokenLinker.Link(repeating, template, collector);
 
         var diagnostics = collector.GetResult()!;
         Assert.Single(diagnostics.Events);
-        Assert.Equal(DiagnosticEventType.RepeatingTokenLinked, diagnostics.Events[0].Type);
+        Assert.Equal(CompilationEventType.RepeatingTokenLinked, diagnostics.Events[0].Type);
     }
 }

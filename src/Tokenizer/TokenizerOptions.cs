@@ -1,4 +1,5 @@
 using System.Globalization;
+using Tokens.Compilation;
 using Tokens.Transformers;
 using Tokens.Validators;
 
@@ -13,8 +14,8 @@ namespace Tokens;
 /// </remarks>
 public record class TokenizerOptions
 {
-    private readonly List<Type> _transformers = new List<Type>();
-    private readonly List<Type> _validators = new List<Type>();
+    private readonly List<DecoratorRegistration> _transformerRegistrations = new List<DecoratorRegistration>();
+    private readonly List<DecoratorRegistration> _validatorRegistrations = new List<DecoratorRegistration>();
     private readonly Dictionary<string, TimeSpan> _timezoneAbbreviations = new Dictionary<string, TimeSpan>(StringComparer.Ordinal);
 
     /// <summary>
@@ -37,8 +38,8 @@ public record class TokenizerOptions
         MaxIterations = original.MaxIterations;
         MaxRegexTimeout = original.MaxRegexTimeout;
         AllowStreamBuffering = original.AllowStreamBuffering;
-        _transformers = new List<Type>(original._transformers);
-        _validators = new List<Type>(original._validators);
+        _transformerRegistrations = new List<DecoratorRegistration>(original._transformerRegistrations);
+        _validatorRegistrations = new List<DecoratorRegistration>(original._validatorRegistrations);
         Culture = original.Culture;
         DefaultOffset = original.DefaultOffset;
         DefaultTimezone = original.DefaultTimezone;
@@ -170,34 +171,64 @@ public record class TokenizerOptions
     }
 
     /// <summary>
+    /// Custom transformer registrations on this options instance.
+    /// </summary>
+    internal IReadOnlyList<DecoratorRegistration> TransformerRegistrations => _transformerRegistrations.AsReadOnly();
+
+    /// <summary>
+    /// Custom validator registrations on this options instance.
+    /// </summary>
+    internal IReadOnlyList<DecoratorRegistration> ValidatorRegistrations => _validatorRegistrations.AsReadOnly();
+
+    /// <summary>
     /// Custom transformer types registered on this options instance.
     /// These are added after the default transformers when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
-    public IReadOnlyList<Type> Transformers => _transformers.AsReadOnly();
+    public IReadOnlyList<Type> Transformers => _transformerRegistrations.Select(r => r.Type).ToList().AsReadOnly();
 
     /// <summary>
     /// Custom validator types registered on this options instance.
     /// These are added after the default validators when building a <see cref="Compilation.TemplateCompiler"/>.
     /// </summary>
-    public IReadOnlyList<Type> Validators => _validators.AsReadOnly();
+    public IReadOnlyList<Type> Validators => _validatorRegistrations.Select(r => r.Type).ToList().AsReadOnly();
 
     /// <summary>
     /// Returns a new <see cref="TokenizerOptions"/> instance with the given transformer type appended.
     /// </summary>
-    public TokenizerOptions WithTransformer<T>() where T : ITokenTransformer
+    public TokenizerOptions WithTransformer<T>() where T : ITokenTransformer, new()
     {
         var copy = this with { };
-        copy._transformers.Add(typeof(T));
+        copy._transformerRegistrations.Add(new DecoratorRegistration(typeof(T), () => new T()));
+        return copy;
+    }
+
+    /// <summary>
+    /// Returns a new <see cref="TokenizerOptions"/> instance with the given transformer factory appended.
+    /// </summary>
+    public TokenizerOptions WithTransformer<T>(Func<T> factory) where T : ITokenTransformer
+    {
+        var copy = this with { };
+        copy._transformerRegistrations.Add(new DecoratorRegistration(typeof(T), () => factory()));
         return copy;
     }
 
     /// <summary>
     /// Returns a new <see cref="TokenizerOptions"/> instance with the given validator type appended.
     /// </summary>
-    public TokenizerOptions WithValidator<T>() where T : ITokenValidator
+    public TokenizerOptions WithValidator<T>() where T : ITokenValidator, new()
     {
         var copy = this with { };
-        copy._validators.Add(typeof(T));
+        copy._validatorRegistrations.Add(new DecoratorRegistration(typeof(T), () => new T()));
+        return copy;
+    }
+
+    /// <summary>
+    /// Returns a new <see cref="TokenizerOptions"/> instance with the given validator factory appended.
+    /// </summary>
+    public TokenizerOptions WithValidator<T>(Func<T> factory) where T : ITokenValidator
+    {
+        var copy = this with { };
+        copy._validatorRegistrations.Add(new DecoratorRegistration(typeof(T), () => factory()));
         return copy;
     }
 

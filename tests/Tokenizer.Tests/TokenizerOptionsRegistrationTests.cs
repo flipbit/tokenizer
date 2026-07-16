@@ -98,4 +98,46 @@ public class TokenizerOptionsRegistrationTests
         var template = parser.Compile("{Value:ToUpper}").Template;
         Assert.NotNull(template);
     }
+
+    [Fact]
+    public void GivenNewOptions_WhenRegisteringTransformerWithFactory_ThenRegistrationIsStored()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = options.WithTransformer(() => new ToUpperTransformer());
+
+        // Assert
+        Assert.Contains(result.TransformerRegistrations, r => r.Type == typeof(ToUpperTransformer));
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenRegisteringValidatorWithFactory_ThenRegistrationIsStored()
+    {
+        // Arrange
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = options.WithValidator(() => new IsNumericValidator());
+
+        // Assert
+        Assert.Contains(result.ValidatorRegistrations, r => r.Type == typeof(IsNumericValidator));
+    }
+
+    [Fact]
+    public void GivenNewOptions_WhenRegisteringTransformerWithFactory_ThenFactoryIsPreserved()
+    {
+        // Arrange
+        var instance = new ToUpperTransformer();
+        var options = new TokenizerOptions();
+
+        // Act
+        var result = options.WithTransformer(() => instance);
+        var registration = result.TransformerRegistrations.Single(r => r.Type == typeof(ToUpperTransformer));
+        var created = registration.Factory();
+
+        // Assert
+        Assert.Same(instance, created);
+    }
 }

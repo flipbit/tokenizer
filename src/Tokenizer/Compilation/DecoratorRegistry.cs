@@ -92,21 +92,19 @@ internal sealed class DecoratorRegistry
             }
         }
 
-        // Temporary bridge: wraps Type-based registrations with Activator.CreateInstance.
-        // Task 3 replaces this with options.TransformerRegistrations/ValidatorRegistrations.
-        foreach (var type in options.Transformers)
+        foreach (var reg in options.TransformerRegistrations)
         {
-            if (!transformers.Exists(r => r.Type == type))
+            if (!transformers.Exists(r => r.Type == reg.Type))
             {
-                transformers.Add(new DecoratorRegistration(type, () => (ITokenDecorator)Activator.CreateInstance(type)!));
+                transformers.Add(reg);
             }
         }
 
-        foreach (var type in options.Validators)
+        foreach (var reg in options.ValidatorRegistrations)
         {
-            if (!validators.Exists(r => r.Type == type))
+            if (!validators.Exists(r => r.Type == reg.Type))
             {
-                validators.Add(new DecoratorRegistration(type, () => (ITokenDecorator)Activator.CreateInstance(type)!));
+                validators.Add(reg);
             }
         }
 

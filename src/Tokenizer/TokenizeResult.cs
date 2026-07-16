@@ -1,6 +1,10 @@
 using Tokens.Exceptions;
 using Tokens.Reflection;
 
+#if NET8_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Tokens;
 
 /// <summary>
@@ -79,6 +83,9 @@ public sealed class TokenizeResult
     /// <exception cref="AssignmentFailedException">
     /// Thrown when one or more matched values cannot be assigned to the target's properties.
     /// </exception>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public T Assign<T>() where T : class, new()
     {
         var target = new T();

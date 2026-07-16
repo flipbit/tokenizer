@@ -4,6 +4,10 @@ using System.Reflection;
 using Tokens.Exceptions;
 using Tokens.Temporal;
 
+#if NET8_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Tokens.Reflection;
 
 /// <summary>
@@ -30,6 +34,9 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Sets a scalar value at the given dot-separated property path.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Property path setting uses reflection to discover and set properties.")]
+#endif
     public void SetScalar(object root, string propertyPath, object value, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
@@ -53,6 +60,9 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Sets a collection of values at the given dot-separated property path.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Property path setting uses reflection to discover and set properties.")]
+#endif
     public void SetCollection(object root, string propertyPath, IReadOnlyList<object> values, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))
@@ -76,6 +86,9 @@ internal sealed class PropertyPathSetter
     /// <summary>
     /// Returns true if the property at the given path on <paramref name="rootType"/> is a supported collection type.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Property path checking uses reflection to discover properties.")]
+#endif
     public static bool IsCollectionProperty(Type rootType, string propertyPath, StringComparison comparison)
     {
         if (string.IsNullOrEmpty(propertyPath))

@@ -10,13 +10,13 @@ A .NET library that extracts structured data from text using pattern matching an
 ## Installation
 
 ```bash
-dotnet add package Tokenizer --version 3.0.0-beta.1
+dotnet add package Tokenizer --version 3.0.0-beta.2
 ```
 
 Or add a PackageReference:
 
 ```xml
-<PackageReference Include="Tokenizer" Version="3.0.0-beta.1" />
+<PackageReference Include="Tokenizer" Version="3.0.0-beta.2" />
 ```
 
 ## Quick Start

@@ -78,7 +78,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
     {
         // Arrange
         var token = new TokenBuilder().WithName("Age").Build();
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), () => new IsNumericValidator(), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
         var result = _pipeline.Evaluate(token, "20", new FileLocation(), out var value);
@@ -93,7 +93,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
     {
         // Arrange
         var token = new TokenBuilder().WithName("Age").Build();
-        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), new ConcurrentDictionary<Type, ITokenDecorator>()));
+        token.AddDecorator(new TokenDecoratorContext(typeof(IsNumericValidator), () => new IsNumericValidator(), new ConcurrentDictionary<Type, ITokenDecorator>()));
 
         // Act
         var result = _pipeline.Evaluate(token, "Twenty", new FileLocation(), out _);
@@ -180,7 +180,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
         var options = new TokenizerOptions { Culture = culture };
         var pipeline = new DecoratorPipeline(options, NullTokenizationDiagnosticCollector.Instance);
         var cache = new ConcurrentDictionary<Type, ITokenDecorator>();
-        var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyTransformer), cache);
+        var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyTransformer), () => new OptionsAwareSpyTransformer(), cache);
         var token = new TokenBuilder().WithName("Value").Build();
         token.AddDecorator(decorator);
 
@@ -199,7 +199,7 @@ public class DecoratorPipelineTests : TokenizerTestBase
         var options = new TokenizerOptions { Culture = culture };
         var pipeline = new DecoratorPipeline(options, NullTokenizationDiagnosticCollector.Instance);
         var cache = new ConcurrentDictionary<Type, ITokenDecorator>();
-        var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyValidator), cache);
+        var decorator = new TokenDecoratorContext(typeof(OptionsAwareSpyValidator), () => new OptionsAwareSpyValidator(), cache);
         var token = new TokenBuilder().WithName("Value").Build();
         token.AddDecorator(decorator);
 

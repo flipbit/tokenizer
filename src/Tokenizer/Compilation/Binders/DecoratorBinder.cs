@@ -17,7 +17,7 @@ internal static class DecoratorBinder
     {
         if (!string.IsNullOrEmpty(definition.Value))
         {
-            var setContext = new TokenDecoratorContext(typeof(SetTransformer), decoratorCache);
+            var setContext = new TokenDecoratorContext(typeof(SetTransformer), () => new SetTransformer(), decoratorCache);
             setContext.AddParameter(definition.Value);
             token.AddDecorator(setContext);
 
@@ -90,7 +90,7 @@ internal static class DecoratorBinder
                     throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
                 }
 
-                var context = new TokenDecoratorContext(registration.Type, decoratorCache);
+                var context = new TokenDecoratorContext(registration.Type, registration.Factory, decoratorCache);
                 foreach (var arg in decorator.Args)
                 {
                     context.AddParameter(arg);
@@ -123,7 +123,7 @@ internal static class DecoratorBinder
             if (string.Equals(decorator.Name, registration.Type.Name, StringComparison.InvariantCultureIgnoreCase) ||
                 string.Equals($"{decorator.Name}Validator", registration.Type.Name, StringComparison.InvariantCultureIgnoreCase))
             {
-                var context = new TokenDecoratorContext(registration.Type, decoratorCache);
+                var context = new TokenDecoratorContext(registration.Type, registration.Factory, decoratorCache);
                 foreach (var arg in decorator.Args)
                 {
                     context.AddParameter(arg);

@@ -11,6 +11,7 @@ namespace Tokens;
 public sealed class TokenDecoratorContext
 {
     // Decorators are cached by type within a TemplateCompiler instance: ITokenTransformer/ITokenValidator are stateless (input via params, output via return). User-registered decorators must be stateless and thread-safe.
+    private readonly Func<ITokenDecorator> _factory;
     private readonly ConcurrentDictionary<Type, ITokenDecorator> _decoratorCache;
     private readonly bool _isTransformer;
     private readonly bool _isValidator;
@@ -22,10 +23,12 @@ public sealed class TokenDecoratorContext
     /// Creates a new <see cref="TokenDecoratorContext"/> for the specified decorator type.
     /// </summary>
     /// <param name="tokenDecorator">The <see cref="ITokenDecorator"/> type to wrap.</param>
+    /// <param name="factory">A factory delegate that creates an instance of the decorator.</param>
     /// <param name="decoratorCache">The instance-scoped cache shared across all contexts for this parser.</param>
-    public TokenDecoratorContext(Type tokenDecorator, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache)
+    public TokenDecoratorContext(Type tokenDecorator, Func<ITokenDecorator> factory, ConcurrentDictionary<Type, ITokenDecorator> decoratorCache)
     {
         DecoratorType = tokenDecorator;
+        _factory = factory;
         _parameters = new List<string>();
         _decoratorCache = decoratorCache;
         _isTransformer = typeof(ITokenTransformer).IsAssignableFrom(tokenDecorator);
@@ -43,12 +46,11 @@ public sealed class TokenDecoratorContext
     /// <returns></returns>
     public ITokenDecorator CreateDecorator()
     {
-        return _decoratorCache.GetOrAdd(DecoratorType, type =>
-        {
-            var instance = Activator.CreateInstance(type)
-                ?? throw new InvalidOperationException($"Failed to create instance of {type.Name}");
-            return (ITokenDecorator)instance;
-        });
+#if NETSTANDARD2_0
+        return _decoratorCache.GetOrAdd(DecoratorType, _ => _factory());
+#else
+        return _decoratorCache.GetOrAdd(DecoratorType, static (_, f) => f(), _factory);
+#endif
     }
 
     /// <summary>

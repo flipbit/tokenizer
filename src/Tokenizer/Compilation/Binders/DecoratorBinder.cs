@@ -80,17 +80,17 @@ internal static class DecoratorBinder
         ICompilationDiagnosticCollector collector)
     {
         // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
-        foreach (var transformerType in registry.Transformers)
+        foreach (var registration in registry.Transformers)
         {
-            if (string.Equals(decorator.Name, transformerType.Name, StringComparison.InvariantCultureIgnoreCase) ||
-                string.Equals($"{decorator.Name}Transformer", transformerType.Name, StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(decorator.Name, registration.Type.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                string.Equals($"{decorator.Name}Transformer", registration.Type.Name, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (decorator.IsNotDecorator)
                 {
                     throw new TokenizerException($"{decorator.Name} cannot be prefixed with '!' character.");
                 }
 
-                var context = new TokenDecoratorContext(transformerType, decoratorCache);
+                var context = new TokenDecoratorContext(registration.Type, decoratorCache);
                 foreach (var arg in decorator.Args)
                 {
                     context.AddParameter(arg);
@@ -102,7 +102,7 @@ internal static class DecoratorBinder
                 {
                     collector.Record(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
-                        decoratorName: transformerType.Name,
+                        decoratorName: registration.Type.Name,
                         decoratorArgs: decorator.Args.ToArray());
                 }
 
@@ -118,12 +118,12 @@ internal static class DecoratorBinder
         ICompilationDiagnosticCollector collector)
     {
         // CodeQL cs/linq/missed-where: foreach+if is used intentionally to avoid LINQ allocation overhead
-        foreach (var validatorType in registry.Validators)
+        foreach (var registration in registry.Validators)
         {
-            if (string.Equals(decorator.Name, validatorType.Name, StringComparison.InvariantCultureIgnoreCase) ||
-                string.Equals($"{decorator.Name}Validator", validatorType.Name, StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(decorator.Name, registration.Type.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                string.Equals($"{decorator.Name}Validator", registration.Type.Name, StringComparison.InvariantCultureIgnoreCase))
             {
-                var context = new TokenDecoratorContext(validatorType, decoratorCache);
+                var context = new TokenDecoratorContext(registration.Type, decoratorCache);
                 foreach (var arg in decorator.Args)
                 {
                     context.AddParameter(arg);
@@ -136,7 +136,7 @@ internal static class DecoratorBinder
                 {
                     collector.Record(CompilationEventType.DecoratorApplied,
                         tokenName: token.Name,
-                        decoratorName: validatorType.Name,
+                        decoratorName: registration.Type.Name,
                         decoratorArgs: decorator.Args.ToArray());
                 }
 

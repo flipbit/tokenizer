@@ -4,6 +4,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Tokens.Exceptions;
 using Tokens.Extensions;
 
+#if NET8_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Tokens;
 
 /// <summary>
@@ -116,12 +120,18 @@ public sealed class TemplateMatcher : ITemplateMatcher
     }
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public T? Tokenize<T>(string input) where T : class, new()
     {
         return Tokenize<T>(input, tags: null);
     }
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public T? Tokenize<T>(string input, string[]? tags) where T : class, new()
     {
         var results = Tokenize(input, tags);
@@ -213,10 +223,16 @@ public sealed class TemplateMatcher : ITemplateMatcher
     }
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(TextReader input, CancellationToken ct = default) where T : class, new()
         => await TokenizeAsync<T>(input, tags: null, ct).ConfigureAwait(false);
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(TextReader input, string[]? tags, CancellationToken ct = default) where T : class, new()
     {
         var results = await TokenizeAsync(input, tags, ct).ConfigureAwait(false);
@@ -225,10 +241,16 @@ public sealed class TemplateMatcher : ITemplateMatcher
     }
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
         => await TokenizeAsync<T>(input, encoding, tags: null, ct).ConfigureAwait(false);
 
     /// <inheritdoc />
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(Stream input, Encoding encoding, string[]? tags, CancellationToken ct = default) where T : class, new()
     {
         var results = await TokenizeAsync(input, encoding, tags, ct).ConfigureAwait(false);

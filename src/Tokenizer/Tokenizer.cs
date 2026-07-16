@@ -9,6 +9,10 @@ using Tokens.Extensions;
 using Tokens.Tokenization;
 using Tokens.Tokenization.Strategies;
 
+#if NET8_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace Tokens;
 
 /// <summary>
@@ -107,6 +111,9 @@ public sealed class Tokenizer : ITokenizer
     /// <param name="template">The compiled template to match against.</param>
     /// <param name="input">The input text to extract values from.</param>
     /// <returns>A new instance of <typeparamref name="T"/> with populated properties, or null if matching fails.</returns>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public T? Tokenize<T>(Template template, string input) where T : class, new()
     {
         var result = Tokenize(template, input);
@@ -141,6 +148,9 @@ public sealed class Tokenizer : ITokenizer
     /// Tokenizes the <paramref name="input"/> string using the provided compiled <paramref name="template"/>
     /// with cancellation support, mapping extracted values onto a new instance of <typeparamref name="T"/>.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public T? Tokenize<T>(Template template, string input, CancellationToken cancellationToken) where T : class, new()
     {
         var result = Tokenize(template, input, cancellationToken);
@@ -169,6 +179,9 @@ public sealed class Tokenizer : ITokenizer
     /// Hint matching in streaming mode scans buffer contents incrementally rather than
     /// searching the full input. Alignment rendering in diagnostics is unavailable.
     /// </remarks>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(Template template, TextReader input, CancellationToken ct = default) where T : class, new()
     {
         var result = await TokenizeAsync(template, input, ct).ConfigureAwait(false);
@@ -197,6 +210,9 @@ public sealed class Tokenizer : ITokenizer
     /// Hint matching in streaming mode scans buffer contents incrementally rather than
     /// searching the full input. Alignment rendering in diagnostics is unavailable.
     /// </remarks>
+#if NET8_0_OR_GREATER
+    [RequiresUnreferencedCode("Object mapping uses reflection to discover and set properties.")]
+#endif
     public async Task<T?> TokenizeAsync<T>(Template template, Stream input, Encoding encoding, CancellationToken ct = default) where T : class, new()
     {
         using var reader = new StreamReader(input, encoding, detectEncodingFromByteOrderMarks: false,

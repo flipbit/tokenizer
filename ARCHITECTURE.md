@@ -22,7 +22,7 @@ pattern string
 | AstTemplateDefinitionParser | `Compilation/Definitions/` | Transforms AST into `Template` definition objects |
 | FrontMatterBinder | `Compilation/Binders/` | Extracts YAML front matter configuration from between `---` markers |
 | TemplateCompiler | `Compilation/TemplateCompiler.cs` | Orchestrates the full compilation pipeline |
-| DecoratorRegistry | `Compilation/DecoratorRegistry.cs` | Discovers built-in transformers/validators via assembly reflection, merges custom registrations from `TokenizerOptions` |
+| DecoratorRegistry | `Compilation/DecoratorRegistry.cs` | Registers built-in transformers/validators via static factory dictionary, merges custom registrations from `TokenizerOptions` |
 
 Compiled templates are cached internally by pattern string, so repeated calls to `Tokenize(pattern, input)` only compile once.
 

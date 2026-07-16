@@ -241,6 +241,28 @@ var person = matcher.Tokenize<Person>("Name: Alice");
 Assert.Equal("Alice", person.Name);
 ```
 
+### Diagnostics
+
+Enable structured diagnostics to trace how the engine processes each token — useful for debugging templates and understanding why tokens matched or missed.
+
+```csharp
+var tokenizer = new Tokenizer(new TokenizerOptions { EnableDiagnostics = true });
+var result = tokenizer.Tokenize(template, input);
+
+if (result.Diagnostics != null)
+{
+    foreach (var token in result.Diagnostics.Tokens)
+    {
+        // token.TokenName, token.Outcome (Matched/Rejected/NeverFound/Blocked)
+        // token.AssignedValues, token.AssignedLocations
+        // token.Attempts — every match consideration
+        // token.Issues — problems with adaptive hints and stable TK codes
+    }
+}
+```
+
+Each `TokenDiagnostic` tells a token's complete story: its outcome, every match attempt, assigned values (with input locations), and any issues with contextual hints. Issue codes (TK001–TK008) are stable across versions for programmatic filtering. See [ARCHITECTURE.md](ARCHITECTURE.md#diagnostics-subsystem) for the full diagnostic model, hint generators, and renderers.
+
 ### Async and Streaming
 
 Compile and tokenize from streams or readers for large inputs.

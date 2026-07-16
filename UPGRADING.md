@@ -9,6 +9,7 @@
 - [ ] Replace `matcher.Match<T>()` calls with `matcher.Tokenize<T>()` or `matcher.Tokenize()`
 - [ ] Move `RegisterTransformer<T>()` / `RegisterValidator<T>()` to `TokenizerOptions`
 - [ ] Replace `TemplateCollection.Names` with `TemplateCollection` directly (it's `IReadOnlyCollection<Template>`)
+- [ ] Replace `AssignedValue` / `AssignedLocation` with `AssignedValues` / `AssignedLocations` on `TokenDiagnostic`
 - [ ] Handle `DateTimeOffset` instead of `DateTime` from date transformers
 - [ ] Update any `(DateTime) match.Value` casts to `(DateTimeOffset)`
 
@@ -63,6 +64,10 @@ This affects:
 `TemplateMatcher.Tokenize<T>()` returns `T?` instead of a result wrapper. If you need access to the
 underlying `TokenizeResult` (for match details, diagnostics, etc.), use the non-generic `Tokenize()` which
 returns `TemplateMatchResult`.
+
+### `AssignedValue` / `AssignedLocation` replaced with list-based properties
+
+The singular `AssignedValue` and `AssignedLocation` properties on `TokenDiagnostic` have been replaced with `AssignedValues` (`IReadOnlyList<string>`) and `AssignedLocations` (`IReadOnlyList<FileLocation>`). These support repeating tokens which produce multiple values. For non-repeating tokens the lists contain a single element.
 
 ### `TokenMatch` is now a record
 
@@ -119,6 +124,10 @@ defaultTimezone: Europe/Berlin
 | `IsTime` | — | Validates time-only values |
 
 `IsDateTime` has been rewritten to use the new `TemporalParser`.
+
+### Structured Diagnostics
+
+Enable `TokenizerOptions.EnableDiagnostics = true` to get a token-centric diagnostic trace on `TokenizeResult.Diagnostics`. Each `TokenDiagnostic` includes the token's outcome, match attempts, assigned values with locations, and issues with adaptive hints and stable error codes (TK001–TK008). See [ARCHITECTURE.md](ARCHITECTURE.md#diagnostics-subsystem) for details.
 
 ### Options-Aware Decorators
 

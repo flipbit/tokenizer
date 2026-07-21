@@ -81,7 +81,34 @@ public sealed class TokenizeResult
     /// </exception>
     public T Assign<T>() where T : class, new()
     {
-        var target = new T();
+        return Assign(new T());
+    }
+
+    /// <summary>
+    /// Projects matches onto the provided <paramref name="target"/> instance,
+    /// assigning matched values to its properties via reflection.
+    /// </summary>
+    /// <remarks>
+    /// For value types, the target is boxed internally during reflection. Callers
+    /// must use the return value rather than the original variable.
+    /// </remarks>
+    /// <typeparam name="T">The type to populate with matched values.</typeparam>
+    /// <param name="target">The existing instance to populate.</param>
+    /// <returns>The populated <paramref name="target"/> instance.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="target"/> is null.
+    /// </exception>
+    /// <exception cref="AssignmentFailedException">
+    /// Thrown when one or more matched values cannot be assigned to the target's properties.
+    /// </exception>
+    public T Assign<T>(T target)
+    {
+        if (target is null)
+        {
+            throw new ArgumentNullException(nameof(target));
+        }
+
+        object boxed = target;
         var options = Template.Options;
         var setter = new PropertyPathSetter(options);
         var errors = new List<Exception>();
@@ -97,11 +124,11 @@ public sealed class TokenizeResult
             {
                 if (PropertyPathSetter.IsCollectionProperty(typeof(T), path, StringComparison.Ordinal))
                 {
-                    setter.SetCollection(target, path, values, StringComparison.Ordinal);
+                    setter.SetCollection(boxed, path, values, StringComparison.Ordinal);
                 }
                 else
                 {
-                    setter.SetScalar(target, path, values[values.Count - 1], StringComparison.Ordinal);
+                    setter.SetScalar(boxed, path, values[values.Count - 1], StringComparison.Ordinal);
                 }
             }
             catch (MissingMemberException)
@@ -128,11 +155,11 @@ public sealed class TokenizeResult
                 $"Failed to assign {errors.Count} value(s) to type '{typeof(T).Name}'.",
                 errors)
             {
-                PartialResult = target,
+                PartialResult = boxed,
             };
         }
 
-        return target;
+        return (T)boxed;
     }
 
     // Expands match values so that a transformer-produced IEnumerable<string>

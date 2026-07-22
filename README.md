@@ -5,7 +5,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 
-A .NET library that extracts structured data from text using pattern matching and maps it onto typed objects.
+A .NET library for extracting structured data from text. Define patterns with placeholders, and Tokenizer matches them against input to populate your .NET objects.
 
 ## Installation
 
@@ -21,7 +21,7 @@ Or add a PackageReference:
 
 ## Quick Start
 
-Define a pattern with `{TokenName}` placeholders. Tokenizer matches the surrounding text and extracts values into your object's properties.
+Define a pattern with `{TokenName}` placeholders, and Tokenizer will match the surrounding text and pull values into your object's properties.
 
 ```csharp
 var tokenizer = new Tokenizer();
@@ -36,13 +36,13 @@ Assert.Equal("Alice", person.Name);
 Assert.Equal(30, person.Age);
 ```
 
-Tokens work by matching the preceding text (the "preamble") in the input. When a match is found, the text after the preamble is extracted as the token value. Extraction continues until the next token's preamble is found or the input ends.
+Tokens work by matching the preceding text (the "preamble") in the input. When a match is found, everything after the preamble becomes the token's value, and extraction continues until the next preamble turns up or the input ends.
 
 ## Features
 
 ### In-Order vs Out-of-Order Processing
 
-By default, tokens must appear in the order defined by the template. Set `OutOfOrder: true` in front matter (or `OutOfOrderTokens = true` on `TokenizerOptions`) to allow tokens to match in any order. In-order mode supports the `?` suffix to mark tokens as optional.
+By default, tokens must appear in the order defined by the template. If you need them to match in any order, set `OutOfOrder: true` in front matter (or `OutOfOrderTokens = true` on `TokenizerOptions`). In-order mode also supports the `?` suffix to mark tokens as optional.
 
 ```csharp
 var pattern =
@@ -67,7 +67,7 @@ Assert.Equal("Smith", student.LastName);
 
 ### Multiline Tokens
 
-Tokens can span multiple lines. A token's value extends until the next token's preamble is found.
+Tokens can span multiple lines - a token's value extends until the next token's preamble is found.
 
 ```csharp
 var pattern =
@@ -139,7 +139,7 @@ Assert.Equal(1234, manager.Number);
 
 ### Required and Optional Fields
 
-Mark tokens as required with `!`. If a required token is missing, `Tokenize<T>` returns `null` (because `TokenizeResult.Success` is `false`).
+Mark tokens as required with `!`. If a required token is missing, `Tokenize<T>` returns `null` (since `TokenizeResult.Success` will be `false`).
 
 ```csharp
 var pattern = @"First Name: {FirstName!}, Last Name: {LastName!}";
@@ -181,7 +181,7 @@ Front matter is placed between `---` markers at the start of a template. Lines s
 
 ### Data Transformers
 
-Extracted values can be transformed before assignment. Chain multiple transformers with commas.
+You can transform extracted values before they're assigned. Chain multiple transformers with commas.
 
 ```csharp
 var pattern = "Name: {Name:Trim(),ToLower()}";
@@ -195,7 +195,7 @@ Assert.Equal("alice", person.Name);
 
 ### Data Validators
 
-Validators test extracted values. If validation fails, the engine skips the current match and searches for the next one.
+Validators test extracted values. If validation fails, the engine skips the current match and keeps searching for the next one.
 
 ```csharp
 var pattern = "Age: {Age:IsNumeric}";
@@ -211,7 +211,7 @@ In this example, `"Ten"` fails the `IsNumeric` check, so the engine continues sc
 
 ### Template Compilation and Caching
 
-Compile templates once and reuse them across multiple tokenization calls.
+You can compile templates once and reuse them across multiple tokenization calls.
 
 ```csharp
 var compiled = tokenizer.Compile("Name: {Name}, Age: {Age:ToInt()}");
@@ -243,7 +243,7 @@ Assert.Equal("Alice", person.Name);
 
 ### Diagnostics
 
-Enable structured diagnostics to trace how the engine processes each token — useful for debugging templates and understanding why tokens matched or missed.
+You can enable structured diagnostics to trace how the engine processes each token - useful for debugging templates and understanding why tokens matched or missed.
 
 ```csharp
 var tokenizer = new Tokenizer(new TokenizerOptions { EnableDiagnostics = true });
@@ -265,7 +265,7 @@ Each `TokenDiagnostic` tells a token's complete story: its outcome, every match 
 
 ### Async and Streaming
 
-Compile and tokenize from streams or readers for large inputs.
+You can compile and tokenize from streams or readers for large inputs.
 
 ```csharp
 using var reader = new StreamReader(stream);
@@ -275,7 +275,7 @@ var person = await tokenizer.TokenizeAsync<Person>(template, reader);
 
 ### Dependency Injection
 
-Register Tokenizer services with the built-in DI container.
+You can register Tokenizer services with the built-in DI container.
 
 ```csharp
 // Default options
@@ -349,7 +349,7 @@ This registers `ITokenizer`, `Tokenizer`, and `ITemplateMatcher` as singletons.
 
 ## Custom Transformers and Validators
 
-Implement `ITokenTransformer` or `ITokenValidator` and register them via options.
+To add your own, implement `ITokenTransformer` or `ITokenValidator` and register them via options.
 
 ```csharp
 using Tokens.Transformers;
@@ -379,7 +379,7 @@ Validators follow the same pattern with `ITokenValidator.IsValid(object value, p
 
 ## Configuration Reference
 
-These options can be set on `TokenizerOptions` (constructor) or in template front matter (YAML between `---` markers).
+You can set these on `TokenizerOptions` (constructor) or in template front matter (YAML between `---` markers).
 
 | Option | Default | Description |
 |--------|---------|-------------|

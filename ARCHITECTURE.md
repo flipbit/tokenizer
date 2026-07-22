@@ -63,7 +63,7 @@ var options = new TokenizerOptions()
 
 ## Async Path
 
-The core compilation and tokenization logic is synchronous. `Tokenizer` and `TemplateMatcher` expose async overloads (`CompileAsync`, `TokenizeAsync`) for stream/reader-based I/O. The async path uses cooperative buffer refills via `TokenEnumerator.FillBufferAsync`, allowing tokenization of inputs larger than memory.
+The core compilation and tokenization logic is synchronous. `Tokenizer` and `TemplateMatcher` expose async overloads (`CompileAsync`, `TokenizeAsync`) for stream/reader-based I/O, using cooperative buffer refills via `TokenEnumerator.FillBufferAsync`. This allows tokenization of inputs larger than memory.
 
 ## Entry Points
 
@@ -76,7 +76,7 @@ Both are available via DI using `services.AddTokenizer()`.
 
 ## Diagnostics Subsystem
 
-The diagnostics subsystem provides structured tracing at two levels: **compilation** (template construction) and **tokenization** (runtime matching). It is opt-in via `TokenizerOptions.EnableDiagnostics` and uses null-object collectors to avoid any allocation overhead when disabled.
+The diagnostics subsystem provides structured tracing at two levels: **compilation** (template construction) and **tokenization** (runtime matching). It's opt-in via `TokenizerOptions.EnableDiagnostics` and uses null-object collectors to avoid any allocation overhead when disabled.
 
 ### Collectors
 
@@ -84,8 +84,8 @@ Diagnostics are recorded through two collector interfaces, each with an active i
 
 | Interface | Active Implementation | Null Implementation | Scope |
 |-----------|----------------------|--------------------|----|
-| `ICompilationDiagnosticCollector` | `CompilationDiagnosticCollector` | `NullCompilationDiagnosticCollector` | Template construction — hints, tokens, decorators |
-| `ITokenizationDiagnosticCollector` | `TokenizationDiagnosticCollector` | `NullTokenizationDiagnosticCollector` | Runtime matching — preambles, values, validators |
+| `ICompilationDiagnosticCollector` | `CompilationDiagnosticCollector` | `NullCompilationDiagnosticCollector` | Template construction - hints, tokens, decorators |
+| `ITokenizationDiagnosticCollector` | `TokenizationDiagnosticCollector` | `NullTokenizationDiagnosticCollector` | Runtime matching - preambles, values, validators |
 
 Both expose `bool IsEnabled`, used as a guard at call sites to skip argument evaluation when diagnostics are off:
 
@@ -102,14 +102,14 @@ Events are stored as `DiagnosticEvent<TType>`, a generic container parameterised
 
 ```
 DiagnosticEvent<TType>
-├── TType Type           — event kind enum value
-├── string? TokenName    — token this event relates to
-├── int? TokenId         — unique token ID within template
-├── FileLocation? Location — position in input/source
-├── string? Value        — value being tested/assigned
-├── string? Detail       — human-readable explanation
-├── string? DecoratorName — validator/transformer name
-└── string[]? DecoratorArgs — decorator parameters
+├── TType Type           - event kind enum value
+├── string? TokenName    - token this event relates to
+├── int? TokenId         - unique token ID within template
+├── FileLocation? Location - position in input/source
+├── string? Value        - value being tested/assigned
+├── string? Detail       - human-readable explanation
+├── string? DecoratorName - validator/transformer name
+└── string[]? DecoratorArgs - decorator parameters
 ```
 
 Global type aliases simplify usage:
@@ -130,20 +130,20 @@ Raw events are transformed into a per-token diagnostic view by `TokenDiagnosticB
 ```
 TokenDiagnostic
 ├── TokenName, TokenId
-├── TokenOutcome         — Matched | Rejected | NeverFound | Blocked
-├── TokenAttempt[]       — every consideration during tokenization
+├── TokenOutcome         - Matched | Rejected | NeverFound | Blocked
+├── TokenAttempt[]       - every consideration during tokenization
 │   ├── Location, Value
-│   ├── AttemptOutcome   — Assigned | ValidatorRejected | TransformerFailed | Backtracked
+│   ├── AttemptOutcome   - Assigned | ValidatorRejected | TransformerFailed | Backtracked
 │   └── DecoratorName, Reason
-├── AssignedValues[]     — matched values (multiple for repeating tokens)
-├── AssignedLocations[]  — parallel to AssignedValues
-├── BlockedBy            — name of blocker token (Blocked outcome only)
-└── DiagnosticIssue[]    — problems with adaptive hints
-    ├── Code             — stable issue code (TK001–TK008)
+├── AssignedValues[]     - matched values (multiple for repeating tokens)
+├── AssignedLocations[]  - parallel to AssignedValues
+├── BlockedBy            - name of blocker token (Blocked outcome only)
+└── DiagnosticIssue[]    - problems with adaptive hints
+    ├── Code             - stable issue code (TK001–TK008)
     ├── DiagnosticIssueType
     ├── Description
     ├── Location
-    └── Hint             — contextual suggestion from hint generators
+    └── Hint             - contextual suggestion from hint generators
 ```
 
 The token-centric view is built lazily on first access and cached. Raw events remain available via `RawEvents` for low-level tracing.
@@ -152,13 +152,13 @@ The token-centric view is built lazily on first access and cached. Raw events re
 
 `TokenDiagnosticBuilder` transforms raw `TokenizationEvent` lists into `TokenDiagnostic` arrays through four ordered phases:
 
-1. **CollectEvents** — walks all raw events, builds per-token attempt lists, issue lists, assigned value entries, and context indexes for cross-referencing.
+1. **CollectEvents** - walks all raw events, builds per-token attempt lists, issue lists, assigned value entries, and context indexes for cross-referencing.
 
-2. **ClassifyOutcomes** — creates `TokenDiagnostic` objects. Determines each token's `TokenOutcome` based on whether it was assigned, rejected, or missed. Runs `ValueMismatch` detection (checks whether a matched token's value contains the preamble of a missed token, suggesting greedy capture).
+2. **ClassifyOutcomes** - creates `TokenDiagnostic` objects. Determines each token's `TokenOutcome` based on whether it was assigned, rejected, or missed. Runs `ValueMismatch` detection (checks whether a matched token's value contains the preamble of a missed token, suggesting greedy capture).
 
-3. **ApplyBlockedAnnotations** — causality analysis for ordered mode only. Finds the first non-optional unmatched token (the "blocker") and reclassifies subsequent `NeverFound` tokens as `Blocked`.
+3. **ApplyBlockedAnnotations** - causality analysis for ordered mode only. Finds the first non-optional unmatched token (the "blocker") and reclassifies subsequent `NeverFound` tokens as `Blocked`.
 
-4. **BuildVerdict** — generates a human-readable summary (e.g. "Matched 3 of 5 tokens (2 missed).").
+4. **BuildVerdict** - generates a human-readable summary (e.g. "Matched 3 of 5 tokens (2 missed).").
 
 ### Issue Codes
 
@@ -177,7 +177,7 @@ Each `DiagnosticIssue` carries a stable code from `IssueCodeMap` for programmati
 
 ### Hint Generators
 
-`IssueFactory` chains `IHintGenerator` implementations to produce contextual suggestions for each issue. All generators are stateless and shared via a static default factory. Each receives the source event and a `BuildContext` containing cross-token indexes (input lines, rejections per token, decorator successes, optional token names).
+`IssueFactory` chains `IHintGenerator` implementations to produce contextual suggestions for each issue. All generators are stateless and shared via a static default factory. Each one receives the source event and a `BuildContext` containing cross-token indexes (input lines, rejections per token, decorator successes, optional token names).
 
 | Generator | Detects | Example Hint |
 |-----------|---------|-------------|
@@ -186,18 +186,18 @@ Each `DiagnosticIssue` carries a stable code from `IssueCodeMap` for programmati
 | `DateFormatHintGenerator` | Failed date transformers, tries 18 common formats | "Value matches format 'dd/MM/yyyy'. Change transformer to use it." |
 | `ChainedDecoratorHintGenerator` | Prior decorator succeeded, next failed | "Decorator chain: 'Trim' succeeded → 'ToInt' rejected value 'abc'." |
 | `MultipleRejectionHintGenerator` | Token rejected 2+ times | "Token was rejected 3 times. Values tried: 'a', 'b', 'c'." |
-| `OptionalTokenHintGenerator` | Optional token not found | "Token 'MiddleName' is optional — no action needed." |
+| `OptionalTokenHintGenerator` | Optional token not found | "Token 'MiddleName' is optional - no action needed." |
 | `RepeatingTokenHintGenerator` | Repeating token disabled early | "Repeating token disabled. Value 'x' failed IsNumeric validation." |
 | `ValueMismatchHintGenerator` | Greedy capture swallowed another preamble | "Consider adding '$' to prevent greedy capture." |
-| `BlockedTokenHintGenerator` | Token blocked by prior failure | "Fix 'FirstName' first — this token may match once resolved." |
+| `BlockedTokenHintGenerator` | Token blocked by prior failure | "Fix 'FirstName' first - this token may match once resolved." |
 
 ### Renderers
 
 Two renderers produce human-readable diagnostic output:
 
-**AlignmentRenderer** (`AlignmentRenderer.Render`) — structured view of template-to-input mapping with sections for matched tokens, failures, unmatched tokens, and blocked tokens. Includes assigned values with line locations, decorator details, and hints.
+**AlignmentRenderer** (`AlignmentRenderer.Render`) - structured view of template-to-input mapping with sections for matched tokens, failures, unmatched tokens, and blocked tokens. Includes assigned values with line locations, decorator details, and hints.
 
-**ProcessingOrderRenderer** (`ProcessingOrderRenderer.Render`) — chronological walk-through of every engine decision, showing event type, token name, location, value, decorator, and detail for each step.
+**ProcessingOrderRenderer** (`ProcessingOrderRenderer.Render`) - chronological walk-through of every engine decision, showing event type, token name, location, value, decorator, and detail for each step.
 
 Both are called automatically during `FinalizeTokenization` when diagnostics are enabled, with alignment logged at Warning level and processing order at Debug level.
 

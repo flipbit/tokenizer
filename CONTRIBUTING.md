@@ -22,11 +22,11 @@ dotnet build ./Tokenizer.sln
 dotnet test ./tests/Tokenizer.Tests/Tokenizer.Tests.csproj
 ```
 
-All pull requests must pass the full test suite on both Ubuntu and Windows (enforced by CI).
+All pull requests need to pass the full test suite on both Ubuntu and Windows (CI enforces this).
 
 ## Code Style
 
-Code style is enforced by `.editorconfig` and Roslyn analyzers. The build will fail on violations. To check formatting:
+Code style is enforced by `.editorconfig` and Roslyn analyzers, so the build will fail on violations. To check formatting:
 
 ```bash
 dotnet format style ./Tokenizer.sln --verify-no-changes
@@ -43,7 +43,7 @@ dotnet format style ./Tokenizer.sln
 - Keep changes focused. One logical change per PR.
 - Add tests for new functionality and bug fixes.
 - Update `CHANGELOG.md` under the `[Unreleased]` section.
-- Ensure all tests pass and the build is clean before submitting.
+- Make sure all tests pass and the build is clean before submitting.
 
 ## Architecture
 

@@ -1,11 +1,20 @@
+<p align="center">
+  <img src="docs/icon.svg" alt="Tokenizer" width="128" height="128" />
+</p>
+
 # Tokenizer
 
 [![Build Status](https://github.com/flipbit/tokenizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/flipbit/tokenizer/actions)
 [![NuGet Version](https://img.shields.io/nuget/v/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/flipbit/tokenizer/blob/main/LICENSE.txt)
+[![Docs](https://img.shields.io/badge/docs-pullpatchpush.com-blue.svg)](https://pullpatchpush.com/tokenizer)
 
 A .NET library for extracting structured data from text. Define patterns with placeholders, and Tokenizer matches them against input to populate your .NET objects.
+
+## Documentation
+
+For full documentation and an interactive playground, visit [pullpatchpush.com/tokenizer](https://pullpatchpush.com/tokenizer).
 
 ## Installation
 
@@ -261,7 +270,7 @@ if (result.Diagnostics != null)
 }
 ```
 
-Each `TokenDiagnostic` tells a token's complete story: its outcome, every match attempt, assigned values (with input locations), and any issues with contextual hints. Issue codes (TK001–TK008) are stable across versions for programmatic filtering. See [ARCHITECTURE.md](ARCHITECTURE.md#diagnostics-subsystem) for the full diagnostic model, hint generators, and renderers.
+Each `TokenDiagnostic` tells a token's complete story: its outcome, every match attempt, assigned values (with input locations), and any issues with contextual hints. Issue codes (TK001–TK008) are stable across versions for programmatic filtering. See [ARCHITECTURE.md](https://github.com/flipbit/tokenizer/blob/main/ARCHITECTURE.md#diagnostics-subsystem) for the full diagnostic model, hint generators, and renderers.
 
 ### Async and Streaming
 
@@ -290,130 +299,41 @@ services.AddTokenizer(configuration.GetSection("Tokenizer"));
 
 This registers `ITokenizer`, `Tokenizer`, and `ITemplateMatcher` as singletons.
 
-## Built-in Transformers
+## Built-in Transformers and Validators
 
-| Name | Description |
-|------|-------------|
-| `DefaultValue(fallback)` | Returns fallback when value is null or empty |
-| `RegexReplace(pattern, replacement)` | Regex-based replacement |
-| `Remove(text)` | Removes all occurrences of text |
-| `RemoveEnd(text)` | Removes text from the end |
-| `RemoveStart(text)` | Removes text from the start |
-| `Replace(old, new)` | Replaces all occurrences |
-| `Set(value)` | Replaces the extracted value entirely |
-| `Split(delimiter)` | Splits into a list |
-| `SubstringAfter(text)` | Text after first occurrence |
-| `SubstringAfterLast(text)` | Text after last occurrence |
-| `SubstringBefore(text)` | Text before first occurrence |
-| `SubstringBeforeLast(text)` | Text before last occurrence |
-| `TitleCase` | Converts to Title Case |
-| `ToBoolean` | Converts to bool |
-| `ToDate(format)` | Converts to DateOnly (NET 8+) |
-| `ToDateTime(format)` | Converts to DateTimeOffset |
-| `ToDecimal` | Converts to decimal |
-| `ToGuid` | Converts to Guid |
-| `ToInt` | Converts to int |
-| `ToLower` | Converts to lowercase |
-| `ToTime(format)` | Converts to TimeOnly (NET 8+) |
-| `ToUpper` | Converts to uppercase |
-| `Trim` | Trims whitespace |
-| `Truncate(maxLength)` | Truncates to max length |
-
-## Built-in Validators
-
-| Name | Description |
-|------|-------------|
-| `Contains(text)` | Value contains text |
-| `EndsWith(text)` | Value ends with text |
-| `IsAlphanumeric` | Letters and digits only |
-| `IsDate(format)` | Valid date (NET 8+) |
-| `IsDateTime(format)` | Valid date/time |
-| `IsDomainName` | Valid domain name |
-| `IsEmail` | Valid email address |
-| `IsGuid` | Valid GUID |
-| `IsInRange(min, max)` | Numeric value in range |
-| `IsInteger` | Valid integer |
-| `IsIpAddress` | Valid IP address |
-| `IsLooseAbsoluteUrl` | URL-like string (absolute) |
-| `IsLooseUrl` | URL-like string |
-| `IsNot(text)` | Value is not equal to text |
-| `IsNotEmpty` | Non-empty value |
-| `IsNumeric` | Valid number |
-| `IsPhoneNumber` | Valid phone number |
-| `IsTime(format)` | Valid time (NET 8+) |
-| `IsUrl` | Valid URL |
-| `MatchesRegex(pattern)` | Matches regex pattern |
-| `MaxLength(n)` | At most n characters |
-| `MinLength(n)` | At least n characters |
-| `StartsWith(text)` | Value starts with text |
+Tokenizer ships with transformers for type conversion (`ToInt`, `ToDateTime`, `ToBoolean`), string manipulation (`Trim`, `Replace`, `Split`), and validators for format checking (`IsNumeric`, `IsEmail`, `IsUrl`). See the full [Transformers](https://pullpatchpush.com/tokenizer/transformers) and [Validators](https://pullpatchpush.com/tokenizer/validators) reference.
 
 ## Custom Transformers and Validators
 
-To add your own, implement `ITokenTransformer` or `ITokenValidator` and register them via options.
+Implement `ITokenTransformer` or `ITokenValidator` and register via options:
 
 ```csharp
-using Tokens.Transformers;
-
-public sealed class ReverseTransformer : ITokenTransformer
-{
-    public bool TryTransform(object value, string[] args, out object transformed)
-    {
-        if (value is string s)
-        {
-            transformed = new string(s.Reverse().ToArray());
-            return true;
-        }
-
-        transformed = value;
-        return false;
-    }
-}
-
-// Register it
 var options = new TokenizerOptions()
-    .WithTransformer<ReverseTransformer>();
+    .WithTransformer<ReverseTransformer>()
+    .WithValidator<IsUpperCaseValidator>();
 var tokenizer = new Tokenizer(options);
 ```
 
-Validators follow the same pattern with `ITokenValidator.IsValid(object value, params string[] args)`.
+See the [Extensibility](https://pullpatchpush.com/tokenizer/extensibility) guide for full examples.
 
 ## Configuration Reference
 
-You can set these on `TokenizerOptions` (constructor) or in template front matter (YAML between `---` markers).
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `OutOfOrderTokens` | `false` | Allow tokens to match in any order |
-| `TrimTrailingWhiteSpace` | `true` | Trim trailing whitespace from extracted values |
-| `TrimLeadingWhitespaceInTokenPreamble` | `true` | Trim leading whitespace in the static text before a token |
-| `TrimPreambleBeforeNewLine` | `false` | Discard preamble text that appears before a newline |
-| `TerminateOnNewLine` | `false` | Extract token values up to the first newline only |
-| `IgnoreMissingProperties` | `false` | Silently ignore tokens that do not map to a property on the target |
-| `EnableDiagnostics` | `false` | Include structured diagnostic trace in results |
-| `TokenStringComparison` | `InvariantCulture` | String comparison used for matching token names to properties |
-| `MaxInputLength` | `1048576` | Maximum input length (0 to disable) |
-| `MaxTemplateLength` | `65536` | Maximum template length (0 to disable) |
-| `MaxTokenCount` | `500` | Maximum tokens per template (0 to disable) |
-| `MaxIterations` | `0` (auto) | Maximum tokenization loop iterations |
-| `AllowStreamBuffering` | `false` | Buffer non-seekable streams for multi-template matching |
-| `Culture` | `null` | Culture for parsing date/time values |
-| `DefaultOffset` | `null` | UTC offset for date/time values without offset info |
-| `DefaultTimezone` | `null` | IANA/Windows timezone ID for date/time values without offset info |
+Options can be set per-instance via `TokenizerOptions` or per-template via YAML front matter. See the [Configuration](https://pullpatchpush.com/tokenizer/configuration) reference for the full list of options and directives.
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for a detailed overview of the compilation pipeline and tokenization engine.
+See [ARCHITECTURE.md](https://github.com/flipbit/tokenizer/blob/main/ARCHITECTURE.md) for a detailed overview of the compilation pipeline and tokenization engine.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on building, testing, and submitting changes.
+See [CONTRIBUTING.md](https://github.com/flipbit/tokenizer/blob/main/CONTRIBUTING.md) for guidelines on building, testing, and submitting changes.
 
 ## Security
 
-For guidance on processing untrusted input (e.g. in a playground or SaaS feature), see [SECURITY.md](SECURITY.md).
+For guidance on processing untrusted input (e.g. in a playground or SaaS feature), see [SECURITY.md](https://github.com/flipbit/tokenizer/blob/main/SECURITY.md).
 
 To report a security vulnerability, please use [GitHub Security Advisories](https://github.com/flipbit/tokenizer/security/advisories/new).
 
 ## License
 
-MIT. See [LICENSE.txt](LICENSE.txt).
+MIT. See [LICENSE.txt](https://github.com/flipbit/tokenizer/blob/main/LICENSE.txt).

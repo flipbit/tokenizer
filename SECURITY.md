@@ -9,7 +9,7 @@ Don't open a public issue for security vulnerabilities.
 ## Processing Untrusted Input
 
 Tokenizer is designed for use with developer-defined templates and trusted input.
-If you're processing untrusted templates or input (e.g. in a playground, SaaS feature, or
+If you're processing untrusted templates or input (e.g. in a [playground](https://pullpatchpush.com/tokenizer/playground), SaaS feature, or
 user-facing tool), you'll want to apply the following mitigations.
 
 ### Recommended Configuration

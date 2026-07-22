@@ -43,9 +43,17 @@ var result = tokenizer.Tokenize(template, input, cts.Token);
 
 ### Instance Isolation
 
-Create a new `Tokenizer` instance per request when processing untrusted input. Do not share
-a `TemplateMatcher` across untrusted users — each user should get their own instance to
-prevent cross-request state leakage via template caches.
+Do not share a `TemplateMatcher` across untrusted users — each user should get their own
+instance to prevent cross-request state leakage via the template collection.
+`TemplateMatcher` holds a mutable `Templates` collection that accumulates registered
+templates; if an attacker can call `RegisterTemplate()`, they can inject templates visible
+to other users of the same instance.
+
+The `Tokenizer` class itself is safe to register as a singleton. All per-call state
+(tokenization context, session, diagnostic collector) is created as local variables within
+each `Tokenize` / `TokenizeAsync` call and is not stored on the instance. `TemplateCompiler`
+maintains a decorator cache keyed by `Type`, but decorator instances are stateless value
+processors — no input data is retained across calls.
 
 ### Diagnostics and PII
 

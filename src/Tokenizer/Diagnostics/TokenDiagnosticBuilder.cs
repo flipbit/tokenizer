@@ -253,7 +253,7 @@ internal sealed class TokenDiagnosticBuilder
 
         foreach (var tokenName in data.TokenOrder)
         {
-            var isAssigned = data.AssignedTokens.ContainsKey(tokenName);
+            var isAssigned = data.AssignedTokens.TryGetValue(tokenName, out var assignedEntries);
             var hasFailures = data.TokensWithFailures.Contains(tokenName);
             var isMissed = data.MissedTokenNames.Contains(tokenName);
 
@@ -269,7 +269,6 @@ internal sealed class TokenDiagnosticBuilder
 
             var tokenAttempts = data.Attempts.TryGetValue(tokenName, out var a) ? a : new List<TokenAttempt>();
             var tokenIssues = data.Issues.TryGetValue(tokenName, out var i) ? i : new List<DiagnosticIssue>();
-            var assignedEntries = isAssigned ? data.AssignedTokens[tokenName] : null;
             data.TokenIds.TryGetValue(tokenName, out var tokenId);
 
             List<string> assignedValues = [];
@@ -323,10 +322,8 @@ internal sealed class TokenDiagnosticBuilder
 
         foreach (var tokenName in data.TokenOrder)
         {
-            if (!data.AssignedTokens.ContainsKey(tokenName))
+            if (!data.AssignedTokens.TryGetValue(tokenName, out var assignedEntries))
                 continue;
-
-            var assignedEntries = data.AssignedTokens[tokenName];
             // For value-mismatch detection, check the last assigned value — this is the
             // one most likely to have "swallowed" a subsequent token's preamble.
             var lastValue = assignedEntries[assignedEntries.Count - 1].value;

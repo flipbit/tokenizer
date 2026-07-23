@@ -16,15 +16,6 @@ public class TokenizationEngineErrorTests
     public void GivenNullReader_WhenInitializingContext_ThenThrowsException()
     {
         // Arrange
-        var template = new TemplateBuilder()
-            .WithName("TestTemplate")
-            .WithTokens(new TokenBuilder()
-                .WithName("Name")
-                .WithRequired()
-                .Build())
-            .WithDefaultOptions()
-            .Build();
-
         var context = new TokenizationContext();
 
         // Act & Assert

@@ -35,8 +35,8 @@
 
 **`RegisterTransformer<T>()` / `RegisterValidator<T>()` on matcher**
 
-These no longer exist on `TemplateMatcher`. Register custom transformers and validators
-through `TokenizerOptions` at construction time instead. See [Migration Patterns](#registering-custom-transformers) below.
+These no longer exist on `TemplateMatcher`. Instead, register custom transformers and validators
+through `TokenizerOptions` at construction time. See [Migration Patterns](#registering-custom-transformers) below.
 
 **`TemplateCollection.Names`**
 
@@ -46,7 +46,7 @@ count, or enumerate directly to access templates by name via `TryGet()` or `Get(
 **`TokenizeResult<T>` and `.Value`**
 
 The generic `TokenizeResult<T>` has been removed. Use the non-generic `TokenizeResult` and
-call `Assign<T>()` to project matches onto a typed object. See [Migration Patterns](#getting-typed-results) below.
+call `Assign<T>()` to map matches onto a typed object. See [Migration Patterns](#getting-typed-results) below.
 
 ### Changed Return Types
 
@@ -67,12 +67,12 @@ returns `TemplateMatchResult`.
 
 ### `AssignedValue` / `AssignedLocation` replaced with list-based properties
 
-The singular `AssignedValue` and `AssignedLocation` properties on `TokenDiagnostic` have been replaced with `AssignedValues` (`IReadOnlyList<string>`) and `AssignedLocations` (`IReadOnlyList<FileLocation>`). These support repeating tokens which produce multiple values. For non-repeating tokens the lists contain a single element.
+The singular `AssignedValue` and `AssignedLocation` properties on `TokenDiagnostic` have been replaced with `AssignedValues` (`IReadOnlyList<string>`) and `AssignedLocations` (`IReadOnlyList<FileLocation>`). These support repeating tokens, which can produce multiple values. For non-repeating tokens, the lists will contain a single element.
 
 ### `TokenMatch` is now a record
 
-`TokenMatch` is a sealed record with init-only properties (`Token`, `Value`, `Location`). Code that
-assigns to `match.Value` will no longer compile. If you need to transform a match value, do so
+`TokenMatch` is now a sealed record with init-only properties (`Token`, `Value`, `Location`). Code that
+assigns to `match.Value` won't compile any more. If you need to transform a match value, do so
 when reading it rather than mutating the match.
 
 ## New APIs
@@ -127,17 +127,17 @@ defaultTimezone: Europe/Berlin
 
 ### Structured Diagnostics
 
-Enable `TokenizerOptions.EnableDiagnostics = true` to get a token-centric diagnostic trace on `TokenizeResult.Diagnostics`. Each `TokenDiagnostic` includes the token's outcome, match attempts, assigned values with locations, and issues with adaptive hints and stable error codes (TK001–TK008). See [ARCHITECTURE.md](ARCHITECTURE.md#diagnostics-subsystem) for details.
+Set `TokenizerOptions.EnableDiagnostics = true` to get a token-centric diagnostic trace on `TokenizeResult.Diagnostics`. Each `TokenDiagnostic` includes the token's outcome, match attempts, assigned values with locations, and any issues (with adaptive hints and stable error codes TK001–TK008). See [ARCHITECTURE.md](ARCHITECTURE.md#diagnostics-subsystem) for details.
 
 ### Options-Aware Decorators
 
 New interfaces for transformers and validators that need access to `TokenizerOptions`
 (e.g. for culture or timezone information):
 
-- `IOptionsAwareTransformer` — extends `ITokenTransformer` with `TryTransform(object, string[], TokenizerOptions, out object)`
-- `IOptionsAwareValidator` — extends `ITokenValidator` with `IsValid(object, string[], TokenizerOptions)`
+- `IOptionsAwareTransformer` - extends `ITokenTransformer` with `TryTransform(object, string[], TokenizerOptions, out object)`
+- `IOptionsAwareValidator` - extends `ITokenValidator` with `IsValid(object, string[], TokenizerOptions)`
 
-Implement these instead of the base interfaces when your decorator needs culture, timezone,
+Use these instead of the base interfaces when your decorator needs culture, timezone,
 or other options context.
 
 ### AssignmentFailedException.PartialResult
@@ -159,7 +159,7 @@ catch (AssignmentFailedException ex)
 
 ## Behavioural Changes
 
-These won't cause compile errors but may change runtime results.
+These won't cause compile errors, but they may change runtime results.
 
 ### Date/time values are `DateTimeOffset` throughout
 
@@ -167,7 +167,7 @@ All date transformers (`ToDateTime`, `ToDateTimeUtc`, `ToDate`, `ToTime`) now go
 `TemporalParser`, which produces `DateTimeOffset`. The `Assign<T>()` method automatically
 converts `DateTimeOffset` to `DateTime`, `DateOnly`, or `TimeOnly` via `DateTimeProjection`
 when the target property requires it. For UTC offsets, `DateTimeProjection` returns
-`UtcDateTime`; for non-zero offsets, it returns `DateTime` (local representation).
+`UtcDateTime`. For non-zero offsets, it returns `DateTime` (local representation).
 
 If you access `TokenMatch.Value` directly and cast, update your casts from `DateTime` to
 `DateTimeOffset`.
@@ -215,9 +215,9 @@ var options = new TokenizerOptions()
 var matcher = new TemplateMatcher(options);
 ```
 
-Note: transformers and validators must be registered before templates are compiled, since
+Worth noting: transformers and validators need to be registered before templates are compiled, since
 decorators are resolved at compile time. The v2 pattern of registering after construction
-is no longer supported.
+isn't supported any more.
 
 ### Getting Typed Results
 
@@ -234,7 +234,7 @@ if (result.BestMatch != null)
 }
 ```
 
-**After (v3) — simple case (just need the typed object):**
+**After (v3) - simple case (just need the typed object):**
 
 ```csharp
 var value = matcher.Tokenize<MyType>(input, tags);
@@ -245,7 +245,7 @@ if (value != null)
 }
 ```
 
-**After (v3) — need match details:**
+**After (v3) - need match details:**
 
 ```csharp
 var result = matcher.Tokenize(input, tags);

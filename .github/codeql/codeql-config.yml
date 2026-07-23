@@ -1,3 +1,22 @@
+# CodeQL configuration for flipbit/tokenizer
+#
+# Suppressed rules:
+#
+#   cs/linq/missed-where — Suggests replacing foreach+if with .Where().
+#     This project uses manual loops in hot paths to avoid LINQ allocation
+#     overhead. The pattern is a deliberate performance choice, not an
+#     oversight.
+#
+#   cs/linq/missed-select — Suggests replacing foreach with .Select().
+#     Same rationale as missed-where: manual loops avoid LINQ allocations
+#     on performance-sensitive code paths.
+
 paths-ignore:
   - '**/obj/**'
   - '**/generated/**'
+
+query-filters:
+  - exclude:
+      id: cs/linq/missed-where
+  - exclude:
+      id: cs/linq/missed-select

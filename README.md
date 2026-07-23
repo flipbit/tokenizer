@@ -1,8 +1,8 @@
+# Tokenizer
+
 <p align="center">
   <img src="docs/icon.svg" alt="Tokenizer" width="128" height="128" />
 </p>
-
-# Tokenizer
 
 [![Build Status](https://github.com/flipbit/tokenizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/flipbit/tokenizer/actions)
 [![NuGet Version](https://img.shields.io/nuget/v/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/)
@@ -14,7 +14,7 @@ A .NET library for extracting structured data from text. Define patterns with pl
 
 ## Documentation
 
-For full documentation and an interactive playground, visit [pullpatchpush.com/tokenizer](https://pullpatchpush.com/tokenizer).
+For full documentation and an [interactive playground](https://pullpatchpush.com/tokenizer/playground), visit [pullpatchpush.com/tokenizer](https://pullpatchpush.com/tokenizer).
 
 ## Installation
 

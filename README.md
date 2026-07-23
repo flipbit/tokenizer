@@ -1,8 +1,8 @@
-# Tokenizer
-
 <p align="center">
   <img src="docs/icon.svg" alt="Tokenizer" width="128" height="128" />
 </p>
+
+# Tokenizer
 
 [![Build Status](https://github.com/flipbit/tokenizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/flipbit/tokenizer/actions)
 [![NuGet Version](https://img.shields.io/nuget/v/tokenizer.svg)](https://www.nuget.org/packages/Tokenizer/)

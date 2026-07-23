@@ -19,13 +19,13 @@ For full documentation and an interactive playground, visit [pullpatchpush.com/t
 ## Installation
 
 ```bash
-dotnet add package Tokenizer --version 3.0.0-beta.2
+dotnet add package Tokenizer --version 3.0.0
 ```
 
 Or add a PackageReference:
 
 ```xml
-<PackageReference Include="Tokenizer" Version="3.0.0-beta.2" />
+<PackageReference Include="Tokenizer" Version="3.0.0" />
 ```
 
 ## Quick Start

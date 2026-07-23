@@ -5,7 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.0.0-beta.1] - 2026-08-08
+## [3.0.0] - 2026-07-23
+
+### Added
+
+- `Assign<T>(T target)` overload for populating existing object instances (classes, structs, records, and types without parameterless constructors)
+- Online documentation at pullpatchpush.com/tokenizer with interactive playground
+- Configuration reference and Extensibility guide on docs site
+
+### Changed
+
+- Library icon updated to Phosphor brackets-curly design
+- README trimmed to landing-page format with links to documentation site
+- README links converted to absolute URLs for NuGet rendering
+
+## [3.0.0-beta.2] - 2026-07-09
+
+### Added
+
+- Token-centric diagnostic model with per-token outcome tracking (Matched, Rejected, NeverFound, Blocked), match attempt history, and assigned value locations
+- Diagnostic hint generators: PreambleNearMiss, ValidatorValue, DateFormat, ChainedDecorator, MultipleRejection, OptionalToken, RepeatingToken, ValueMismatch, BlockedToken
+- Stable diagnostic issue codes (TK001–TK008) for programmatic filtering
+- AlignmentRenderer and ProcessingOrderRenderer for human-readable diagnostic output
+- Causality analysis for ordered-mode diagnostics (blocked token detection)
+- `MaxRegexTimeout` option on `TokenizerOptions` (default: 1 second) to bound regex evaluation in user-supplied patterns
+- `CancellationToken` overloads on synchronous `Tokenize` methods
+- SECURITY.md with guidance for processing untrusted input
+- 61 diagnostic characterisation tests
+
+### Changed
+
+- Diagnostic subsystem redesigned from flat event stream to token-centric model (`TokenDiagnostic`, `TokenAttempt`, `DiagnosticIssue`)
+- `DiagnosticResult` replaced with `TokenizationDiagnostics` (lazy-built token view, raw event access kept)
+- Singular `AssignedValue`/`AssignedLocation` on `TokenDiagnostic` replaced with list-based `AssignedValues`/`AssignedLocations` for repeating token support
+- Compilation and tokenization diagnostic collectors separated (`ICompilationDiagnosticCollector`, `ITokenizationDiagnosticCollector`)
+- `MatchesRegexValidator` hardened: catches `RegexMatchTimeoutException`, removed `RegexOptions.Compiled`, added bounded cache eviction
+- `RegexReplaceTransformer` hardened: catches timeout, uses `MaxRegexTimeout`
+- Removed unbounded static `PathSegmentCache` (replaced with instance-scoped caching)
+- PII logging: guarded exception messages at Debug level, downgraded diagnostic log output
+
+### Fixed
+
+- All CodeQL code scanning alerts resolved (catch-of-all-exceptions, useless-assignment, local-not-disposed, dispose-not-called-on-throw, useless-upcast, missed-readonly, nested-if, missed-ternary, null-argument-to-equals, path-combine, useless-gethashcode, misleading-indentation)
+- Infinite regex timeouts on netstandard2.0 fallback paths
+
+## [3.0.0-beta.1] - 2026-06-20
 
 ### Added
 

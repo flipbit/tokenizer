@@ -52,7 +52,7 @@ public class TemplateFactoryTests
         var definition = new TemplateDefinition { Name = string.Empty };
         var t1 = TemplateFactory.Create(1UL, definition);
         var t2 = TemplateFactory.Create(2UL, definition);
-        Assert.NotEqual(t1.Name, t2.Name);
+        Assert.NotEqual(t1.Name, t2.Name, StringComparer.Ordinal);
         Assert.StartsWith("Template_", t1.Name, StringComparison.Ordinal);
         Assert.StartsWith("Template_", t2.Name, StringComparison.Ordinal);
     }

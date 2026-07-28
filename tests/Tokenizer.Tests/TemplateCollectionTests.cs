@@ -140,7 +140,7 @@ public class TemplateCollectionTests : TokenizerTestBase
         var names = coll.Select(t => t.Name).Order(StringComparer.Ordinal).ToList();
 
         // Assert
-        Assert.Equal(new[] { "alpha", "beta" }, names);
+        Assert.Equal(new[] { "alpha", "beta" }, names, StringComparer.Ordinal);
     }
 
     [Fact]

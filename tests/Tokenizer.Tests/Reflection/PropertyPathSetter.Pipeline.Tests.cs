@@ -181,7 +181,7 @@ public class PropertyPathSetterPipelineTests : TokenizerTestBase
         var target = result.Assign<CollectionTarget>();
 
         // Assert
-        Assert.Equal(new[] { "tag1", "tag2", "tag3" }, target.Tags);
+        Assert.Equal(new[] { "tag1", "tag2", "tag3" }, target.Tags, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class PropertyPathSetterPipelineTests : TokenizerTestBase
 
         // Assert
         Assert.Equal("Alice", target.Name);
-        Assert.Equal(new[] { "dev", "ops" }, target.Tags);
+        Assert.Equal(new[] { "dev", "ops" }, target.Tags, StringComparer.Ordinal);
     }
 
     // ── Missing property tests ──────────────────────────────────────────────────

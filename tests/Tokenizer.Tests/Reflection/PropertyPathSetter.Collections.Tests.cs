@@ -61,7 +61,7 @@ public class PropertyPathSetterCollectionsTests
         _setter.SetCollection(target, "StringList", values, StringComparison.Ordinal);
 
         // Assert
-        Assert.Equal(new[] { "alpha", "beta", "gamma" }, target.StringList);
+        Assert.Equal(new[] { "alpha", "beta", "gamma" }, target.StringList, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -247,7 +247,7 @@ public class PropertyPathSetterCollectionsTests
         _setter.SetCollection(target, "StringList", values, StringComparison.Ordinal);
 
         // Assert
-        Assert.Equal(new[] { "only" }, target.StringList);
+        Assert.Equal(new[] { "only" }, target.StringList, StringComparer.Ordinal);
     }
 
     // ── Getter-only collections ──────────────────────────────────────────────────

@@ -148,7 +148,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy.MM.dd HH:mm:ss", f);
+        Assert.Contains("yyyy.MM.dd HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -167,7 +167,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy-MM-dd HH:mm:ss", f);
+        Assert.Contains("yyyy-MM-dd HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -187,7 +187,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd-MMM-yyyy HH:mm:ss", f);
+        Assert.Contains("dd-MMM-yyyy HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -207,7 +207,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dddd d MMMM yyyy", f);
+        Assert.Contains("dddd d MMMM yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -227,7 +227,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd MMM yyyy HH:mmzzz", f);
+        Assert.Contains("dd MMM yyyy HH:mmzzz", f, StringComparer.Ordinal);
         Assert.True(DateTimeOffset.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -247,7 +247,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("MMMM d, yyyy", f);
+        Assert.Contains("MMMM d, yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -268,7 +268,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd-MMM-yyyy", f);
+        Assert.Contains("dd-MMM-yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -288,7 +288,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd MMM yyyy", f);
+        Assert.Contains("dd MMM yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -308,7 +308,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd-MMMM-yyyy", f);
+        Assert.Contains("dd-MMMM-yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -327,7 +327,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd.MM.yyyy HH:mm:ss", f);
+        Assert.Contains("dd.MM.yyyy HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -367,7 +367,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy. MM. dd.", f);
+        Assert.Contains("yyyy. MM. dd.", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -387,7 +387,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy-MMM-dd.", f);
+        Assert.Contains("yyyy-MMM-dd.", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -406,7 +406,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy/MM/dd HH:mm:ss", f);
+        Assert.Contains("yyyy/MM/dd HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -425,7 +425,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd/MM/yyyy HH:mm:ss", f);
+        Assert.Contains("dd/MM/yyyy HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -444,7 +444,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy-MM-dd", f);
+        Assert.Contains("yyyy-MM-dd", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -463,7 +463,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy.MM.dd", f);
+        Assert.Contains("yyyy.MM.dd", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -482,7 +482,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy/MM/dd", f);
+        Assert.Contains("yyyy/MM/dd", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -501,7 +501,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd.MM.yyyy", f);
+        Assert.Contains("dd.MM.yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -520,7 +520,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd/MM/yyyy", f);
+        Assert.Contains("dd/MM/yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -539,7 +539,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd-MM-yyyy", f);
+        Assert.Contains("dd-MM-yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -558,7 +558,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyyMMddHHmmss", f);
+        Assert.Contains("yyyyMMddHHmmss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -577,7 +577,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyyMMdd HH:mm:ss", f);
+        Assert.Contains("yyyyMMdd HH:mm:ss", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -596,7 +596,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyyMMdd", f);
+        Assert.Contains("yyyyMMdd", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -616,7 +616,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("d.M.yyyy", f);
+        Assert.Contains("d.M.yyyy", f, StringComparer.Ordinal);
         Assert.True(DateTime.TryParseExact(input, f, CultureInfo.InvariantCulture,
             DateTimeStyles.None, out _), $"TryParseExact failed for '{input}' with formats [{string.Join(", ", f)}]");
     }
@@ -637,7 +637,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("dd/MM/yyyy", f);
+        Assert.Contains("dd/MM/yyyy", f, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -649,7 +649,7 @@ public class DatePatternRecognizerTests
         // Assert
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("MM/dd/yyyy", f);
+        Assert.Contains("MM/dd/yyyy", f, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -706,6 +706,6 @@ public class DatePatternRecognizerTests
 
         Assert.True(result);
         var f = formats!;
-        Assert.Contains("yyyy-MM-ddTHH:mm:sszzz", f);
+        Assert.Contains("yyyy-MM-ddTHH:mm:sszzz", f, StringComparer.Ordinal);
     }
 }

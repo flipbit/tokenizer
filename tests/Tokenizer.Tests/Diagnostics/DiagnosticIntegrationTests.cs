@@ -142,7 +142,7 @@ public class DiagnosticIntegrationTests : TokenizerTestBase
         var transformerEvent = result.Diagnostics.RawEvents
             .First(e => e.Type == TokenizationEventType.TransformerSucceeded);
         Assert.NotNull(transformerEvent.DecoratorArgs);
-        Assert.Contains("yyyy-MM-dd", transformerEvent.DecoratorArgs);
+        Assert.Contains("yyyy-MM-dd", transformerEvent.DecoratorArgs, StringComparer.Ordinal);
     }
 
     [Fact]

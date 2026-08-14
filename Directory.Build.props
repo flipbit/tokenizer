@@ -10,7 +10,7 @@
     <AnalysisLevel>latest-None</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.137">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.152">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -29,7 +29,7 @@ public class TokenizationEngineTests : TokenizerTestBase
         // Assert
         Assert.True(result.Success);
         Assert.Single(result.Tokens.Matches);
-        Assert.Equal("hello", result.Tokens.Matches.First().Value);
+        Assert.Equal("hello", result.Tokens.Matches[0].Value);
     }
 
     [Fact]

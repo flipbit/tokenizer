@@ -20,7 +20,7 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -29,7 +29,7 @@ public class TemplateParserDecoratorTests
         Assert.False(token.IsRepeating);
         Assert.Single(token.Decorators);
 
-        var decorator = token.Decorators.First();
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
     }
@@ -43,7 +43,7 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -52,11 +52,11 @@ public class TemplateParserDecoratorTests
         Assert.False(token.IsRepeating);
         Assert.Equal(2, token.Decorators.Count);
 
-        var decorator1 = token.Decorators.First();
+        var decorator1 = token.Decorators[0];
 
         Assert.Equal("Trim", decorator1.Name);
 
-        var decorator2 = token.Decorators.ElementAt(1);
+        var decorator2 = token.Decorators[1];
 
         Assert.Equal("IsNotNullOrEmpty", decorator2.Name);
     }
@@ -70,13 +70,13 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -88,13 +88,13 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -106,13 +106,13 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -124,8 +124,8 @@ public class TemplateParserDecoratorTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("Decorator", decorator.Name);
 

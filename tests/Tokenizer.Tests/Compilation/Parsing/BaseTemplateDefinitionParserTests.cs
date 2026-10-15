@@ -34,7 +34,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -59,7 +59,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token1 = template.Tokens.First();
+        var token1 = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token1.Preamble);
         Assert.Equal("TokenName", token1.Name);
@@ -67,7 +67,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.False(token1.TerminateOnNewLine);
         Assert.False(token1.IsRepeating);
 
-        var token2 = template.Tokens.ElementAt(1);
+        var token2 = template.Tokens[1];
 
         Assert.Equal("Preamble 2 ", token2.Preamble);
         Assert.Equal("TokenName2", token2.Name);
@@ -85,7 +85,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -110,7 +110,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -129,7 +129,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -163,7 +163,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -181,7 +181,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -190,7 +190,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.False(token.IsRepeating);
         Assert.Single(token.Decorators);
 
-        var decorator = token.Decorators.First();
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
     }
@@ -204,7 +204,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("Preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -213,11 +213,11 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.False(token.IsRepeating);
         Assert.Equal(2, token.Decorators.Count);
 
-        var decorator1 = token.Decorators.First();
+        var decorator1 = token.Decorators[0];
 
         Assert.Equal("Trim", decorator1.Name);
 
-        var decorator2 = token.Decorators.ElementAt(1);
+        var decorator2 = token.Decorators[1];
 
         Assert.Equal("IsNotNullOrEmpty", decorator2.Name);
     }
@@ -231,13 +231,13 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -249,13 +249,13 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -267,13 +267,13 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("ToDateTime", decorator.Name);
 
         Assert.Single(decorator.Args);
-        Assert.Equal("yyyy-MM-dd", decorator.Args.First());
+        Assert.Equal("yyyy-MM-dd", decorator.Args[0]);
     }
 
     [Fact]
@@ -285,8 +285,8 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
-        var decorator = token.Decorators.First();
+        var token = template.Tokens[0];
+        var decorator = token.Decorators[0];
 
         Assert.Equal("Decorator", decorator.Name);
 
@@ -305,7 +305,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("TokenName", token.Name);
 
         var second = template.Tokens[1];
@@ -322,7 +322,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
 
@@ -340,7 +340,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
 
@@ -359,7 +359,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.Equal(StringComparison.InvariantCulture, template.Options.TokenStringComparison);
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }
@@ -374,7 +374,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         Assert.Equal(StringComparison.InvariantCultureIgnoreCase, template.Options.TokenStringComparison);
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }
@@ -388,7 +388,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal("My Template", template.Name);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }
@@ -440,7 +440,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This {is} the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -475,7 +475,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -535,7 +535,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -552,7 +552,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -569,7 +569,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -586,7 +586,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -626,7 +626,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -643,7 +643,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -675,7 +675,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -692,7 +692,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -709,7 +709,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -903,7 +903,7 @@ public abstract class BaseTemplateDefinitionParserTests(ITestOutputHelper testOu
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("Null", token.Name);

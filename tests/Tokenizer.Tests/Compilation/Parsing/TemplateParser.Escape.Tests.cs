@@ -20,7 +20,7 @@ public class TemplateParserEscapeTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This {is} the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);

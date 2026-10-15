@@ -22,7 +22,7 @@ public class FrontMatterOptionsTests
         Assert.Equal(StringComparison.InvariantCulture, template.Options.TokenStringComparison);
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }
@@ -37,7 +37,7 @@ public class FrontMatterOptionsTests
         Assert.Equal(StringComparison.InvariantCultureIgnoreCase, template.Options.TokenStringComparison);
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }
@@ -51,7 +51,7 @@ public class FrontMatterOptionsTests
         // Assert
         Assert.Equal("My Template", template.Name);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
     }

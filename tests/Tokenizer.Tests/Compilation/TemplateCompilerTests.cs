@@ -19,7 +19,7 @@ public class TemplateCompilerTests
 
         Assert.Single(token.Decorators);
 
-        var tokenOperator = token.Decorators.First();
+        var tokenOperator = token.Decorators[0];
 
         Assert.Equal(typeof(ToDateTimeTransformer), tokenOperator.DecoratorType);
         Assert.Single(tokenOperator.Parameters);
@@ -37,7 +37,7 @@ public class TemplateCompilerTests
 
         Assert.Single(token.Decorators);
 
-        var tokenOperator = token.Decorators.First();
+        var tokenOperator = token.Decorators[0];
 
         Assert.Equal(typeof(ToDateTimeTransformer), tokenOperator.DecoratorType);
         Assert.Single(tokenOperator.Parameters);

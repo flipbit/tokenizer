@@ -59,7 +59,7 @@ public class TokenizerAsyncTests : TokenizerTestBase
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal("Charlie", result.Tokens.Matches.First().Value);
+        Assert.Equal("Charlie", result.Tokens.Matches[0].Value);
     }
 
     [Fact]

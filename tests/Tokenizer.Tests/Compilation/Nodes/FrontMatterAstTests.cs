@@ -32,8 +32,8 @@ public class FrontMatterAstTests
 
         // Assert
         Assert.Equal(2, block.Entries.Count);
-        Assert.Same(e1, block.Entries.First());
-        Assert.Same(e2, block.Entries.Last());
+        Assert.Same(e1, block.Entries[0]);
+        Assert.Same(e2, block.Entries[^1]);
     }
 
     [Fact]

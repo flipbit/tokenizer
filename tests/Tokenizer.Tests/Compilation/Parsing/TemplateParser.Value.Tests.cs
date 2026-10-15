@@ -20,7 +20,7 @@ public class TemplateParserValueTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -37,7 +37,7 @@ public class TemplateParserValueTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -69,7 +69,7 @@ public class TemplateParserValueTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -86,7 +86,7 @@ public class TemplateParserValueTests
         // Assert
         Assert.Single(template.Tokens);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);
@@ -103,7 +103,7 @@ public class TemplateParserValueTests
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
 
         Assert.Equal("This is the preamble", token.Preamble);
         Assert.Equal("TokenName", token.Name);

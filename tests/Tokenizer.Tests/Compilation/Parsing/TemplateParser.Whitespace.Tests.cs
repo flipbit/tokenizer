@@ -37,7 +37,7 @@ public class TemplateParserWhitespaceTests
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
 
@@ -55,7 +55,7 @@ public class TemplateParserWhitespaceTests
         // Assert
         Assert.Equal(2, template.Tokens.Count);
 
-        var token = template.Tokens.First();
+        var token = template.Tokens[0];
         Assert.Equal("Preamble\n", token.Preamble);
         Assert.Equal("TokenName", token.Name);
 
